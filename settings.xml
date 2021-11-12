@@ -67,8 +67,8 @@
                     <arch>x86_64</arch>
                 </os>
             </activation>
-            <properties>
-                <JAVA_INCLUDE>-I/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/include</JAVA_INCLUDE>
+	    <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/darwin</JAVA_INCLUDE>
                 <jemalloc.include>include_mac</jemalloc.include>
                 <lib.packaging>dylib</lib.packaging>
                 <lib.path.plaftorm.suffix>Mac/x86_64</lib.path.plaftorm.suffix>
@@ -84,8 +84,8 @@
                     <arch>amd64</arch>
                 </os>
             </activation>
-            <properties>
-                <JAVA_INCLUDE>-I/usr/java/latest/include/ -I/usr/java/latest/include/linux/</JAVA_INCLUDE>
+	    <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux</JAVA_INCLUDE>
                 <jemalloc.include>include_linux</jemalloc.include>
                 <lib.packaging>so</lib.packaging>
                 <lib.path.plaftorm.suffix>Linux/amd64</lib.path.plaftorm.suffix>
