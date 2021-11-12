@@ -19,7 +19,8 @@ package org.bigbase.carrot.compression;
 
 // TODO: Auto-generated Javadoc
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.nio.ByteBuffer;
 
@@ -28,9 +29,8 @@ import java.nio.ByteBuffer;
  */
 public class CodecFactory {
 
-    private static Logger logger = Logger.getLogger(CodecFactory.class);
-
-            /** The s instance. */
+    private static Logger logger = LogManager.getLogger(CodecFactory.class);
+            /** The factory instance. */
     private static CodecFactory sInstance;
 
     /**
