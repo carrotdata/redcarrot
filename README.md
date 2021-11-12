@@ -43,7 +43,7 @@ First release introduces new data type: **sparsed bitset**. The sparse bitset ha
 
 #### B-tree data type
 
-Release 0.4 will introduce B-Tree data type, which will allow range queries with filters, aggregations and grouping. Stay tuned   
+Release 0.4 will introduce B-Tree data type, which will allow range queries with filters, aggregations and grouping. Stay tuned.   
 
 ### New features in existing data types
 
@@ -62,11 +62,11 @@ Short answer is - this is the primary programming language of the CarrotDB devel
 * The server is very conservative in producing temporary Java objects, most of the code paths are almost free of any object allocations. So, this helps a lot when someone want predictable performance and query latencies. 
 * Performance and memory efficiency have been top two priorities since the beginning of the project.
 * As a result, memory efficiency of a CarrotDB is much better than Redis. Especially, for a small key-values, because of a very low CarrotDB engine overhead. For example, to store 1M  of 8 bytes set members, CarrotDB needs less than 10MB of RAM (less than 2 bytes overhead) and Redis needs close to 70MB.
-* Surprisngly, performance is good as well and pretty close to Redis in most of the tests. See WiKi fo test results **(TODO)**.  
+* Surprisngly, performance is good as well and pretty close to Redis in most of the tests. See **Wiki** fo test results.  
 
 ## What is covered in the first release
 
-Most of data types commands (total number is 105 for the release 0.1) of Redis 6.2.x have been implemented. The list of supported commands is **HERE**. The following data types are suported (with some commands still missing): **sets, ordered sets, hashes, lists, strings, bitmaps**. No administration, cluster, ACL yet. These will follow in the next releases. Persistence is supported, as well as a **SAVE** and **BGSAVE** commands.
+Most of data types commands (total number is 105 for the release 0.1) of Redis 6.2.x have been implemented. The list of supported commands is in the **Wiki**. The following data types are suported (with some commands still missing): **sets, ordered sets, hashes, lists, strings, bitmaps**. No administration, cluster, ACL yet. These will follow in the next releases. Persistence is supported, as well as a **SAVE** and **BGSAVE** commands.
 
 ## How to build
 
@@ -100,7 +100,7 @@ CarrotDB was tested with Java Jedis client, it should work with other Redis clie
 
 ## Benchmark summary
 
-Accros all benchmark tests, Redis requires between 2 and 12 times more memory to keep the same data set. CarrotDB performance is within 5-10% of Redis, when CarrotDB compression is disabled and 40% less (only for updates and deletes) when compression is on. See performance benchmark tests in the WiKi **TODO**. We have not started code optimization yet, no profiling not hot spot detection. So, this is preproduction data and, definetely, performance will be improved by the time of the first official release.  
+Accros all benchmark tests, Redis requires between 2 and 12 times more memory to keep the same data set. CarrotDB performance is within 5-10% of Redis, when CarrotDB compression is disabled and 40% less (only for updates and deletes) when compression is on. See performance benchmark tests in the **Wiki**. We have not started code optimization yet, no profiling not hot spot detection. So, this is preproduction data and, definetely, performance will be improved by the time of the first official release.  
 
 ## Releases timeline
 
