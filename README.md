@@ -1,4 +1,4 @@
-# CarrotDB - computational data store
+# CarrotDB - computational in-memory data store
 
 ## Introduction
 
