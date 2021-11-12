@@ -1,12 +1,12 @@
-# Carrot - Redis on steroids
+# CarrotDB - computational data store
 
 ## Introduction
 
-Carrot is the new in-memory data store, which provides full Redis compatibility (up to the current 6.2.5 version) and can be used with any existing Redis clients. It will follow open source Redis as close as possible to facilitate easy migration for existing Redis users, but surely, Carrtot has its own flavors, which differ it from the original. 
+CarrotDB is the new in-memory data store, which provides full Redis compatibility (up to the current 6.2.5 version) and can be used with any existing Redis clients. It will follow open source Redis as close as possible to facilitate easy migration for existing Redis users, but surely, Carrtot has its own flavors, which differs it from the original. CarrotDB is not a cache - its computational data store (CDS). The major goal of CarrotDB is to provide dvelopers with a smart in-memory data store, which is highly flexible, extendable and customazible through user-provided coprocessors, filters, functions, aggregators and stored procedures.  CarrotDB aims at low milliseconds latencies for complex groupBy-aggregate-topN queries.  
 
 ### In memory data compression. 
 
-First of all, Carrot supports on-the-fly compression and decompression data (currently, LZ4 is supported with ZSTD following shortly). The compression works on blocks of Key-Value pairs - not on single Key-Value. This results in a much supperior performance (try to compress 100 byte value and 4K block of key values, ordered by key and compare the result).
+CarrotDB supports on-the-fly compression and decompression data (currently, LZ4 is supported with ZSTD following shortly). The compression works on blocks of Key-Value pairs - not on single Key-Value. This results in a much supperior performance (try to compress 100 byte value and 4K block of key values, ordered by key and compare the result).
 
 ### Custom B-Tree engine
 
@@ -30,11 +30,11 @@ Carrot supports multiple data nodes inside a single process, each data node can 
 #### Sparsed bitsets
 First release introduces new data type: **sparsed bitset**. The sparse bitset has the same API as a regular Redis bitset. The difference is in memory usage:
 * Sparse bitset does not allocate memory continuosly, For example:  ```SETBIT key 1000000000 1``` in Redis will allocate at least 125MB of RAM first to keep all the bitset up to the last bit set. The command for Carrot: ```SSETBIT 1000000000 1``` will allocate only 4Kb of data and will compress it after that. 
-* Sparse bitset are very memory efficient when population counts (%% of set bits) is < 10% or > 90%. In this case it provides very decent compression. Sparse bitsets length is limited only by available physical RAM (bit index is a signed 64-bit integer). Current compression codec is LZ4, this is the general compression codec, not specifically designed to compress bitsets. Future releases will introduce bitset-optimized compression using novell compression scheme - **bitcom4**. *Bitcom4* borrows some ideas from a very popular bitset compression algorithm - *Roaring bitmap*, namely - 16-bit compression scheme for 64K bit blocks, but introduces two new ones: 8-bit and 4-bit block compression for 256 and 16 bit block sizes respectively. There are 4 codecs in *bitcom4* compression algorithm: 16-bit codec for large sparse blocks (with bit density below 0.001), 8 - bit codec - for blocks with bit density between 0.001 and 0.02 (approximately), 4 - bit codec for blocks with bit density between 0.02 and 0.2 and RAW (no compression codec) for bit densities above 0.2. Combination of four codecs allows better compression, especially when bit density is above 0.02. For example, *Roaring bitmap* can not compress bitsets with bit densities above 0.06. *bitcom4* compresses random bitmaps with 0.06 density up 2.5x times.       
+* Sparse bitset are very memory efficient when population counts (%% of set bits) is < 10% or > 90%. In this case it provides very decent compression. Sparse bitsets length is limited only by available physical RAM (bit index is a signed 64-bit integer). Current compression codec is LZ4, this is the general compression codec, not specifically designed to compress bitsets. Future releases will introduce bitset-optimized compression using novell compression scheme - **bitcom4**. **Bitcom4** borrows some ideas from a very popular bitset compression algorithm - **Roaring bitmap**, namely - 16-bit compression scheme for 64K bit blocks, but introduces two new ones: 8-bit and 4-bit block compression for 256 and 16 bit block sizes respectively. There are 4 codecs in **bitcom4** compression algorithm: 16-bit codec for large sparse blocks (with bit density below 0.001), 8 - bit codec - for blocks with bit density between 0.001 and 0.02 (approximately), 4 - bit codec for blocks with bit density between 0.02 and 0.2 and RAW (no compression codec) for bit densities above 0.2. Combination of four codecs allows better compression, especially when bit density is above 0.02. For example, **Roaring bitmap** can not compress bitsets with bit densities above 0.06. **bitcom4** compresses random bitmaps with 0.06 density up 2.5x times.       
 
 #### B-tree data type
 
-Release 0.3 will introduce B-Tree data type, which will allow range queries with filters and aggregations. Stay tuned   
+Release 0.4 will introduce B-Tree data type, which will allow range queries with filters, aggregations and grouping. Stay tuned   
 
 ### New features in existing data types
 
@@ -87,7 +87,7 @@ $ mvn --settings settings.xml surefire:test
 
 ## Usage and Redis client compatibility
 
-Carrot was tested with Java Jedis clinet, it should work with other clients as well. The client **cluster support is required** to use Carrot at a full potential (multiple data nodes per server). **TODO**. As since Carrot is at 0.2 version it is not surprisingly that it does not have its own shell yet, but Redis ```redis-cli``` shell can be used instead.  
+Carrot was tested with Java Jedis client, it should work with other Redis clients as well. The client **cluster support is required** to use Carrot at a full potential (multiple data nodes per server). **TODO**. As since Carrot is at 0.2 version it is not surprisingly that it does not have its own shell yet, but Redis ```redis-cli``` shell can be used instead.  
 
 ## Benchmark summary
 
