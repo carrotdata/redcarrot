@@ -79,10 +79,15 @@ To create Eclipse environment files:
 ```
 $ mvn --settings settings.xml eclipse:eclipse -DskipTests
 ```
+To run unit tests from command line:
+
+```
+$ mvn --settings settings.xml surefire:test
+```
 
 ## Usage and Redis client compatibility
 
-Carrot was tested with Java Jedis, should work with other clients as well. The client **cluster support is required** to use Carrot at a full potential (multiple data nodes per server). **TODO**.
+Carrot was tested with Java Jedis clinet, it should work with other clients as well. The client **cluster support is required** to use Carrot at a full potential (multiple data nodes per server). **TODO**. As since Carrot is at 0.2 version it is not surprisingly that it does not have its own shell yet, but Redis ```redis-cli``` shell can be used instead.  
 
 ## Benchmark summary
 
