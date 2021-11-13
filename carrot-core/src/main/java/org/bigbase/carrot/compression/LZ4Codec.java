@@ -20,7 +20,8 @@ package org.bigbase.carrot.compression;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.bigbase.compression.lz4.LZ4;
 
@@ -33,7 +34,7 @@ public class LZ4Codec implements Codec {
 
 	/** The Constant LOG. */
 	@SuppressWarnings("unused")
-    private final static Logger LOG = Logger.getLogger(LZ4Codec.class);
+    private final static Logger LOG = LogManager.getLogger(LZ4Codec.class);
 	
 	/** The min comp size. */
 	private int minCompSize = 100;

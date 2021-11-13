@@ -29,8 +29,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -52,9 +50,6 @@ public class BigSortedMap {
 
 
   /**************** STATIC SECTION *******************************/
-  
-  
-  static Log LOG = LogFactory.getLog(BigSortedMap.class);
   
   /**
    * Compression codec

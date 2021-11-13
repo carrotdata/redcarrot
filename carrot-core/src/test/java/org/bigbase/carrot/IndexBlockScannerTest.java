@@ -33,11 +33,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IndexBlockScannerTest {
-  Logger LOG = LoggerFactory.getLogger(IndexBlockScannerTest.class);
   
   static {
     //UnsafeAccess.debug = true;
