@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bigbase.carrot.util.RangeTree.Range;
 
 import sun.misc.Unsafe;
@@ -294,7 +294,7 @@ public final class UnsafeAccess {
   /**
    * Logger
    */
-  private static final Log LOG = LogFactory.getLog(UnsafeAccess.class);
+  private static final Logger LOG = LogManager.getLogger(UnsafeAccess.class);
   
   /**
    * The great UNSAFE

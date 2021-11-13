@@ -30,11 +30,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import sun.misc.Unsafe;
 
 
@@ -55,7 +52,7 @@ public class Bytes  {
   //HConstants.EMPTY_BYTE_ARRAY should be updated if this changed
   private static final byte [] EMPTY_BYTE_ARRAY = new byte [0];
 
-  private static final Log LOG = LogFactory.getLog(Bytes.class);
+  private static final Logger LOG = LogManager.getLogger(Bytes.class);
 
   /**
    * Size of boolean in bytes
