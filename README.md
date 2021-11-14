@@ -106,6 +106,10 @@ Accros all benchmark tests, Redis requires between 2 and 12 times more memory to
 
 First release, which is 0.1 was done on Sept 3rd 2021. We plan to release new version every 1-2 months. Stay tuned.
 
+## How to contribute
+
+Clone repo, open new issue, create new pull request, please use Google Java code formatter: https://github.com/google/google-java-format
+
 ## License
 
 Similar to MongoDB, permissive, but not fully open source.
