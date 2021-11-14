@@ -628,7 +628,7 @@ public class SparseBitmapsTest {
    *
    * @param set set
    * @param start from offset (inclusive)
-   * @param end   to offset (inclusive)
+   * @param end to offset (inclusive)
    * @return number of bits set
    */
   private int expectedNumber(NavigableSet<Integer> set, long start, long end) {
@@ -683,7 +683,7 @@ public class SparseBitmapsTest {
    *
    * @param set set
    * @param start from offset (inclusive)
-   * @param end   to offset (inclusive)
+   * @param end to offset (inclusive)
    * @return forts set bit position
    */
   private int expectedPositionUnSet(NavigableSet<Integer> set, long start, long end) {

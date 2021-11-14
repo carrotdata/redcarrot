@@ -13,7 +13,6 @@
  */
 package org.bigbase.carrot.examples.basic;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -1024,7 +1023,7 @@ public class CarrotVsRedisDemo {
 
   private static void verify(List<String> valList, String s) {
     for (String val : valList) {
-        assert (s.indexOf(val) > 0);
+      assert (s.indexOf(val) > 0);
     }
   }
 
@@ -1114,7 +1113,7 @@ public class CarrotVsRedisDemo {
     }
 
     public String set(String key, String value) throws IOException {
-      writeRequest(buf, new String[]{"SET", key, value});
+      writeRequest(buf, new String[] {"SET", key, value});
       int slot = Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       buf.flip();
@@ -1134,7 +1133,7 @@ public class CarrotVsRedisDemo {
     }
 
     public String get(String key) throws IOException {
-      writeRequest(buf, new String[]{"GET", key});
+      writeRequest(buf, new String[] {"GET", key});
       int slot = Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       buf.flip();
@@ -1212,7 +1211,7 @@ public class CarrotVsRedisDemo {
     }
 
     private String flushAll(SocketChannel channel) throws IOException {
-      writeRequest(buf, new String[]{"FLUSHALL"});
+      writeRequest(buf, new String[] {"FLUSHALL"});
       buf.flip();
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1230,7 +1229,7 @@ public class CarrotVsRedisDemo {
     }
 
     private String save(SocketChannel channel) throws IOException {
-      writeRequest(buf, new String[]{"SAVE"});
+      writeRequest(buf, new String[] {"SAVE"});
       buf.flip();
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1254,7 +1253,7 @@ public class CarrotVsRedisDemo {
     }
 
     public String sscan(String key, long cursor) throws IOException {
-      writeRequest(buf, new String[]{"SSCAN", key, Long.toString(cursor)});
+      writeRequest(buf, new String[] {"SSCAN", key, Long.toString(cursor)});
       buf.flip();
       int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);

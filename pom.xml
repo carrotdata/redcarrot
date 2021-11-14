@@ -1,293 +1,293 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.bigbase</groupId>
-  <artifactId>carrot</artifactId>
-  <packaging>pom</packaging>
-  <name>Carrot</name>
-  <version>${revision}</version>
-  <url>http://www.server.com</url>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.bigbase</groupId>
+    <artifactId>carrot</artifactId>
+    <packaging>pom</packaging>
+    <name>Carrot</name>
+    <version>${revision}</version>
+    <url>http://www.server.com</url>
 
-  <properties>
-    <revision>1.0.0</revision>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>11</java.version>
-  </properties>
+    <properties>
+        <revision>1.0.0</revision>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+    </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <!--      modules-->
-      <dependency>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot-core</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot-common</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot-examples</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bigbase</groupId>
-        <artifactId>lz4-java</artifactId>
-        <version>${revision}</version>
-      </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!--      modules-->
+            <dependency>
+                <groupId>org.bigbase</groupId>
+                <artifactId>carrot-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bigbase</groupId>
+                <artifactId>carrot-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bigbase</groupId>
+                <artifactId>carrot-examples</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bigbase</groupId>
+                <artifactId>lz4-java</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
-      <!--      3rd atrs dependencies-->
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.14.1</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.13.1</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>30.0-jre</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/org.roaringbitmap/RoaringBitmap -->
-      <dependency>
-        <groupId>org.roaringbitmap</groupId>
-        <artifactId>RoaringBitmap</artifactId>
-        <version>0.9.15</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>3.5.1</version>
-        <type>jar</type>
-        <scope>compile</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+            <!--      3rd atrs dependencies-->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.14.1</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.13.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.0-jre</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.roaringbitmap/RoaringBitmap -->
+            <dependency>
+                <groupId>org.roaringbitmap</groupId>
+                <artifactId>RoaringBitmap</artifactId>
+                <version>0.9.15</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>3.5.1</version>
+                <type>jar</type>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-  <modules>
-    <module>carrot-common</module>
-    <module>lz4</module>
-    <module>lz4-java</module>
-    <module>carrot-core</module>
-    <module>dist</module>
-    <module>carrot-examples</module>
-  </modules>
+    <modules>
+        <module>carrot-common</module>
+        <module>lz4</module>
+        <module>lz4-java</module>
+        <module>carrot-core</module>
+        <module>dist</module>
+        <module>carrot-examples</module>
+    </modules>
 
-  <build>
-    <plugins>
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-shade-plugin</artifactId>-->
-      <!--        <version>3.2.1</version>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <phase>package</phase>-->
-      <!--            <goals>-->
-      <!--              <goal>shade</goal>-->
-      <!--            </goals>-->
-      <!--            <configuration>-->
-      <!--              <transformers>-->
-      <!--                <transformer-->
-      <!--                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-      <!--                  <manifestEntries>-->
-      <!--                    <Main-Class>org.bigbase.carrot.redis.CarrotMain</Main-Class>-->
-      <!--                    <Build-Number>${revision}</Build-Number>-->
-      <!--                  </manifestEntries>-->
-      <!--                </transformer>-->
-      <!--              </transformers>-->
-      <!--            </configuration>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <configuration>
-          <argLine>-Xmx512m --add-opens java.base/java.nio=ALL-UNNAMED</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <forkCount>1</forkCount>
-          <reuseForks>false</reuseForks>
-          <excludes>
-            <exclude>**/BigSortedMapPerfTestClusterMode.java</exclude>
-            <exclude>**/BigSortedMapTestMT.java</exclude>
-            <exclude>**/AtomicAppendTestMT.java</exclude>
-            <exclude>**/AtomicIncrementTestMT.java</exclude>
-            <exclude>**/HashesMultithreadedTest.java</exclude>
-            <exclude>**/SetsMultithreadedTest.java</exclude>
-            <exclude>**/TestBitmapCompression.java</exclude>
-            <exclude>**/ZSetsMultithreadedTest.java</exclude>
-            <exclude>**/SparseBitmapTest.java</exclude>
-          </excludes>
-          <systemProperties>
-            <property>
-              <name>surefire</name>
-              <value>true</value>
-            </property>
-          </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
-        <!--        <executions>-->
-        <!--          <execution>-->
-        <!--            <id>copy</id>-->
-        <!--            <phase>package</phase>-->
-        <!--            <goals>-->
-        <!--              <goal>copy</goal>-->
-        <!--            </goals>-->
-        <!--            <configuration>-->
-        <!--              <artifactItems>-->
-        <!--                <artifactItem>-->
-        <!--                  <groupId>org.bigbase</groupId>-->
-        <!--                  <artifactId>liblz4</artifactId>-->
-        <!--                  <type>so</type>-->
-        <!--                  <overWrite>true</overWrite>-->
-        <!--                  <destFileName>liblz4.so</destFileName>-->
-        <!--                </artifactItem>-->
-        <!--              </artifactItems>-->
-        <!--              <overWriteReleases>false</overWriteReleases>-->
-        <!--              <overWriteSnapshots>true</overWriteSnapshots>-->
-        <!--              <outputDirectory>${project.build.directory}/lz4-java/src/main/resources</outputDirectory>-->
-        <!--            </configuration>-->
-        <!--          </execution>-->
-        <!--        </executions>-->
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <!--      <plugin>-->
+            <!--        <groupId>org.apache.maven.plugins</groupId>-->
+            <!--        <artifactId>maven-shade-plugin</artifactId>-->
+            <!--        <version>3.2.1</version>-->
+            <!--        <executions>-->
+            <!--          <execution>-->
+            <!--            <phase>package</phase>-->
+            <!--            <goals>-->
+            <!--              <goal>shade</goal>-->
+            <!--            </goals>-->
+            <!--            <configuration>-->
+            <!--              <transformers>-->
+            <!--                <transformer-->
+            <!--                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+            <!--                  <manifestEntries>-->
+            <!--                    <Main-Class>org.bigbase.carrot.redis.CarrotMain</Main-Class>-->
+            <!--                    <Build-Number>${revision}</Build-Number>-->
+            <!--                  </manifestEntries>-->
+            <!--                </transformer>-->
+            <!--              </transformers>-->
+            <!--            </configuration>-->
+            <!--          </execution>-->
+            <!--        </executions>-->
+            <!--      </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <argLine>-Xmx512m --add-opens java.base/java.nio=ALL-UNNAMED</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <excludes>
+                        <exclude>**/BigSortedMapPerfTestClusterMode.java</exclude>
+                        <exclude>**/BigSortedMapTestMT.java</exclude>
+                        <exclude>**/AtomicAppendTestMT.java</exclude>
+                        <exclude>**/AtomicIncrementTestMT.java</exclude>
+                        <exclude>**/HashesMultithreadedTest.java</exclude>
+                        <exclude>**/SetsMultithreadedTest.java</exclude>
+                        <exclude>**/TestBitmapCompression.java</exclude>
+                        <exclude>**/ZSetsMultithreadedTest.java</exclude>
+                        <exclude>**/SparseBitmapTest.java</exclude>
+                    </excludes>
+                    <systemProperties>
+                        <property>
+                            <name>surefire</name>
+                            <value>true</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <!--        <executions>-->
+                <!--          <execution>-->
+                <!--            <id>copy</id>-->
+                <!--            <phase>package</phase>-->
+                <!--            <goals>-->
+                <!--              <goal>copy</goal>-->
+                <!--            </goals>-->
+                <!--            <configuration>-->
+                <!--              <artifactItems>-->
+                <!--                <artifactItem>-->
+                <!--                  <groupId>org.bigbase</groupId>-->
+                <!--                  <artifactId>liblz4</artifactId>-->
+                <!--                  <type>so</type>-->
+                <!--                  <overWrite>true</overWrite>-->
+                <!--                  <destFileName>liblz4.so</destFileName>-->
+                <!--                </artifactItem>-->
+                <!--              </artifactItems>-->
+                <!--              <overWriteReleases>false</overWriteReleases>-->
+                <!--              <overWriteSnapshots>true</overWriteSnapshots>-->
+                <!--              <outputDirectory>${project.build.directory}/lz4-java/src/main/resources</outputDirectory>-->
+                <!--            </configuration>-->
+                <!--          </execution>-->
+                <!--        </executions>-->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-  <profiles>
-    <profile>
-      <id>default</id>
+    <profiles>
+        <profile>
+            <id>default</id>
 
-      <activation>
-      </activation>
+            <activation>
+            </activation>
 
-      <repositories>
-        <repository>
-          <id>Repo1 Maven</id>
-          <url>http://repo1.maven.org/maven2/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-        </repository>
-        <repository>
-          <id>Repo2 Maven</id>
-          <url>http://repo2.maven.org/maven2/</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-        </repository>
-        <repository>
-          <id>JBoss</id>
-          <url>http://repository.jboss.org/nexus/content/groups/public</url>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-        </repository>
-        <repository>
-          <id>Maven Snapshots</id>
-          <url>http://snapshots.maven.codehaus.org/maven2</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-        </repository>
-      </repositories>
-    </profile>
+            <repositories>
+                <repository>
+                    <id>Repo1 Maven</id>
+                    <url>http://repo1.maven.org/maven2/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+                <repository>
+                    <id>Repo2 Maven</id>
+                    <url>http://repo2.maven.org/maven2/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+                <repository>
+                    <id>JBoss</id>
+                    <url>http://repository.jboss.org/nexus/content/groups/public</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+                <repository>
+                    <id>Maven Snapshots</id>
+                    <url>http://snapshots.maven.codehaus.org/maven2</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
 
-    <profile>
-      <id>mac</id>
-      <activation>
-        <os>
-          <family>Mac</family>
-          <arch>x86_64</arch>
-        </os>
-      </activation>
-      <properties>
-        <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/darwin</JAVA_INCLUDE>
-        <jemalloc.include>include_mac</jemalloc.include>
-        <lib.packaging>dylib</lib.packaging>
-        <lib.path.plaftorm.suffix>Mac/x86_64</lib.path.plaftorm.suffix>
-        <lib.suffix>-mac</lib.suffix>
-      </properties>
-    </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/darwin</JAVA_INCLUDE>
+                <jemalloc.include>include_mac</jemalloc.include>
+                <lib.packaging>dylib</lib.packaging>
+                <lib.path.plaftorm.suffix>Mac/x86_64</lib.path.plaftorm.suffix>
+                <lib.suffix>-mac</lib.suffix>
+            </properties>
+        </profile>
 
-    <profile>
-      <id>linux</id>
-      <activation>
-        <os>
-          <family>Linux</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux</JAVA_INCLUDE>
-        <jemalloc.include>include_linux</jemalloc.include>
-        <lib.packaging>so</lib.packaging>
-        <lib.path.plaftorm.suffix>Linux/amd64</lib.path.plaftorm.suffix>
-        <lib.suffix></lib.suffix>
-      </properties>
-    </profile>
-  </profiles>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux</JAVA_INCLUDE>
+                <jemalloc.include>include_linux</jemalloc.include>
+                <lib.packaging>so</lib.packaging>
+                <lib.path.plaftorm.suffix>Linux/amd64</lib.path.plaftorm.suffix>
+                <lib.suffix></lib.suffix>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
 

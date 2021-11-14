@@ -78,7 +78,7 @@ public class SparseBitmapsComparison {
 
   static double[] dencities =
       new double[] {
-          /*0.000001, 0.00001, 0.0001, 0.001,*/
+        /*0.000001, 0.00001, 0.0001, 0.001,*/
         0.01 /*, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1*/
       };
 

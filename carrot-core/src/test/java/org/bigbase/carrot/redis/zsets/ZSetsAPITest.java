@@ -2878,13 +2878,14 @@ public class ZSetsAPITest {
       double max = Double.MAX_VALUE;
       int startIdx = Integer.MIN_VALUE / 2, endIdx = Integer.MAX_VALUE / 2;
       int expectedNum = 0;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -3365,8 +3366,7 @@ public class ZSetsAPITest {
       if (expectedNum < 0) {
         expectedNum = 0;
       }
-      long total = ZSets.ZREMRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive);
+      long total = ZSets.ZREMRANGEBYLEX(map, key, start, startInclusive, end, endInclusive);
       assertEquals(expectedNum, (int) total);
       long cardinality = ZSets.ZCARD(map, key);
       assertEquals(numMembers - expectedNum, (int) cardinality);
