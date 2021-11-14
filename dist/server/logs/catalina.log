@@ -1,0 +1,85 @@
+2021-11-14 12:04:40,066 main ERROR Error processing element appender ([configuration: null]): CLASS_NOT_FOUND
+2021-11-14 12:04:40,069 main ERROR Error processing element appender ([configuration: null]): CLASS_NOT_FOUND
+2021-11-14 12:04:40,084 main ERROR Unknown object "property" of type org.apache.logging.log4j.core.config.Property is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,085 main ERROR Unknown object "property" of type org.apache.logging.log4j.core.config.Property is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,091 main ERROR Unknown object "logger" of type org.apache.logging.log4j.core.config.LoggerConfig is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,092 main ERROR Unknown object "logger" of type org.apache.logging.log4j.core.config.LoggerConfig is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,093 main ERROR Unknown object "logger" of type org.apache.logging.log4j.core.config.LoggerConfig is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,094 main ERROR Unknown object "logger" of type org.apache.logging.log4j.core.config.LoggerConfig is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,095 main ERROR Unknown object "root" of type org.apache.logging.log4j.core.config.LoggerConfig is ignored: try nesting it inside one of: ["Appenders", "Loggers", "Properties", "Scripts", "CustomLevels"].
+2021-11-14 12:04:40,095 main WARN No Loggers were configured, using default. Is the Loggers element missing?
+Snapshot directory does not exists: /home/k_zheludkov/apps/carrot2/dist/server/./snapshots/127.0.0.1/6379
+[carrot-node-6379]  loaded data store in 17ms
+[carrot-node-6379] Selector started
+[carrot-node-6379] Server socket opened
+[carrot-node-6379] Node server started on port: 6379
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGILL (0x4) at pc=0x00007fe60aaf7cd7 (sent by kill), pid=10892, tid=10892
+#
+# JRE version: OpenJDK Runtime Environment (11.0.11+9) (build 11.0.11+9-Ubuntu-0ubuntu2.20.04)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.11+9-Ubuntu-0ubuntu2.20.04, mixed mode, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libpthread.so.0+0xacd7]  __pthread_clockjoin_ex+0x257
+#
+# Core dump will be written. Default location: core.10892 (may not exist)
+#
+# An error report file with more information is saved as:
+# /home/k_zheludkov/apps/carrot2/dist/server/hs_err_pid10892.log
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-lts
+#
+2021-11-14 12:24:01,696 main ERROR Unable to locate appender "APP_SIZE_APPENDER" for logger config "org.bigbase"
+2021-11-14 12:24:01,698 main ERROR Unable to locate appender "LIB_SIZE_APPENDER" for logger config "com.google"
+2021-11-14 12:24:01,698 main ERROR Unable to locate appender "LIB_SIZE_APPENDER" for logger config "org.apache"
+Snapshot file does not exists: /home/k_zheludkov/apps/carrot2/dist/server/./snapshots/127.0.0.1/6379/snapshot.data
+[carrot-node-6379]  loaded data store in 17ms
+[carrot-node-6379] Selector started
+[carrot-node-6379] Server socket opened
+[carrot-node-6379] Node server started on port: 6379
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGILL (0x4) at pc=0x00007f2c5e137cd7 (sent by kill), pid=11112, tid=11112
+#
+# JRE version: OpenJDK Runtime Environment (11.0.11+9) (build 11.0.11+9-Ubuntu-0ubuntu2.20.04)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.11+9-Ubuntu-0ubuntu2.20.04, mixed mode, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libpthread.so.0+0xacd7]  __pthread_clockjoin_ex+0x257
+#
+# Core dump will be written. Default location: core.11112 (may not exist)
+#
+# An error report file with more information is saved as:
+# /home/k_zheludkov/apps/carrot2/dist/server/hs_err_pid11112.log
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-lts
+#
+2021-11-14 12:25:49,775 main ERROR Unable to locate appender "APP_SIZE_APPENDER" for logger config "org.bigbase"
+2021-11-14 12:25:49,776 main ERROR Unable to locate appender "LIB_SIZE_APPENDER" for logger config "com.google"
+2021-11-14 12:25:49,776 main ERROR Unable to locate appender "LIB_SIZE_APPENDER" for logger config "org.apache"
+Snapshot file does not exists: /home/k_zheludkov/apps/carrot2/dist/server/./snapshots/127.0.0.1/6379/snapshot.data
+[carrot-node-6379]  loaded data store in 17ms
+[carrot-node-6379] Selector started
+[carrot-node-6379] Server socket opened
+[carrot-node-6379] Node server started on port: 6379
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGILL (0x4) at pc=0x00007ffdec107cd7 (sent by kill), pid=11213, tid=11213
+#
+# JRE version: OpenJDK Runtime Environment (11.0.11+9) (build 11.0.11+9-Ubuntu-0ubuntu2.20.04)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.11+9-Ubuntu-0ubuntu2.20.04, mixed mode, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libpthread.so.0+0xacd7]  __pthread_clockjoin_ex+0x257
+#
+# Core dump will be written. Default location: core.11213 (may not exist)
+#
+# An error report file with more information is saved as:
+# /home/k_zheludkov/apps/carrot2/dist/server/hs_err_pid11213.log
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-lts
+#

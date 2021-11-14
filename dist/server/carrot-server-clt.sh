@@ -5,7 +5,7 @@ echo Carrot server home directory is "${START_HOME}"
 
 cd "${START_HOME}" || exit
 
-. ./setdist.sh
+. ./setenv.sh
 webapps="libs/${RELEASE}-${APP_PORT}"
 rm -rf "${webapps}"
 mkdir "${webapps}"
