@@ -5,8 +5,8 @@ echo Carrot server home directory is "${START_HOME}"
 
 cd "${START_HOME}" || exit
 
-. ./setdist.sh
-webapps="libs/${RELEASE}-${APP_PORT}"
+. ./setenv.sh
+webapps="libs/${RELEASE}"
 rm -rf "${webapps}"
 mkdir "${webapps}"
 cd "${webapps}" || exit 1
@@ -34,16 +34,14 @@ start() {
 
   exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS}"
   echo "${exec_cmd}"
-  nohup ${exec_cmd} >>logs/catalina.log &
+  nohup ${exec_cmd} >>logs/carrot-stdout.log &
   echo "Carrot instance ${INSTANCE_NAME} is staring on PID ${PID}, please wait..."
 
-  sleep 2
-  PID=$(pid)
+  sleep 1
 
+  PID=$(pid)
   if [ ! -z "${PID}" ]; then
     echo "Carrot instance ${INSTANCE_NAME} successfully started. PID ${PID}"
-    # TODO
-    # status
     exit 0
   fi
 
@@ -64,6 +62,8 @@ stop() {
     #pelase add grace full stop here...
   fi
 
+  sleep 1
+
   PID=$(pid)
   if [ ! -z "${PID}" ]; then
     echo "Carrot server still running on instance ${INSTANCE_NAME} and can't be stopped for some reason. PID ${PID}"
@@ -79,17 +79,8 @@ stop() {
 #===== reboot =====
 reboot() {
   stop 1
-  sleep 3
+  sleep 2
   start
-}
-
-#===== status =====
-status() {
-  echo
-  echo "$(wget ${HEALTH_MONITOR})"
-  echo
-
-  exit 0
 }
 
 #===== usage =====
@@ -97,7 +88,7 @@ usage() {
   echo
   echo Usage:
   # shellcheck disable=SC2102
-  echo \$\> \./carrot-server-clt.sh [start]\|[stop]\|[reboot]\|[status]
+  echo \$\> \./carrot-server-clt.sh [start]\|[stop]\|[reboot]
   echo
 }
 
@@ -111,8 +102,6 @@ elif [ "${cmd}" == "stop" ]; then
   stop
 elif [ "${cmd}" == "reboot" ]; then
   reboot
-elif [ "${cmd}" == "status" ]; then
-  status
 else
   usage
 fi

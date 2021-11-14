@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-export APP_PORT=6379
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export RELEASE=carrot-1.0.0
 export DISTRIBUTION=${RELEASE}.tar.gz
