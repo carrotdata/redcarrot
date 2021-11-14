@@ -8,12 +8,12 @@
 
     <appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
         </Console>
 
-        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${APP_FILE}"
+        <RollingRandomAccessFile name="APP_SIZE_APPENDER" fileName="${APP_FILE}"
                                  filePattern="${APP_FILE}.%d{yyyy-MM-dd}.%i.gz">
-            <PatternLayout>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</PatternLayout>
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="250 MB"/>
@@ -21,9 +21,9 @@
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${LIB_FILE}"
+        <RollingRandomAccessFile name="LIB_SIZE_APPENDER" fileName="${LIB_FILE}"
                                  filePattern="${LIB_FILE}.%d{yyyy-MM-dd}.%i.gz">
-            <PatternLayout>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</PatternLayout>
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="250 MB"/>
@@ -37,15 +37,15 @@
             <appender-ref ref="APP_SIZE_APPENDER"/>
         </Logger>
 
-        <Logger level="INFO" name="org.apache">
+        <Logger level="WARN" name="org.apache">
             <appender-ref ref="LIB_SIZE_APPENDER"/>
         </Logger>
 
-        <Logger level="INFO" name="com.google">
+        <Logger level="WARN" name="com.google">
             <appender-ref ref="LIB_SIZE_APPENDER"/>
         </Logger>
 
-        <Root level="ERROR">
+        <Root level="INFO">
             <appender-ref ref="STDOUT"/>
         </Root>
     </Loggers>

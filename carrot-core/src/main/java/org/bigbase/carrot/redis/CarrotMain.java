@@ -26,6 +26,7 @@ public class CarrotMain {
   private static final Logger log = LogManager.getLogger(CarrotMain.class);
 
   public static void main(String[] args) {
+    log.info("Start CarrotMain main...");
     if (args.length == 0) {
       usage();
     }
@@ -34,6 +35,7 @@ public class CarrotMain {
   }
 
   private static void startNodes() {
+    log.trace("CarrotMain startNodes...");
     RedisConf conf = RedisConf.getInstance();
     String[] nodes = conf.getNodes();
     CarrotNodeServer[] nodeServers = new CarrotNodeServer[nodes.length];
@@ -46,14 +48,16 @@ public class CarrotMain {
       int port = Integer.parseInt(parts[1].trim());
       nodeServers[i] = new CarrotNodeServer(host, port);
       nodeServers[i].start();
+      log.debug("Start nodeServers '{}'}", nodeServers[i]);
     }
 
     // Wait for all of them
-    for (int i = 0; i < nodeServers.length; i++) {
-      nodeServers[i].join();
+    for (CarrotNodeServer nodeServer : nodeServers) {
+      log.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
+      nodeServer.join();
     }
     // shutdown
-    log.debug("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
+    log.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
   }
 
   private static void usage() {
@@ -62,10 +66,13 @@ public class CarrotMain {
   }
 
   private static void loadConfigAndInit(String confFilePath) {
+    log.trace("CarrotMain loadConfigAndInit...");
     RedisConf conf = RedisConf.getInstance(confFilePath);
     long limit = conf.getMaxMemoryLimit();
+    log.debug("Max limit memory '{}'", limit);
     BigSortedMap.setGlobalMemoryLimit(limit);
     BigSortedMap.setCompressionCodec(conf.getCompressionCodec());
+    log.debug("setCompressionCodec '{}'", conf.getCompressionCodec());
     // Register custom memory deallocator for LIST data type
     Lists.registerDeallocator();
     Lists.registerSerDe();
