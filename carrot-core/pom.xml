@@ -1,44 +1,50 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.bigbase</groupId>
   <artifactId>carrot-core</artifactId>
   <packaging>jar</packaging>
   <name>Carrot Core</name>
-  <version>1.0.0</version>
+
   <parent>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot</artifactId>
-        <version>1.0.0</version>
+    <groupId>org.bigbase</groupId>
+    <artifactId>carrot</artifactId>
+    <version>${revision}</version>
   </parent>
+
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
-        <dependency>
-            <groupId>org.bigbase</groupId>
-            <artifactId>lz4-java</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-  	<dependency>
-  		<groupId>com.google.guava</groupId>
-  		<artifactId>guava</artifactId>
-  		<version>30.0-jre</version>
-  	</dependency>
-<!-- https://mvnrepository.com/artifact/org.roaringbitmap/RoaringBitmap -->
-        <dependency>
-               <groupId>org.roaringbitmap</groupId>
-               <artifactId>RoaringBitmap</artifactId>
-               <version>0.9.15</version>
-               <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.bigbase</groupId>
+      <artifactId>lz4-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.roaringbitmap/RoaringBitmap -->
+    <dependency>
+      <groupId>org.roaringbitmap</groupId>
+      <artifactId>RoaringBitmap</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
 </project>

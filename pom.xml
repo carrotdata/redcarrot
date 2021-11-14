@@ -7,20 +7,69 @@
   <artifactId>carrot</artifactId>
   <packaging>pom</packaging>
   <name>Carrot</name>
-  <version>1.0.0</version>
+  <version>${revision}</version>
   <url>http://www.server.com</url>
 
   <properties>
+    <revision>1.0.0</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <!--      modules-->
       <dependency>
         <groupId>org.bigbase</groupId>
-        <artifactId>liblz4</artifactId>
-        <version>${project.version}</version>
+        <artifactId>carrot-core</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bigbase</groupId>
+        <artifactId>carrot-common</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bigbase</groupId>
+        <artifactId>carrot-examples</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bigbase</groupId>
+        <artifactId>lz4-java</artifactId>
+        <version>${revision}</version>
+      </dependency>
+
+      <!--      3rd atrs dependencies-->
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.14.1</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>30.0-jre</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.roaringbitmap/RoaringBitmap -->
+      <dependency>
+        <groupId>org.roaringbitmap</groupId>
+        <artifactId>RoaringBitmap</artifactId>
+        <version>0.9.15</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>3.5.1</version>
+        <type>jar</type>
+        <scope>compile</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -35,32 +84,31 @@
   </modules>
 
   <build>
-    <finalName>carrot-uber</finalName>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <manifestEntries>
-                    <Main-Class>org.bigbase.carrot.redis.CarrotMain</Main-Class>
-                    <Build-Number>${project.version}</Build-Number>
-                  </manifestEntries>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      <!--      <plugin>-->
+      <!--        <groupId>org.apache.maven.plugins</groupId>-->
+      <!--        <artifactId>maven-shade-plugin</artifactId>-->
+      <!--        <version>3.2.1</version>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>package</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>shade</goal>-->
+      <!--            </goals>-->
+      <!--            <configuration>-->
+      <!--              <transformers>-->
+      <!--                <transformer-->
+      <!--                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+      <!--                  <manifestEntries>-->
+      <!--                    <Main-Class>org.bigbase.carrot.redis.CarrotMain</Main-Class>-->
+      <!--                    <Build-Number>${revision}</Build-Number>-->
+      <!--                  </manifestEntries>-->
+      <!--                </transformer>-->
+      <!--              </transformers>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -102,29 +150,29 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.1.1</version>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.bigbase</groupId>
-                  <artifactId>liblz4</artifactId>
-                  <type>so</type>
-                  <overWrite>true</overWrite>
-                  <destFileName>liblz4.so</destFileName>
-                </artifactItem>
-              </artifactItems>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-              <outputDirectory>${project.build.directory}/lz4-java/src/main/resources</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
+        <!--        <executions>-->
+        <!--          <execution>-->
+        <!--            <id>copy</id>-->
+        <!--            <phase>package</phase>-->
+        <!--            <goals>-->
+        <!--              <goal>copy</goal>-->
+        <!--            </goals>-->
+        <!--            <configuration>-->
+        <!--              <artifactItems>-->
+        <!--                <artifactItem>-->
+        <!--                  <groupId>org.bigbase</groupId>-->
+        <!--                  <artifactId>liblz4</artifactId>-->
+        <!--                  <type>so</type>-->
+        <!--                  <overWrite>true</overWrite>-->
+        <!--                  <destFileName>liblz4.so</destFileName>-->
+        <!--                </artifactItem>-->
+        <!--              </artifactItems>-->
+        <!--              <overWriteReleases>false</overWriteReleases>-->
+        <!--              <overWriteSnapshots>true</overWriteSnapshots>-->
+        <!--              <outputDirectory>${project.build.directory}/lz4-java/src/main/resources</outputDirectory>-->
+        <!--            </configuration>-->
+        <!--          </execution>-->
+        <!--        </executions>-->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
