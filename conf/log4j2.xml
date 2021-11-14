@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration status="info">
+
+    <property name="APP_FILE" value="./logs/carrot-core.log"/>
+    <property name="LIB_FILE" value="./logs/carrot-lib.log"/>
+
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="APP_SIZE_APPENDER">
+        <file>${APP_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${APP_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="LIB_SIZE_APPENDER">
+        <file>${LIB_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LIB_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger level="DEBUG" name="org.bigbase"  additivity="false">
+        <appender-ref ref="APP_SIZE_APPENDER"/>
+    </logger>
+
+    <logger level="INFO" name="org.apache"  additivity="false">
+        <appender-ref ref="LIB_SIZE_APPENDER"/>
+    </logger>
+
+    <logger level="INFO" name="redis.clients"  additivity="false">
+        <appender-ref ref="LIB_SIZE_APPENDER"/>
+    </logger>
+
+    <logger level="INFO" name="com.google"  additivity="false">
+        <appender-ref ref="LIB_SIZE_APPENDER"/>
+    </logger>
+
+    <root level="ERROR"  additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

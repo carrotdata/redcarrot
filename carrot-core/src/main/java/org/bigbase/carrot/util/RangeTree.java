@@ -1,23 +1,28 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.util;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RangeTree {
+
+  private static final Logger log = LogManager.getLogger(RangeTree.class);
+
   public static class Range implements Comparable<Range> {
     long start;
     int size;
@@ -59,7 +64,7 @@ public class RangeTree {
     Range r = map.floorKey(search);
     boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
     if (!result && r != null) {
-      System.out.println(
+      log.debug(
           "Check FAILED for range ["
               + start
               + ","
@@ -70,7 +75,7 @@ public class RangeTree {
               + r.size
               + "]");
     } else if (!result) {
-      System.out.println(
+      log.debug(
           "Check FAILED for range [" + start + "," + size + "] No allocation found.");
     }
     return result;

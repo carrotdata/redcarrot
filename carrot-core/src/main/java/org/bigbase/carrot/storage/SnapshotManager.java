@@ -1,25 +1,29 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.storage;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 
 /** Snapshot Manager */
 public class SnapshotManager {
+
+  private static final Logger log = LogManager.getLogger(SnapshotManager.class);
 
   private static SnapshotManager manager;
   SnapshotThread worker;
@@ -42,7 +46,7 @@ public class SnapshotManager {
     boolean result = worker.take(store, sync);
     if (!result) {
       // WARN
-      System.out.println(
+      log.debug(
           "WARNING! Active snapshot started at "
               + worker.getLastSnapshotTime()
               + " is still in progress.");
@@ -52,6 +56,8 @@ public class SnapshotManager {
 }
 
 class SnapshotThread extends Thread {
+
+  private static final Logger log = LogManager.getLogger(SnapshotThread.class);
 
   AtomicReference<BigSortedMap> storeRef = new AtomicReference<BigSortedMap>();
   Date lastSnapshotTime;
@@ -73,7 +79,7 @@ class SnapshotThread extends Thread {
       while (storeRef.get() != null) {
         try {
           Thread.sleep(10);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
       }
     }
@@ -81,22 +87,22 @@ class SnapshotThread extends Thread {
   }
 
   public void run() {
-    System.out.println("Thread " + getName() + " started at " + new Date());
+    log.debug("Thread " + getName() + " started at " + new Date());
     for (; ; ) {
       try {
         wait();
-      } catch (InterruptedException e) {
+      } catch (InterruptedException ignored) {
 
       }
       BigSortedMap map = storeRef.get();
       if (map == null) {
         continue;
       }
-      System.out.println("Snapshot started at " + lastSnapshotTime);
+      log.debug("Snapshot started at " + lastSnapshotTime);
       lastSnapshotTime = new Date();
       map.snapshot();
       storeRef.set(null);
-      System.out.println("Snapshot finished at " + new Date());
+      log.debug("Snapshot finished at " + new Date());
     }
   }
 }

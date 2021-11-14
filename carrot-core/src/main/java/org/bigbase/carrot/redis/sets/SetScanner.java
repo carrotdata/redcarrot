@@ -1,15 +1,15 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.sets;
 
@@ -17,6 +17,8 @@ import static org.bigbase.carrot.redis.util.Commons.NUM_ELEM_SIZE;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.util.Scanner;
@@ -26,6 +28,8 @@ import org.bigbase.carrot.util.Utils;
 
 /** Scanner to iterate through set members */
 public class SetScanner extends Scanner {
+
+  private static final Logger log = LogManager.getLogger(SetScanner.class);
 
   /*
    * This is used to speed up reverse scanner.
@@ -49,7 +53,7 @@ public class SetScanner extends Scanner {
   /*
    * Base Map scanner
    */
-  private BigSortedMapScanner mapScanner;
+  private final BigSortedMapScanner mapScanner;
   /*
    * Minimum member (inclusive)
    */
@@ -175,7 +179,7 @@ public class SetScanner extends Scanner {
 
   @SuppressWarnings("unused")
   private void dumpLimits() {
-    System.out.println(
+    log.debug(
         "start="
             + (startMemberPtr > 0 ? Bytes.toHex(startMemberPtr, startMemberSize) : "0")
             + " end="
@@ -186,7 +190,7 @@ public class SetScanner extends Scanner {
   private void dumpKey() {
     long ptr = this.mapScanner.keyAddress();
     int size = this.mapScanner.keySize();
-    System.out.println("KEY=" + Bytes.toHex(ptr, size));
+    log.debug("KEY=" + Bytes.toHex(ptr, size));
   }
 
   /**
@@ -513,7 +517,7 @@ public class SetScanner extends Scanner {
           } else {
             break;
           }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
       }
     }

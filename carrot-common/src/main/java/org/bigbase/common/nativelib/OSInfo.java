@@ -1,32 +1,37 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.common.nativelib;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /** Provides OS name and architecture name. */
 public class OSInfo {
+  private static final Logger log = LogManager.getLogger(OSInfo.class);
+
   public static void main(String[] args) {
     if (args.length >= 1) {
       if ("--os".equals(args[0])) {
-        System.out.print(getOSName());
+        log.debug(getOSName());
         return;
       } else if ("--arch".equals(args[0])) {
-        System.out.print(getArchName());
+        log.debug(getArchName());
         return;
       }
     }
 
-    System.out.print(getNativeLibFolderPathForCurrentOS());
+    log.debug(getNativeLibFolderPathForCurrentOS());
   }
 
   public static String getNativeLibFolderPathForCurrentOS() {

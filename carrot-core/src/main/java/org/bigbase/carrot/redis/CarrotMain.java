@@ -1,25 +1,29 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.lists.Lists;
 
 /** Main service launcher */
 public class CarrotMain {
+
+  private static final Logger log = LogManager.getLogger(CarrotMain.class);
 
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -49,11 +53,11 @@ public class CarrotMain {
       nodeServers[i].join();
     }
     // shutdown
-    log("Shutdown finished.");
+    log.debug("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
   }
 
   private static void usage() {
-    log("Usage: java org.bigbase.carrot.redis.RedisMain config_file_path");
+    log.debug("[" + Thread.currentThread().getName() + "] " + "Usage: java org.bigbase.carrot.redis.RedisMain config_file_path");
     System.exit(-1);
   }
 
@@ -65,13 +69,5 @@ public class CarrotMain {
     // Register custom memory deallocator for LIST data type
     Lists.registerDeallocator();
     Lists.registerSerDe();
-  }
-
-  static void log(String str) {
-    System.out.println("[" + Thread.currentThread().getName() + "] " + str);
-  }
-
-  static void logError(String str) {
-    System.err.println("[" + Thread.currentThread().getName() + "] " + str);
   }
 }

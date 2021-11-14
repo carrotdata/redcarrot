@@ -1,15 +1,15 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis;
 
@@ -20,10 +20,14 @@ import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.util.Utils;
 
 public class RequestHandlers {
+
+  private static final Logger log = LogManager.getLogger(RequestHandlers.class);
 
   static long epochStartNanos = System.nanoTime();
 
@@ -70,7 +74,7 @@ public class RequestHandlers {
 
   public void start() {
     Arrays.stream(workers).forEach(x -> x.start());
-    System.out.println("Started request handlers: count=" + workers.length);
+    log.debug("Started request handlers: count=" + workers.length);
   }
 
   /**
@@ -95,6 +99,8 @@ public class RequestHandlers {
 }
 
 class WorkThread extends Thread {
+
+  private static final Logger log = LogManager.getLogger(WorkThread.class);
 
   /*
    * Busy loop max iteration
@@ -250,7 +256,7 @@ class WorkThread extends Thread {
           int limit = out.limit();
           byte[] bb = new byte[limit];
           out.get(bb);
-          System.out.println("SERVER:\n" + new String(bb));
+          log.debug("SERVER:\n" + new String(bb));
           out.position(0);
           out.limit(limit);
           while (out.hasRemaining()) {
