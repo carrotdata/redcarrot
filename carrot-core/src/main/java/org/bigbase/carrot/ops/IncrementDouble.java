@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.ops;
 
@@ -21,45 +17,42 @@ import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
-/**
- * This example of specific Update - atomic counter 
- * 
- *
- */
+/** This example of specific Update - atomic counter */
 public class IncrementDouble extends Operation {
-  
-  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
-    @Override
-    protected Long initialValue() {
-      return UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
-    }
-  };
-  
+
+  static ThreadLocal<Long> buffer =
+      new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
+        }
+      };
+
   double value;
-  
+
   public IncrementDouble() {
     setReadOnly(true);
   }
-  
+
   public void setIncrement(double v) {
     this.value = v;
   }
-  
+
   public double getIncrement() {
     return this.value;
   }
-  
+
   public double getValue() {
     return this.value;
   }
-  
+
   @Override
   public void reset() {
     super.reset();
     value = 0;
     setReadOnly(true);
   }
-  
+
   @Override
   public boolean execute() {
     double dv = 0;
@@ -85,5 +78,4 @@ public class IncrementDouble extends Operation {
     this.valueSizes[0] = Utils.SIZEOF_DOUBLE;
     return true;
   }
-
 }

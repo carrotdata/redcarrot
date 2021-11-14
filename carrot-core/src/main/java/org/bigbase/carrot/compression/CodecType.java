@@ -1,26 +1,20 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.compression;
 
 // TODO: Auto-generated Javadoc
-/**
- * The Enum CodecType.
- */
+/** The Enum CodecType. */
 public enum CodecType {
 
   /** No compression. */
@@ -29,7 +23,7 @@ public enum CodecType {
   LZ4(1),
   /** LZ4-HC */
   LZ4HC(2),
-  /** Bitmap codec*/
+  /** Bitmap codec */
   BITMAP(3),
   /** ZSTD */
   ZSTD(4);
@@ -38,9 +32,8 @@ public enum CodecType {
 
   /**
    * Instantiates a new codec type.
-   * 
-   * @param id
-   *          the id
+   *
+   * @param id the id
    */
   private CodecType(int id) {
     this.id = id;
@@ -48,7 +41,7 @@ public enum CodecType {
 
   /**
    * Id.
-   * 
+   *
    * @return the int
    */
   public int id() {
@@ -57,7 +50,7 @@ public enum CodecType {
 
   /**
    * Gets the codec.
-   * 
+   *
    * @return the codec
    */
   public Codec getCodec() {
@@ -66,12 +59,9 @@ public enum CodecType {
         return CodecFactory.getInstance().getCodec(CodecType.NONE);
       case 1:
         return CodecFactory.getInstance().getCodec(CodecType.LZ4);
-      case 2: 
-        return CodecFactory.getInstance().getCodec(CodecType.LZ4HC);  
+      case 2:
+        return CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
     }
     return null;
   }
-  
-
-  
 }

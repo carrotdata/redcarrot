@@ -1,17 +1,16 @@
 /**
  * Copyright (C) 2021-present Carrot, Inc.
- * <p>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
+ *
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
  * Server Side Public License, version 1, as published by MongoDB, Inc.
- * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Server
- * Side Public License for more details.
- * <p>
- * You should have received a copy of the Server Side Public License along with this program. If
+ *
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
+ *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
  * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package org.bigbase.carrot.examples.basic;
 
 
@@ -32,7 +31,6 @@ import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Utils;
 
 @SuppressWarnings("unused")
-
 public class CarrotVsRedisDemo {
 
   static long N = 10000000;
@@ -86,9 +84,13 @@ public class CarrotVsRedisDemo {
     NumberFormat formatter = NumberFormat.getInstance();
 
     System.out.println("\n************************ RESULTS *************************************");
-    System.out.println("\nTOTAL ELEMENTS LOADED =" + formatter.format(totalLoaded) + " TOTAL TIME ="
-        + ((double) (end - start)) / 1000 + "s, EPS =" + formatter.format(
-        (totalLoaded) * 1000 / (end - start)));
+    System.out.println(
+        "\nTOTAL ELEMENTS LOADED ="
+            + formatter.format(totalLoaded)
+            + " TOTAL TIME ="
+            + ((double) (end - start)) / 1000
+            + "s, EPS ="
+            + formatter.format((totalLoaded) * 1000 / (end - start)));
 
     client.close();
   }
@@ -96,13 +98,14 @@ public class CarrotVsRedisDemo {
   private static void runClusterSetCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterSet();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterSet();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -110,29 +113,36 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
-    System.out.println("Finished " + N + " sets in " + (end - start) + "ms. RPS=" +
-        (((long) N) * 1000) / (end - start));
-
+    System.out.println(
+        "Finished "
+            + N
+            + " sets in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) N) * 1000) / (end - start));
   }
 
   private static void runClusterGetCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterGet();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterGet();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -140,29 +150,36 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
-    System.out.println("Finished " + N + " gets in " + (end - start) + "ms. RPS=" +
-        (((long) N) * 1000) / (end - start));
-
+    System.out.println(
+        "Finished "
+            + N
+            + " gets in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) N) * 1000) / (end - start));
   }
 
   private static void runClusterMGetCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterMGet();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterMGet();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -170,29 +187,36 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
-    System.out.println("Finished " + N + " gets in " + (end - start) + "ms. RPS=" +
-        (((long) N) * 1000) / (end - start));
-
+    System.out.println(
+        "Finished "
+            + N
+            + " gets in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) N) * 1000) / (end - start));
   }
 
   private static void runClusterMSetCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterMSet();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterMSet();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -200,29 +224,36 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
-    System.out.println("Finished " + N + " sets in " + (end - start) + "ms. RPS=" +
-        (((long) N) * 1000) / (end - start));
-
+    System.out.println(
+        "Finished "
+            + N
+            + " sets in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) N) * 1000) / (end - start));
   }
 
   private static void runClusterPingPongCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterPingPong();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterPingPong();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -230,30 +261,36 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + N * NUM_THREADS + " ping - pongs in " + (end - start) + "ms. RPS=" +
-            (((long) NUM_THREADS * N) * 1000) / (end - start));
-
+        "Finished "
+            + N * NUM_THREADS
+            + " ping - pongs in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) NUM_THREADS * N) * 1000) / (end - start));
   }
 
   private static void runClusterSaddCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterSadd();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterSadd();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -261,31 +298,38 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + (loaded.get() / SET_SIZE) + " sadd x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (loaded.get() * 1000) / (end - start));
-
+        "Finished "
+            + (loaded.get() / SET_SIZE)
+            + " sadd x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (loaded.get() * 1000) / (end - start));
   }
 
   private static void runClusterSismemberCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterSetIsMember();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterSetIsMember();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -293,31 +337,38 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + SET_KEY_TOTAL + " sismember x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
-
+        "Finished "
+            + SET_KEY_TOTAL
+            + " sismember x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
   }
 
   private static void runClusterHSetCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterHSet();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterHSet();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -325,32 +376,39 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + (loaded.get() / SET_SIZE) + " hset x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (loaded.get() * 1000) / (end - start));
-
+        "Finished "
+            + (loaded.get() / SET_SIZE)
+            + " hset x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (loaded.get() * 1000) / (end - start));
   }
 
   private static void runClusterHexistsCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterHexists();
-        ;
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterHexists();
+            ;
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -358,31 +416,38 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + SET_KEY_TOTAL + " hexists x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
-
+        "Finished "
+            + SET_KEY_TOTAL
+            + " hexists x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
   }
 
   private static void runClusterZAddCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterZAdd();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterZAdd();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -390,31 +455,38 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + (loaded.get() / SET_SIZE) + " zadd x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (loaded.get() * 1000) / (end - start));
-
+        "Finished "
+            + (loaded.get() / SET_SIZE)
+            + " zadd x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (loaded.get() * 1000) / (end - start));
   }
 
   private static void runClusterZScoreCycle() {
     index.set(0);
 
-    Runnable r = () -> {
-      try {
-        runClusterZScore();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    };
+    Runnable r =
+        () -> {
+          try {
+            runClusterZScore();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
     Thread[] workers = new Thread[NUM_THREADS];
     for (int i = 0; i < NUM_THREADS; i++) {
       workers[i] = new Thread(r);
@@ -422,19 +494,25 @@ public class CarrotVsRedisDemo {
     }
     long start = System.currentTimeMillis();
     Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers).forEach(x -> {
-      try {
-        x.join();
-      } catch (Exception e) {
-      }
-    });
+    Arrays.stream(workers)
+        .forEach(
+            x -> {
+              try {
+                x.join();
+              } catch (Exception e) {
+              }
+            });
     long end = System.currentTimeMillis();
 
     System.out.println(
-        "Finished " + SET_KEY_TOTAL + " hexists x (" + SET_SIZE + ") in " + (end - start)
-            + "ms. RPS=" +
-            (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
-
+        "Finished "
+            + SET_KEY_TOTAL
+            + " hexists x ("
+            + SET_SIZE
+            + ") in "
+            + (end - start)
+            + "ms. RPS="
+            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
   }
 
   private static void flushAll(RawClusterClient client) throws IOException {
@@ -462,15 +540,13 @@ public class CarrotVsRedisDemo {
 
     for (; ; ) {
       int idx = (int) index.getAndIncrement();
-      if (idx >= N) {
-        break;
-      }
-      UserSession us = UserSession.newSession(idx);//userSessions.get(idx);
+      if (idx >= N) break;
+      UserSession us = UserSession.newSession(idx); // userSessions.get(idx);
       count++;
       String skey = us.getUserId();
       String svalue = us.toString();
       String v = client.set(skey, svalue);
-      //assertTrue(v.indexOf(svalue) > 0);
+      // assertTrue(v.indexOf(svalue) > 0);
       if (count % 100000 == 0) {
         System.out.println(Thread.currentThread().getId() + ": set " + count);
       }
@@ -478,8 +554,13 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " user sessions,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " user sessions,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
@@ -502,10 +583,8 @@ public class CarrotVsRedisDemo {
 
       // Load up to BATCH_SIZE k-v pairs
       for (int i = 0; i < BATCH_SIZE; i++, idx += NUM_THREADS) {
-        if (idx >= N) {
-          break;
-        }
-        UserSession us = UserSession.newSession(idx);//userSessions.get(idx);
+        if (idx >= N) break;
+        UserSession us = UserSession.newSession(idx); // userSessions.get(idx);
         count++;
         String skey = us.getUserId();
         String svalue = us.toString();
@@ -513,9 +592,7 @@ public class CarrotVsRedisDemo {
         argList.add(svalue);
       }
 
-      if (argList.size() == 0) {
-        break;
-      }
+      if (argList.size() == 0) break;
 
       String[] args = new String[argList.size()];
       argList.toArray(args);
@@ -529,8 +606,13 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " user sessions,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " user sessions,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
@@ -568,8 +650,13 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " set members,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " set members,"
+            + " in "
+            + (endTime - startTime));
     loaded.addAndGet(count);
     client.close();
   }
@@ -612,8 +699,13 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " set members,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " set members,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
@@ -651,8 +743,13 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
     loaded.addAndGet(count);
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " hash members,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " hash members,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
@@ -703,9 +800,13 @@ public class CarrotVsRedisDemo {
     }
 
     long endTime = System.currentTimeMillis();
-
-    System.out.println(Thread.currentThread().getId() + ": Checked " + count + " hash fields,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Checked "
+            + count
+            + " hash fields,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
@@ -752,16 +853,19 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
     loaded.addAndGet(count);
-    System.out.println(Thread.currentThread().getId() + ": Loaded " + count + " zset members,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Loaded "
+            + count
+            + " zset members,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
 
   private static int toInt(String s) {
-    if (s.charAt(0) != ':') {
-      return 0;
-    }
+    if (s.charAt(0) != ':') return 0;
     int len = s.length();
     return Integer.parseInt(s.substring(1, len - 2));
   }
@@ -772,7 +876,6 @@ public class CarrotVsRedisDemo {
       scores[i] = r.nextDouble() * 1000;
     }
   }
-
 
   private static void runClusterZScore() throws IOException, OperationFailedException {
 
@@ -817,12 +920,16 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Checked " + count + " zset fields,"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Checked "
+            + count
+            + " zset fields,"
+            + " in "
+            + (endTime - startTime));
 
     client.close();
   }
-
 
   private static void runClusterGet() throws IOException, OperationFailedException {
 
@@ -836,23 +943,26 @@ public class CarrotVsRedisDemo {
     int count = 0;
     for (; ; ) {
       int idx = (int) index.getAndIncrement();
-      if (idx >= N) {
-        break;
-      }
-      UserSession us = UserSession.newSession(idx);//userSessions.get(idx);
+      if (idx >= N) break;
+      UserSession us = UserSession.newSession(idx); // userSessions.get(idx);
       count++;
       String skey = us.getUserId();
       String svalue = us.toString();
       String v = client.get(skey);
-      //assertTrue(v.indexOf(svalue) > 0);
+      // assertTrue(v.indexOf(svalue) > 0);
       if (count % 100000 == 0) {
         System.out.println(Thread.currentThread().getId() + ": get " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Read " + count + " user sessions"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Read "
+            + count
+            + " user sessions"
+            + " in "
+            + (endTime - startTime));
     client.close();
   }
 
@@ -868,26 +978,22 @@ public class CarrotVsRedisDemo {
     int count = 0;
     int idx = id;
     List<String> argList = new ArrayList<String>();
-    //List<String> valList = new ArrayList<String>();
+    // List<String> valList = new ArrayList<String>();
     int batch = 1;
     while (idx < N) {
 
       // Load up to BATCH_SIZE k-v pairs
       for (int i = 0; i < BATCH_SIZE; i++, idx += NUM_THREADS) {
-        if (idx >= N) {
-          break;
-        }
-        UserSession us = UserSession.newSession(idx);//.get(idx);
+        if (idx >= N) break;
+        UserSession us = UserSession.newSession(idx); // .get(idx);
         count++;
         String skey = us.getUserId();
-        //String svalue = us.toString();
+        // String svalue = us.toString();
         argList.add(skey);
-        //valList.add(svalue);
+        // valList.add(svalue);
       }
 
-      if (argList.size() == 0) {
-        break;
-      }
+      if (argList.size() == 0) break;
 
       String[] args = new String[argList.size()];
       argList.toArray(args);
@@ -895,26 +1001,30 @@ public class CarrotVsRedisDemo {
       if (s.length() < 1000) {
         System.out.println("\n" + s + "\n");
       }
-      //verify(valList, s);
+      // verify(valList, s);
       if (count / 100000 >= batch) {
         System.out.println(
             Thread.currentThread().getId() + ": get " + count + " s.length=" + s.length());
         batch++;
       }
       argList.clear();
-      //valList.clear();
+      // valList.clear();
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Read " + count + " user sessions"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Read "
+            + count
+            + " user sessions"
+            + " in "
+            + (endTime - startTime));
     client.close();
   }
 
-
   private static void verify(List<String> valList, String s) {
     for (String val : valList) {
-      assert (s.indexOf(val) > 0);
+        assert (s.indexOf(val) > 0);
     }
   }
 
@@ -936,14 +1046,19 @@ public class CarrotVsRedisDemo {
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(Thread.currentThread().getId() + ": Ping-Pong " + N + " messages"
-        + " in " + (endTime - startTime));
+    System.out.println(
+        Thread.currentThread().getId()
+            + ": Ping-Pong "
+            + N
+            + " messages"
+            + " in "
+            + (endTime - startTime));
     client.close();
   }
 
   static class RawClusterClient {
 
-    byte[] CRLF = new byte[]{(byte) '\r', (byte) '\n'};
+    byte[] CRLF = new byte[] {(byte) '\r', (byte) '\n'};
     byte ARRAY = (byte) '*';
     byte STR = (byte) '$';
 
@@ -980,7 +1095,7 @@ public class CarrotVsRedisDemo {
       System.arraycopy(args, 0, newArgs, 1, args.length);
       newArgs[0] = "MSET";
       writeRequest(buf, newArgs);
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       buf.flip();
       while (buf.hasRemaining()) {
@@ -1044,7 +1159,7 @@ public class CarrotVsRedisDemo {
       System.arraycopy(keys, 0, newArgs, 1, keys.length);
       newArgs[0] = "MGET";
       writeRequest(buf, newArgs);
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       buf.flip();
       while (buf.hasRemaining()) {
@@ -1074,7 +1189,7 @@ public class CarrotVsRedisDemo {
       }
     }
 
-    static String[] ping_cmd = new String[]{"PING"};
+    static String[] ping_cmd = new String[] {"PING"};
 
     public String ping() throws IOException {
       int slot = 0;
@@ -1141,7 +1256,7 @@ public class CarrotVsRedisDemo {
     public String sscan(String key, long cursor) throws IOException {
       writeRequest(buf, new String[]{"SSCAN", key, Long.toString(cursor)});
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1165,7 +1280,7 @@ public class CarrotVsRedisDemo {
       newArgs[1] = key;
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1190,7 +1305,7 @@ public class CarrotVsRedisDemo {
 
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1214,7 +1329,7 @@ public class CarrotVsRedisDemo {
       newArgs[1] = key;
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1238,7 +1353,7 @@ public class CarrotVsRedisDemo {
       newArgs[2] = field;
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1262,7 +1377,7 @@ public class CarrotVsRedisDemo {
       newArgs[2] = Integer.toString(seconds);
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1291,7 +1406,7 @@ public class CarrotVsRedisDemo {
 
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1315,7 +1430,7 @@ public class CarrotVsRedisDemo {
       newArgs[2] = field;
       writeRequest(buf, newArgs);
       buf.flip();
-      int slot = 0;//Math.abs(key.hashCode()) % connList.size();
+      int slot = 0; // Math.abs(key.hashCode()) % connList.size();
       SocketChannel channel = connList.get(slot);
       while (buf.hasRemaining()) {
         channel.write(buf);
@@ -1331,7 +1446,6 @@ public class CarrotVsRedisDemo {
       buf.get(bytes);
       return new String(bytes);
     }
-
 
     public void saveAll() throws IOException {
       for (SocketChannel sc : connList) {
@@ -1356,5 +1470,4 @@ public class CarrotVsRedisDemo {
       }
     }
   }
-
 }

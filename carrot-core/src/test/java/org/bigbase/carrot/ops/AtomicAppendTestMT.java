@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.ops;
 
@@ -31,9 +27,9 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.Test;
 
 /**
- * This test load data (key - long value) and in parallel appends keys - multithreaded.
- * At the end it scans all the keys and calculated total value size of all keys, 
- * compares it with expected number of appends. 
+ * This test load data (key - long value) and in parallel appends keys - multithreaded. At the end
+ * it scans all the keys and calculated total value size of all keys, compares it with expected
+ * number of appends.
  */
 public class AtomicAppendTestMT {
 
@@ -42,10 +38,9 @@ public class AtomicAppendTestMT {
   static AtomicLong totalAppends = new AtomicLong();
   static long toLoad = 2000000;
   static int totalThreads = 8;
-  
+
   static class AppendRunner extends Thread {
-    
-    
+
     public AppendRunner(String name) {
       super(name);
     }
@@ -56,15 +51,15 @@ public class AtomicAppendTestMT {
       long value = UnsafeAccess.malloc(8);
       int keySize;
       Random r = new Random();
-      byte[] LONG_ZERO = new byte[] {0,0,0,0,0,0,0,0};
+      byte[] LONG_ZERO = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
 
-      while (totalLoaded.get() < toLoad) {        
+      while (totalLoaded.get() < toLoad) {
         double d = r.nextDouble();
         if (d < 0.5 && totalLoaded.get() > 1000) {
           // Run append
           int n = r.nextInt((int) totalLoaded.get()) + 1;
           keySize = getKey(ptr, n);
-          if(!map.exists(ptr, keySize)) {
+          if (!map.exists(ptr, keySize)) {
             continue;
           }
           append.reset();
@@ -76,21 +71,20 @@ public class AtomicAppendTestMT {
           totalAppends.incrementAndGet();
         } else {
           // Run put
-          byte[] key = ("KEY"+ (totalLoaded.incrementAndGet())).getBytes();
+          byte[] key = ("KEY" + (totalLoaded.incrementAndGet())).getBytes();
           byte[] vvalue = LONG_ZERO;
           boolean result = map.put(key, 0, key.length, vvalue, 0, vvalue.length, 0);
           assertTrue(result);
         }
         if (totalLoaded.get() % 1000000 == 0) {
-          System.out.println(getName() + " loaded = " + totalLoaded+" appends="+ totalAppends);
+          System.out.println(getName() + " loaded = " + totalLoaded + " appends=" + totalAppends);
         }
-      }// end while
+      } // end while
       UnsafeAccess.free(ptr);
       UnsafeAccess.free(value);
-    }// end run()
-  }// end IncrementRunner
- 
-    
+    } // end run()
+  } // end IncrementRunner
+
   @Test
   public void testAppend() throws IOException {
     for (int k = 1; k <= 100; k++) {
@@ -107,7 +101,7 @@ public class AtomicAppendTestMT {
           runners[i] = new AppendRunner("Increment Runner#" + i);
           runners[i].start();
         }
-        for(int i = 0; i < totalThreads; i++) {
+        for (int i = 0; i < totalThreads; i++) {
           try {
             runners[i].join();
           } catch (InterruptedException e) {
@@ -115,7 +109,7 @@ public class AtomicAppendTestMT {
             e.printStackTrace();
           }
         }
-        
+
         long end = System.currentTimeMillis();
         BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
         long total = 0;
@@ -126,13 +120,19 @@ public class AtomicAppendTestMT {
           total += size;
           scanner.next();
         }
-        assertEquals((totalAppends.get() + totalLoaded.get())*8, total);
+        assertEquals((totalAppends.get() + totalLoaded.get()) * 8, total);
         assertEquals(totalLoaded.get(), count);
         map.dumpStats();
-        System.out.println("Time to load= "+ totalLoaded+" and to append =" 
-            + totalAppends+"="+(end -start)+"ms");
-        System.out.println("Total memory="+BigSortedMap.getGlobalAllocatedMemory());
-        System.out.println("Total   data="+BigSortedMap.getGlobalBlockDataSize());
+        System.out.println(
+            "Time to load= "
+                + totalLoaded
+                + " and to append ="
+                + totalAppends
+                + "="
+                + (end - start)
+                + "ms");
+        System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+        System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
         System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
@@ -141,13 +141,11 @@ public class AtomicAppendTestMT {
         }
       }
     }
-
   }
-  
-  static private int getKey (long ptr, int n) {
-    byte[] key = ("KEY"+ (n)).getBytes();
+
+  private static int getKey(long ptr, int n) {
+    byte[] key = ("KEY" + (n)).getBytes();
     UnsafeAccess.copy(key, 0, ptr, key.length);
     return key.length;
   }
-  
 }

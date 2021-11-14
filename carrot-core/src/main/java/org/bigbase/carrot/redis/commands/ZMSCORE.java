@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -42,7 +38,8 @@ public class ZMSCORE implements RedisCommand {
     long[] ptrs = Utils.loadPointers(inDataPtr, numArgs - 2);
     int[] sizes = Utils.loadSizes(inDataPtr, numArgs - 2);
     int off = Utils.SIZEOF_BYTE + Utils.SIZEOF_INT;
-    long size = ZSets.ZMSCORE(map, keyPtr, keySize, ptrs, sizes, outBufferPtr + off, outBufferSize - off);
+    long size =
+        ZSets.ZMSCORE(map, keyPtr, keySize, ptrs, sizes, outBufferPtr + off, outBufferSize - off);
     UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.ARRAY.ordinal());
     UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, (int) size);
   }

@@ -1,20 +1,16 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
@@ -32,51 +28,42 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 /**
- * This example shows how to use Carrot Strings.INCRBY 
- * and Strings.INCRBYFLOAT to keep huge list of atomic counters
- * Test Description:
- * 
- * Key format: "counter:number" number = [0:1M]
- * 
- * 1. Load 1M long and double counters
- * 2. Increment each by random number 0 - 1000
- * 3. Calculate Memory usage
- * 
- * Results:
- * 
- * 1. Average counter size is 21 (13 bytes - key, 8 - value)
- * 2. Carrot No compression. 37.5 bytes per counter
- * 3. Carrot LZ4      -  10.8 bytes per counter
- * 4. Carrot LZ4HC    - 10.3 bytes per counter 
- * 5. Redis memory usage per counter is 57.5 bytes
- * 
- * RAM usage (Redis-to-Carrot)
- * 
- * 1) No compression    57.5/37.5 ~ 1.5x
- * 2) LZ4   compression 57.5/10.8 ~ 5.3x
- * 3) LZ4HC compression 57.5/10.3 ~ 5.6x 
- * 
- * Effect of a compression:
- * 
- * LZ4  - 37.5/10.8 = 3.5    (to no compression)
- * LZ4HC - 37.5/10.3 = 3.6  (to no compression)
- * 
- * Redis
- * 
- * In Redis Hashes with ziplist encodings can be used to keep counters
- * TODO: we need to compare Redis optimized version with our default
- * 
- * 
+ * This example shows how to use Carrot Strings.INCRBY and Strings.INCRBYFLOAT to keep huge list of
+ * atomic counters Test Description:
  *
+ * <p>Key format: "counter:number" number = [0:1M]
+ *
+ * <p>1. Load 1M long and double counters 2. Increment each by random number 0 - 1000 3. Calculate
+ * Memory usage
+ *
+ * <p>Results:
+ *
+ * <p>1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 37.5 bytes
+ * per counter 3. Carrot LZ4 - 10.8 bytes per counter 4. Carrot LZ4HC - 10.3 bytes per counter 5.
+ * Redis memory usage per counter is 57.5 bytes
+ *
+ * <p>RAM usage (Redis-to-Carrot)
+ *
+ * <p>1) No compression 57.5/37.5 ~ 1.5x 2) LZ4 compression 57.5/10.8 ~ 5.3x 3) LZ4HC compression
+ * 57.5/10.3 ~ 5.6x
+ *
+ * <p>Effect of a compression:
+ *
+ * <p>LZ4 - 37.5/10.8 = 3.5 (to no compression) LZ4HC - 37.5/10.3 = 3.6 (to no compression)
+ *
+ * <p>Redis
+ *
+ * <p>In Redis Hashes with ziplist encodings can be used to keep counters TODO: we need to compare
+ * Redis optimized version with our default
  */
 public class StringsAtomicCounters {
-  
+
   static {
     UnsafeAccess.debug = true;
   }
-  
+
   static long buffer = UnsafeAccess.malloc(4096);
-  static List<Key> keys = new ArrayList<Key>(); 
+  static List<Key> keys = new ArrayList<Key>();
   static long keyTotalSize = 0;
   static long N = 1000000;
   static int MAX_VALUE = 1000;
@@ -92,7 +79,7 @@ public class StringsAtomicCounters {
     }
     Collections.shuffle(keys);
   }
-  
+
   public static void main(String[] args) throws IOException, OperationFailedException {
 
     System.out.println("RUN compression = NONE");
@@ -104,54 +91,60 @@ public class StringsAtomicCounters {
     System.out.println("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
-
   }
-  
+
   private static void runTest() throws IOException, OperationFailedException {
-    
-    BigSortedMap map =  new BigSortedMap(100000000);
+
+    BigSortedMap map = new BigSortedMap(100000000);
 
     long startTime = System.currentTimeMillis();
-    int count =0;
+    int count = 0;
     Random r = new Random();
-    for (Key key: keys) {
+    for (Key key : keys) {
       count++;
       Strings.INCRBY(map, key.address, key.length, r.nextInt(MAX_VALUE));
       if (count % 100000 == 0) {
-        System.out.println("set long "+ count);
+        System.out.println("set long " + count);
       }
     }
     long endTime = System.currentTimeMillis();
-    
-    System.out.println("Loaded " + keys.size() +" long counters of avg size=" +(keyTotalSize/N + 8)+ " each in "
-      + (endTime - startTime) + "ms. RAM usage="+ (UnsafeAccess.getAllocatedMemory() - keyTotalSize));
-    
+
+    System.out.println(
+        "Loaded "
+            + keys.size()
+            + " long counters of avg size="
+            + (keyTotalSize / N + 8)
+            + " each in "
+            + (endTime - startTime)
+            + "ms. RAM usage="
+            + (UnsafeAccess.getAllocatedMemory() - keyTotalSize));
+
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Delete all
-    for (Key key: keys) {
+    for (Key key : keys) {
       Strings.DELETE(map, key.address, key.length);
     }
-    
-//    // Now test doubles
-//    count = 0;
-//    startTime = System.currentTimeMillis();
-//    
-//    for (Key key: keys) {
-//      count++;
-//      Strings.INCRBYFLOAT(map, key.address, key.length, 1d);
-//      if (count % 100000 == 0) {
-//        System.out.println("set float "+ count);
-//      }
-//    }
-//    
-//    endTime = System.currentTimeMillis();
-//    
-//    System.out.println("Loaded " + keys.size() +" double counters of avg size=" +(keyTotalSize/N + 8)+ " each in "
-//        + (endTime - startTime) + "ms. RAM usage="+ (UnsafeAccess.getAllocatedMemory() - keyTotalSize));
+
+    //    // Now test doubles
+    //    count = 0;
+    //    startTime = System.currentTimeMillis();
+    //
+    //    for (Key key: keys) {
+    //      count++;
+    //      Strings.INCRBYFLOAT(map, key.address, key.length, 1d);
+    //      if (count % 100000 == 0) {
+    //        System.out.println("set float "+ count);
+    //      }
+    //    }
+    //
+    //    endTime = System.currentTimeMillis();
+    //
+    //    System.out.println("Loaded " + keys.size() +" double counters of avg size="
+    // +(keyTotalSize/N + 8)+ " each in "
+    //        + (endTime - startTime) + "ms. RAM usage="+ (UnsafeAccess.getAllocatedMemory() -
+    // keyTotalSize));
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     map.dispose();
-    
   }
-
 }

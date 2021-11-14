@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.ops;
 
@@ -21,39 +17,41 @@ import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 public class Append extends Operation {
-  
+
   long appendValuePtr;
   int appendValueSize;
-  
-  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
 
-    @Override
-    protected Long initialValue() {
-      long ptr = UnsafeAccess.malloc(4096);
-      return ptr;
-    }
-  };
-  
-  static ThreadLocal<Integer> bufferSize = new ThreadLocal<Integer>() {
+  static ThreadLocal<Long> buffer =
+      new ThreadLocal<Long>() {
 
-    @Override
-    protected Integer initialValue() {
-      return 4096;
-    }    
-  };
-  
+        @Override
+        protected Long initialValue() {
+          long ptr = UnsafeAccess.malloc(4096);
+          return ptr;
+        }
+      };
+
+  static ThreadLocal<Integer> bufferSize =
+      new ThreadLocal<Integer>() {
+
+        @Override
+        protected Integer initialValue() {
+          return 4096;
+        }
+      };
+
   @Override
   public void reset() {
     super.reset();
     appendValuePtr = 0;
     appendValueSize = 0;
   }
-  
+
   public void setAppendValue(long ptr, int size) {
     this.appendValuePtr = ptr;
     this.appendValueSize = size;
   }
-  
+
   private void checkBuffer(int required) {
     int size = bufferSize.get();
     if (size >= required) {
@@ -64,10 +62,10 @@ public class Append extends Operation {
     buffer.set(ptr);
     bufferSize.set(required);
   }
-  
+
   @Override
   public boolean execute() {
-    if (foundRecordAddress <=0) {
+    if (foundRecordAddress <= 0) {
       return false;
     }
     int vsize = DataBlock.valueLength(foundRecordAddress);
@@ -85,5 +83,4 @@ public class Append extends Operation {
     updatesCount = 1;
     return true;
   }
-
 }

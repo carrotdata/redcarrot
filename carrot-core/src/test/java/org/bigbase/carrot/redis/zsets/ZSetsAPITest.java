@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2021-present Carrot, Inc.
- * <p>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
+ *
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
  * Server Side Public License, version 1, as published by MongoDB, Inc.
- * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Server
- * Side Public License for more details.
- * <p>
- * You should have received a copy of the Server Side Public License along with this program. If
+ *
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
+ *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
  * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.zsets;
@@ -60,7 +60,7 @@ public class ZSetsAPITest {
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
       list.add(new Pair<String>(m, score));
-      long res = ZSets.ZADD(map, key, new String[]{m}, new double[]{sc}, false);
+      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         System.out.println("Loaded " + i);
@@ -69,7 +69,6 @@ public class ZSetsAPITest {
     Collections.sort(list);
     return list;
   }
-
 
   private long dataSeed;
 
@@ -82,32 +81,30 @@ public class ZSetsAPITest {
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
     dataSeed = seed;
-    //System.out.println("Data seed="+ seed);
+    // System.out.println("Data seed="+ seed);
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
-      long res = ZSets.ZADD(map, key, new String[]{m}, new double[]{sc}, false);
+      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       list.add(new Pair<String>(m, score));
       if ((i + 1) % 100000 == 0) {
         System.out.println("Loaded " + i);
       }
     }
-    Collections.sort(list, new Comparator<Pair<String>>() {
-      @Override
-      public int compare(Pair<String> o1, Pair<String> o2) {
-        double d1 = Double.parseDouble(o1.getSecond());
-        double d2 = Double.parseDouble(o2.getSecond());
-        if (d1 < d2) {
-          return -1;
-        }
-        if (d1 > d2) {
-          return 1;
-        }
-        return 0;
-      }
-    });
+    Collections.sort(
+        list,
+        new Comparator<Pair<String>>() {
+          @Override
+          public int compare(Pair<String> o1, Pair<String> o2) {
+            double d1 = Double.parseDouble(o1.getSecond());
+            double d2 = Double.parseDouble(o2.getSecond());
+            if (d1 < d2) return -1;
+            if (d1 > d2) return 1;
+            return 0;
+          }
+        });
     return list;
   }
 
@@ -145,7 +142,7 @@ public class ZSetsAPITest {
       double sc = 1.08E8D; // some score
       String score = Double.toString(sc);
       list.add(new Pair<String>(m, score));
-      long res = ZSets.ZADD(map, key, new String[]{m}, new double[]{sc}, false);
+      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         System.out.println("Loaded " + i);
@@ -168,7 +165,7 @@ public class ZSetsAPITest {
     }
   }
 
-  //@Ignore
+  // @Ignore
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
@@ -292,7 +289,6 @@ public class ZSetsAPITest {
     System.out.println("Run time=" + (end - start) + "ms");
   }
 
-
   private List<String> fieldList(List<Pair<String>> list) {
     List<String> ll = new ArrayList<String>();
     for (Pair<String> p : list) {
@@ -305,7 +301,7 @@ public class ZSetsAPITest {
   @Test
   public void testZRANDMEMBER() {
 
-    //TODO: check multiple \r\n in output
+    // TODO: check multiple \r\n in output
 
     System.out.println("ZSets ZRANDMEMBER multiple keys test");
     int numMembers = 1000;
@@ -396,11 +392,16 @@ public class ZSetsAPITest {
     assertEquals(X, total);
     total = scan(map, key, max, after, count, 100, null);
     assertEquals(0, total);
-
   }
 
-  private int scan(BigSortedMap map, String key, double lastScore, String lastSeenMember,
-      int count, int bufferSize, String regex) {
+  private int scan(
+      BigSortedMap map,
+      String key,
+      double lastScore,
+      String lastSeenMember,
+      int count,
+      int bufferSize,
+      String regex) {
     int total = 0;
     List<Pair<String>> result = null;
     // Check overall functionality - full scan
@@ -436,7 +437,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     List<Pair<String>> list = loadDataSortByScore(key, X);
     // Check cardinality
-    assertEquals(X, (int) ZSets.ZCARD(map, key));    // Check cardinality
+    assertEquals(X, (int) ZSets.ZCARD(map, key)); // Check cardinality
 
     // Check full scan
     int expected = countMatches(list, 0, regex);
@@ -480,9 +481,7 @@ public class ZSetsAPITest {
     assertEquals(expected, total);
     total = scan(map, key, max, after, count, 100, regex);
     assertEquals(0, total);
-
   }
-
 
   @Ignore
   @Test
@@ -632,7 +631,7 @@ public class ZSetsAPITest {
       Double score = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(score);
       score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADD(map, key, new String[]{p.getFirst()}, new double[]{score}, false);
+      long res = ZSets.ZADD(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
       assertEquals(0, (int) res);
       Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(newScore);
@@ -647,8 +646,7 @@ public class ZSetsAPITest {
       Double score = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(score);
       score = r.nextDouble() * r.nextInt();
-      long res =
-          ZSets.ZADDNX(map, key, new String[]{p.getFirst()}, new double[]{score}, false);
+      long res = ZSets.ZADDNX(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
       assertEquals(0, (int) res);
     }
     card = ZSets.ZCARD(map, key);
@@ -661,10 +659,9 @@ public class ZSetsAPITest {
     // load again with ZADDNX
     int count = 0;
     for (Pair<String> p : data) {
-      //System.out.println(count);
+      // System.out.println(count);
       double score = r.nextDouble() * r.nextInt();
-      long res =
-          ZSets.ZADDNX(map, key, new String[]{p.getFirst()}, new double[]{score}, false);
+      long res = ZSets.ZADDNX(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
       assertEquals(1, (int) res);
       Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(newScore);
@@ -678,8 +675,7 @@ public class ZSetsAPITest {
       Double score = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(score);
       score = r.nextDouble() * r.nextInt();
-      long res =
-          ZSets.ZADDXX(map, key, new String[]{p.getFirst()}, new double[]{score}, true);
+      long res = ZSets.ZADDXX(map, key, new String[] {p.getFirst()}, new double[] {score}, true);
       assertEquals(1, (int) res);
       count++;
     }
@@ -691,8 +687,7 @@ public class ZSetsAPITest {
     // Try loading again with ZADDXX
     for (Pair<String> p : data) {
       double score = r.nextDouble() * r.nextInt();
-      long res =
-          ZSets.ZADDXX(map, key, new String[]{p.getFirst()}, new double[]{score}, true);
+      long res = ZSets.ZADDXX(map, key, new String[] {p.getFirst()}, new double[] {score}, true);
       assertEquals(0, (int) res);
       Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
       assertNull(newScore);
@@ -896,7 +891,6 @@ public class ZSetsAPITest {
     assertEquals(expected, count);
     count = ZSets.ZCOUNT(map, key, min, true, max, false);
     assertEquals(expected, count);
-
   }
 
   @Ignore
@@ -1094,7 +1088,6 @@ public class ZSetsAPITest {
     assertEquals(expected, count);
     count = ZSets.ZLEXCOUNT(map, key, null, true, null, false);
     assertEquals(expected, count);
-
   }
 
   @Ignore
@@ -1420,8 +1413,8 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREVRANGEBYLEX_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive) {
+  void testZREVRANGEBYLEX_core(
+      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
     int numIterations = 1000;
@@ -1457,8 +1450,8 @@ public class ZSetsAPITest {
       }
       ;
 
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       int loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -1474,8 +1467,8 @@ public class ZSetsAPITest {
     String start = null;
     String end = null;
     int expectedNum = data.size();
-    List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-        endInclusive, bufSize);
+    List<Pair<String>> list =
+        ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
     assertEquals(expectedNum, list.size());
     Collections.reverse(list);
     assertTrue(equals(data, list));
@@ -1495,7 +1488,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
     assertEquals(expectedNum, list.size());
-
   }
 
   @Ignore
@@ -1540,10 +1532,9 @@ public class ZSetsAPITest {
     assertEquals(0L, map.countRecords());
   }
 
-
   @Ignore
-  void testZRANGEBYLEX_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive) {
+  void testZRANGEBYLEX_core(
+      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
     int numIterations = 1000;
@@ -1578,8 +1569,8 @@ public class ZSetsAPITest {
       if (expectedNum < 0) {
         expectedNum = 0;
       }
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       int loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -1596,8 +1587,8 @@ public class ZSetsAPITest {
     String start = null;
     String end = null;
     int expectedNum = data.size();
-    List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end, endInclusive,
-        bufSize);
+    List<Pair<String>> list =
+        ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
     assertEquals(expectedNum, list.size());
     assertTrue(equals(data, list));
 
@@ -1616,7 +1607,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end, endInclusive, bufSize);
     assertEquals(expectedNum, list.size());
-
   }
 
   @Ignore
@@ -1678,8 +1668,13 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREVRANGEBYLEX_wol_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive, int offset, int limit) {
+  void testZREVRANGEBYLEX_wol_core(
+      List<Pair<String>> data,
+      String key,
+      boolean startInclusive,
+      boolean endInclusive,
+      int offset,
+      int limit) {
 
     Random r = new Random();
     long seed = r.nextLong();
@@ -1706,18 +1701,19 @@ public class ZSetsAPITest {
         endIdx = i1;
       }
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
 
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1735,13 +1731,14 @@ public class ZSetsAPITest {
       String end = null;
       int startIdx = Integer.MIN_VALUE / 2, endIdx = Integer.MAX_VALUE / 2;
       int expectedNum = 0;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1759,13 +1756,14 @@ public class ZSetsAPITest {
       int startIdx = Integer.MIN_VALUE / 2;
       int endIdx = r.nextInt(data.size());
       end = data.get(endIdx).getFirst();
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1784,13 +1782,14 @@ public class ZSetsAPITest {
       int endIdx = Integer.MAX_VALUE / 2;
       start = data.get(startIdx).getFirst();
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1808,13 +1807,14 @@ public class ZSetsAPITest {
       int endIdx = startIdx;
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1837,8 +1837,9 @@ public class ZSetsAPITest {
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
       int expectedNum = 0;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -1855,8 +1856,8 @@ public class ZSetsAPITest {
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-    int[] offsets = new int[]{-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[]{-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] {-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
+    int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -1878,8 +1879,8 @@ public class ZSetsAPITest {
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[]{-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[]{-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] {-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
+    limits = new int[] {-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -1897,8 +1898,13 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZRANGEBYLEX_wol_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive, int offset, int limit) {
+  void testZRANGEBYLEX_wol_core(
+      List<Pair<String>> data,
+      String key,
+      boolean startInclusive,
+      boolean endInclusive,
+      int offset,
+      int limit) {
 
     Random r = new Random();
     int numMembers = data.size();
@@ -1923,17 +1929,18 @@ public class ZSetsAPITest {
         startIdx = i2;
         endIdx = i1;
       }
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1951,13 +1958,14 @@ public class ZSetsAPITest {
       String end = null;
       int startIdx = Integer.MIN_VALUE / 2, endIdx = Integer.MAX_VALUE / 2;
       int expectedNum = 0;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1975,13 +1983,14 @@ public class ZSetsAPITest {
       int startIdx = Integer.MIN_VALUE / 2;
       int endIdx = r.nextInt(data.size());
       end = data.get(endIdx).getFirst();
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2000,13 +2009,14 @@ public class ZSetsAPITest {
       int endIdx = Integer.MAX_VALUE / 2;
       start = data.get(startIdx).getFirst();
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2024,13 +2034,14 @@ public class ZSetsAPITest {
       int endIdx = startIdx;
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2053,8 +2064,9 @@ public class ZSetsAPITest {
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
       int expectedNum = 0;
-      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
-          endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYLEX(
+              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -2071,8 +2083,14 @@ public class ZSetsAPITest {
    * @param limit
    * @return start offset or -1
    */
-  private int getRangeStart(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
-      boolean stopInclusive, int offset, int limit) {
+  private int getRangeStart(
+      int dataSize,
+      int startIndex,
+      boolean startInclusive,
+      int stopIndex,
+      boolean stopInclusive,
+      int offset,
+      int limit) {
     if (offset >= dataSize) {
       return -1;
     } else if (offset < 0) {
@@ -2117,8 +2135,14 @@ public class ZSetsAPITest {
    * @param limit
    * @return stop offset or -1
    */
-  private int getRangeStop(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
-      boolean stopInclusive, int offset, int limit) {
+  private int getRangeStop(
+      int dataSize,
+      int startIndex,
+      boolean startInclusive,
+      int stopIndex,
+      boolean stopInclusive,
+      int offset,
+      int limit) {
     if (offset >= dataSize) {
       return -1;
     } else if (offset < 0) {
@@ -2170,8 +2194,8 @@ public class ZSetsAPITest {
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-    int[] offsets = new int[]{-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[]{-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] {-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
+    int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2193,8 +2217,8 @@ public class ZSetsAPITest {
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[]{-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[]{-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] {-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
+    limits = new int[] {-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2262,8 +2286,8 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZRANGEBYSCORE_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive) {
+  void testZRANGEBYSCORE_core(
+      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
     int numIterations = 1000;
@@ -2299,9 +2323,9 @@ public class ZSetsAPITest {
         expectedNum = 0;
       }
       ;
-      //*DEBUG*/ System.out.println("min="+ min + " max="+ max+ " ");
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, true, bufSize);
+      // *DEBUG*/ System.out.println("min="+ min + " max="+ max+ " ");
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       int loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -2310,12 +2334,11 @@ public class ZSetsAPITest {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
 
-      list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, false, bufSize);
+      list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -2332,8 +2355,8 @@ public class ZSetsAPITest {
     double min = -Double.MAX_VALUE;
     double max = Double.MAX_VALUE;
     int expectedNum = data.size();
-    List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive,
-        true, bufSize);
+    List<Pair<String>> list =
+        ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, true, bufSize);
     assertEquals(expectedNum, list.size());
     assertTrue(equals(data, list));
 
@@ -2344,8 +2367,8 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
-      assertEquals(Double.parseDouble(data.get(1).getSecond()),
-          Double.parseDouble(list.get(0).getSecond()));
+      assertEquals(
+          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()));
     }
 
     // start > end
@@ -2354,7 +2377,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, true, bufSize);
     assertEquals(expectedNum, list.size());
-
   }
 
   @Ignore
@@ -2401,8 +2423,13 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZRANGEBYSCORE_wol_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive, int offset, int limit) {
+  void testZRANGEBYSCORE_wol_core(
+      List<Pair<String>> data,
+      String key,
+      boolean startInclusive,
+      boolean endInclusive,
+      int offset,
+      int limit) {
 
     Random r = new Random();
     int numMembers = data.size();
@@ -2426,29 +2453,31 @@ public class ZSetsAPITest {
         startIdx = i2;
         endIdx = i1;
       }
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
 
-      list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, false, bufSize);
+      list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2466,21 +2495,22 @@ public class ZSetsAPITest {
       double max = Double.MAX_VALUE;
       int startIdx = Integer.MIN_VALUE / 2, endIdx = Integer.MAX_VALUE / 2;
       int expectedNum = 0;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2492,21 +2522,22 @@ public class ZSetsAPITest {
       int startIdx = Integer.MIN_VALUE / 2;
       int endIdx = r.nextInt(data.size());
       max = Double.parseDouble(data.get(endIdx).getSecond());
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2519,21 +2550,22 @@ public class ZSetsAPITest {
       int endIdx = Integer.MAX_VALUE / 2;
       min = Double.parseDouble(data.get(startIdx).getSecond());
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
     // 3. start = end
@@ -2544,21 +2576,22 @@ public class ZSetsAPITest {
       int endIdx = startIdx;
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = min;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2573,8 +2606,9 @@ public class ZSetsAPITest {
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());
       int expectedNum = 0;
-      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -2592,8 +2626,8 @@ public class ZSetsAPITest {
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    int[] offsets = new int[]{-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[]{-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] {-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
+    int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2615,8 +2649,8 @@ public class ZSetsAPITest {
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[]{-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[]{-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] {-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
+    limits = new int[] {-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2634,8 +2668,8 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREVRANGEBYSCORE_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive) {
+  void testZREVRANGEBYSCORE_core(
+      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
     int numIterations = 1000;
@@ -2671,8 +2705,8 @@ public class ZSetsAPITest {
         expectedNum = 0;
       }
       ;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       int loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -2681,12 +2715,12 @@ public class ZSetsAPITest {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
 
-      list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, false, bufSize);
+      list =
+          ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       loopStart = startInclusive ? startIdx : startIdx + 1;
@@ -2716,8 +2750,8 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
-      assertEquals(Double.parseDouble(data.get(1).getSecond()),
-          Double.parseDouble(list.get(0).getSecond()));
+      assertEquals(
+          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()));
     }
 
     // start > end
@@ -2726,7 +2760,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, true, bufSize);
     assertEquals(expectedNum, list.size());
-
   }
 
   @Ignore
@@ -2773,8 +2806,13 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREVRANGEBYSCORE_wol_core(List<Pair<String>> data, String key,
-      boolean startInclusive, boolean endInclusive, int offset, int limit) {
+  void testZREVRANGEBYSCORE_wol_core(
+      List<Pair<String>> data,
+      String key,
+      boolean startInclusive,
+      boolean endInclusive,
+      int offset,
+      int limit) {
 
     Random r = new Random();
     int numMembers = data.size();
@@ -2798,29 +2836,31 @@ public class ZSetsAPITest {
         startIdx = i2;
         endIdx = i1;
       }
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
 
-      list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, false, bufSize);
+      list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2851,8 +2891,8 @@ public class ZSetsAPITest {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2864,21 +2904,22 @@ public class ZSetsAPITest {
       int startIdx = Integer.MIN_VALUE / 2;
       int endIdx = r.nextInt(data.size());
       max = Double.parseDouble(data.get(endIdx).getSecond());
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2891,21 +2932,22 @@ public class ZSetsAPITest {
       int endIdx = Integer.MAX_VALUE / 2;
       min = Double.parseDouble(data.get(startIdx).getSecond());
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
     // 3. start = end
@@ -2916,21 +2958,22 @@ public class ZSetsAPITest {
       int endIdx = startIdx;
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = min;
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
-      int loopEnd = getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive,
-          offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopEnd =
+          getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(Double.parseDouble(expected.getSecond()),
-            Double.parseDouble(result.getSecond()));
+        assertEquals(
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
       }
     }
 
@@ -2945,8 +2988,9 @@ public class ZSetsAPITest {
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());
       int expectedNum = 0;
-      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list =
+          ZSets.ZREVRANGEBYSCORE(
+              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -2964,8 +3008,8 @@ public class ZSetsAPITest {
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    int[] offsets = new int[]{-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[]{-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] {-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
+    int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2987,8 +3031,8 @@ public class ZSetsAPITest {
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[]{-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[]{-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] {-10, -100, 0, 20, 30, 50, 250, 499, 500, 501};
+    limits = new int[] {-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -3006,8 +3050,8 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREMRANGEBYSCORE_core(String key, int numMembers,
-      boolean startInclusive, boolean endInclusive) {
+  void testZREMRANGEBYSCORE_core(
+      String key, int numMembers, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     /*DEBUG*/
     long seed = r.nextLong();
@@ -3050,13 +3094,25 @@ public class ZSetsAPITest {
       }
       ;
 
-      long total = ZSets.ZREMRANGEBYSCORE(map, key, min, startInclusive, max,
-          endInclusive);
+      long total = ZSets.ZREMRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive);
       if (total != expectedNum) {
         System.out.println(
-            "min=" + min + " max=" + max + " startIdx=" + startIdx + " endIdx=" + endIdx +
-                " minInclusive=" + startInclusive + " maxInclusive=" + endInclusive +
-                " test seed=" + seed + " data seed=" + dataSeed);
+            "min="
+                + min
+                + " max="
+                + max
+                + " startIdx="
+                + startIdx
+                + " endIdx="
+                + endIdx
+                + " minInclusive="
+                + startInclusive
+                + " maxInclusive="
+                + endInclusive
+                + " test seed="
+                + seed
+                + " data seed="
+                + dataSeed);
         System.out.println("START: score=" + min + " field=" + data.get(startIdx).getFirst());
         System.out.println("STOP : score=" + max + " field=" + data.get(endIdx).getFirst());
 
@@ -3071,20 +3127,21 @@ public class ZSetsAPITest {
         String member = expected.getFirst();
         long rank = ZSets.ZRANK(map, key, member);
         if (rank >= 0) {
-          /*DEBUG*/
-          System.out.println(
-              "FOUND #" + (k - loopStart) + " expected score=" + expected.getSecond() +
-                  " field=" + expected.getFirst());
-          /*DEBUG*/
-          System.out.println("Actual score=" + ZSets.ZSCORE(map, key, member));
+          /*DEBUG*/ System.out.println(
+              "FOUND #"
+                  + (k - loopStart)
+                  + " expected score="
+                  + expected.getSecond()
+                  + " field="
+                  + expected.getFirst());
+          /*DEBUG*/ System.out.println("Actual score=" + ZSets.ZSCORE(map, key, member));
         }
         assertEquals(-1, (int) rank);
       }
       // Delete set
       ZSets.DELETE(map, key);
       if (i % 100 == 0) {
-        /*DEBUG*/
-        System.out.println(i);
+        /*DEBUG*/ System.out.println(i);
       }
     }
     // Test some edge cases
@@ -3117,7 +3174,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     total = ZSets.ZREMRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive);
     assertEquals(expectedNum, (int) total);
-
   }
 
   @Ignore
@@ -3138,8 +3194,8 @@ public class ZSetsAPITest {
     testZREMRANGEBYSCORE_core(key, numMembers, false, true);
 
     // 2. CARDINALITY < compact size (512)
-    //boolean res = ZSets.DELETE(map, key);
-    //assertTrue(res);
+    // boolean res = ZSets.DELETE(map, key);
+    // assertTrue(res);
     assertEquals(0L, map.countRecords());
     numMembers = 500;
 
@@ -3185,8 +3241,15 @@ public class ZSetsAPITest {
       expectedNum = endIdx - startIdx + 1;
       long total = ZSets.ZREMRANGEBYRANK(map, key, startIdx, endIdx);
       if (total != expectedNum) {
-        System.out.println(" startIdx=" + startIdx + " endIdx=" + endIdx +
-            " test seed=" + seed + " data seed=" + dataSeed);
+        System.out.println(
+            " startIdx="
+                + startIdx
+                + " endIdx="
+                + endIdx
+                + " test seed="
+                + seed
+                + " data seed="
+                + dataSeed);
       }
       assertEquals(expectedNum, (int) total);
       // Verify that we are correct
@@ -3201,8 +3264,7 @@ public class ZSetsAPITest {
       // Delete set
       ZSets.DELETE(map, key);
       if (i % 100 == 0) {
-        /*DEBUG*/
-        System.out.println(i);
+        /*DEBUG*/ System.out.println(i);
       }
     }
 
@@ -3236,7 +3298,6 @@ public class ZSetsAPITest {
     expectedNum = 0;
     total = ZSets.ZREMRANGEBYRANK(map, key, min, max);
     assertEquals(expectedNum, (int) total);
-
   }
 
   @Ignore
@@ -3256,14 +3317,19 @@ public class ZSetsAPITest {
   }
 
   @Ignore
-  void testZREMRANGEBYLEX_core(String key, int numMembers,
-      boolean startInclusive, boolean endInclusive) {
+  void testZREMRANGEBYLEX_core(
+      String key, int numMembers, boolean startInclusive, boolean endInclusive) {
 
-    System.out.println("numMembers=" + numMembers + " startInclusive=" + startInclusive +
-        " endInclusive=" + endInclusive);
+    System.out.println(
+        "numMembers="
+            + numMembers
+            + " startInclusive="
+            + startInclusive
+            + " endInclusive="
+            + endInclusive);
 
     Random r = new Random();
-    long seed = 276634853598895472L;//r.nextLong();
+    long seed = 276634853598895472L; // r.nextLong();
     r.setSeed(seed);
     System.out.println("Test seed=" + seed);
     int numIterations = 1000;
@@ -3392,7 +3458,6 @@ public class ZSetsAPITest {
 
     assertEquals(0L, map.countRecords());
   }
-
 
   public void setUp() {
     map = new BigSortedMap(100000000);

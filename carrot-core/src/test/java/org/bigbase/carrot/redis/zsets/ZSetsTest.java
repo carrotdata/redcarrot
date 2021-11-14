@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2021-present Carrot, Inc.
- * <p>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
+ *
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
  * Server Side Public License, version 1, as published by MongoDB, Inc.
- * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Server
- * Side Public License for more details.
- * <p>
- * You should have received a copy of the Server Side Public License along with this program. If
+ *
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
+ *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
  * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.zsets;
@@ -46,8 +46,8 @@ public class ZSetsTest {
   int maxScore = 100000;
 
   static {
-    //UnsafeAccess.setMallocDebugEnabled(true);
-    //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
+    // UnsafeAccess.setMallocDebugEnabled(true);
+    // UnsafeAccess.setMallocDebugStackTraceEnabled(true);
   }
 
   private List<Value> getFields(long n) {
@@ -106,7 +106,7 @@ public class ZSetsTest {
     }
   }
 
-  //@Ignore
+  // @Ignore
   @Test
   public void runAllNoCompression() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -119,7 +119,7 @@ public class ZSetsTest {
     }
   }
 
-  //@Ignore
+  // @Ignore
   @Test
   public void runAllCompressionLZ4() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
@@ -156,7 +156,7 @@ public class ZSetsTest {
     setUp();
     testAddDeleteMulti();
     tearDown();
-    //testAddGetScoreMultiOpt();
+    // testAddGetScoreMultiOpt();
   }
 
   @Ignore
@@ -262,20 +262,27 @@ public class ZSetsTest {
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory()
-        + " for " + n + " " + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
-        + " byte values. Overhead=" +
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - (
-            2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)) +
-        " bytes per value. Time to load: " + (end - start) + "ms");
+    System.out.println(
+        "Total allocated memory ="
+            + BigSortedMap.getGlobalAllocatedMemory()
+            + " for "
+            + n
+            + " "
+            + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
+            + " byte values. Overhead="
+            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n
+                - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3))
+            + " bytes per value. Time to load: "
+            + (end - start)
+            + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, ZSets.ZCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
-      Double res = ZSets.ZSCORE(map, key.address, key.length, fields.get(i).address,
-          fields.get(i).length);
+      Double res =
+          ZSets.ZSCORE(map, key.address, key.length, fields.get(i).address, fields.get(i).length);
       assertEquals(this.scores.get(i), res);
       if ((i + 1) % 100000 == 0) {
         System.out.println(i + 1);
@@ -286,7 +293,6 @@ public class ZSetsTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-
   }
 
   @Ignore
@@ -309,12 +315,19 @@ public class ZSetsTest {
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory()
-        + " for " + n + " " + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
-        + " byte values. Overhead=" +
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - (
-            2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3))
-        + " bytes per value. Time to load: " + (end - start) + "ms");
+    System.out.println(
+        "Total allocated memory ="
+            + BigSortedMap.getGlobalAllocatedMemory()
+            + " for "
+            + n
+            + " "
+            + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
+            + " byte values. Overhead="
+            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n
+                - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3))
+            + " bytes per value. Time to load: "
+            + (end - start)
+            + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -336,7 +349,6 @@ public class ZSetsTest {
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) map.countRecords());
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-
   }
 
   @Ignore
@@ -357,14 +369,27 @@ public class ZSetsTest {
         System.out.println(i + 1);
       }
     }
-    int setSize = DataBlock.RECORD_TOTAL_OVERHEAD + fieldSize /*part of a key*/ +
-        6/*4 + 1 + 1 - additional key overhead */ + Utils.SIZEOF_DOUBLE + fieldSize + 3;
+    int setSize =
+        DataBlock.RECORD_TOTAL_OVERHEAD
+            + fieldSize /*part of a key*/
+            + 6 /*4 + 1 + 1 - additional key overhead */
+            + Utils.SIZEOF_DOUBLE
+            + fieldSize
+            + 3;
 
     long end = System.currentTimeMillis();
-    System.out.println("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory()
-        + " for " + n + " " + setSize + " byte values. Overhead=" +
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize) +
-        " bytes per value. Time to load: " + (end - start) + "ms");
+    System.out.println(
+        "Total allocated memory ="
+            + BigSortedMap.getGlobalAllocatedMemory()
+            + " for "
+            + n
+            + " "
+            + setSize
+            + " byte values. Overhead="
+            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize)
+            + " bytes per value. Time to load: "
+            + (end - start)
+            + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -381,7 +406,6 @@ public class ZSetsTest {
     end = System.currentTimeMillis();
     System.out.println("Time for " + n + " DELETE=" + (end - start) + "ms");
     assertEquals(0, (int) map.countRecords());
-
   }
 
   private void tearDown() {

@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis;
 
@@ -32,22 +28,23 @@ import org.junit.Test;
 public class TestRedisConf {
 
   private RedisConf conf;
-  String sconf = "#Carrot Redis server configuration\n"
-      + "# Number of supported Redis commands\n"
-      + "command.count=104\n"
-      + "# Compression (NONE, LZ4)\n"
-      + "compression.codec=none\n"
-      + "# Data store maximum size\n"
-      + "max.memory.limit=10000000000\n"
-      + "# Maximum sorted size compact size\n"
-      + "zset.compact.maxsize=512\n"
-      + "# Server port\n"
-      + "server.port=6379\n"
-      + "# Thread pool size\n"
-      + "thread.pool.size=1\n"
-      + "# Cluster nodes\n"
-      + "redis.nodes=127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381,127.0.0.1:6382";
-  
+  String sconf =
+      "#Carrot Redis server configuration\n"
+          + "# Number of supported Redis commands\n"
+          + "command.count=104\n"
+          + "# Compression (NONE, LZ4)\n"
+          + "compression.codec=none\n"
+          + "# Data store maximum size\n"
+          + "max.memory.limit=10000000000\n"
+          + "# Maximum sorted size compact size\n"
+          + "zset.compact.maxsize=512\n"
+          + "# Server port\n"
+          + "server.port=6379\n"
+          + "# Thread pool size\n"
+          + "thread.pool.size=1\n"
+          + "# Cluster nodes\n"
+          + "redis.nodes=127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381,127.0.0.1:6382";
+
   @Before
   public void setUp() throws IOException {
     ByteArrayInputStream is = new ByteArrayInputStream(sconf.getBytes());
@@ -55,7 +52,7 @@ public class TestRedisConf {
     p.load(is);
     conf = new RedisConf(p);
   }
-  
+
   @Test
   public void testClusterSlots() {
     ByteBuffer buf = ByteBuffer.allocate(2048);
@@ -67,19 +64,19 @@ public class TestRedisConf {
     String result = new String(arr);
     System.out.println(result);
   }
-  
+
   @Test
   public void testDataBlockSizes() {
     Properties p = new Properties();
     p.setProperty(RedisConf.DATA_BLOCK_SIZES_KEY, "10,20,30");
     RedisConf conf = new RedisConf(p);
-    
+
     int[] sizes = conf.getDataBlockSizes();
     assertEquals(3, sizes.length);
     assertEquals(10, sizes[0]);
     assertEquals(20, sizes[1]);
     assertEquals(30, sizes[2]);
-    
+
     p.clear();
     p.setProperty(RedisConf.DATA_BLOCK_SIZES_KEY, "  10,20,50 ");
     sizes = conf.getDataBlockSizes();
@@ -87,13 +84,11 @@ public class TestRedisConf {
     assertEquals(10, sizes[0]);
     assertEquals(20, sizes[1]);
     assertEquals(50, sizes[2]);
-    
+
     p.clear();
     // Wrong format
     p.setProperty(RedisConf.DATA_BLOCK_SIZES_KEY, "10, 20,50");
     sizes = conf.getDataBlockSizes();
     assertNull(sizes);
-    
   }
-  
 }

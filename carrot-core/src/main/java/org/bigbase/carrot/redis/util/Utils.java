@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.util;
 
@@ -37,42 +33,38 @@ import static org.bigbase.carrot.util.Utils.SIZEOF_BYTE;
 import static org.bigbase.carrot.util.Utils.SIZEOF_DOUBLE;
 import static org.bigbase.carrot.util.Utils.SIZEOF_LONG;
 
-
-
-/**
- * 
- * Utility class for Redis package
- *
- */
+/** Utility class for Redis package */
 public class Utils {
-  
+
   static final byte ARR_TYPE = (byte) '*';
   static final byte INT_TYPE = (byte) ':';
   static final byte BULK_TYPE = (byte) '$';
   static final byte ERR_TYPE = (byte) '-';
   static final byte PLUS = (byte) '+';
-  
+
   static final byte[] OK_RESP = "+OK\r\n".getBytes();
   static final byte[] CRLF = "\r\n".getBytes();
-  
-  
+
   /**
-   * Converts Redis request (raw) to an internal Carrot 
-   * representation. Provided memory buffer MUST be sufficient to keep all 
-   * converted data
+   * Converts Redis request (raw) to an internal Carrot representation. Provided memory buffer MUST
+   * be sufficient to keep all converted data
+   *
    * @param buf request data
    * @return true if success, false - otherwise (not a full request)
    */
   public static boolean requestIsComplete(ByteBuffer buf) {
-    
+
     buf.flip(); // do not double flip!!!
     int len = 0;
-    
+
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      /*DEBUG*/System.err.println("PANIC!!! - wrong message format: pos = "+ buf.position() + 
-        " remaining=" + buf.remaining());
+      /*DEBUG*/ System.err.println(
+          "PANIC!!! - wrong message format: pos = "
+              + buf.position()
+              + " remaining="
+              + buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;
@@ -80,7 +72,7 @@ public class Utils {
       // I hope it is correct
       return buf.get(limit - 2) == (byte) '\r' && buf.get(limit - 1) == (byte) '\n';
     }
-    
+
     // Read first line to get array length
     int lsize = readLine(buf);
     if (lsize < 0) {
@@ -96,14 +88,14 @@ public class Utils {
     int pos = lsize;
     // move to next line
     buf.position(pos);
-    
+
     for (int i = 0; i < len; i++) {
       lsize = readLine(buf);
       if (lsize < 0) {
         // wrong format
         return false;
       }
-      int strlen =  (int) strToLong(buf, pos + 1, lsize - 3);
+      int strlen = (int) strToLong(buf, pos + 1, lsize - 3);
       if (strlen <= 0) {
         return false;
       }
@@ -123,18 +115,21 @@ public class Utils {
     }
     return true;
   }
-  
+
   public static boolean arrayResponseIsComplete(ByteBuffer buf) {
-    
+
     if (buf.position() == 0) return false;
     buf.flip(); // do not double flip!!!
     int len = 0;
-    
+
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      /*DEBUG*/System.err.println("PANIC!!! - wrong message format: pos = "+ buf.position() + 
-        " remaining=" + buf.remaining());
+      /*DEBUG*/ System.err.println(
+          "PANIC!!! - wrong message format: pos = "
+              + buf.position()
+              + " remaining="
+              + buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;
@@ -142,7 +137,7 @@ public class Utils {
       // I hope it is correct
       return buf.get(limit - 2) == (byte) '\r' && buf.get(limit - 1) == (byte) '\n';
     }
-    
+
     // Read first line to get array length
     int lsize = readLine(buf);
     if (lsize < 0) {
@@ -158,14 +153,14 @@ public class Utils {
     int pos = lsize;
     // move to next line
     buf.position(pos);
-    
+
     for (int i = 0; i < len; i++) {
       lsize = readLine(buf);
       if (lsize < 0) {
         // wrong format
         return false;
       }
-      int strlen =  (int) strToLong(buf, pos + 1, lsize - 3);
+      int strlen = (int) strToLong(buf, pos + 1, lsize - 3);
       if (strlen <= 0) {
         // NULL string
         pos += lsize;
@@ -189,18 +184,17 @@ public class Utils {
     return true;
   }
 
-  
   /**
-   * Converts Redis request (raw) to an internal Carrot 
-   * representation. Provided memory buffer MUST be sufficient to keep all 
-   * converted data
+   * Converts Redis request (raw) to an internal Carrot representation. Provided memory buffer MUST
+   * be sufficient to keep all converted data
+   *
    * @param buf request data
    * @param ptr memory pointer, for Carrot representation
    * @param size memory size
    * @return true if success, false - otherwise (wrong request format)
    */
   public static boolean requestToCarrot(ByteBuffer buf, long ptr, int size) {
-    
+
     buf.flip(); // do not double flip!!!
     int len = 0;
     // Check first byte
@@ -228,14 +222,14 @@ public class Utils {
     int pos = lsize;
     // move to next line
     buf.position(pos);
-    
+
     for (int i = 0; i < len; i++) {
       lsize = readLine(buf);
       if (lsize < 0) {
         // wrong format
         return false;
       }
-      int strlen =  (int) strToLong(buf, pos + 1, lsize - 3);
+      int strlen = (int) strToLong(buf, pos + 1, lsize - 3);
       if (strlen <= 0) {
         return false;
       }
@@ -257,10 +251,10 @@ public class Utils {
     }
     return true;
   }
-  
+
   /**
    * Scans byte buffer till next CR/LF combo
-   * 
+   *
    * @param buf
    * @return
    */
@@ -268,9 +262,9 @@ public class Utils {
     if (buf.hasRemaining() == false) return -1;
     byte prev = buf.get();
     int count = 1;
-    while(buf.hasRemaining()) {
+    while (buf.hasRemaining()) {
       byte ch = buf.get();
-      count ++;
+      count++;
       if (prev == '\r' && ch == '\n') {
         return count;
       }
@@ -281,44 +275,45 @@ public class Utils {
   }
 
   /**
-   * Converts Redis request (inline, telnet mode) to an internal Carrot 
-   * representation. Provided memory buffer MUST be sufficient to keep all 
-   * converted data
+   * Converts Redis request (inline, telnet mode) to an internal Carrot representation. Provided
+   * memory buffer MUST be sufficient to keep all converted data
+   *
    * @param buf request data
    * @param ptr memory pointer, for Carrot representation
    * @param size memory size
    * @return true if success, false - otherwise (wrong request format)
    */
   public static boolean inlineRequestToCarrot(ByteBuffer buf, long ptr, int size) {
-    
+
     int off = SIZEOF_INT;
     int count = 0, len = 0;
-    
-    while(buf.hasRemaining()) {
+
+    while (buf.hasRemaining()) {
       skipWhiteSpaces(buf);
       len = countNonWhitespaces(buf);
       if (len == 0) {
         break;
       }
       // Write down string length
-      UnsafeAccess.putInt(ptr + off,  len);
+      UnsafeAccess.putInt(ptr + off, len);
       off += SIZEOF_INT;
       // Copy string to a memory buffer
       UnsafeAccess.copy(buf, ptr + off, len);
       // Advance memory buffer offset
       off += len;
       // Advance buffer
-      //buf.position(buf.position() + len);
+      // buf.position(buf.position() + len);
       // Increment count
       count++;
     }
-    
+
     UnsafeAccess.putInt(ptr, count);
     return true;
   }
-  
+
   /**
    * Converts inline request to a Redis RESP2 array
+   *
    * @param request inline request
    * @return Redis RESP2 array as a String
    */
@@ -327,7 +322,7 @@ public class Utils {
     StringBuffer sb = new StringBuffer("*"); // ARRAY
     sb.append(Long.toString(splits.length));
     sb.append("\r\n");
-    for (String s: splits) {
+    for (String s : splits) {
       sb.append("$"); // bulk string
       sb.append(Long.toString(s.length()));
       sb.append("\r\n");
@@ -336,21 +331,23 @@ public class Utils {
     }
     return sb.toString();
   }
-  
+
   /**
    * Skips white spaces
+   *
    * @param buf byte buffer
    */
   private static void skipWhiteSpaces(ByteBuffer buf) {
     int skipped = 0;
     int pos = buf.position();
     int remaining = buf.remaining();
-    while (skipped < remaining && buf.get() == (byte)' ') skipped++;
+    while (skipped < remaining && buf.get() == (byte) ' ') skipped++;
     buf.position(pos + skipped);
   }
-  
+
   /**
-   * Counts consecutive non-white space characters 
+   * Counts consecutive non-white space characters
+   *
    * @param buf byte buffer
    * @return length of a continuous non-white space symbols
    */
@@ -358,13 +355,14 @@ public class Utils {
     int skipped = 0;
     int pos = buf.position();
     int remaining = buf.remaining();
-    while (skipped < remaining && buf.get() != (byte)' ') skipped++;
+    while (skipped < remaining && buf.get() != (byte) ' ') skipped++;
     buf.position(pos);
     return skipped;
   }
-  
+
   /**
    * Converts internal Carrot message to a Redis response format
+   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -372,15 +370,15 @@ public class Utils {
     buf.rewind();
     int val = UnsafeAccess.toByte(ptr);
     ReplyType type = ReplyType.values()[val];
-    
-    switch(type) {
-      case OK: 
+
+    switch (type) {
+      case OK:
         okResponse(ptr, buf);
         break;
       case SIMPLE:
         simpleResponse(ptr, buf);
         break;
-      case INTEGER: 
+      case INTEGER:
         intResponse(ptr, buf);
         break;
       case BULK_STRING:
@@ -408,11 +406,11 @@ public class Utils {
         errorResponse(ptr, buf);
         break;
       default:
-        throw new IllegalArgumentException(String.format("Illegal number response type %d", type.ordinal()));
-        
+        throw new IllegalArgumentException(
+            String.format("Illegal number response type %d", type.ordinal()));
     }
   }
-  
+
   private static void simpleResponse(long ptr, ByteBuffer buf) {
     buf.put(PLUS);
     int len = UnsafeAccess.toInt(ptr + SIZEOF_BYTE);
@@ -426,7 +424,7 @@ public class Utils {
     buf.put(CRLF);
     // 1. CURSOR
     buf.put(BULK_TYPE);
-    ptr += SIZEOF_BYTE; // skip multi bulk type    
+    ptr += SIZEOF_BYTE; // skip multi bulk type
     ptr += SIZEOF_BYTE; // skip type
     long cursor = UnsafeAccess.toLong(ptr);
     int curlen = stringSize(cursor);
@@ -445,13 +443,14 @@ public class Utils {
       case ZARRAY:
         zarrayResponse(ptr, buf);
       default:
-        //TODO
+        // TODO
     }
   }
 
   /**
    * Converts ZARRAY1 Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void zarray1Response(long ptr, ByteBuffer buf) {
@@ -461,9 +460,9 @@ public class Utils {
     ptr += SIZEOF_INT;
     int len = UnsafeAccess.toInt(ptr);
     ptr += SIZEOF_INT;
-    longToStr(len , buf, buf.position());
+    longToStr(len, buf, buf.position());
     buf.put(CRLF);
-    
+
     for (int i = 0; i < len; i++) {
       int size = readUVInt(ptr);
       ptr += sizeUVInt(size) + SIZEOF_DOUBLE;
@@ -475,12 +474,13 @@ public class Utils {
       UnsafeAccess.copy(ptr, buf, size);
       buf.put(CRLF);
       ptr += size;
-    }        
+    }
   }
-  
+
   /**
    * Converts ZARRAY Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void zarrayResponse(long ptr, ByteBuffer buf) {
@@ -492,12 +492,12 @@ public class Utils {
     ptr += SIZEOF_INT;
     longToStr(2 * len /* score+field*/, buf, buf.position());
     buf.put(CRLF);
-    
+
     for (int i = 0; i < len; i++) {
       // Read total size (score + field)
       int size = readUVInt(ptr);
       ptr += sizeUVInt(size);
-      
+
       // Write field
       buf.put(BULK_TYPE);
       longToStr(size - SIZEOF_DOUBLE, buf, buf.position());
@@ -506,22 +506,23 @@ public class Utils {
       buf.put(CRLF);
       // Write score (double - 8 bytes)
       double score = lexToDouble(ptr);
-      //TODO: optimize conversion w/o object creation
+      // TODO: optimize conversion w/o object creation
       // Get score
       String s = Double.toString(score);
       int slen = s.length();
-      buf.put(BULK_TYPE);     
+      buf.put(BULK_TYPE);
       longToStr(slen, buf, buf.position());
       buf.put(CRLF);
       strToByteBuffer(s, buf);
       buf.put(CRLF);
       ptr += size;
-    }    
+    }
   }
-  
+
   /**
    * Converts VARRAY Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void varrayResponse(long ptr, ByteBuffer buf) {
@@ -533,7 +534,7 @@ public class Utils {
     ptr += SIZEOF_INT;
     longToStr(len, buf, buf.position());
     buf.put(CRLF);
-    
+
     for (int i = 0; i < len; i++) {
       int size = readUVInt(ptr);
       int sizeSize = sizeUVInt(size);
@@ -541,16 +542,17 @@ public class Utils {
       buf.put(BULK_TYPE);
       longToStr(size, buf, buf.position());
       buf.put(CRLF);
-      if(size > 0) {
+      if (size > 0) {
         UnsafeAccess.copy(ptr, buf, size);
         buf.put(CRLF);
         ptr += size;
       }
-    }    
+    }
   }
   /**
    * Converts ERROR Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void errorResponse(long ptr, ByteBuffer buf) {
@@ -561,13 +563,12 @@ public class Utils {
     UnsafeAccess.copy(ptr, buf, msgLen);
     buf.position(SIZEOF_BYTE + msgLen);
     buf.put(CRLF);
-    
   }
 
   /**
-   * Converts TYPED_ARRAY Carrot type to a Redis response
-   * TODO: currently we support only INT types
-   * @param ptr memory address of a serialized Carrot response 
+   * Converts TYPED_ARRAY Carrot type to a Redis response TODO: currently we support only INT types
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void intArrayResponse(long ptr, ByteBuffer buf) {
@@ -579,19 +580,20 @@ public class Utils {
     ptr += SIZEOF_INT;
     longToStr(len, buf, buf.position());
     buf.put(CRLF);
-    for (int i=0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
       // Works only with ints
       long val = UnsafeAccess.toLong(ptr);
       ptr += SIZEOF_LONG;
       buf.put(INT_TYPE);
       longToStr(val, buf, buf.position());
       buf.put(CRLF);
-    }    
+    }
   }
 
   /**
    * Converts simple ARRAY Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void arrayResponse(long ptr, ByteBuffer buf) {
@@ -603,14 +605,14 @@ public class Utils {
     ptr += SIZEOF_INT;
     longToStr(len, buf, buf.position());
     buf.put(CRLF);
-    
+
     for (int i = 0; i < len; i++) {
       int size = UnsafeAccess.toInt(ptr);
       ptr += SIZEOF_INT;
       buf.put(BULK_TYPE);
       longToStr(size, buf, buf.position());
       buf.put(CRLF);
-      if(size >= 0) {
+      if (size >= 0) {
         UnsafeAccess.copy(ptr, buf, size);
         buf.put(CRLF);
         ptr += size;
@@ -620,12 +622,13 @@ public class Utils {
 
   /**
    * This call is used for CLUSTER SLOTS
+   *
    * @param data array objects
    * @param buf buffer to serialize to
    */
   public static void serializeTypedArray(Object[] data, ByteBuffer buf) {
     buf.put(ARR_TYPE);
-    int len = data == null? -1: data.length;
+    int len = data == null ? -1 : data.length;
     longToStr(len, buf, buf.position());
     buf.put(CRLF);
     if (len < 0) return;
@@ -633,7 +636,7 @@ public class Utils {
       serializeObject(data[i], buf);
     }
   }
-  
+
   private static void serializeObject(Object obj, ByteBuffer buf) {
     if (obj instanceof Long) {
       Long value = (Long) obj;
@@ -652,10 +655,10 @@ public class Utils {
     longToStr(value, buf, buf.position());
     buf.put(CRLF);
   }
-  
+
   private static void serializeString(String s, ByteBuffer buf) {
-    buf.put(BULK_TYPE);  
-    int len = s == null? -1: s.length();
+    buf.put(BULK_TYPE);
+    int len = s == null ? -1 : s.length();
     longToStr(len, buf, buf.position());
     buf.put(CRLF);
     if (len > 0) {
@@ -663,14 +666,15 @@ public class Utils {
       buf.put(CRLF);
     }
   }
-  
+
   /**
    * Converts BULK_STRING Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void bulkResponse(long ptr, ByteBuffer buf) {
-    buf.put(BULK_TYPE);  
+    buf.put(BULK_TYPE);
     ptr += SIZEOF_BYTE;
     int len = UnsafeAccess.toInt(ptr);
     ptr += SIZEOF_INT;
@@ -680,12 +684,12 @@ public class Utils {
       UnsafeAccess.copy(ptr, buf, len);
       buf.put(CRLF);
     }
-
   }
 
   /**
    * Converts INTEGER Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void intResponse(long ptr, ByteBuffer buf) {
@@ -698,11 +702,11 @@ public class Utils {
 
   /**
    * Converts OK Carrot type to a Redis response
-   * @param ptr memory address of a serialized Carrot response 
+   *
+   * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void okResponse(long ptr, ByteBuffer buf) {
     buf.put(OK_RESP);
   }
-  
 }

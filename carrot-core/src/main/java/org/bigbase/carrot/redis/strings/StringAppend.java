@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.strings;
 
@@ -23,15 +19,12 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * String append mutation.
- * If key already exists and is a string, this command appends the value at the end of the string. 
- * If key does not exist it is created and set as an empty string, 
- * so APPEND will be similar to SET in this special case.
- * 
- *
+ * String append mutation. If key already exists and is a string, this command appends the value at
+ * the end of the string. If key does not exist it is created and set as an empty string, so APPEND
+ * will be similar to SET in this special case.
  */
 public class StringAppend extends Operation {
-  
+
   /*
    * Append value address
    */
@@ -44,36 +37,38 @@ public class StringAppend extends Operation {
    * Size of a value after append
    */
   int sizeAfterAppend;
-  
+
   /*
-   * Thread local buffer 
+   * Thread local buffer
    */
-  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
+  static ThreadLocal<Long> buffer =
+      new ThreadLocal<Long>() {
 
-    @Override
-    protected Long initialValue() {
-      long ptr = UnsafeAccess.malloc(4096);
-      return ptr;
-    }
-  };
-  
-  /* 
+        @Override
+        protected Long initialValue() {
+          long ptr = UnsafeAccess.malloc(4096);
+          return ptr;
+        }
+      };
+
+  /*
    * Thread local buffer size
-   * 
+   *
    */
-  static ThreadLocal<Integer> bufferSize = new ThreadLocal<Integer>() {
+  static ThreadLocal<Integer> bufferSize =
+      new ThreadLocal<Integer>() {
 
-    @Override
-    protected Integer initialValue() {
-      return 4096;
-    }    
-  };
-  
+        @Override
+        protected Integer initialValue() {
+          return 4096;
+        }
+      };
+
   public StringAppend() {
     // WTF is it for?
-    //setFloorKey(true);
+    // setFloorKey(true);
   }
-  
+
   @Override
   public void reset() {
     super.reset();
@@ -83,6 +78,7 @@ public class StringAppend extends Operation {
   }
   /**
    * Sets append value address and size
+   *
    * @param ptr append value address
    * @param size append value size
    */
@@ -90,17 +86,19 @@ public class StringAppend extends Operation {
     this.appendValuePtr = ptr;
     this.appendValueSize = size;
   }
-  
+
   /**
    * Gets value size after append
-   * @return value size after append operation 
+   *
+   * @return value size after append operation
    */
   public int getSizeAfterAppend() {
     return this.sizeAfterAppend;
   }
-  
+
   /**
    * Ensure enough space in a thread local buffer
+   *
    * @param required required size
    */
   private void checkBuffer(int required) {
@@ -113,7 +111,7 @@ public class StringAppend extends Operation {
     buffer.set(ptr);
     bufferSize.set(required);
   }
-  
+
   @Override
   public boolean execute() {
     int vsize = appendValueSize;
@@ -142,5 +140,4 @@ public class StringAppend extends Operation {
     updatesCount = 1;
     return true;
   }
-
 }

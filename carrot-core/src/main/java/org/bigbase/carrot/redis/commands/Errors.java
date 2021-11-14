@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -23,25 +19,28 @@ import org.bigbase.carrot.util.Utils;
 
 public class Errors {
 
-  static final byte[] TYPE_GENERIC = new byte[] {(byte)'E', (byte) 'R', (byte) 'R'};
-  static final byte[] SPACE = new byte[] {(byte)':', (byte)' '};
+  static final byte[] TYPE_GENERIC = new byte[] {(byte) 'E', (byte) 'R', (byte) 'R'};
+  static final byte[] SPACE = new byte[] {(byte) ':', (byte) ' '};
   static final byte[] ERR_WRONG_NUMBER_FORMAT = "Wrong number format".getBytes();
   static final byte[] ERR_WRONG_BIT_VALUE = "Wrong bit value (must be 0 or 1)".getBytes();
   static final byte[] ERR_WRONG_ARGS_NUMBER = "Wrong number of arguments".getBytes();
-  static final byte[] ERR_WRONG_COMMAND_FORMAT = "Wrong command format, unexpected argument".getBytes();
+  static final byte[] ERR_WRONG_COMMAND_FORMAT =
+      "Wrong command format, unexpected argument".getBytes();
   static final byte[] ERR_KEY_DOESNOT_EXIST = "Key does not exist".getBytes();
   static final byte[] ERR_OPERATION_FAILED = "Operation failed".getBytes();
   static final byte[] ERR_KEY_NOT_NUMBER = "Value at key is not a number".getBytes();
   static final byte[] ERR_INVALID_CURSOR = "Invalid cursor".getBytes();
   static final byte[] ERR_OUT_OF_RANGE = "Index is out of range".getBytes();
-  static final byte[] ERR_OUT_OF_RANGE_OR = "Index is out of range or key does not exist".getBytes();
+  static final byte[] ERR_OUT_OF_RANGE_OR =
+      "Index is out of range or key does not exist".getBytes();
   static final byte[] ERR_POSITIVE_NUMBER_EXPECTED = "Positive number expected".getBytes();
-  static final String ERR_MIN_SPECIFIED = "Either '(' or '[' or '-' can be specified for a min argument";
-  static final String ERR_MAX_SPECIFIED = "Either '(' or '[' or '+' can be specified for a max argument";
+  static final String ERR_MIN_SPECIFIED =
+      "Either '(' or '[' or '-' can be specified for a min argument";
+  static final String ERR_MAX_SPECIFIED =
+      "Either '(' or '[' or '+' can be specified for a max argument";
   static final byte[] ERR_UNSUPPORTED_COMMAND = "Unsupported command".getBytes();
   static final byte[] ERR_SNAPSHOT_RUNNING = "Snapshot is already running".getBytes();
-  
-  
+
   public static void write(long buffer, byte[] type, byte[] message) {
     int off = 0;
     UnsafeAccess.putByte(buffer, (byte) ReplyType.ERROR.ordinal());
@@ -55,7 +54,7 @@ public class Errors {
     // Set the message's length
     UnsafeAccess.putInt(buffer + Utils.SIZEOF_BYTE, off - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
   }
-  
+
   public static void write(long buffer, byte[] type, byte[] message, String reason) {
     int off = 0;
     UnsafeAccess.putByte(buffer, (byte) ReplyType.ERROR.ordinal());
@@ -74,7 +73,7 @@ public class Errors {
     // Set the message's length
     UnsafeAccess.putInt(buffer + Utils.SIZEOF_BYTE, off - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
   }
-  
+
   public static void write(long buffer, byte[] type, byte[] message, byte[] reason) {
     int off = 0;
     UnsafeAccess.putByte(buffer, (byte) ReplyType.ERROR.ordinal());
