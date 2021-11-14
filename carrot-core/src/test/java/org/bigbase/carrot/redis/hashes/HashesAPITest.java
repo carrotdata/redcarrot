@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.hashes;
 
 import static org.junit.Assert.assertEquals;
@@ -35,10 +35,9 @@ import org.junit.Test;
 
 public class HashesAPITest {
   BigSortedMap map;
-  long n = 1000;
 
   private List<String> loadData(String key, int n) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(r, 10);
@@ -53,7 +52,7 @@ public class HashesAPITest {
   }
 
   private List<String> loadDataRandomSize(String key, int n) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
       int size = r.nextInt(10) + 5;
@@ -224,27 +223,27 @@ public class HashesAPITest {
   public void testHashIncrementFloat() throws OperationFailedException {
     int N = 10000;
     System.out.println("Test Hashes HINCRBYFLOAT API call");
-    List<String> keys = new ArrayList<String>();
+    List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
     for (int i = 0; i < N; i++) {
       String key = Utils.getRandomStr(r, 10);
       keys.add(key);
       double value = Hashes.HINCRBYFLOAT(map, key, field, 1);
-      assertEquals(1d, value);
+      assertEquals(1d, value, 0.0);
     }
 
     for (String key : keys) {
       double value = Hashes.HINCRBYFLOAT(map, key, field, 10);
-      assertEquals(11d, value);
+      assertEquals(11d, value, 0.0);
       value = Hashes.HINCRBYFLOAT(map, key, field, 100);
-      assertEquals(111d, value);
+      assertEquals(111d, value, 0.0);
       value = Hashes.HINCRBYFLOAT(map, key, field, 0);
-      assertEquals(111d, value);
+      assertEquals(111d, value, 0.0);
       value = Hashes.HINCRBYFLOAT(map, key, field, -100);
-      assertEquals(11d, value);
+      assertEquals(11d, value, 0.0);
       value = Hashes.HDEL(map, key, field);
-      assertEquals(1d, value);
+      assertEquals(1d, value, 0.0);
     }
   }
 
@@ -253,7 +252,7 @@ public class HashesAPITest {
   public void testHashIncrement() throws OperationFailedException {
     int N = 10000;
     System.out.println("Test Hashes HINCRBY API call");
-    List<String> keys = new ArrayList<String>();
+    List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
     for (int i = 0; i < N; i++) {
@@ -431,10 +430,10 @@ public class HashesAPITest {
     assertEquals(fields.length, result.size());
 
     assertEquals(list.get(0), result.get(0));
-    assertEquals(null, result.get(1));
+    assertNull(result.get(1));
     assertEquals(list.get(2), result.get(2));
-    assertEquals(null, result.get(3));
-    assertEquals(null, result.get(4));
+    assertNull(result.get(3));
+    assertNull(result.get(4));
   }
 
   private String[] getRandom(List<String> list, int count) {
@@ -527,9 +526,8 @@ public class HashesAPITest {
     assertEquals(X, (int) Hashes.HLEN(map, key));
 
     // Check full scan
-    String lastSeenMember = null;
     int count = 11; // required buffer size 22 * 11 + 4 = 246
-    int total = scan(map, key, lastSeenMember, count, 250, null);
+    int total = scan(map, key, null, count, 250, null);
     assertEquals(X, total);
 
     // Check correctness of partial scans
@@ -588,9 +586,8 @@ public class HashesAPITest {
 
     // Check full scan
     int expected = countMatches(list, 0, regex);
-    String lastSeenMember = null;
     int count = 11;
-    int total = scan(map, key, lastSeenMember, count, 250, regex);
+    int total = scan(map, key, null, count, 250, regex);
     assertEquals(expected, total);
 
     // Check correctness of partial scans
@@ -632,7 +629,7 @@ public class HashesAPITest {
       int bufferSize,
       String regex) {
     int total = 0;
-    List<Pair<String>> result = null;
+    List<Pair<String>> result;
     // Check overall functionality - full scan
     while ((result = Hashes.HSCAN(map, key, lastSeenMember, count, bufferSize, regex)) != null) {
       total += result.size() - 1;
@@ -643,7 +640,7 @@ public class HashesAPITest {
 
   @Ignore
   @Test
-  public void testScannerRandomMembersEdgeCases() throws IOException {
+  public void testScannerRandomMembersEdgeCases() {
     System.out.println("Test Hashes HRANDFIELD API call (Edge cases)");
     // Load N elements
     int N = 10000;
@@ -700,7 +697,7 @@ public class HashesAPITest {
 
   @Ignore
   @Test
-  public void testScannerRandomMembers() throws IOException {
+  public void testScannerRandomMembers() {
     System.out.println("Test Hashes HRANDFIELD API call");
     // Load N elements
     int N = 100000;
@@ -781,7 +778,7 @@ public class HashesAPITest {
   /**
    * Checks if list has all unique members. List must be sorted.
    *
-   * @param list
+   * @param list List of unique values
    * @return true/false
    */
   private boolean unique(List<Pair<String>> list) {

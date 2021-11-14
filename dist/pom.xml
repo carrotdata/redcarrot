@@ -50,7 +50,7 @@
                                 <descriptor>src/main/assemble/carrot-assembly.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>carrot-${project.version}</finalName>
+                            <finalName>carrot-${revision}</finalName>
                         </configuration>
                     </execution>
                 </executions>
