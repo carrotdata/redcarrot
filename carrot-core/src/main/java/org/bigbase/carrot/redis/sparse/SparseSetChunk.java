@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.sparse;
 
@@ -32,23 +28,20 @@ import org.bigbase.carrot.ops.Operation;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
-/**
- * Inserts new or overwrites existing chunk of a bitmap
- * 
- */
-
+/** Inserts new or overwrites existing chunk of a bitmap */
 public class SparseSetChunk extends Operation {
 
   /*
-   * Buffer for local thread operations 
+   * Buffer for local thread operations
    */
-  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
+  static ThreadLocal<Long> buffer =
+      new ThreadLocal<Long>() {
 
-    @Override
-    protected Long initialValue() {
-      return UnsafeAccess.malloc(BUFFER_CAPACITY);
-    }
-  };
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(BUFFER_CAPACITY);
+        }
+      };
   /*
    * Address of a chunk
    */
@@ -88,15 +81,20 @@ public class SparseSetChunk extends Operation {
           sameChunk = true;
           long vPtr = DataBlock.valueAddress(this.foundRecordAddress);
           int vSize = DataBlock.valueLength(this.foundRecordAddress);
-          vPtr = SparseBitmaps.isCompressed(vPtr) ? SparseBitmaps.decompress(vPtr, vSize - HEADER_SIZE, buffer.get()): vPtr;
+          vPtr =
+              SparseBitmaps.isCompressed(vPtr)
+                  ? SparseBitmaps.decompress(vPtr, vSize - HEADER_SIZE, buffer.get())
+                  : vPtr;
           int preCopy = (int) (this.offset - (this.offset / BYTES_PER_CHUNK * BYTES_PER_CHUNK));
           // Copy from existing till offset (exclusive)
           UnsafeAccess.copy(vPtr + HEADER_SIZE, chunkPtr + HEADER_SIZE, preCopy);
           // Copy from existing after offset + chunkLength(inclusive)
           if (preCopy + this.chunkLength < BYTES_PER_CHUNK) {
             int postCopy = BYTES_PER_CHUNK - preCopy - this.chunkLength;
-            UnsafeAccess.copy(vPtr + HEADER_SIZE + preCopy + this.chunkLength,
-              chunkPtr + HEADER_SIZE + preCopy + this.chunkLength, postCopy);
+            UnsafeAccess.copy(
+                vPtr + HEADER_SIZE + preCopy + this.chunkLength,
+                chunkPtr + HEADER_SIZE + preCopy + this.chunkLength,
+                postCopy);
           }
         }
       }
@@ -127,7 +125,6 @@ public class SparseSetChunk extends Operation {
     this.values[0] = valuePtr;
     this.valueSizes[0] = valueSize;
     return true;
-
   }
 
   @Override
@@ -141,6 +138,7 @@ public class SparseSetChunk extends Operation {
 
   /**
    * Set absolute offset of a chunk in bytes
+   *
    * @param offset
    */
   public void setOffset(long offset) {
@@ -149,6 +147,7 @@ public class SparseSetChunk extends Operation {
 
   /**
    * Set chunk address
+   *
    * @param ptr address of a chunk
    */
   public void setChunkAddress(long ptr) {
@@ -157,10 +156,10 @@ public class SparseSetChunk extends Operation {
 
   /**
    * Set chunk length
+   *
    * @param length chunk length
    */
   public void setChunkLength(int length) {
     this.chunkLength = length;
   }
-
 }

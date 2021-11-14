@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.ops;
 
@@ -34,9 +30,9 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.Test;
 
 /**
- * This test load data (key - long value) and in parallel increments keys - multithreaded.
- * At the end it scans all the keys and calculated total value of all keys, 
- * compares it with expected number of increments. 
+ * This test load data (key - long value) and in parallel increments keys - multithreaded. At the
+ * end it scans all the keys and calculated total value of all keys, compares it with expected
+ * number of increments.
  */
 public class AtomicIncrementTestMT {
 
@@ -47,21 +43,20 @@ public class AtomicIncrementTestMT {
   static List<Key> keys = Collections.synchronizedList(new ArrayList<Key>());
 
   static class IncrementRunner extends Thread {
-    
-    
+
     public IncrementRunner(String name) {
       super(name);
     }
 
     public void run() {
-      
+
       int keySize = 16;
-      byte[] key = new byte[keySize];      
+      byte[] key = new byte[keySize];
       long LONG_ZERO = UnsafeAccess.mallocZeroed(Utils.SIZEOF_LONG);
       Random r = new Random();
 
-      while (true) {        
- 
+      while (true) {
+
         double d = r.nextDouble();
         if (d < 0.5 && totalLoaded.get() > 1000) {
           // Run increment
@@ -69,7 +64,7 @@ public class AtomicIncrementTestMT {
           Key k = keys.get(n);
           try {
             map.incrementLongOp(k.address, k.length, 1);
-          } catch(OperationFailedException e) {
+          } catch (OperationFailedException e) {
             System.err.println("Increment failed.");
             break;
           }
@@ -87,24 +82,29 @@ public class AtomicIncrementTestMT {
             keys.add(k);
           }
           if (totalLoaded.get() % 1000000 == 0) {
-            System.out.println(getName() + " loaded = " + totalLoaded+" increments="+ totalIncrements + " mem="+
-          BigSortedMap.getGlobalAllocatedMemory() + " max="+ BigSortedMap.getGlobalMemoryLimit());
+            System.out.println(
+                getName()
+                    + " loaded = "
+                    + totalLoaded
+                    + " increments="
+                    + totalIncrements
+                    + " mem="
+                    + BigSortedMap.getGlobalAllocatedMemory()
+                    + " max="
+                    + BigSortedMap.getGlobalMemoryLimit());
           }
         }
-      }// end while
-    }// end run()
-    
+      } // end while
+    } // end run()
+
     private Key nextKey(Random r, byte[] buf) {
       r.nextBytes(buf);
       long ptr = UnsafeAccess.allocAndCopy(buf, 0, buf.length);
       Key k = new Key(ptr, buf.length);
       return k;
     }
-    
-  }// end IncrementRunner
- 
+  } // end IncrementRunner
 
-  
   @Test
   public void testIncrement() throws IOException {
     for (int k = 1; k <= 1; k++) {
@@ -121,7 +121,7 @@ public class AtomicIncrementTestMT {
           runners[i] = new IncrementRunner("Increment Runner#" + i);
           runners[i].start();
         }
-        for(int i = 0; i < totalThreads; i++) {
+        for (int i = 0; i < totalThreads; i++) {
           try {
             runners[i].join();
           } catch (InterruptedException e) {
@@ -129,7 +129,7 @@ public class AtomicIncrementTestMT {
             e.printStackTrace();
           }
         }
-        
+
         long end = System.currentTimeMillis();
         BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
         long total = 0;
@@ -140,15 +140,21 @@ public class AtomicIncrementTestMT {
           total += UnsafeAccess.toLong(addr);
           scanner.next();
         }
-        System.out.println("totalLoaded=" + totalLoaded + " actual="+ count);
+        System.out.println("totalLoaded=" + totalLoaded + " actual=" + count);
 
         assertEquals(totalIncrements.get(), total);
-        // CHECK THIS 
+        // CHECK THIS
         assertEquals(keys.size(), (int) count);
-        System.out.println("Time to load= "+ totalLoaded+" and to increment =" 
-            + totalIncrements+"="+(end -start)+"ms");
-        System.out.println("Total memory="+BigSortedMap.getGlobalAllocatedMemory());
-        System.out.println("Total   data="+BigSortedMap.getGlobalBlockDataSize());
+        System.out.println(
+            "Time to load= "
+                + totalLoaded
+                + " and to increment ="
+                + totalIncrements
+                + "="
+                + (end - start)
+                + "ms");
+        System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+        System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
         System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
@@ -158,5 +164,4 @@ public class AtomicIncrementTestMT {
       }
     }
   }
-  
 }

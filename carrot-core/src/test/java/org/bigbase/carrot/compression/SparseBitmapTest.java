@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.compression;
 
@@ -26,81 +22,80 @@ import org.junit.Test;
 public class SparseBitmapTest {
   int size = 4096;
 
-  
-  //@Ignore
+  // @Ignore
   @Test
   public void runTest() {
     CodecFactory factory = CodecFactory.getInstance();
     Codec codec = factory.getCodec(CodecType.LZ4);
     long src = UnsafeAccess.mallocZeroed(size);
-    long dst = UnsafeAccess.mallocZeroed(2* size);
-    
+    long dst = UnsafeAccess.mallocZeroed(2 * size);
+
     double pct = 0;
     Random r = new Random();
-    for (int i = 1; i <=100; i++) {
+    for (int i = 1; i <= 100; i++) {
       pct += 0.01;
-      UnsafeAccess.setMemory(src, size, (byte)0);
-      fill (src, pct, r);
+      UnsafeAccess.setMemory(src, size, (byte) 0);
+      fill(src, pct, r);
       int compressedSize = codec.compress(src, size, dst, 2 * size);
-      System.out.println("Sparsiness " + i +"% comp ratio=" + (((float)size)/compressedSize));
+      System.out.println("Sparsiness " + i + "% comp ratio=" + (((float) size) / compressedSize));
     }
   }
 
   @Ignore
-  @Test  
+  @Test
   public void runOneByteCompressionLZ4() {
     CodecFactory factory = CodecFactory.getInstance();
     Codec codec = factory.getCodec(CodecType.LZ4);
     long src = UnsafeAccess.mallocZeroed(size);
-    long dst = UnsafeAccess.mallocZeroed(2* size);
+    long dst = UnsafeAccess.mallocZeroed(2 * size);
     Random r = new Random();
-    
-    for (int i =0; i < size/4; i++) {
+
+    for (int i = 0; i < size / 4; i++) {
       int v = r.nextInt(256);
       UnsafeAccess.putInt(src + i * 4, v);
     }
-    
+
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4 1-byte compression ratio=" + (((float)size)/compressedSize));
+    System.out.println("LZ4 1-byte compression ratio=" + (((float) size) / compressedSize));
   }
-  
+
   @Ignore
   @Test
   public void runTwoBytesCompressionLZ4() {
     CodecFactory factory = CodecFactory.getInstance();
     Codec codec = factory.getCodec(CodecType.LZ4);
     long src = UnsafeAccess.mallocZeroed(size);
-    long dst = UnsafeAccess.mallocZeroed(2* size);
+    long dst = UnsafeAccess.mallocZeroed(2 * size);
     Random r = new Random();
-    
-    for (int i =0; i < size/4; i++) {
+
+    for (int i = 0; i < size / 4; i++) {
       int v = r.nextInt(1000);
       UnsafeAccess.putInt(src + i * 4, v);
     }
-    
+
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4 2-byte compression ratio=" + (((float)size)/compressedSize));
+    System.out.println("LZ4 2-byte compression ratio=" + (((float) size) / compressedSize));
   }
-  
+
   @Ignore
-  @Test  
+  @Test
   public void runOneByteCompressionLZ4HC() {
     CodecFactory factory = CodecFactory.getInstance();
     Codec codec = factory.getCodec(CodecType.LZ4HC);
     codec.setLevel(3);
     long src = UnsafeAccess.mallocZeroed(size);
-    long dst = UnsafeAccess.mallocZeroed(2* size);
+    long dst = UnsafeAccess.mallocZeroed(2 * size);
     Random r = new Random();
-    
-    for (int i =0; i < size/4; i++) {
+
+    for (int i = 0; i < size / 4; i++) {
       int v = r.nextInt(256);
       UnsafeAccess.putInt(src + i * 4, v);
     }
-    
+
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4HC 1-byte compression ratio=" + (((float)size)/compressedSize));
+    System.out.println("LZ4HC 1-byte compression ratio=" + (((float) size) / compressedSize));
   }
-  
+
   @Ignore
   @Test
   public void runTwoBytesCompressionLZ4HC() {
@@ -109,36 +104,34 @@ public class SparseBitmapTest {
     codec.setLevel(3);
 
     long src = UnsafeAccess.mallocZeroed(size);
-    long dst = UnsafeAccess.mallocZeroed(2* size);
+    long dst = UnsafeAccess.mallocZeroed(2 * size);
     Random r = new Random();
-    
-    for (int i =0; i < size/4; i++) {
+
+    for (int i = 0; i < size / 4; i++) {
       int v = r.nextInt(1000);
       UnsafeAccess.putInt(src + i * 4, v);
     }
-    
+
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4HC 2-byte compression ratio=" + (((float)size)/compressedSize));
+    System.out.println("LZ4HC 2-byte compression ratio=" + (((float) size) / compressedSize));
   }
-  
-  
+
   private void fill(long src, double pct, Random r) {
     // TODO Auto-generated method stub
     int max = size * 8;
-    for (int i =0 ; i < max; i++) {
+    for (int i = 0; i < max; i++) {
       double d = r.nextDouble();
       if (d < pct) {
         setBit(src, i);
       }
     }
   }
-  
+
   private void setBit(long src, long offset) {
-    int n = (int)(offset/8);
-    int pos = (int)(offset - n * 8);
+    int n = (int) (offset / 8);
+    int pos = (int) (offset - n * 8);
     byte b = UnsafeAccess.toByte(src + n);
-    b |= 1 << (7-pos);
+    b |= 1 << (7 - pos);
     UnsafeAccess.putByte(src + n, b);
-    
   }
 }

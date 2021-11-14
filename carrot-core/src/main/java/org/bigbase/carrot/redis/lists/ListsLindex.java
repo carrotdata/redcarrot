@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.lists;
 
@@ -23,23 +19,23 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * Returns the element at index in the list stored at key. The index is zero-based, so 0 means 
- * the first element, 1 the second element and so on. Negative indices can be used to designate elements 
- * starting at the tail of the list. Here, -1 means the last element, -2 means the penultimate and so forth.
- * When the value at key is not a list, an error is returned.
- * 
- * Return value
- * Bulk string reply: the requested element, or nil when index is out of range.
- * 
- * This is fully fenced, atomic implementation
- */ 
+ * Returns the element at index in the list stored at key. The index is zero-based, so 0 means the
+ * first element, 1 the second element and so on. Negative indices can be used to designate elements
+ * starting at the tail of the list. Here, -1 means the last element, -2 means the penultimate and
+ * so forth. When the value at key is not a list, an error is returned.
+ *
+ * <p>Return value Bulk string reply: the requested element, or nil when index is out of range.
+ *
+ * <p>This is fully fenced, atomic implementation
+ */
 public class ListsLindex extends Operation {
-  private static ThreadLocal<Segment> segment = new ThreadLocal<Segment>() {
-    @Override
-    protected Segment initialValue() {
-      return new Segment();
-    } 
-  };
+  private static ThreadLocal<Segment> segment =
+      new ThreadLocal<Segment>() {
+        @Override
+        protected Segment initialValue() {
+          return new Segment();
+        }
+      };
   /*
    * Buffer to load element to
    */
@@ -52,16 +48,16 @@ public class ListsLindex extends Operation {
    * Length of an element
    */
   private int length = -1;
-  
+
   /*
    * Index of an element in a list
    */
   private long index = -1;
-  
+
   public ListsLindex() {
     setReadOnly(true);
   }
-  
+
   @Override
   public boolean execute() {
     // This is a read operation
@@ -81,14 +77,14 @@ public class ListsLindex extends Operation {
     if (index < 0) {
       index += listSize;
       if (index < 0) {
-        return false; 
+        return false;
       }
     }
     if (index >= listSize) {
       return false;
     }
     Segment s = segment.get();
-    //TODO: is it safe?
+    // TODO: is it safe?
     s.setDataPointerAndParentMap(null, ptr);
     int off = Lists.findSegmentForIndex(s, index);
     if (off < 0) {
@@ -97,8 +93,9 @@ public class ListsLindex extends Operation {
     this.length = s.get(off, buffer, bufferSize);
     return true;
   }
-  /** 
+  /**
    * Set buffer to read data to
+   *
    * @param buffer buffer address
    * @param bufferSize buffer size
    */
@@ -106,23 +103,25 @@ public class ListsLindex extends Operation {
     this.buffer = buffer;
     this.bufferSize = bufferSize;
   }
-  
+
   /**
    * Set index
+   *
    * @param index
    */
   public void setIndex(long index) {
     this.index = index;
   }
-  
-  /** 
+
+  /**
    * Get length of an element or -1
+   *
    * @return length
    */
   public int getLength() {
     return this.length;
   }
-  
+
   @Override
   public void reset() {
     super.reset();

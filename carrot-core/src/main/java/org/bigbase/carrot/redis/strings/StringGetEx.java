@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.strings;
 
@@ -22,20 +18,15 @@ import org.bigbase.carrot.ops.Operation;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 /**
- * 
- * String GETEX operation.
- * Atomically gets key value and updates expire. 
- * Returns an error when key exists but does not hold a string value.
- * 
- * 
- *
+ * String GETEX operation. Atomically gets key value and updates expire. Returns an error when key
+ * exists but does not hold a string value.
  */
 public class StringGetEx extends Operation {
 
   private long bufferPtr;
   private int bufferSize;
   private int size = -1; // means did not exist
-  
+
   @Override
   public boolean execute() {
     setUpdateInPlace(true);
@@ -59,20 +50,20 @@ public class StringGetEx extends Operation {
     }
     return true;
   }
-  
+
   public void setBuffer(long ptr, int size) {
     this.bufferPtr = ptr;
     this.bufferSize = size;
   }
-  
+
   /**
    * Get value previous size
+   *
    * @return size
    */
   public int getValueLength() {
     return this.size;
   }
-  
 
   @Override
   public void reset() {

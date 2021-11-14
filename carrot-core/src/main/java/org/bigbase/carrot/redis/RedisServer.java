@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis;
 
@@ -28,78 +24,67 @@ import java.util.function.Consumer;
 
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.lists.Lists;
- 
+
 /**
- *
- *  Simple network server for MVP (minimum viable product)
- *  Scalability and performance is not a goal #1 yet
- *  
+ * Simple network server for MVP (minimum viable product) Scalability and performance is not a goal
+ * #1 yet
  */
- 
 public class RedisServer {
-  
-  /**
-   * Executor service (request handlers)
-   */
+
+  /** Executor service (request handlers) */
   static RequestHandlers service;
-  
-  /**
-   * In memory data store
-   */
+
+  /** In memory data store */
   static BigSortedMap store;
-  
-  /**
-   * I/O selector for async operations
-   */
+
+  /** I/O selector for async operations */
   static Selector selector;
-  
-  /**
-   * Server started (for testing)
-   */
+
+  /** Server started (for testing) */
   static boolean started = false;
-  
+
   /**
    * Has server started yet?
+   *
    * @return true, false
    */
   public static boolean hasStarted() {
     return started;
   }
-  
-  /**
-   * Start server in a separate thread
-   */
+
+  /** Start server in a separate thread */
   public static void start() {
-    new Thread(() -> {
-      try {
-        RedisServer.main(new String[] {});
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }).start();
-    
-    while(!hasStarted()) {
+    new Thread(
+            () -> {
+              try {
+                RedisServer.main(new String[] {});
+              } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+            })
+        .start();
+
+    while (!hasStarted()) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-      log("started="+ started);
+      log("started=" + started);
     }
   }
-  
+
   /**
-   * 
    * Network server Main method (entry point)
-   * 
+   *
    * @param args command line argument list (path to a configuration file)
    * @throws IOException
    */
   public static void main(String[] args) throws IOException {
     log("Carrot-Redis server starting ...");
-    String confFilePath = args.length > 0? args[0]: null;
+    String confFilePath = args.length > 0 ? args[0] : null;
     initStore(confFilePath);
     log("Internal store started");
 
@@ -128,33 +113,33 @@ public class RedisServer {
 
     started = true;
 
-    Consumer<SelectionKey> action = key -> {
-
-      try {
-        if (!key.isValid()) return;
-        if (key.isValid() && key.isAcceptable()) {
-          SocketChannel client = serverSocket.accept();
-          // Adjusts this channel's blocking mode to false
-          client.configureBlocking(false);
-          client.setOption(StandardSocketOptions.TCP_NODELAY, true);
-          // Operation-set bit for read operations
-          client.register(selector, SelectionKey.OP_READ);
-          log("Connection Accepted: " + client.getLocalAddress());
-        } else if (key.isValid() && key.isReadable()) {
-          // Check if it is in use
-          RequestHandlers.Attachment att = (RequestHandlers.Attachment)key.attachment();
-          if (att !=null && att.inUse()) return;
-          service.submit(key);
-        }
-      } catch (IOException e) {
-        log("Shutting down server ...");
-        service.shutdown();
-        store.dispose();
-        store = null;
-        service = null;
-        log("Bye-bye folks. See you soon :)");
-      }
-    };
+    Consumer<SelectionKey> action =
+        key -> {
+          try {
+            if (!key.isValid()) return;
+            if (key.isValid() && key.isAcceptable()) {
+              SocketChannel client = serverSocket.accept();
+              // Adjusts this channel's blocking mode to false
+              client.configureBlocking(false);
+              client.setOption(StandardSocketOptions.TCP_NODELAY, true);
+              // Operation-set bit for read operations
+              client.register(selector, SelectionKey.OP_READ);
+              log("Connection Accepted: " + client.getLocalAddress());
+            } else if (key.isValid() && key.isReadable()) {
+              // Check if it is in use
+              RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
+              if (att != null && att.inUse()) return;
+              service.submit(key);
+            }
+          } catch (IOException e) {
+            log("Shutting down server ...");
+            service.shutdown();
+            store.dispose();
+            store = null;
+            service = null;
+            log("Bye-bye folks. See you soon :)");
+          }
+        };
     // Infinite loop..
     // Keep server running
     while (true) {
@@ -162,7 +147,7 @@ public class RedisServer {
       selector.select(action);
     }
   }
- 
+
   public static void shutdown() {
     if (selector != null) {
       try {
@@ -173,7 +158,7 @@ public class RedisServer {
       }
     }
   }
-  
+
   private static void initStore(String confFilePath) {
     RedisConf conf = RedisConf.getInstance(confFilePath);
     long limit = conf.getMaxMemoryLimit();
@@ -181,7 +166,7 @@ public class RedisServer {
     if (store == null) {
       store = new BigSortedMap(limit);
     }
-    //TODO: Load data from a configured snapshot directory
+    // TODO: Load data from a configured snapshot directory
     BigSortedMap.setCompressionCodec(conf.getCompressionCodec());
     // Register custom memory deallocator for LIST data type
     Lists.registerDeallocator();
@@ -197,9 +182,8 @@ public class RedisServer {
   static void log(String str) {
     System.out.println(str);
   }
-  
+
   static void logError(String str) {
     System.err.println(str);
   }
 }
-

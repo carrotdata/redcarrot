@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot;
 
@@ -30,35 +26,34 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Test;
 
-public class DataBlockLargeKVsTest extends DataBlockTest{
+public class DataBlockLargeKVsTest extends DataBlockTest {
 
-  
-  protected ArrayList<Key> fillDataBlock (DataBlock b) throws RetryOperationException {
+  protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
     ArrayList<Key> keys = new ArrayList<Key>();
     Random r = new Random();
     int maxSize = 4096;
     boolean result = true;
-    while(result == true) {
+    while (result == true) {
       int len = r.nextInt(maxSize) + 1;
       byte[] key = new byte[len];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(len);
       UnsafeAccess.copy(key, 0, ptr, len);
-      result = b.put(key, 0, key.length, key, 0, key.length,  -1);
-      if(result) {
+      result = b.put(key, 0, key.length, key, 0, key.length, -1);
+      if (result) {
         keys.add(new Key(ptr, len));
       }
     }
-    System.out.println("M: "+ BigSortedMap.getGlobalAllocatedMemory() +" D:"+BigSortedMap.getGlobalDataSize());
+    System.out.println(
+        "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
     return keys;
   }
-  
+
   /**
-   * 
-   * 1. K & V are both in data block - we do not test this
-   * 2. K & V both external, reducing value size should keep them both external
-   * 3. K  is in data block , V  is external, reducing V size to 12 bytes and less will guarantee
-   *    that there will be no overflow in a data block and new V will be kept in a data block 
+   * 1. K & V are both in data block - we do not test this 2. K & V both external, reducing value
+   * size should keep them both external 3. K is in data block , V is external, reducing V size to
+   * 12 bytes and less will guarantee that there will be no overflow in a data block and new V will
+   * be kept in a data block
    */
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
@@ -96,15 +91,14 @@ public class DataBlockLargeKVsTest extends DataBlockTest{
     }
   }
   /**
-   * 
-   * 1. K & V are both in data block and > 12 - push V out of data block
-   * 2. K & V both external, increasing value size should keep them both external
-   * 3. K  is in data block , V  is external, increasing V size is safe 
+   * 1. K & V are both in data block and > 12 - push V out of data block 2. K & V both external,
+   * increasing value size should keep them both external 3. K is in data block , V is external,
+   * increasing V size is safe
    */
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
     System.out.println("testOverwriteLargerValueSize- Large KVs");
-    
+
     for (int i = 0; i < 1000; i++) {
       Random r = new Random();
       DataBlock b = getDataBlock();

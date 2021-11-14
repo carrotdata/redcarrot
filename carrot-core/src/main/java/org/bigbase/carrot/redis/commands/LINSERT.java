@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -44,15 +40,18 @@ public class LINSERT implements RedisCommand {
     int flagSize = UnsafeAccess.toInt(inDataPtr);
     inDataPtr += Utils.SIZEOF_INT;
     long flagPtr = inDataPtr;
-    if (Utils.compareTo(BEFORE_FLAG, BEFORE_LENGTH, flagPtr, flagSize) == 0 ||
-        Utils.compareTo(BEFORE_FLAG_LOWER, BEFORE_LENGTH, flagPtr, flagSize) == 0) {
+    if (Utils.compareTo(BEFORE_FLAG, BEFORE_LENGTH, flagPtr, flagSize) == 0
+        || Utils.compareTo(BEFORE_FLAG_LOWER, BEFORE_LENGTH, flagPtr, flagSize) == 0) {
       after = false;
-    } else if (Utils.compareTo(AFTER_FLAG, AFTER_LENGTH, flagPtr, flagSize) == 0 ||
-        Utils.compareTo(AFTER_FLAG_LOWER, AFTER_LENGTH, flagPtr, flagSize) == 0) { 
+    } else if (Utils.compareTo(AFTER_FLAG, AFTER_LENGTH, flagPtr, flagSize) == 0
+        || Utils.compareTo(AFTER_FLAG_LOWER, AFTER_LENGTH, flagPtr, flagSize) == 0) {
       after = true;
     } else {
-      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT, 
-        ": "+ Utils.toString(flagPtr, flagSize));
+      Errors.write(
+          outBufferPtr,
+          Errors.TYPE_GENERIC,
+          Errors.ERR_WRONG_COMMAND_FORMAT,
+          ": " + Utils.toString(flagPtr, flagSize));
       return;
     }
     inDataPtr += flagSize;
@@ -66,7 +65,7 @@ public class LINSERT implements RedisCommand {
     inDataPtr += Utils.SIZEOF_INT;
     long elemPtr = inDataPtr;
     inDataPtr += elemSize;
-    long size = Lists.LINSERT(map, keyPtr, keySize, after, pivotPtr, pivotSize, elemPtr, elemSize);    
+    long size = Lists.LINSERT(map, keyPtr, keySize, after, pivotPtr, pivotSize, elemPtr, elemSize);
     INT_REPLY(outBufferPtr, size);
   }
 }

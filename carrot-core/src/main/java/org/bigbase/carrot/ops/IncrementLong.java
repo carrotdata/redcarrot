@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.ops;
 
@@ -21,36 +17,35 @@ import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
-/**
- * This example of specific Update - atomic counter 
- * 
- *
- */
+/** This example of specific Update - atomic counter */
 public class IncrementLong extends Operation {
-  
-  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
-    @Override
-    protected Long initialValue() {
-      return UnsafeAccess.malloc(Utils.SIZEOF_LONG);
-    }
-  };
-  
+
+  static ThreadLocal<Long> buffer =
+      new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(Utils.SIZEOF_LONG);
+        }
+      };
+
   long value;
-  
+
   public IncrementLong() {
     setReadOnly(true);
   }
-  
+
   /**
    * Set increment value
+   *
    * @param v value
    */
   public void setIncrement(long v) {
     this.value = v;
   }
-  
+
   /**
    * Get increment value
+   *
    * @return
    */
   public long getIncrement() {
@@ -58,19 +53,20 @@ public class IncrementLong extends Operation {
   }
   /**
    * Get value after increment
+   *
    * @return value after increment
    */
   public long getValue() {
     return this.value;
   }
-  
+
   @Override
   public void reset() {
     super.reset();
     value = 0;
     setReadOnly(true);
   }
-  
+
   @Override
   public boolean execute() {
     long v = 0;

@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.sets;
 
@@ -31,27 +27,24 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
-
 /**
- * This read-modify-write mutation is executed atomically and isolated
- * It deletes element from a given set, defined by a Key
- * 
- *
+ * This read-modify-write mutation is executed atomically and isolated It deletes element from a
+ * given set, defined by a Key
  */
-public class SetDelete extends Operation{
+public class SetDelete extends Operation {
   // TODO: use own keyArena
 
   BigSortedMap map;
   boolean checkForEmpty;
-  
+
   public SetDelete() {
     setFloorKey(true);
   }
-  
+
   public boolean checkForEmpty() {
     return this.checkForEmpty;
   }
-  
+
   @Override
   public void reset() {
     super.reset();
@@ -59,14 +52,14 @@ public class SetDelete extends Operation{
     this.map = null;
     this.checkForEmpty = false;
   }
-  
+
   public void setMap(BigSortedMap map) {
     this.map = map;
   }
-  
+
   @Override
   public boolean execute() {
-    if (foundRecordAddress <=0) {
+    if (foundRecordAddress <= 0) {
       return false;
     }
     // check prefix
@@ -77,14 +70,14 @@ public class SetDelete extends Operation{
     }
     long foundKeyAddress = DataBlock.keyAddress(foundRecordAddress);
     int setKeySize = setKeySizeWithPrefix - Commons.KEY_PREFIX_SIZE;
-    boolean isFirstKey = isFirstKey(foundKeyAddress, foundKeySize, setKeySize); 
+    boolean isFirstKey = isFirstKey(foundKeyAddress, foundKeySize, setKeySize);
 
     // Prefix keys must be equals
-    if (Utils.compareTo(keyAddress, setKeySizeWithPrefix, foundKeyAddress, 
-      setKeySizeWithPrefix) != 0) {
+    if (Utils.compareTo(keyAddress, setKeySizeWithPrefix, foundKeyAddress, setKeySizeWithPrefix)
+        != 0) {
       return false;
     }
-    
+
     long elementPtr = elementAddressFromKey(keyAddress);
     int elementSize = elementSizeFromKey(keyAddress, keySize);
     // First two bytes are number of elements in a value
@@ -107,28 +100,30 @@ public class SetDelete extends Operation{
     long ptr = Sets.valueArena.get();
     // TODO: check this
     UnsafeAccess.copy(valueAddress, ptr, addr - valueAddress);
-    UnsafeAccess.copy(addr + toCut, ptr + addr - valueAddress, valueSize - toCut - (addr - valueAddress));
-    
+    UnsafeAccess.copy(
+        addr + toCut, ptr + addr - valueAddress, valueSize - toCut - (addr - valueAddress));
+
     // set # of updates to 1
     this.updatesCount = 1;
     this.keys[0] = foundKeyAddress;
     this.keySizes[0] = foundKeySize;
     this.values[0] = ptr;
     this.valueSizes[0] = valueSize - toCut;
-    if (numElements == 0 && !isFirstKey/*canDelete(foundKeyAddress, foundKeySize)*/) {
+    if (numElements == 0 && !isFirstKey /*canDelete(foundKeyAddress, foundKeySize)*/) {
       // Delete Key, b/c its empty
-      //TODO - this code leaves last key, which needs to be deleted explicitly
+      // TODO - this code leaves last key, which needs to be deleted explicitly
       this.updateTypes[0] = true;
     }
     return true;
   }
-  
+
   /**
-   * We can delete K-V only when it is empty, not a first key (ends with '\0' 
-   * or (TODO) first and the only K-V for the set)
+   * We can delete K-V only when it is empty, not a first key (ends with '\0' or (TODO) first and
+   * the only K-V for the set)
+   *
    * @param foundKeyAddress
    * @return true if can be deleted, false -otherwise
-   * @throws IOException 
+   * @throws IOException
    */
   // private boolean canDelete(long foundKeyAddress, int foundKeySize) {
   // if (!firstKVinType(foundKeyAddress, foundKeySize)) {

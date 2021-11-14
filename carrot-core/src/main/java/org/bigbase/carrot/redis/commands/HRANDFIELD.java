@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -52,24 +48,33 @@ public class HRANDFIELD implements RedisCommand {
       if (numArgs > 3) {
         int size = UnsafeAccess.toInt(inDataPtr);
         inDataPtr += Utils.SIZEOF_INT;
-        if (Utils.compareTo(WITHVALUES_FLAG, WITHVALUES_LENGTH, inDataPtr, size) == 0 ||
-            Utils.compareTo(WITHVALUES_FLAG_LOWER, WITHVALUES_LENGTH, inDataPtr, size) == 0) {
+        if (Utils.compareTo(WITHVALUES_FLAG, WITHVALUES_LENGTH, inDataPtr, size) == 0
+            || Utils.compareTo(WITHVALUES_FLAG_LOWER, WITHVALUES_LENGTH, inDataPtr, size) == 0) {
           withValues = true;
         } else {
           throw new IllegalArgumentException(Utils.toString(inDataPtr, size));
         }
       }
-      int size = (int) Hashes.HRANDFIELD(map, keyPtr, keySize, count, withValues,
-        outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
-        outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
+      int size =
+          (int)
+              Hashes.HRANDFIELD(
+                  map,
+                  keyPtr,
+                  keySize,
+                  count,
+                  withValues,
+                  outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
+                  outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
       if (numArgs == 2) {
         // Bulk string reply
         // We will never get null here
         UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.BULK_STRING.ordinal());
 
         int num = UnsafeAccess.toInt(outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
-        int strLen = num == 0 ? -1
-            : Utils.readUVInt(outBufferPtr + Utils.SIZEOF_BYTE + 2 * Utils.SIZEOF_INT);
+        int strLen =
+            num == 0
+                ? -1
+                : Utils.readUVInt(outBufferPtr + Utils.SIZEOF_BYTE + 2 * Utils.SIZEOF_INT);
         if (strLen == -1) {
           // NULL
           UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, strLen);
@@ -77,24 +82,28 @@ public class HRANDFIELD implements RedisCommand {
           int sizeStrLen = Utils.sizeUVInt(strLen);
           // Write string length
           UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, strLen);
-          UnsafeAccess.copy(outBufferPtr + Utils.SIZEOF_BYTE + 2 * Utils.SIZEOF_INT + sizeStrLen,
-            outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT, strLen);
+          UnsafeAccess.copy(
+              outBufferPtr + Utils.SIZEOF_BYTE + 2 * Utils.SIZEOF_INT + sizeStrLen,
+              outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
+              strLen);
         }
       } else {
         // Array reply
         UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.VARRAY.ordinal());
         // Array serialized size
-        UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE,
-          size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
+        UnsafeAccess.putInt(
+            outBufferPtr + Utils.SIZEOF_BYTE, size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
       }
       // All data is in the out buffer, including number of elements
     } catch (NumberFormatException e) {
-      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT,
-        ": " + e.getMessage());
+      Errors.write(
+          outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT, ": " + e.getMessage());
     } catch (IllegalArgumentException ee) {
-      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
-        ": " + ee.getMessage());
+      Errors.write(
+          outBufferPtr,
+          Errors.TYPE_GENERIC,
+          Errors.ERR_WRONG_COMMAND_FORMAT,
+          ": " + ee.getMessage());
     }
-
   }
 }

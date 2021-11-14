@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -30,7 +26,7 @@ public class BITCOUNT implements RedisCommand {
 
     try {
       int numArgs = UnsafeAccess.toInt(inDataPtr);
-      if (numArgs != 2  &&  numArgs != 4) {
+      if (numArgs != 2 && numArgs != 4) {
         Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_ARGS_NUMBER);
         return;
       }
@@ -50,14 +46,14 @@ public class BITCOUNT implements RedisCommand {
         int valSize = UnsafeAccess.toInt(inDataPtr);
         inDataPtr += Utils.SIZEOF_INT;
         long valPtr = inDataPtr;
-        start =  Utils.strToLong(valPtr, valSize); 
+        start = Utils.strToLong(valPtr, valSize);
         inDataPtr += valSize;
         valSize = UnsafeAccess.toInt(inDataPtr);
         inDataPtr += Utils.SIZEOF_INT;
         valPtr = inDataPtr;
-        end = Utils.strToLong(valPtr, valSize); 
+        end = Utils.strToLong(valPtr, valSize);
       }
-      
+
       long num = Strings.BITCOUNT(map, keyPtr, keySize, start, end);
 
       // INTEGER reply - we do not check buffer size here - should be larger than 5
@@ -67,7 +63,7 @@ public class BITCOUNT implements RedisCommand {
       if (msg == null) {
         Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT);
       } else {
-        Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT,": " + msg);        
+        Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT, ": " + msg);
       }
     }
   }

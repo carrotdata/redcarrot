@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.commands;
 
@@ -23,7 +19,7 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 public class GETEX implements RedisCommand {
-  
+
   @Override
   public void execute(BigSortedMap map, long inDataPtr, long outBufferPtr, int outBufferSize) {
     try {
@@ -48,18 +44,30 @@ public class GETEX implements RedisCommand {
         int num = ttlSectionSize(inDataPtr, true, numArgs - argsCount);
         argsCount += num;
         if (argsCount != numArgs) {
-          Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT, ": " + 
-              Utils.toString(inDataPtr + Utils.SIZEOF_INT, UnsafeAccess.toInt(inDataPtr)));
+          Errors.write(
+              outBufferPtr,
+              Errors.TYPE_GENERIC,
+              Errors.ERR_WRONG_COMMAND_FORMAT,
+              ": " + Utils.toString(inDataPtr + Utils.SIZEOF_INT, UnsafeAccess.toInt(inDataPtr)));
           return;
         }
         size =
-          Strings.GETEX(map, keyPtr, keySize, expire, outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
-            outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
+            Strings.GETEX(
+                map,
+                keyPtr,
+                keySize,
+                expire,
+                outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
+                outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
       } else {
         // Pure GET
         size =
-            Strings.GET(map, keyPtr, keySize, outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
-              outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
+            Strings.GET(
+                map,
+                keyPtr,
+                keySize,
+                outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
+                outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
       }
       // Bulk String reply
       UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.BULK_STRING.ordinal());
@@ -67,13 +75,21 @@ public class GETEX implements RedisCommand {
         UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, (int) size);
       } else {
         // Buffer is small
-        UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE,
-          (int) size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
+        UnsafeAccess.putInt(
+            outBufferPtr + Utils.SIZEOF_BYTE, (int) size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
       }
-    } catch(NumberFormatException ee) {
-      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT, ": " + ee.getMessage());
+    } catch (NumberFormatException ee) {
+      Errors.write(
+          outBufferPtr,
+          Errors.TYPE_GENERIC,
+          Errors.ERR_WRONG_NUMBER_FORMAT,
+          ": " + ee.getMessage());
     } catch (IllegalArgumentException e) {
-      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT, ": " + e.getMessage());
-    } 
+      Errors.write(
+          outBufferPtr,
+          Errors.TYPE_GENERIC,
+          Errors.ERR_WRONG_COMMAND_FORMAT,
+          ": " + e.getMessage());
+    }
   }
 }

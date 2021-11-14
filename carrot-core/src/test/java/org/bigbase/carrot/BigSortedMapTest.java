@@ -1,19 +1,15 @@
 /**
- *    Copyright (C) 2021-present Carrot, Inc.
+ * Copyright (C) 2021-present Carrot, Inc.
  *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the Server Side Public License, version 1,
- *    as published by MongoDB, Inc.
+ * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * Server Side Public License, version 1, as published by MongoDB, Inc.
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    Server Side Public License for more details.
+ * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Server Side Public License for more details.
  *
- *    You should have received a copy of the Server Side Public License
- *    along with this program. If not, see
- *    <http://www.mongodb.com/licensing/server-side-public-license>.
- *
+ * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot;
 
@@ -32,8 +28,7 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
 
-
-//TODO: MEMORY LEAK
+// TODO: MEMORY LEAK
 public class BigSortedMapTest {
 
   BigSortedMap map;
@@ -41,7 +36,7 @@ public class BigSortedMapTest {
   long MAX_ROWS = 1000000;
 
   static {
-    //UnsafeAccess.debug = true;
+    // UnsafeAccess.debug = true;
   }
 
   long countRecords() throws IOException {
@@ -87,8 +82,9 @@ public class BigSortedMapTest {
     System.out.println("\nTotal memory     =" + BigSortedMap.getGlobalAllocatedMemory());
     System.out.println("Total   data       =" + BigSortedMap.getGlobalDataSize());
     System.out.println("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
-    System.out.println("Compression  ratio ="
-        + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
+    System.out.println(
+        "Compression  ratio ="
+            + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
     System.out.println();
     assertEquals(totalLoaded, scanned);
   }
@@ -101,7 +97,7 @@ public class BigSortedMapTest {
     testDeleteUndeleted();
     testExists();
     testPutGet();
-    
+
     // This call must be the last
     testFlushAll();
   }
@@ -153,7 +149,6 @@ public class BigSortedMapTest {
     assertEquals(totalLoaded - 100, countRecords());
     undelete(keys);
     assertEquals(totalLoaded, countRecords());
-
   }
 
   @Ignore
@@ -182,7 +177,6 @@ public class BigSortedMapTest {
     }
     long end = System.currentTimeMillis();
     System.out.println("Time to get " + totalLoaded + " =" + (end - start) + "ms");
-
   }
 
   @Ignore
@@ -206,7 +200,7 @@ public class BigSortedMapTest {
     System.out.println("testFlushAll");
 
     map.flushAll();
-    
+
     // Check that all keys have been deleted
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + (i)).getBytes();
@@ -217,7 +211,7 @@ public class BigSortedMapTest {
       assertEquals(false, res);
     }
   }
-  
+
   private List<byte[]> delete(int num) {
     Random r = new Random();
     int numDeleted = 0;
@@ -260,5 +254,4 @@ public class BigSortedMapTest {
       assertTrue(res);
     }
   }
-
 }
