@@ -29,23 +29,25 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 /**
- * Records are lexicographically sorted Format: <KV>+ <KV> : 0 .. 1 - key size (2 bytes: max key
- * size = 32K) 2 .. 3 - value size (2 bytes: max embedded value size = 32K if value size == -1,
- * value is stored externally, If key size == -1, both key and value are stored externally. We keep
- * embedded 8 bytes for value in this case: 8 bytes - address of K-V pair Format for external K-V:
- * 4-4-key-value (4 bytes- key/value sizes)
+ * Records are lexicographically sorted. Format:<br> 
+ * <KV>+ <br> 
+ * <KV> : <br>
+ * 0 .. 1 - key size (2 bytes: max key size = 32K)<br> 
+ * 2 .. 3 - value size (2 bytes: max embedded value size = 32K<br> 
+ * if value size == -1, value is stored externally, If key size == -1, <br>
+ * both key and value are stored externally. We keep embedded 8 bytes for value <br>
+ * in this case: 8 bytes - address of K-V pair Format for external K-V:<br>
+ * 4-key-value (4 bytes- key/value sizes)
  *
  * <p>We store K-V externally if sizeOf(Key) + sizeOf(value) + RECORD_TOTAL_OVERHEAD > 0.5 *
- * MAX_BLOCK_SIZE
+ * MAX_BLOCK_SIZE <br>
  *
- * <p><EXPIRATION> (8 bytes time in ms: 0 - never expires) <EVICTION> (8 bytes - used by eviction
- * algorithm : LRU, LFU etc) DEPRECATED <KEY> <SEQUENCEID> - 8 bytes - DEPRECATED <TYPE/DATA_TYPE> -
- * 1 byte: <VALUE> For ordering we use combination of <KEY><SEQUENCEID><TYPE> (DEPRECATED) - <KEY>
- * TODO: 1. Add support for type - DONE 2. Add support for sequenceid - DONE 3. Add support for
- * expiration field and API - DONE 4. Add support for eviction field - DONE 5 Optimize storeFence
- * usage - make sure we call it once before we release write lock We need sequenceId & type to
- * support snapshots & tx 6. check usage blockKeyLength & blockValueLength 7. Code
- * REUSE/DECOMPOSITION (IMPORTANT) 8. Implement Append (as Get/Delete/Put?)
+ * <p> <br>
+ * <EXPIRATION> (8 bytes time in milliseconds: 0 - never expires) <br>
+ * <KEY> <br>
+ * <TYPE> - DEPRECATED <br> 
+ * <VALUE> <br> For ordering we use <KEY><TYPE>
+ * 
  */
 // @SuppressWarnings("unused")
 public final class DataBlock {

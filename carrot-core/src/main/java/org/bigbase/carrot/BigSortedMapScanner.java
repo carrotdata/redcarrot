@@ -21,10 +21,9 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * Scanner implementation TODO Scanner w/o thread locals WARNING: we can not create multiple
- * scanners in a single thread
- *
- * @author jenium65
+ * Scanner implementation <br>
+ * TODO Scanner w/o thread locals <br>
+ * WARNING: we can not create multiple  scanners in a single thread <br>
  */
 public class BigSortedMapScanner extends Scanner {
 
@@ -34,7 +33,7 @@ public class BigSortedMapScanner extends Scanner {
   private long stopRowPtr;
   private int stopRowLength;
   private long nextBlockFirstKey;
-  private int nextBlockFirstKeySize;
+  //private int nextBlockFirstKeySize;
   private long toFree;
   private DataBlockScanner blockScanner;
   private IndexBlockScanner indexScanner;

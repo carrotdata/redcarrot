@@ -19,8 +19,9 @@ import java.io.IOException;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * Thread unsafe implementation Index scanner scans block scanners Precautions should be taken on
- * each next() to make sure that index block is still valid TODO: stopRow logic
+ * Thread unsafe implementation Index scanner scans block scanners Precautions <br>
+ * should be taken on each next() to make sure that index block is still valid <br>
+ * TODO: stopRow logic 
  */
 public final class IndexBlockScanner implements Closeable {
 

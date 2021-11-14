@@ -28,16 +28,23 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * TODO: 1. minimize block overhead 2. Check logic 3. Do not keep address, but index in a array of
- * addresses (?)
+ * TODO: <br> 
+ * 1. minimize block overhead <br>
+ * 2. Check logic 3. Do not keep address, but index in a array of
+ * addresses (?) <br>
  *
  * <p>Records are sorted Format: [DATA_BLOCK_STATIC_PREFIX][BLOCK_START_KEY]
  *
  * <p>TODO: reconsider overhead [DATA_BLOCK_STATIC_PREFIX] - 19 bytes
  *
- * <p>dataPtr (8 bytes) blockSize (2 bytes) dataSize (2 bytes) numRecords (2 bytes)
- * seqNumberSplitOrMerge (1 byte) - no need for single thread version aux (1 byte) numExternalAllocs
- * (2 bytes) numCustomAllocs (2 bytes)
+ * <p>dataPtr (8 bytes) <br>
+ * blockSize (2 bytes) <br>
+ * dataSize (2 bytes) <br>
+ * numRecords (2 bytes) <br>
+ * seqNumberSplitOrMerge (1 byte) - no need for single thread version <br>
+ * aux (1 byte) <br>
+ * numExternalAllocs (2 bytes) <br> 
+ * numCustomAllocs (2 bytes) <br>
  *
  * <p>[BLOCK_START_KEY] = [len][key] [len] - 2 bytes [key] - key data [version] - 8 bytes [type] - 1
  * byte (DELETE=0, PUT =1)
