@@ -677,27 +677,27 @@ public class StringsTest {
 
     int size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     double value = Utils.strToDouble(buffer, size);
-    assertEquals(10d, value);
+    assertEquals(10d, value, 0.0);
 
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, 100d);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(110d, value);
+    assertEquals(110d, value, 0.0);
 
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, 1000d);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(1110d, value);
+    assertEquals(1110d, value, 0.0);
 
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, 10000d);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(11110d, value);
+    assertEquals(11110d, value, 0.0);
 
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, -11110d);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(0d, value);
+    assertEquals(0d, value, 0.0);
 
     double incr = Double.MAX_VALUE / 2;
     double newValue = value + incr;
@@ -705,7 +705,7 @@ public class StringsTest {
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, incr);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(newValue, value);
+    assertEquals(newValue, value, 0.0);
 
     incr = -Double.MAX_VALUE / 2;
     newValue = value + incr;
@@ -713,7 +713,7 @@ public class StringsTest {
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, incr);
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     value = Utils.strToDouble(buffer, size);
-    assertEquals(newValue, value);
+    assertEquals(newValue, value, 0.0);
   }
 
   @Ignore
