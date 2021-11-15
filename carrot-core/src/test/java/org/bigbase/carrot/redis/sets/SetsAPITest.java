@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.sets;
 
 import static org.junit.Assert.assertEquals;
@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -32,6 +34,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class SetsAPITest {
+
+  private static final Logger log = LogManager.getLogger(SetsAPITest.class);
+
   BigSortedMap map;
   int valSize = 8;
   long n = 1000;
@@ -44,12 +49,11 @@ public class SetsAPITest {
       list.add(m);
       int res = Sets.SADD(map, key, m);
       if (res == 0) {
-        /*DEBUG*/ System.out.println(
-            "Can not add " + m + " it exists=" + Sets.SISMEMBER(map, key, m));
+        /*DEBUG*/ log.debug("Can not add " + m + " it exists=" + Sets.SISMEMBER(map, key, m));
       }
       assertEquals(1, res);
       if (i % 100000 == 0) {
-        System.out.println("Loaded " + i);
+        log.debug("Loaded " + i);
       }
     }
     return list;
@@ -59,9 +63,9 @@ public class SetsAPITest {
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -72,9 +76,9 @@ public class SetsAPITest {
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -85,9 +89,9 @@ public class SetsAPITest {
   @Test
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 10; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -145,7 +149,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testSimpleCalls() throws IOException {
-    System.out.println("Test Sets ADD/ISMEMBER/MEMBERS API calls");
+    log.debug("Test Sets ADD/ISMEMBER/MEMBERS API calls");
     // Adding to set which does not exists
     int result = Sets.SADD(map, "key", "member1");
     assertEquals(1, result);
@@ -222,7 +226,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testMoveOperation() {
-    System.out.println("Test Sets SMOVE API call");
+    log.debug("Test Sets SMOVE API call");
     // Add multiple members
     int result =
         Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
@@ -268,7 +272,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testMultipleMembersOperation() {
-    System.out.println("Test Sets SMISMEMBER API call");
+    log.debug("Test Sets SMISMEMBER API call");
     // Add multiple members
     int result =
         Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
@@ -313,7 +317,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testSscanNoRegex() {
-    System.out.println("Test Sets SSCAN API call w/o regex pattern");
+    log.debug("Test Sets SSCAN API call w/o regex pattern");
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -363,7 +367,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testCardinalityPerformance() {
-    System.out.println("Test Sets SCARD API call performance");
+    log.debug("Test Sets SCARD API call performance");
     // Load X elements
     int X = 200000;
     String key = "key";
@@ -379,7 +383,7 @@ public class SetsAPITest {
     }
     long end = System.currentTimeMillis();
 
-    System.out.println("total=" + total + " time for " + (1000 * X) + "=" + (end - start) + "ms");
+    log.debug("total=" + total + " time for " + (1000 * X) + "=" + (end - start) + "ms");
   }
 
   private int countMatches(List<String> list, int startIndex, String regex) {
@@ -396,7 +400,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testSscanWithRegex() {
-    System.out.println("Test Sets SSCAN API call with regex pattern");
+    log.debug("Test Sets SSCAN API call with regex pattern");
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -448,7 +452,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testSetScannerSkipSmall() throws IOException {
-    System.out.println("Test Sets skip API call (small)");
+    log.debug("Test Sets skip API call (small)");
     // Load X elements
     int X = 100;
     String key = "key";
@@ -495,7 +499,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testSetScannerSkipLarge() throws IOException {
-    System.out.println("Test Sets skip API call (large) ");
+    log.debug("Test Sets skip API call (large) ");
     // Load X elements
     int X = 100000;
     String key = "key";
@@ -552,7 +556,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testScannerSkipRandom() throws IOException {
-    System.out.println("Test Sets skip API call (Random) ");
+    log.debug("Test Sets skip API call (Random) ");
     // Load N elements
     int N = 1000000;
     int numIter = 1000;
@@ -584,18 +588,17 @@ public class SetsAPITest {
         }
       }
       if (i % 100 == 0) {
-        System.out.println("Skipped " + i);
+        log.debug("Skipped " + i);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(
-        numIter + " random skips for " + N + " cardinality set time=" + (end - start) + "ms");
+    log.debug(numIter + " random skips for " + N + " cardinality set time=" + (end - start) + "ms");
   }
 
   @Ignore
   @Test
   public void testScannerSkipRandomSingleScanner() throws IOException {
-    System.out.println("Test Sets skip API call (Random Single Scanner) ");
+    log.debug("Test Sets skip API call (Random Single Scanner) ");
     // Load N elements
     int N = 1000000;
     int numIter = 10000;
@@ -628,11 +631,11 @@ public class SetsAPITest {
         }
       }
       if (i % 100 == 0) {
-        System.out.println("Skipped " + i);
+        log.debug("Skipped " + i);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         numIter
             + " random skips x"
             + 10
@@ -646,7 +649,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testScannerRandomMembersEdgeCases() throws IOException {
-    System.out.println("Test Sets SRANDMEMBER API call (Edge cases)");
+    log.debug("Test Sets SRANDMEMBER API call (Edge cases)");
     // Load N elements
     int N = 10000;
     String key = "key";
@@ -680,7 +683,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testScannerRandomMembers() throws IOException {
-    System.out.println("Test Sets SRANDMEMBER API call");
+    log.debug("Test Sets SRANDMEMBER API call");
     // Load N elements
     int N = 100000;
     int numIter = 1000;
@@ -696,11 +699,11 @@ public class SetsAPITest {
       assertTrue(Utils.unique(result));
       assertTrue(list.containsAll(result));
       if (i % 100 == 0) {
-        System.out.println("Skipped " + i);
+        log.debug("Skipped " + i);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
 
     // Check negatives
@@ -710,18 +713,18 @@ public class SetsAPITest {
       assertEquals(10, result.size());
       assertTrue(list.containsAll(result));
       if (i % 100 == 0) {
-        System.out.println("Skipped " + i);
+        log.debug("Skipped " + i);
       }
     }
     end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
   }
 
   @Ignore
   @Test
   public void testScannerRandomMembersDeleteEdgeCases() throws IOException {
-    System.out.println("Test Sets SPOP API call (Edge cases)");
+    log.debug("Test Sets SPOP API call (Edge cases)");
     // Load N elements
     int N = 10000;
     String key = "key";
@@ -754,7 +757,7 @@ public class SetsAPITest {
   @Ignore
   @Test
   public void testScannerRandomMembersDelete() throws IOException {
-    System.out.println("Test Sets SPOP API call");
+    log.debug("Test Sets SPOP API call");
     // Load N elements
     int N = 100000;
     int numIter = 100;
@@ -775,11 +778,11 @@ public class SetsAPITest {
         assertEquals(0, res);
       }
       if (i % 100 == 0) {
-        System.out.println("Skipped " + i);
+        log.debug("Skipped " + i);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
 
     // Check negatives
@@ -794,11 +797,11 @@ public class SetsAPITest {
     //        assertEquals(0, res);
     //      }
     //      if (i % 100 == 0) {
-    //        System.out.println("Skipped " + i);
+    //        log.debug("Skipped " + i);
     //      }
     //    }
     //    end = System.currentTimeMillis();
-    //    System.out.println(numIter + " random members for "+ N +" cardinality set time="+ (end -
+    //    log.debug(numIter + " random members for "+ N +" cardinality set time="+ (end -
     // start)+"ms");
   }
 

@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.geoip;
 
 import java.io.DataInputStream;
@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.sets.Sets;
 import org.bigbase.carrot.util.Bytes;
@@ -28,6 +30,9 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import redis.clients.jedis.Jedis;
 
 public class CityBlock {
+
+  private static final Logger log = LogManager.getLogger(CityBlock.class);
+
   private String address;
   private long netAddress;
   private int id;
@@ -59,7 +64,7 @@ public class CityBlock {
       list.add(block);
       total++;
       if (total % 100000 == 0) {
-        System.out.println("Loaded " + total);
+        log.debug("Loaded " + total);
       }
     }
     dis.close();
@@ -113,10 +118,10 @@ public class CityBlock {
   public static void main(String[] args) throws IOException {
     List<CityBlock> list = load(args[0]);
 
-    System.out.println("Loaded " + list.size());
+    log.debug("Loaded " + list.size());
 
     for (int i = 0; i < 20; i++) {
-      System.out.println(list.get(i));
+      log.debug(list.get(i));
     }
   }
 }

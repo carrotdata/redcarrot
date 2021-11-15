@@ -1,17 +1,20 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.compression.lz4;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +25,8 @@ import java.nio.channels.FileChannel;
 
 public class LZ4Bench {
 
+  private static final Logger log = LogManager.getLogger(LZ4Bench.class);
+
   /**
    * @param args
    * @throws IOException
@@ -30,7 +35,7 @@ public class LZ4Bench {
     String fileName = args[0];
 
     File f = new File(fileName);
-    System.out.println("Testing " + args[0]);
+    log.debug("Testing " + args[0]);
     int fileSize = (int) f.length();
 
     ByteBuffer src = ByteBuffer.allocateDirect(fileSize);
@@ -44,13 +49,13 @@ public class LZ4Bench {
     while ((read += channel.read(src)) < fileSize)
       ;
 
-    System.out.println("Read " + read + " bytes");
+    log.debug("Read " + read + " bytes");
 
     src.flip();
     long start = System.currentTimeMillis();
     int compressedSize = LZ4.compress(src, dst);
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         "Original size="
             + fileSize
             + " comp size="

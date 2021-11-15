@@ -15,6 +15,8 @@ package org.bigbase.carrot.examples.adserver;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -47,6 +49,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class TestCarrotAdServerAdsPerf {
 
+  private static final Logger log = LogManager.getLogger(TestCarrotAdServerAdsPerf.class);
+
   static final int MAX_ADS = 1000;
   static final int MAX_SITES = 10000;
 
@@ -57,19 +61,19 @@ public class TestCarrotAdServerAdsPerf {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -79,12 +83,12 @@ public class TestCarrotAdServerAdsPerf {
     doAdsSitePerf(map);
     doAdsSiteRank(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println("Total memory=" + memory);
+    log.debug("Total memory=" + memory);
     map.dispose();
   }
 
   private static void doAdsSiteRank(BigSortedMap map) {
-    System.out.println("Loading AdsSiteRank data");
+    log.debug("Loading AdsSiteRank data");
     String key = "ads:sites:rank";
     Random r = new Random();
     long count = 0;
@@ -109,17 +113,17 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("AdsSiteRank :" + count);
+          log.debug("AdsSiteRank :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doAdsSitePerf(BigSortedMap map) {
-    System.out.println("Loading Ads-Site Performance data");
+    log.debug("Loading Ads-Site Performance data");
     String key = "ads:site:perf:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -156,13 +160,13 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtrs[1]);
 
         if (count % 100000 == 0) {
-          System.out.println("AdsSitePerf :" + count);
+          log.debug("AdsSitePerf :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    System.out.println("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
   }
 }

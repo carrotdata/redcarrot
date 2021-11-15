@@ -1,20 +1,22 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -46,6 +48,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class TestCarrotAdServerSitePerf {
 
+  private static final Logger log = LogManager.getLogger(TestCarrotAdServerSitePerf.class);
+
   static final int MAX_ADS = 10000;
   static final int MAX_WORDS = 10000;
   static final int MAX_SITES = 1000;
@@ -57,19 +61,19 @@ public class TestCarrotAdServerSitePerf {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -79,12 +83,12 @@ public class TestCarrotAdServerSitePerf {
     doSiteAdsRank(map);
     doSiteWordsRank(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println("Total memory=" + memory);
+    log.debug("Total memory=" + memory);
     map.dispose();
   }
 
   private static void doSiteWordsRank(BigSortedMap map) {
-    System.out.println("Loading SiteWordsRank data");
+    log.debug("Loading SiteWordsRank data");
     String key = "sites:words:rank:";
     Random r = new Random();
     long count = 0;
@@ -108,17 +112,17 @@ public class TestCarrotAdServerSitePerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("SiteWordsRank :" + count);
+          log.debug("SiteWordsRank :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doSiteAdsRank(BigSortedMap map) {
-    System.out.println("Loading  SiteAdsRank data");
+    log.debug("Loading  SiteAdsRank data");
     String key = "sites:ads:rank:";
     Random r = new Random();
     long count = 0;
@@ -143,12 +147,12 @@ public class TestCarrotAdServerSitePerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("SiteAdsRank :" + count);
+          log.debug("SiteAdsRank :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
   }
 }

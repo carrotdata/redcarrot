@@ -158,7 +158,7 @@ public final class UnsafeAccess {
       allocMap.delete(address);
       Range r = allocMap.add(new Range(address, (int) alloced));
       if (r != null) {
-        System.err.println("Allocation collision [" + r.start + "," + r.size + "]");
+        log.error("Allocation collision [" + r.start + "," + r.size + "]");
       }
       if (isStackTraceRecordingEnabled()) {
         if (stackTraceMap.size() < strLimit) {

@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
@@ -32,6 +34,8 @@ import org.junit.Test;
 
 public class DataBlockScannerTest {
 
+  private static final Logger log = LogManager.getLogger(DataBlockScannerTest.class);
+
   protected DataBlock getDataBlock() {
     IndexBlock ib = new IndexBlock(null, 4096);
     ib.setFirstIndexBlock();
@@ -41,11 +45,11 @@ public class DataBlockScannerTest {
 
   @Test
   public void testFullScan() throws IOException {
-    System.out.println("testFullScan");
+    log.debug("testFullScan");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
     scanner.next();
@@ -56,13 +60,13 @@ public class DataBlockScannerTest {
 
   @Test
   public void testFullScanCompressionDecompression() throws IOException {
-    System.out.println("testFullScanCompressionDecompression");
+    log.debug("testFullScanCompressionDecompression");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
 
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     ib.compressDataBlockIfNeeded();
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
@@ -78,7 +82,7 @@ public class DataBlockScannerTest {
   @Test
   public void testReverseAll() throws IOException {
     for (int i = 0; i < 100000; i++) {
-      System.out.println("\n i=" + i + "\n");
+      log.debug("\n i=" + i + "\n");
       testFullScanReverse();
       testOpenEndScanReverse();
       testOpenStartScanReverse();
@@ -88,14 +92,14 @@ public class DataBlockScannerTest {
 
   @Test
   public void testFullScanReverseCompressionDecompression() throws IOException {
-    System.out.println("testFullScanReverseCompressionDecompression");
+    log.debug("testFullScanReverseCompressionDecompression");
     // Enable data  block compression
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
 
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     ib.compressDataBlockIfNeeded();
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
@@ -110,11 +114,11 @@ public class DataBlockScannerTest {
 
   @Test
   public void testFullScanReverse() throws IOException {
-    System.out.println("testFullScanReverse");
+    log.debug("testFullScanReverse");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
     scanner.last();
@@ -131,16 +135,16 @@ public class DataBlockScannerTest {
 
   @Test
   public void testOpenStartScan() throws IOException {
-    System.out.println("testOpenStartScan");
+    log.debug("testOpenStartScan");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
     Random r = new Random();
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(0, stopRowIndex);
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE);
     // Skip first system key
@@ -152,21 +156,21 @@ public class DataBlockScannerTest {
 
   @Test
   public void testOpenStartScanReverse() throws IOException {
-    System.out.println("testOpenStartScanReverse");
+    log.debug("testOpenStartScanReverse");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("testOpenStartScanReverse seed=" + seed);
+    log.debug("testOpenStartScanReverse seed=" + seed);
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(0, stopRowIndex);
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     if (keys.size() == 0) {
-      System.out.println();
+      log.debug("");
     }
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE);
@@ -185,16 +189,16 @@ public class DataBlockScannerTest {
 
   @Test
   public void testOpenEndScan() throws IOException {
-    System.out.println("testOpenEndScan");
+    log.debug("testOpenEndScan");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
     Random r = new Random();
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(startRowIndex, keys.size());
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
     verifyScanner(scanner, keys);
@@ -204,19 +208,19 @@ public class DataBlockScannerTest {
 
   @Test
   public void testOpenEndScanReverse() throws IOException {
-    System.out.println("testOpenEndScanReverse");
+    log.debug("testOpenEndScanReverse");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("testOpenEndScanReverse seed=" + seed);
+    log.debug("testOpenEndScanReverse seed=" + seed);
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(startRowIndex, keys.size());
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
     if (scanner != null) {
@@ -234,7 +238,7 @@ public class DataBlockScannerTest {
 
   @Test
   public void testSubScan() throws IOException {
-    System.out.println("testSubScan");
+    log.debug("testSubScan");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
@@ -246,9 +250,9 @@ public class DataBlockScannerTest {
     }
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(startRowIndex, stopRowIndex);
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(
             ib, startRow.address, startRow.length, stopRow.address, stopRow.length, Long.MAX_VALUE);
@@ -263,14 +267,14 @@ public class DataBlockScannerTest {
 
   @Test
   public void testSubScanReverse() throws IOException {
-    System.out.println("testSubScanReverse");
+    log.debug("testSubScanReverse");
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("testSubScanReverse seed=" + seed);
+    log.debug("testSubScanReverse seed=" + seed);
     int startRowIndex = r.nextInt(keys.size());
     int stopRowIndex = r.nextInt(keys.size() - startRowIndex) + 1 + startRowIndex;
     if (stopRowIndex >= keys.size()) {
@@ -278,10 +282,10 @@ public class DataBlockScannerTest {
     }
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    System.out.println("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded " + keys.size() + " kvs");
     keys = keys.subList(startRowIndex, stopRowIndex);
 
-    System.out.println("Selected " + keys.size() + " kvs");
+    log.debug("Selected " + keys.size() + " kvs");
     // When start and stop rows are equals
     // scanner must be null
     DataBlockScanner scanner =
@@ -349,7 +353,7 @@ public class DataBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Fill seed=" + seed);
+    log.debug("Fill seed=" + seed);
     int length = 32;
     boolean result = true;
     while (result == true) {
@@ -362,7 +366,7 @@ public class DataBlockScannerTest {
         keys.add(new Key(ptr, length));
       }
     }
-    System.out.println(b.getNumberOfRecords() + " " + b.getDataInBlockSize());
+    log.debug(b.getNumberOfRecords() + " " + b.getDataInBlockSize());
     return keys;
   }
 }

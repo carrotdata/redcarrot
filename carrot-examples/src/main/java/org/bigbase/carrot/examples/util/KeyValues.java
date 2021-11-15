@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.util;
 
 import java.util.ArrayList;
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.util.Key;
@@ -29,6 +31,9 @@ import org.bigbase.carrot.util.Utils;
 import redis.clients.jedis.Jedis;
 /** Simple utility class, which can convert properties to a list of KeyValue objects for testing */
 public abstract class KeyValues {
+
+  private static final Logger log = LogManager.getLogger(KeyValues.class);
+
   protected Properties props = new Properties();
 
   protected KeyValues(Properties p) {
@@ -154,13 +159,13 @@ public abstract class KeyValues {
     try {
       long size = Hashes.HGETALL(map, keyPtr, keySize, buffer, 4096);
       if (size < 0 || size > 4096) {
-        System.err.println("Verification failed, size=" + size);
+        log.error("Verification failed, size=" + size);
         return false;
       }
 
       int num = UnsafeAccess.toInt(buffer);
       if (num != 2 * props.size()) {
-        System.err.println("Verification failed, num=" + num + " expected=" + props.size());
+        log.error("Verification failed, num=" + num + " expected=" + props.size());
         return false;
       }
       return true;

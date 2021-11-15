@@ -1,22 +1,24 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.appcomps;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -43,6 +45,9 @@ import org.bigbase.carrot.util.Utils;
  * tested only Carrot w/o compression.
  */
 public class TestCarrotInvertedIndex {
+
+  private static final Logger log = LogManager.getLogger(TestCarrotInvertedIndex.class);
+
   static int numWords = 1000;
   static int maxDocs = 5000;
 
@@ -53,20 +58,20 @@ public class TestCarrotInvertedIndex {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   @SuppressWarnings("unused")
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -96,13 +101,13 @@ public class TestCarrotInvertedIndex {
         totalSize++;
       }
       if (i % 100 == 0) {
-        System.out.println("Loaded " + i);
+        log.debug("Loaded " + i);
       }
     }
 
     long end = System.currentTimeMillis();
 
-    System.out.println("Loaded " + totalSize + " in " + (end - start) + "ms");
+    log.debug("Loaded " + totalSize + " in " + (end - start) + "ms");
 
     long total = 0;
     int totalKeys = 0;
@@ -115,21 +120,21 @@ public class TestCarrotInvertedIndex {
       }
     }
     end = System.currentTimeMillis();
-    System.out.println("Check CARD " + totalSize + " in " + (end - start) + "ms");
+    log.debug("Check CARD " + totalSize + " in " + (end - start) + "ms");
 
     if (totalKeys != numWords) {
-      System.err.println("total keys=" + totalKeys + " expected=" + numWords);
+      log.error("total keys=" + totalKeys + " expected=" + numWords);
       // System.exit(-1);
     }
 
     if (total != totalSize) {
-      System.err.println("total set=" + total + " expected=" + totalSize);
+      log.error("total set=" + total + " expected=" + totalSize);
       // System.exit(-1);
     }
 
     long allocced = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println("Memory usage per (4-bytes) doc ID: " + ((double) allocced) / totalSize);
-    System.out.println("Memory usage: " + allocced);
+    log.debug("Memory usage per (4-bytes) doc ID: " + ((double) allocced) / totalSize);
+    log.debug("Memory usage: " + allocced);
 
     map.dispose();
     UnsafeAccess.free(vPtr);

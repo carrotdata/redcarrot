@@ -1150,7 +1150,7 @@ public class BigSortedMap {
             // MUST ALWAYS BE true
             assert (r);
           } else if (res != OpResult.OK) {
-            System.err.println("PANIC! Unexpected result of delete operation: " + res);
+            log.error("PANIC! Unexpected result of delete operation: " + res);
             Thread.dumpStack();
             System.exit(-1);
           }
@@ -2270,7 +2270,7 @@ public class BigSortedMap {
     File dir = new File(snapshotDir);
     if (dir.exists() == false) {
       if (dir.mkdirs() == false) {
-        System.err.println("Snapshot failed. Can not create directory: " + dir.getAbsolutePath());
+        log.error("Snapshot failed. Can not create directory: " + dir.getAbsolutePath());
         return;
       }
     }
@@ -2284,7 +2284,7 @@ public class BigSortedMap {
       // Save store meta data
       saveStoreMeta(fc);
     } catch (IOException e) {
-      System.err.println(
+      log.error(
           "Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
       e.printStackTrace();
       return;
@@ -2328,7 +2328,7 @@ public class BigSortedMap {
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException e) {
-        System.err.println(
+        log.error(
             "Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
         e.printStackTrace();
         return;
@@ -2351,7 +2351,7 @@ public class BigSortedMap {
       setLastSnapshotTimestamp(timestamp);
       raf.close();
     } catch (IOException e) {
-      System.err.println("WARNING! " + e.getMessage());
+      log.error("WARNING! " + e.getMessage());
       e.printStackTrace();
       // TODO: what to do?
     }
@@ -2361,13 +2361,13 @@ public class BigSortedMap {
     if (oldSnapshotFile.exists()) {
       boolean result = oldSnapshotFile.delete();
       if (!result) {
-        System.err.println("ERROR! Can not delete old snapshot file.");
+        log.error("ERROR! Can not delete old snapshot file.");
         return;
       }
     }
     boolean result = snapshotFile.renameTo(oldSnapshotFile);
     if (!result) {
-      System.err.println(
+      log.error(
           "ERROR! Can not rename new snapshot file: "
               + snapshotFile.getAbsolutePath()
               + " to "
@@ -2416,13 +2416,13 @@ public class BigSortedMap {
     File dir = new File(snapshotDir);
     if (dir.exists() == false) {
       dir.mkdirs();
-      System.err.println("Snapshot directory does not exists: " + dir.getAbsolutePath());
+      log.error("Snapshot directory does not exists: " + dir.getAbsolutePath());
       return new BigSortedMap();
     }
 
     File snapshotFile = new File(dir, "snapshot.data");
     if (!snapshotFile.exists()) {
-      System.err.println("Snapshot file does not exists: " + snapshotFile.getAbsolutePath());
+      log.error("Snapshot file does not exists: " + snapshotFile.getAbsolutePath());
       return new BigSortedMap();
     }
 
@@ -2437,7 +2437,7 @@ public class BigSortedMap {
       // Save store meta data
       map = loadStoreMeta(fc);
     } catch (IOException e) {
-      System.err.println(
+      log.error(
           "Loading store failed. Can not open snapshot file: " + snapshotFile.getAbsolutePath());
       return null;
     }
@@ -2480,7 +2480,7 @@ public class BigSortedMap {
       map.printMemoryAllocationStats();
       return map;
     } catch (IOException e) {
-      System.err.println(
+      log.error(
           "Loading store failed. Corrupted (?) snapshot file: " + snapshotFile.getAbsolutePath());
       e.printStackTrace();
     } finally {
@@ -2488,7 +2488,7 @@ public class BigSortedMap {
       try {
         raf.close();
       } catch (IOException e) {
-        System.err.println("WARNING! " + e.getMessage());
+        log.error("WARNING! " + e.getMessage());
         e.printStackTrace();
       }
     }

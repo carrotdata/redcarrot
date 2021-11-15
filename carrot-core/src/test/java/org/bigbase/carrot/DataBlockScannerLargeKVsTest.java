@@ -1,25 +1,29 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 public class DataBlockScannerLargeKVsTest extends DataBlockScannerTest {
+
+  private static final Logger log = LogManager.getLogger(DataBlockScannerLargeKVsTest.class);
 
   protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
     ArrayList<Key> keys = new ArrayList<Key>();
@@ -37,8 +41,7 @@ public class DataBlockScannerLargeKVsTest extends DataBlockScannerTest {
         keys.add(new Key(ptr, len));
       }
     }
-    System.out.println(
-        "records=" + b.getNumberOfRecords() + "  data size=" + b.getDataInBlockSize());
+    log.debug("records=" + b.getNumberOfRecords() + "  data size=" + b.getDataInBlockSize());
     return keys;
   }
 }

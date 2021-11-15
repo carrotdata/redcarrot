@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.DataInputStream;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -71,6 +73,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
  */
 public class SetsSpamFilter {
 
+  private static final Logger log = LogManager.getLogger(SetsSpamFilter.class);
+
   static {
     UnsafeAccess.debug = true;
   }
@@ -93,13 +97,13 @@ public class SetsSpamFilter {
     if (args.length == 0) {
       usage();
     }
-    System.out.println("RUN compression = NONE");
+    log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest(args[0]);
-    System.out.println("RUN compression = LZ4");
+    log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest(args[0]);
-    System.out.println("RUN compression = LZ4HC");
+    log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest(args[0]);
   }
@@ -125,12 +129,12 @@ public class SetsSpamFilter {
         Sets.SADD(map, key.address, key.length, buffer, data.length);
       }
       if ((count % 100000) == 0 && count > 0) {
-        System.out.println("Loaded " + count);
+        log.debug("Loaded " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + count * keys.size()
             + " records, total size="
@@ -139,8 +143,7 @@ public class SetsSpamFilter {
             + (endTime - startTime)
             + "ms. RAM usage="
             + UnsafeAccess.getAllocatedMemory());
-    System.out.println(
-        "COMPRESSION =" + ((double) totalLength) / UnsafeAccess.getAllocatedMemory());
+    log.debug("COMPRESSION =" + ((double) totalLength) / UnsafeAccess.getAllocatedMemory());
     dis.close();
 
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -151,7 +154,7 @@ public class SetsSpamFilter {
   }
 
   private static void usage() {
-    System.out.println("usage: java org.bigbase.carrot.examples.SpamFilter domain_list_file");
+    log.debug("usage: java org.bigbase.carrot.examples.SpamFilter domain_list_file");
     System.exit(-1);
   }
 }

@@ -16,6 +16,8 @@ package org.bigbase.carrot.examples.adserver;
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Bytes;
 
 import redis.clients.jedis.Jedis;
@@ -42,6 +44,8 @@ import redis.clients.jedis.Jedis;
  */
 public class TestRedisAdServerAdsPerf {
 
+  private static final Logger log = LogManager.getLogger(TestRedisAdServerAdsPerf.class);
+
   static final int MAX_ADS = 1000;
   static final int MAX_SITES = 10000;
 
@@ -54,14 +58,14 @@ public class TestRedisAdServerAdsPerf {
     Jedis client = new Jedis("localhost");
     doAdsSitePerf(client);
     doAdsSiteRank(client);
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
     client.flushAll();
     client.close();
   }
 
   private static void doAdsSiteRank(Jedis client) {
-    System.out.println("Loading AdsSiteRank data");
+    log.debug("Loading AdsSiteRank data");
     String key = "ads:sites:rank";
     Random r = new Random();
     long count = 0;
@@ -74,16 +78,16 @@ public class TestRedisAdServerAdsPerf {
         client.zadd(k.getBytes(), r.nextDouble(), Bytes.toBytes(siteId));
         count++;
         if (count % 100000 == 0) {
-          System.out.println("AdsSiteRank :" + count);
+          log.debug("AdsSiteRank :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doAdsSitePerf(Jedis client) {
-    System.out.println("Loading Ads-Site Performance data");
+    log.debug("Loading Ads-Site Performance data");
     String key = "ads:site:perf:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -105,11 +109,11 @@ public class TestRedisAdServerAdsPerf {
         client.hset(kk.getBytes(), field2, Bytes.toBytes(r.nextInt(100)));
         count++;
         if (count % 100000 == 0) {
-          System.out.println("AdsSitePerf :" + count);
+          log.debug("AdsSitePerf :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
   }
 }

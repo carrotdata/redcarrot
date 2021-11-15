@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.twitter;
 
 import java.util.ArrayList;
@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.examples.util.KeyValues;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.Utils;
@@ -37,6 +39,9 @@ import org.bigbase.carrot.util.Utils;
  * 1,211 98 1,675 99 2,991 99.9 24,964
  */
 public class User extends KeyValues {
+
+  private static final Logger log = LogManager.getLogger(User.class);
+
   public static final String LOGIN = "login";
   public static final String ID = "id";
   public static final String NAME = "name";
@@ -50,7 +55,7 @@ public class User extends KeyValues {
   static {
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    System.out.println("SEED=" + seed);
+    log.debug("SEED=" + seed);
   }
 
   static int[] perc =

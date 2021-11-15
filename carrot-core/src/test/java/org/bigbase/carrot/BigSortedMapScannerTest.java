@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -29,6 +31,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class BigSortedMapScannerTest {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMapScannerTest.class);
 
   static {
     // UnsafeAccess.debug = true;
@@ -48,14 +52,14 @@ public class BigSortedMapScannerTest {
       load(totalLoaded);
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
     start = System.currentTimeMillis();
     long scanned = countRecords();
     end = System.currentTimeMillis();
-    System.out.println("Scanned=" + countRecords() + " in " + (end - start) + "ms");
-    System.out.println("\nTotal memory      =" + BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println("Total   data      =" + BigSortedMap.getGlobalDataSize());
-    System.out.println(
+    log.debug("Scanned=" + countRecords() + " in " + (end - start) + "ms");
+    log.debug("\nTotal memory      =" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data      =" + BigSortedMap.getGlobalDataSize());
+    log.debug(
         "Compression ratio ="
             + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory()
             + "\n");
@@ -118,7 +122,7 @@ public class BigSortedMapScannerTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* " + i + " ********** Codec = NONE\n");
       setUp();
       allTests();
       tearDown();
@@ -131,7 +135,7 @@ public class BigSortedMapScannerTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
       setUp();
       allTests();
       tearDown();
@@ -145,7 +149,7 @@ public class BigSortedMapScannerTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
       setUp();
       allTests();
       tearDown();
@@ -157,12 +161,12 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testPrefixScanners() throws IOException {
-    System.out.println("testPrefixScanners ");
+    log.debug("testPrefixScanners ");
 
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED =" + seed);
+    log.debug("SEED =" + seed);
     for (int i = 0; i < 10; i++) {
       int n = r.nextInt((int) MAX_ROWS / 100) + 1;
       String prefix = "KEY" + n;
@@ -172,12 +176,12 @@ public class BigSortedMapScannerTest {
       BigSortedMapScanner scanner = map.getPrefixScanner(ptr, size);
       int count = (int) countRows(scanner);
       if (count != expected) {
-        System.err.println(prefix);
+        log.error(prefix);
       }
       assertEquals(expected, count);
       scanner.close();
       UnsafeAccess.free(ptr);
-      System.out.println("prefix=" + prefix + " count=" + count);
+      log.debug("prefix=" + prefix + " count=" + count);
     }
     testPrefixEdges(10);
   }
@@ -235,12 +239,12 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testPrefixReverseScanners() throws IOException {
-    System.out.println("testPrefixReverseScanners ");
+    log.debug("testPrefixReverseScanners ");
 
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED =" + seed);
+    log.debug("SEED =" + seed);
     for (int i = 0; i < 10; i++) {
       int n = r.nextInt((int) MAX_ROWS / 100) + 1;
       String prefix = "KEY" + n;
@@ -252,7 +256,7 @@ public class BigSortedMapScannerTest {
       assertEquals(expected, count);
       scanner.close();
       UnsafeAccess.free(ptr);
-      System.out.println("prefix=" + prefix + " count=" + count);
+      log.debug("prefix=" + prefix + " count=" + count);
     }
     testPrefixEdgesReverse(10);
   }
@@ -260,7 +264,7 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryAllRangesMapScanner() throws IOException {
-    System.out.println("testDirectMemoryAllRangesMapScanner ");
+    log.debug("testDirectMemoryAllRangesMapScanner ");
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
     int stopIndex = r.nextInt((int) totalLoaded);
@@ -306,11 +310,11 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryAllRangesMapScannerReverse() throws IOException {
-    System.out.println("testDirectMemoryAllRangesMapScannerReverse");
+    log.debug("testDirectMemoryAllRangesMapScannerReverse");
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("testDirectMemoryAllRangesMapScannerReverse seed=" + seed);
+    log.debug("testDirectMemoryAllRangesMapScannerReverse seed=" + seed);
     int startIndex = r.nextInt((int) totalLoaded);
     int stopIndex = r.nextInt((int) totalLoaded);
 
@@ -376,12 +380,12 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryFullMapScanner() throws IOException {
-    System.out.println("testDirectMemoryFullMapScanner ");
+    log.debug("testDirectMemoryFullMapScanner ");
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
     long count = countRows(scanner);
     long end = System.currentTimeMillis();
-    System.out.println("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned " + count + " in " + (end - start) + "ms");
     assertEquals(totalLoaded, count);
     scanner.close();
   }
@@ -389,12 +393,12 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryFullMapScannerReverse() throws IOException {
-    System.out.println("testDirectMemoryFullMapScannerReverse ");
+    log.debug("testDirectMemoryFullMapScannerReverse ");
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
     long count = countRowsReverse(scanner);
     long end = System.currentTimeMillis();
-    System.out.println("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned " + count + " in " + (end - start) + "ms");
     assertEquals(totalLoaded, count);
     scanner.close();
   }
@@ -424,7 +428,7 @@ public class BigSortedMapScannerTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    System.out.println("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
     return list;
   }
 
@@ -445,7 +449,7 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryFullMapScannerWithDeletes() throws IOException {
-    System.out.println("testDirectMemoryFullMapScannerWithDeletes ");
+    log.debug("testDirectMemoryFullMapScannerWithDeletes ");
     int toDelete = 100000;
     List<byte[]> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
@@ -478,20 +482,20 @@ public class BigSortedMapScannerTest {
     UnsafeAccess.free(value);
 
     long end = System.currentTimeMillis();
-    System.out.println("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned " + count + " in " + (end - start) + "ms");
     assertEquals(totalLoaded - toDelete, count);
     undelete(deletedKeys);
   }
 
   public void testDirectMemoryFullMapScannerWithDeletesReverse() throws IOException {
-    System.out.println("testDirectMemoryFullMapScannerWithDeletesReverse ");
+    log.debug("testDirectMemoryFullMapScannerWithDeletesReverse ");
     int toDelete = 100000;
     List<byte[]> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
     long count = countRowsReverse(scanner);
     long end = System.currentTimeMillis();
-    System.out.println("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned " + count + " in " + (end - start) + "ms");
     scanner.close();
     assertEquals(totalLoaded - toDelete, count);
 
@@ -501,7 +505,7 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryScannerSameStartStopRow() throws IOException {
-    System.out.println("testDirectMemoryScannerSameStartStopRow");
+    log.debug("testDirectMemoryScannerSameStartStopRow");
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
     byte[] startKey = ("KEY" + startIndex).getBytes();
@@ -535,7 +539,7 @@ public class BigSortedMapScannerTest {
   @Ignore
   @Test
   public void testDirectMemoryScannerSameStartStopRowReverse() throws IOException {
-    System.out.println("testDirectMemoryScannerSameStartStopRowReverse");
+    log.debug("testDirectMemoryScannerSameStartStopRowReverse");
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
     byte[] startKey = ("KEY" + startIndex).getBytes();
@@ -595,7 +599,7 @@ public class BigSortedMapScannerTest {
     }
     UnsafeAccess.free(value);
     long end = System.currentTimeMillis();
-    System.out.println("Scanned direct " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned direct " + count + " in " + (end - start) + "ms");
     return count;
   }
 
@@ -627,7 +631,7 @@ public class BigSortedMapScannerTest {
     }
     UnsafeAccess.free(value);
     long end = System.currentTimeMillis();
-    System.out.println("Scanned reversed " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned reversed " + count + " in " + (end - start) + "ms");
     return count;
   }
 }

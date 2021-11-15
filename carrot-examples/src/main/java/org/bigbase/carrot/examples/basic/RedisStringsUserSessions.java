@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.examples.util.UserSession;
 import org.bigbase.carrot.ops.OperationFailedException;
 
@@ -62,6 +64,8 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisStringsUserSessions {
 
+  private static final Logger log = LogManager.getLogger(RedisStringsUserSessions.class);
+
   static long N = 10000000;
   static long totalDataSize = 0;
   static List<UserSession> userSessions = new ArrayList<UserSession>();
@@ -77,7 +81,7 @@ public class RedisStringsUserSessions {
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("Run Redis Cluster");
+    log.debug("Run Redis Cluster");
     Jedis client = getClient();
     client.flushAll();
     Runnable r =
@@ -104,7 +108,7 @@ public class RedisStringsUserSessions {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " sets in "
@@ -138,7 +142,7 @@ public class RedisStringsUserSessions {
             });
     end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " gets in "
@@ -149,7 +153,7 @@ public class RedisStringsUserSessions {
     start = System.currentTimeMillis();
     client.save();
     end = System.currentTimeMillis();
-    System.out.println("DB save took " + (end - start) + "ms");
+    log.debug("DB save took " + (end - start) + "ms");
     client.close();
   }
 
@@ -218,13 +222,13 @@ public class RedisStringsUserSessions {
       client.mset(args);
       count += len;
       if (count / 100000 >= batches) {
-        System.out.println(Thread.currentThread().getId() + ": set " + count);
+        log.debug(Thread.currentThread().getId() + ": set " + count);
         batches++;
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -264,19 +268,19 @@ public class RedisStringsUserSessions {
       List<String> result = client.mget(args);
       count += len;
       if (count / 100000 >= batches) {
-        System.out.println(Thread.currentThread().getId() + ": get " + count);
+        log.debug(Thread.currentThread().getId() + ": get " + count);
         batches++;
       }
       assert (args.length == result.size());
       verify(result, idxs);
 
       //      if (count % 10000 == 0) {
-      //        System.out.println(Thread.currentThread().getId() +": get "+ count);
+      //        log.debug(Thread.currentThread().getId() +": get "+ count);
       //      }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Read "
             + count

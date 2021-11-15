@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -30,6 +32,8 @@ import org.junit.Test;
 
 // TODO: MEMORY LEAK
 public class BigSortedMapTest {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMapTest.class);
 
   BigSortedMap map;
   long totalLoaded;
@@ -72,20 +76,20 @@ public class BigSortedMapTest {
       totalLoaded++;
       load(totalLoaded);
       if (totalLoaded % 100000 == 0) {
-        System.out.println("Loaded " + totalLoaded);
+        log.debug("Loaded " + totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
     long scanned = countRecords();
-    System.out.println("Scanned=" + countRecords());
-    System.out.println("\nTotal memory     =" + BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println("Total   data       =" + BigSortedMap.getGlobalDataSize());
-    System.out.println("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
-    System.out.println(
+    log.debug("Scanned=" + countRecords());
+    log.debug("\nTotal memory     =" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data       =" + BigSortedMap.getGlobalDataSize());
+    log.debug("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
+    log.debug(
         "Compression  ratio ="
             + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println();
+    log.debug("");
     assertEquals(totalLoaded, scanned);
   }
 
@@ -106,7 +110,7 @@ public class BigSortedMapTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* " + i + " ********** Codec = NONE\n");
       setUp();
       allTests();
       tearDown();
@@ -119,7 +123,7 @@ public class BigSortedMapTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
       setUp();
       allTests();
       tearDown();
@@ -132,7 +136,7 @@ public class BigSortedMapTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
       setUp();
       allTests();
       tearDown();
@@ -144,7 +148,7 @@ public class BigSortedMapTest {
   @Ignore
   @Test
   public void testDeleteUndeleted() throws IOException {
-    System.out.println("testDeleteUndeleted");
+    log.debug("testDeleteUndeleted");
     List<byte[]> keys = delete(100);
     assertEquals(totalLoaded - 100, countRecords());
     undelete(keys);
@@ -154,7 +158,7 @@ public class BigSortedMapTest {
   @Ignore
   @Test
   public void testPutGet() {
-    System.out.println("testPutGet");
+    log.debug("testPutGet");
 
     long start = System.currentTimeMillis();
     for (int i = 1; i <= totalLoaded; i++) {
@@ -176,13 +180,13 @@ public class BigSortedMapTest {
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time to get " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to get " + totalLoaded + " =" + (end - start) + "ms");
   }
 
   @Ignore
   @Test
   public void testExists() {
-    System.out.println("testExists");
+    log.debug("testExists");
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + (i)).getBytes();
@@ -197,7 +201,7 @@ public class BigSortedMapTest {
   @Ignore
   @Test
   public void testFlushAll() {
-    System.out.println("testFlushAll");
+    log.debug("testFlushAll");
 
     map.flushAll();
 
@@ -237,7 +241,7 @@ public class BigSortedMapTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    System.out.println("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
     return list;
   }
 

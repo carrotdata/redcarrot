@@ -435,7 +435,7 @@ public class ZSets {
       //      } else if (vsize > 0){
       //        //TODO - collision detected
       //        //PANIC
-      //        System.err.println("ZCARD collision detected");
+      //        log.error("ZCARD collision detected");
       //        Thread.dumpStack();
       //        System.exit(-1);
       //      }
@@ -471,7 +471,7 @@ public class ZSets {
   private static long ZSETCARD(BigSortedMap map, long keyPtr, int keySize, long card) {
     /*DEBUG*/
     //    if (card > 1000) {
-    //      System.err.println("ZSETCARD="+ card);
+    //      log.error("ZSETCARD="+ card);
     //    }
     //    //checkKeyArena(CARD_MEMBER_SIZE);
     //    // Build CARDINALITY member

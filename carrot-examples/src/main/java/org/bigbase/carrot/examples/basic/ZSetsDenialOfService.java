@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.DataInputStream;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -60,6 +62,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
  */
 public class ZSetsDenialOfService {
 
+  private static final Logger log = LogManager.getLogger(ZSetsDenialOfService.class);
+
   static {
     UnsafeAccess.debug = true;
   }
@@ -84,26 +88,26 @@ public class ZSetsDenialOfService {
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("RUN compression = NONE");
+    log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
-    System.out.println("RUN compression = LZ4");
+    log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    System.out.println("RUN compression = LZ4HC");
+    log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
 
     // Now load hosts
     if (args.length > 0) {
       loadHosts(args[0]);
-      System.out.println("RUN compression = NONE - REAL DATA");
+      log.debug("RUN compression = NONE - REAL DATA");
       BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
       runTest();
-      System.out.println("RUN compression = LZ4 - REAL DATA");
+      log.debug("RUN compression = LZ4 - REAL DATA");
       BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
       runTest();
-      System.out.println("RUN compression = LZ4HC - REAL DATA");
+      log.debug("RUN compression = LZ4HC - REAL DATA");
       BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
       runTest();
     }
@@ -163,14 +167,14 @@ public class ZSetsDenialOfService {
       ZSets.ZADD(map, keyPtr, keySize, scores, memPtrs, memSizes, false);
 
       if (i % 10000 == 0 && i > 0) {
-        System.out.println("zset " + i);
+        log.debug("zset " + i);
       }
     }
     long endTime = System.currentTimeMillis();
 
     long num = hosts.size() > 0 ? hosts.size() : N;
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + num
             + " [host, number] pairs"

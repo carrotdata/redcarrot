@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.lists;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.compression.CodecFactory;
@@ -33,6 +35,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class ListsTest {
+
+  private static final Logger log = LogManager.getLogger(ListsTest.class);
+
   BigSortedMap map;
   Key key;
   List<Value> values;
@@ -52,7 +57,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("KEY SEED=" + seed);
+    log.debug("KEY SEED=" + seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, keySize);
     return key = new Key(ptr, keySize);
@@ -64,7 +69,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("ANOTHER KEY SEED=" + seed);
+    log.debug("ANOTHER KEY SEED=" + seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, keySize);
     return new Key(ptr, keySize);
@@ -75,7 +80,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("VALUES seed=" + seed);
+    log.debug("VALUES seed=" + seed);
     values = new ArrayList<Value>();
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -109,9 +114,9 @@ public class ListsTest {
   @Test
   public void runAllNoCompression() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -122,9 +127,9 @@ public class ListsTest {
   @Test
   public void runAllCompressionLZ4() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -135,9 +140,9 @@ public class ListsTest {
   @Test
   public void runAllCompressionLZ4HC() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 10; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -215,7 +220,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testDeallocator() {
-    System.out.println("Test Deallocator");
+    log.debug("Test Deallocator");
     // Register LIST deallocator
     Lists.registerDeallocator();
 
@@ -228,17 +233,17 @@ public class ListsTest {
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
-    System.out.println("Before BSM.dispose:");
+    log.debug("Before BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
-    System.out.println("After BSM.dispose:");
+    log.debug("After BSM.dispose:");
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
   }
 
   @Ignore
   @Test
   public void testListWithLargeElements() {
-    System.out.println("Test List with large elements");
+    log.debug("Test List with large elements");
     Key key = getKey();
     int largeSize = 1023;
     long largePtr = UnsafeAccess.malloc(largeSize);
@@ -261,7 +266,7 @@ public class ListsTest {
       assertEquals(2 * i + 2, (int) len);
     }
 
-    System.out.println("After loading large values:");
+    log.debug("After loading large values:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
 
@@ -283,7 +288,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testListSerDeWithLargeElements() {
-    System.out.println("Test List SerDe with large elements");
+    log.debug("Test List SerDe with large elements");
     // Register LIST deallocator
     Lists.registerDeallocator();
     Lists.registerSerDe();
@@ -308,16 +313,16 @@ public class ListsTest {
       assertEquals(2 * i + 2, (int) len);
     }
 
-    System.out.println("Before BSM.dispose:");
+    log.debug("Before BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
 
-    System.out.println("Taking snapshot");
+    log.debug("Taking snapshot");
     map.snapshot();
     map.dispose();
 
-    System.out.println("After BSM.dispose:");
+    log.debug("After BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
@@ -328,7 +333,7 @@ public class ListsTest {
     BigSortedMap.setStatsUpdatesDisabled(false);
     map.syncStatsToGlobal();
     // Data is ready
-    System.out.println("Load snapshot");
+    log.debug("Load snapshot");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
@@ -348,7 +353,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testListSerDe() {
-    System.out.println("Test List serializer");
+    log.debug("Test List serializer");
     // Register LIST deallocator
     Lists.registerDeallocator();
     Lists.registerSerDe();
@@ -361,16 +366,16 @@ public class ListsTest {
       assertEquals(i + 1, (int) len);
     }
 
-    System.out.println("Before BSM.dispose:");
+    log.debug("Before BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
     UnsafeAccess.mallocStats.printStats();
 
-    System.out.println("Taking snapshot");
+    log.debug("Taking snapshot");
     map.snapshot();
     map.dispose();
-    System.out.println("After BSM.dispose:");
+    log.debug("After BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
@@ -380,7 +385,7 @@ public class ListsTest {
     BigSortedMap.setStatsUpdatesDisabled(false);
     map.syncStatsToGlobal();
 
-    System.out.println("Load snapshot");
+    log.debug("Load snapshot");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
@@ -398,7 +403,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testRPUSHX() {
-    System.out.println("Test RPUSHX");
+    log.debug("Test RPUSHX");
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -422,7 +427,7 @@ public class ListsTest {
       assertEquals(i + 1, (int) len);
     }
 
-    System.out.println(
+    log.debug(
         "Total allocated memory ="
             + BigSortedMap.getGlobalAllocatedMemory()
             + " for "
@@ -449,7 +454,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLPUSHX() {
-    System.out.println("Test LPUSHX");
+    log.debug("Test LPUSHX");
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -473,7 +478,7 @@ public class ListsTest {
       assertEquals(i + 1, (int) len);
     }
 
-    System.out.println(
+    log.debug(
         "Total allocated memory ="
             + BigSortedMap.getGlobalAllocatedMemory()
             + " for "
@@ -500,11 +505,11 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLPUSHLPOP() {
-    System.out.println("Test LPUSHLPOP");
+    log.debug("Test LPUSHLPOP");
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
-      // System.out.println(i);
+      // log.debug(i);
       Value v = values.get(i);
       long[] elemPtrs = new long[] {v.address};
       int[] elemSizes = new int[] {v.length};
@@ -512,7 +517,7 @@ public class ListsTest {
       assertEquals(i + 1, (int) len);
     }
 
-    System.out.println(
+    log.debug(
         "Total allocated memory ="
             + BigSortedMap.getGlobalAllocatedMemory()
             + " for "
@@ -539,7 +544,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testRPUSHRPOP() {
-    System.out.println("\nTest RPUSHRPOP");
+    log.debug("\nTest RPUSHRPOP");
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
@@ -567,7 +572,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLPUSHRPOP() {
-    System.out.println("\nTest LPUSHRPOP");
+    log.debug("\nTest LPUSHRPOP");
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -594,12 +599,12 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLRMIX() {
-    System.out.println("\nTest LRMIX");
+    log.debug("\nTest LRMIX");
     Key key = getKey();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED=" + seed);
+    log.debug("SEED=" + seed);
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
       long[] elemPtrs = new long[] {v.address};
@@ -631,7 +636,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testRPUSHLPOP() {
-    System.out.println("\nTest RPUSHLPOP");
+    log.debug("\nTest RPUSHLPOP");
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -657,7 +662,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLPUSHLINDEX() {
-    System.out.println("\nTest LPUSHLINDEX");
+    log.debug("\nTest LPUSHLINDEX");
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -677,7 +682,7 @@ public class ListsTest {
     }
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
     long end = System.currentTimeMillis();
-    System.out.println("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
+    log.debug("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
     Lists.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
@@ -685,7 +690,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLindexEdgeCases() {
-    System.out.println("\nTest LINDEX edge cases");
+    log.debug("\nTest LINDEX edge cases");
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -713,7 +718,7 @@ public class ListsTest {
     assertEquals(-1, sz);
 
     long end = System.currentTimeMillis();
-    System.out.println("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
+    log.debug("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
     Lists.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
@@ -721,7 +726,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testRPUSHLINDEX() {
-    System.out.println("Test RPUSHLINDEX");
+    log.debug("Test RPUSHLINDEX");
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -741,7 +746,7 @@ public class ListsTest {
     }
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
     long end = System.currentTimeMillis();
-    System.out.println("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
+    log.debug("Time to index " + n + " from " + n + " long list=" + (end - start) + "ms");
     Lists.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
@@ -749,7 +754,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLMOVE() {
-    System.out.println("\nTest LMOVE");
+    log.debug("\nTest LMOVE");
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -1061,7 +1066,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testRPOPLPUSH() {
-    System.out.println("\nTest RPOPLPUSH");
+    log.debug("\nTest RPOPLPUSH");
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -1115,21 +1120,21 @@ public class ListsTest {
   @Ignore
   @Test
   public void testBLMOVE() {
-    System.out.println("BLMOVE - TODO");
+    log.debug("BLMOVE - TODO");
     testLMOVE();
   }
 
   @Ignore
   @Test
   public void testBRPOPLPUSH() {
-    System.out.println("BRPOPLPUSH - TODO");
+    log.debug("BRPOPLPUSH - TODO");
     testRPOPLPUSH();
   }
 
   @Ignore
   @Test
   public void testLSET() {
-    System.out.println("Test LSET operation");
+    log.debug("Test LSET operation");
     Key key = getKey();
     // load half of values
     int toLoad = n / 2;
@@ -1164,7 +1169,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLINSERT() {
-    System.out.println("Test LINSERT operation");
+    log.debug("Test LINSERT operation");
     Key key = getKey();
     // load half of values
     for (int i = 0; i < n / 2; i++) {
@@ -1185,7 +1190,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
     // Insert and Verify
     int listSize = n / 2;
     for (int i = n / 2; i < n / 2 + 10000; i++) {
@@ -1214,7 +1219,7 @@ public class ListsTest {
       assertEquals(valueSize, sz);
       assertEquals(0, Utils.compareTo(insert.address, insert.length, buffer, sz));
       if (i % 1000 == 0) {
-        System.out.println(i);
+        log.debug(i);
       }
     }
 
@@ -1225,7 +1230,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLRANGE() {
-    System.out.println("Test LRANGE operation");
+    log.debug("Test LRANGE operation");
     Key key = getKey();
     // No exists yet
 
@@ -1243,7 +1248,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
 
     // Test edge cases
     // 1. start >= n
@@ -1315,7 +1320,7 @@ public class ListsTest {
   @Ignore
   @Test
   public void testLREM() {
-    System.out.println("Test LREM operation");
+    log.debug("Test LREM operation");
     Key key = getKey();
     // No exists yet
     long removed =
@@ -1343,7 +1348,7 @@ public class ListsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
 
     // Get the last one
     Value v = values.get(n - 1);
@@ -1364,7 +1369,7 @@ public class ListsTest {
       assertEquals(toInsert, (int) removed);
       assertEquals(n - 1, (int) Lists.LLEN(map, key.address, key.length));
       if (i % 10 == 0) {
-        System.out.println("direct =" + i);
+        log.debug("direct =" + i);
       }
     }
 
@@ -1385,7 +1390,7 @@ public class ListsTest {
       assertEquals(toInsert, (int) removed);
       assertEquals(n - 1, (int) Lists.LLEN(map, key.address, key.length));
       if (i % 10 == 0) {
-        System.out.println("direct more=" + i);
+        log.debug("direct more=" + i);
       }
     }
 
@@ -1407,7 +1412,7 @@ public class ListsTest {
       assertEquals(toInsert, (int) removed);
       assertEquals(n - 1, (int) Lists.LLEN(map, key.address, key.length));
       if (i % 10 == 0) {
-        System.out.println("reverse =" + i);
+        log.debug("reverse =" + i);
       }
     }
 
@@ -1427,7 +1432,7 @@ public class ListsTest {
       assertEquals(toInsert, (int) removed);
       assertEquals(n - 1, (int) Lists.LLEN(map, key.address, key.length));
       if (i % 10 == 0) {
-        System.out.println("reverse more=" + i);
+        log.debug("reverse more=" + i);
       }
     }
 
@@ -1447,7 +1452,7 @@ public class ListsTest {
       assertEquals(toInsert, (int) removed);
       assertEquals(n - 1, (int) Lists.LLEN(map, key.address, key.length));
       if (i % 10 == 0) {
-        System.out.println("all =" + i);
+        log.debug("all =" + i);
       }
     }
 

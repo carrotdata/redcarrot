@@ -1,22 +1,24 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.examples.util.Address;
 import org.bigbase.carrot.ops.OperationFailedException;
 
@@ -58,12 +60,14 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisHashesAddresses {
 
+  private static final Logger log = LogManager.getLogger(RedisHashesAddresses.class);
+
   static long totalDataSize = 0;
   static List<Address> addressList;
 
   public static void main(String[] args) throws IOException, OperationFailedException {
     addressList = Address.loadFromFile(args[0]);
-    System.out.println("RUN Redis ");
+    log.debug("RUN Redis ");
     runTest();
   }
 
@@ -79,17 +83,17 @@ public class RedisHashesAddresses {
       String skey = Address.getUserId(count);
       Map<String, String> map = us.getPropsMap();
       if (count % 10000 == 0) {
-        System.out.println("set " + count);
+        log.debug("set " + count);
       }
       client.hset(skey, map);
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded " + addressList.size() + " user address objects" + " in " + (endTime - startTime));
     client.close();
 
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
 
     count = 0;
@@ -98,7 +102,7 @@ public class RedisHashesAddresses {
       count++;
       String skey = Address.getUserId(count);
       if (count % 10000 == 0) {
-        System.out.println("del " + count);
+        log.debug("del " + count);
       }
       client.del(skey);
     }

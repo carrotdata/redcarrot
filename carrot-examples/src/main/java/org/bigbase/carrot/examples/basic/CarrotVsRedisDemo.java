@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
@@ -25,12 +25,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.examples.util.UserSession;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Utils;
 
 @SuppressWarnings("unused")
 public class CarrotVsRedisDemo {
+
+  private static final Logger log = LogManager.getLogger(CarrotVsRedisDemo.class);
 
   static long N = 10000000;
 
@@ -48,12 +52,12 @@ public class CarrotVsRedisDemo {
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("Run Carrot vs. Redis Demo");
+    log.debug("Run Carrot vs. Redis Demo");
     RawClusterClient client = new RawClusterClient(clusterNodes);
     long start = System.currentTimeMillis();
     flushAll(client);
     long end = System.currentTimeMillis();
-    System.out.println("flush all " + (end - start) + "ms");
+    log.debug("flush all " + (end - start) + "ms");
 
     // main 3 tests
     start = System.currentTimeMillis();
@@ -82,8 +86,8 @@ public class CarrotVsRedisDemo {
 
     NumberFormat formatter = NumberFormat.getInstance();
 
-    System.out.println("\n************************ RESULTS *************************************");
-    System.out.println(
+    log.debug("\n************************ RESULTS *************************************");
+    log.debug(
         "\nTOTAL ELEMENTS LOADED ="
             + formatter.format(totalLoaded)
             + " TOTAL TIME ="
@@ -122,7 +126,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " sets in "
@@ -159,7 +163,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " gets in "
@@ -196,7 +200,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " gets in "
@@ -233,7 +237,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N
             + " sets in "
@@ -270,7 +274,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + N * NUM_THREADS
             + " ping - pongs in "
@@ -307,7 +311,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + (loaded.get() / SET_SIZE)
             + " sadd x ("
@@ -346,7 +350,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + SET_KEY_TOTAL
             + " sismember x ("
@@ -385,7 +389,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + (loaded.get() / SET_SIZE)
             + " hset x ("
@@ -425,7 +429,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + SET_KEY_TOTAL
             + " hexists x ("
@@ -464,7 +468,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + (loaded.get() / SET_SIZE)
             + " zadd x ("
@@ -503,7 +507,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Finished "
             + SET_KEY_TOTAL
             + " hexists x ("
@@ -522,7 +526,7 @@ public class CarrotVsRedisDemo {
     long start = System.currentTimeMillis();
     client.saveAll();
     long end = System.currentTimeMillis();
-    System.out.println("Save time=" + (end - start));
+    log.debug("Save time=" + (end - start));
   }
 
   private static void runClusterSet() throws IOException, OperationFailedException {
@@ -531,8 +535,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " SET started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " SET started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -547,13 +550,13 @@ public class CarrotVsRedisDemo {
       String v = client.set(skey, svalue);
       // assertTrue(v.indexOf(svalue) > 0);
       if (count % 100000 == 0) {
-        System.out.println(Thread.currentThread().getId() + ": set " + count);
+        log.debug(Thread.currentThread().getId() + ": set " + count);
       }
     }
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -570,8 +573,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " SET started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " SET started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -597,7 +599,7 @@ public class CarrotVsRedisDemo {
       argList.toArray(args);
       client.mset(args);
       if (count / 100000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": set " + count);
+        log.debug(Thread.currentThread().getId() + ": set " + count);
         batch++;
       }
       argList.clear();
@@ -605,7 +607,7 @@ public class CarrotVsRedisDemo {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -622,8 +624,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " SADD started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " SADD started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -642,14 +643,14 @@ public class CarrotVsRedisDemo {
         break;
       }
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": sadd " + count);
+        log.debug(Thread.currentThread().getId() + ": sadd " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -666,8 +667,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " SISMBER started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " SISMBER started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -685,20 +685,20 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.sismember(key, member);
         if (":1\r\n".equals(result) == false) {
-          System.err.println("sismember failed result=" + result);
+          log.error("sismember failed result=" + result);
           System.exit(-1);
         }
       }
       count += SET_SIZE;
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": sismember " + count);
+        log.debug(Thread.currentThread().getId() + ": sismember " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -715,8 +715,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " HSET started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " HSET started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -735,14 +734,14 @@ public class CarrotVsRedisDemo {
         break;
       }
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": hset " + count);
+        log.debug(Thread.currentThread().getId() + ": hset " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
     loaded.addAndGet(count);
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -768,8 +767,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " HEXISTS started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " HEXISTS started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -787,19 +785,19 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.hexists(key, member);
         if (":1\r\n".equals(result) == false) {
-          System.err.println("hexists failed result=" + result);
+          log.error("hexists failed result=" + result);
           System.exit(-1);
         }
       }
       count += SET_SIZE;
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": hexists " + count);
+        log.debug(Thread.currentThread().getId() + ": hexists " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Checked "
             + count
@@ -823,8 +821,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " ZADD started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " ZADD started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -845,14 +842,14 @@ public class CarrotVsRedisDemo {
         break;
       }
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": zadd " + count);
+        log.debug(Thread.currentThread().getId() + ": zadd " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
     loaded.addAndGet(count);
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Loaded "
             + count
@@ -882,8 +879,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " ZSCORE started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " ZSCORE started. , connect to :" + list.get(0));
 
     long startTime = System.currentTimeMillis();
     int count = 0;
@@ -901,25 +897,25 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.zscore(key, member);
         if ("$-1\r\n".equals(result) == true) {
-          System.err.println("zscore failed result=" + result);
+          log.error("zscore failed result=" + result);
           System.exit(-1);
         }
         String exp = Double.toString(scores[i]);
         if (result.indexOf(exp) < 0) {
-          System.err.println("zscore failed result=" + result);
+          log.error("zscore failed result=" + result);
           System.exit(-1);
         }
       }
       count += SET_SIZE;
       if (count / 1000000 >= batch) {
-        System.out.println(Thread.currentThread().getId() + ": zscore " + count);
+        log.debug(Thread.currentThread().getId() + ": zscore " + count);
         batch++;
       }
     }
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Checked "
             + count
@@ -936,8 +932,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " GET started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " GET started. , connect to :" + list.get(0));
     long startTime = System.currentTimeMillis();
     int count = 0;
     for (; ; ) {
@@ -950,12 +945,12 @@ public class CarrotVsRedisDemo {
       String v = client.get(skey);
       // assertTrue(v.indexOf(svalue) > 0);
       if (count % 100000 == 0) {
-        System.out.println(Thread.currentThread().getId() + ": get " + count);
+        log.debug(Thread.currentThread().getId() + ": get " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Read "
             + count
@@ -971,8 +966,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
-        Thread.currentThread().getName() + " GET started. , connect to :" + list.get(0));
+    log.debug(Thread.currentThread().getName() + " GET started. , connect to :" + list.get(0));
     long startTime = System.currentTimeMillis();
     int count = 0;
     int idx = id;
@@ -998,12 +992,11 @@ public class CarrotVsRedisDemo {
       argList.toArray(args);
       String s = client.mget(args);
       if (s.length() < 1000) {
-        System.out.println("\n" + s + "\n");
+        log.debug("\n" + s + "\n");
       }
       // verify(valList, s);
       if (count / 100000 >= batch) {
-        System.out.println(
-            Thread.currentThread().getId() + ": get " + count + " s.length=" + s.length());
+        log.debug(Thread.currentThread().getId() + ": get " + count + " s.length=" + s.length());
         batch++;
       }
       argList.clear();
@@ -1011,7 +1004,7 @@ public class CarrotVsRedisDemo {
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Read "
             + count
@@ -1032,7 +1025,7 @@ public class CarrotVsRedisDemo {
     List<String> list = new ArrayList<String>();
     list.add(clusterNodes.get(id % clusterNodes.size()));
     RawClusterClient client = new RawClusterClient(list);
-    System.out.println(
+    log.debug(
         Thread.currentThread().getName() + " PING/PONG started. , connect to :" + list.get(0));
     long startTime = System.currentTimeMillis();
 
@@ -1040,12 +1033,12 @@ public class CarrotVsRedisDemo {
       String reply = client.ping();
       assert (reply.indexOf("PONG") > 0);
       if ((i + 1) % 100000 == 0) {
-        System.out.println(Thread.currentThread().getName() + ": pings " + (i + 1));
+        log.debug(Thread.currentThread().getName() + ": pings " + (i + 1));
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         Thread.currentThread().getId()
             + ": Ping-Pong "
             + N

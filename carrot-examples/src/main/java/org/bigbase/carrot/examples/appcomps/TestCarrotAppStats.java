@@ -1,18 +1,20 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.appcomps;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -56,6 +58,9 @@ import org.bigbase.carrot.compression.CodecType;
  * <p>No compression = 1.45 LZ4 compression = 3.0 LZ4HC compression = 3.1
  */
 public class TestCarrotAppStats {
+
+  private static final Logger log = LogManager.getLogger(TestCarrotAppStats.class);
+
   static final String KEY_PREFIX = "stats:profilepage:access:";
   static final int hoursToKeep = 10 * 365 * 24;
 
@@ -66,19 +71,19 @@ public class TestCarrotAppStats {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -92,7 +97,7 @@ public class TestCarrotAppStats {
     }
     long end = System.currentTimeMillis();
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println(
+    log.debug(
         "Loaded " + hoursToKeep + " in " + (end - start) + "ms. RAM usage=" + memory + " bytes");
     map.dispose();
   }

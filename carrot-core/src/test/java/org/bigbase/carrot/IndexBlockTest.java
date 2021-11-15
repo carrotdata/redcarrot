@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
@@ -31,6 +33,8 @@ import org.junit.Ignore;
 
 public class IndexBlockTest {
 
+  private static final Logger log = LogManager.getLogger(IndexBlockTest.class);
+
   static {
     UnsafeAccess.debug = true;
   }
@@ -39,7 +43,7 @@ public class IndexBlockTest {
   public void testAll() throws RetryOperationException, IOException {
 
     for (int i = 0; i < 10; i++) {
-      System.out.println("\nRun " + (i + 1) + "\n");
+      log.debug("\nRun " + (i + 1) + "\n");
       testPutGet();
       testPutGetWithCompressionLZ4();
       testPutGetWithCompressionLZ4HC();
@@ -75,7 +79,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGet() {
-    System.out.println("testPutGet");
+    log.debug("testPutGet");
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     for (Key key : keys) {
@@ -93,7 +97,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetWithCompressionLZ4() {
-    System.out.println("testPutGetWithCompressionLZ4");
+    log.debug("testPutGetWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testPutGet();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -102,7 +106,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetWithCompressionLZ4HC() {
-    System.out.println("testPutGetWithCompressionLZ4HC");
+    log.debug("testPutGetWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testPutGet();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -111,7 +115,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testAutomaticDataBlockMerge() {
-    System.out.println("testAutomaticDataBlockMerge");
+    log.debug("testAutomaticDataBlockMerge");
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     Utils.sortKeys(keys);
@@ -126,7 +130,7 @@ public class IndexBlockTest {
       assertTrue(res == OpResult.OK);
     }
     int after = ib.getNumberOfDataBlock();
-    System.out.println("Before =" + before + " After=" + after);
+    log.debug("Before =" + before + " After=" + after);
     assertTrue(before > after);
     ib.free();
     freeKeys(keys);
@@ -135,7 +139,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testAutomaticDataBlockMergeWithCompressionLZ4() {
-    System.out.println("testAutomaticDataBlockMergeWithCompressionLZ4");
+    log.debug("testAutomaticDataBlockMergeWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testAutomaticDataBlockMerge();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -144,7 +148,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testAutomaticDataBlockMergeWithCompressionLZ4HC() {
-    System.out.println("testAutomaticDataBlockMergeWithCompressionLZ4HC");
+    log.debug("testAutomaticDataBlockMergeWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testAutomaticDataBlockMerge();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -153,7 +157,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeleteFull() {
-    System.out.println("testPutGetDeleteFull");
+    log.debug("testPutGetDeleteFull");
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -200,7 +204,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeleteFullWithCompressionLZ4() {
-    System.out.println("testPutGetDeleteFullWithCompressionLZ4");
+    log.debug("testPutGetDeleteFullWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testPutGetDeleteFull();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -209,7 +213,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeleteFullWithCompressionLZ4HC() {
-    System.out.println("testPutGetDeleteFullWithCompressionLZ4HC");
+    log.debug("testPutGetDeleteFullWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testPutGetDeleteFull();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -218,7 +222,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeletePartial() {
-    System.out.println("testPutGetDeletePartial");
+    log.debug("testPutGetDeletePartial");
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -276,7 +280,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeletePartialWithCompressionLZ4() {
-    System.out.println("testPutGetDeletePartialWithCompressionLZ4");
+    log.debug("testPutGetDeletePartialWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testPutGetDeletePartial();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -285,7 +289,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testPutGetDeletePartialWithCompressionLZ4HC() {
-    System.out.println("testPutGetDeletePartiallWithCompressionLZ4HC");
+    log.debug("testPutGetDeletePartiallWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testPutGetDeletePartial();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -294,7 +298,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testOverwriteSameValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSameValueSize");
+    log.debug("testOverwriteSameValueSize");
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -320,7 +324,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteSameValueSizeWithCompressionLZ4()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSameValueSizeWithCompressionLZ4");
+    log.debug("testOverwriteSameValueSizeWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testOverwriteSameValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -330,7 +334,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteSameValueSizeWithCompressionLZ4HC()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSameValueSizeWithCompressionLZ4HC");
+    log.debug("testOverwriteSameValueSizeWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testOverwriteSameValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -339,7 +343,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSmallerValueSize");
+    log.debug("testOverwriteSmallerValueSize");
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -365,7 +369,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteSmallerValueSizeWithCompressionLZ4()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSmallerValueSizeWithCompressionLZ4");
+    log.debug("testOverwriteSmallerValueSizeWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testOverwriteSmallerValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -375,7 +379,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteSmallerValueSizeWithCompressionLZ4HC()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSmallerValueSizeWithCompressionLZ4HC");
+    log.debug("testOverwriteSmallerValueSizeWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testOverwriteSmallerValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -384,7 +388,7 @@ public class IndexBlockTest {
   @Ignore
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteLargerValueSize");
+    log.debug("testOverwriteLargerValueSize");
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -418,7 +422,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteLargerValueSizeWithCompressionLZ4()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteLargerValueSizeWithCompressionLZ4");
+    log.debug("testOverwriteLargerValueSizeWithCompressionLZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     testOverwriteLargerValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -428,7 +432,7 @@ public class IndexBlockTest {
   @Test
   public void testOverwriteLargerValueSizeWithCompressionLZ4HC()
       throws RetryOperationException, IOException {
-    System.out.println("testOverwriteLargerValueSizeWithCompressionLZ4HC");
+    log.debug("testOverwriteLargerValueSizeWithCompressionLZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     testOverwriteLargerValueSize();
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -488,7 +492,7 @@ public class IndexBlockTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Fill seed=" + seed);
+    log.debug("Fill seed=" + seed);
     int kvSize = 32;
     boolean result = true;
     while (result == true) {
@@ -503,7 +507,7 @@ public class IndexBlockTest {
         UnsafeAccess.free(ptr);
       }
     }
-    System.out.println(
+    log.debug(
         "Number of data blocks="
             + b.getNumberOfDataBlock()
             + " "

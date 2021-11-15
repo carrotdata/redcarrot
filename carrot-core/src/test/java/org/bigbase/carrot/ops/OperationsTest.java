@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.ops;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.ops.Append;
@@ -27,6 +29,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.Test;
 
 public class OperationsTest {
+
+  private static final Logger log = LogManager.getLogger(OperationsTest.class);
 
   static BigSortedMap map;
   static long totalLoaded;
@@ -54,21 +58,21 @@ public class OperationsTest {
         break;
       }
       if (totalLoaded % 1000000 == 0) {
-        System.out.println("Loaded = " + totalLoaded);
+        log.debug("Loaded = " + totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
     map.dumpStats();
-    System.out.println("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
-    System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-    System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
+    log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
   }
 
   @Test
   public void testIncrement() throws IOException {
     try {
-      System.out.println("Increment test");
+      log.debug("Increment test");
       load();
       IncrementLong incr = new IncrementLong();
       long ptr = UnsafeAccess.malloc(16);
@@ -87,7 +91,7 @@ public class OperationsTest {
         assertTrue(res);
       }
       long end = System.currentTimeMillis();
-      System.out.println("Time to increment " + totalIncrement + " " + (end - start) + "ms");
+      log.debug("Time to increment " + totalIncrement + " " + (end - start) + "ms");
       BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
       long total = 0;
       while (scanner.hasNext()) {
@@ -108,7 +112,7 @@ public class OperationsTest {
   @Test
   public void testAppend() throws IOException {
     try {
-      System.out.println("Append test");
+      log.debug("Append test");
       loadForAppend();
       Append append = new Append();
       long key = UnsafeAccess.malloc(16);
@@ -118,13 +122,13 @@ public class OperationsTest {
       Random r = new Random();
       long seed = r.nextLong();
       r.setSeed(seed);
-      System.out.println("SEED=" + seed);
+      log.debug("SEED=" + seed);
       long start = System.currentTimeMillis();
       for (int i = 0; i < totalAppend; i++) {
 
         int n = r.nextInt((int) totalLoaded) + 1;
         keySize = getKey(key, n);
-        // System.out.println(" i="+i);
+        // log.debug(" i="+i);
         append.reset();
         append.setKeyAddress(key);
         append.setKeySize(keySize);
@@ -133,7 +137,7 @@ public class OperationsTest {
         assertTrue(res);
       }
       long end = System.currentTimeMillis();
-      System.out.println("Time to append " + totalAppend + " " + (end - start) + "ms");
+      log.debug("Time to append " + totalAppend + " " + (end - start) + "ms");
       BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
       long total = 0;
       while (scanner.hasNext()) {
@@ -174,15 +178,15 @@ public class OperationsTest {
         break;
       }
       if (totalLoaded % 1000000 == 0) {
-        System.out.println("Loaded = " + totalLoaded);
+        log.debug("Loaded = " + totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
     map.dumpStats();
-    System.out.println("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
-    System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-    System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
+    log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
   }
 
   private int getKey(long ptr, int n) {

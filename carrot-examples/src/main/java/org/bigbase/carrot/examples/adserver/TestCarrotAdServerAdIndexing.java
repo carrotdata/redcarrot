@@ -1,20 +1,22 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -94,6 +96,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class TestCarrotAdServerAdIndexing {
 
+  private static final Logger log = LogManager.getLogger(TestCarrotAdServerAdIndexing.class);
+
   static final int MAX_ADS = 10000;
   static final int MAX_WORDS = 10000;
   static final int MAX_LOCATIONS = 10000;
@@ -105,19 +109,19 @@ public class TestCarrotAdServerAdIndexing {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -131,13 +135,13 @@ public class TestCarrotAdServerAdIndexing {
     doWordAds(map);
     doAdWords(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println("Total memory=" + memory);
+    log.debug("Total memory=" + memory);
     map.dispose();
   }
 
   private static void doLocAds(BigSortedMap map) {
     // SET
-    System.out.println("Loading Location - AdId data");
+    log.debug("Loading Location - AdId data");
     String key = "idx:locads:";
     Random r = new Random();
     long count = 0;
@@ -156,17 +160,17 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("LocAds :" + count);
+          log.debug("LocAds :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("LocAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("LocAds : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doWordAds(BigSortedMap map) {
-    System.out.println("Loading Word - AdId data");
+    log.debug("Loading Word - AdId data");
 
     String key = "idx:wordads:";
     Random r = new Random();
@@ -187,23 +191,23 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("WordAds :" + count);
+          log.debug("WordAds :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("WordAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("WordAds : loaded " + count + " in " + (end - start) + "ms");
   }
 
   static enum Type {
     CPM,
     CPA,
-    CPC;
+    CPC
   }
 
   private static void doAddTypes(BigSortedMap map) {
-    System.out.println("Loading Ad - Type data");
+    log.debug("Loading Ad - Type data");
 
     String key = "type:";
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
@@ -226,11 +230,11 @@ public class TestCarrotAdServerAdIndexing {
     UnsafeAccess.free(keyPtr);
 
     long end = System.currentTimeMillis();
-    System.out.println("AdType : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdType : loaded " + MAX_ADS + " in " + (end - start) + "ms");
   }
 
   private static void doAdeCPM(BigSortedMap map) {
-    System.out.println("Loading Ad - eCPM data");
+    log.debug("Loading Ad - eCPM data");
 
     String key = "idx:ad:value:";
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
@@ -248,11 +252,11 @@ public class TestCarrotAdServerAdIndexing {
     }
     UnsafeAccess.free(keyPtr);
     long end = System.currentTimeMillis();
-    System.out.println("AdeCPM : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdeCPM : loaded " + MAX_ADS + " in " + (end - start) + "ms");
   }
 
   private static void doAdBase(BigSortedMap map) {
-    System.out.println("Loading Ad - Base value data");
+    log.debug("Loading Ad - Base value data");
 
     String key = "idx:ad:base_value:";
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
@@ -270,12 +274,12 @@ public class TestCarrotAdServerAdIndexing {
     }
     UnsafeAccess.free(keyPtr);
     long end = System.currentTimeMillis();
-    System.out.println("AdBase : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdBase : loaded " + MAX_ADS + " in " + (end - start) + "ms");
   }
 
   private static void doAdWords(BigSortedMap map) {
     // SET
-    System.out.println("Loading Ad - Words data");
+    log.debug("Loading Ad - Words data");
     String key = "idx:terms:";
     Random r = new Random();
     long count = 0;
@@ -293,12 +297,12 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("AdWords :" + count);
+          log.debug("AdWords :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("AdWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdWords : loaded " + count + " in " + (end - start) + "ms");
   }
 }

@@ -1,20 +1,22 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -45,6 +47,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class TestCarrotAdServerUserTarget {
 
+  private static final Logger log = LogManager.getLogger(TestCarrotAdServerUserTarget.class);
+
   static final int MAX_ADS = 10000;
   static final int MAX_WORDS = 10000;
   static final int MAX_USERS = 1000;
@@ -56,19 +60,19 @@ public class TestCarrotAdServerUserTarget {
   }
 
   private static void runTestNoCompression() {
-    System.out.println("\nTest , compression = None");
+    log.debug("\nTest , compression = None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
   }
 
   private static void runTestCompressionLZ4() {
-    System.out.println("\nTest , compression = LZ4");
+    log.debug("\nTest , compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
   }
 
   private static void runTestCompressionLZ4HC() {
-    System.out.println("\nTest , compression = LZ4HC");
+    log.debug("\nTest , compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -80,13 +84,13 @@ public class TestCarrotAdServerUserTarget {
     doUserViewAds(map);
     doUserActionAds(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    System.out.println("Total memory=" + memory);
+    log.debug("Total memory=" + memory);
     map.dispose();
   }
 
   private static void doUserViewWords(BigSortedMap map) {
     // SET
-    System.out.println("Loading UserViewWords data");
+    log.debug("Loading UserViewWords data");
     String key = "user:viewwords:";
     Random r = new Random();
     long count = 0;
@@ -111,18 +115,18 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("UserViewWords :" + count);
+          log.debug("UserViewWords :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserActionWords(BigSortedMap map) {
     // SET
-    System.out.println("Loading UserActionWords data");
+    log.debug("Loading UserActionWords data");
     String key = "user:actionwords:";
     Random r = new Random();
     long count = 0;
@@ -147,17 +151,17 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("UserActionWords :" + count);
+          log.debug("UserActionWords :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserViewAds(BigSortedMap map) {
-    System.out.println("Loading User View Ads data");
+    log.debug("Loading User View Ads data");
     String key = "user:viewads:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -181,18 +185,18 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(vPtr);
         UnsafeAccess.free(mPtr);
         if (count % 100000 == 0) {
-          System.out.println("UserViewAds :" + count);
+          log.debug("UserViewAds :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    System.out.println("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserActionAds(BigSortedMap map) {
-    System.out.println("Loading User Action Ads data");
+    log.debug("Loading User Action Ads data");
     String key = "user:actionads:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -216,13 +220,13 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(vPtr);
         UnsafeAccess.free(mPtr);
         if (count % 100000 == 0) {
-          System.out.println("UserActionAds :" + count);
+          log.debug("UserActionAds :" + count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    System.out.println("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
   }
 }

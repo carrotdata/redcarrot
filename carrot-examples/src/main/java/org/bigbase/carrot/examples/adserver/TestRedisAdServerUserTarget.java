@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Utils;
 
@@ -43,6 +45,8 @@ import redis.clients.jedis.Jedis;
  */
 public class TestRedisAdServerUserTarget {
 
+  private static final Logger log = LogManager.getLogger(TestRedisAdServerUserTarget.class);
+
   static final int MAX_ADS = 10000;
   static final int MAX_WORDS = 10000;
   static final int MAX_USERS = 1000;
@@ -57,7 +61,7 @@ public class TestRedisAdServerUserTarget {
     doUserActionWords(client);
     doUserViewAdds(client);
     doUserActionAdds(client);
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
     client.flushAll();
     client.close();
@@ -65,7 +69,7 @@ public class TestRedisAdServerUserTarget {
 
   private static void doUserViewWords(Jedis client) {
     // SET
-    System.out.println("Loading UserViewWords data");
+    log.debug("Loading UserViewWords data");
     String key = "user:viewwords:";
     Random r = new Random();
     long count = 0;
@@ -78,17 +82,17 @@ public class TestRedisAdServerUserTarget {
         client.zadd(k.getBytes(), r.nextDouble(), word.getBytes());
         count++;
         if (count % 100000 == 0) {
-          System.out.println("UserViewWords :" + count);
+          log.debug("UserViewWords :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserActionWords(Jedis client) {
     // SET
-    System.out.println("Loading UserActionWords data");
+    log.debug("Loading UserActionWords data");
     String key = "user:actionwords:";
     Random r = new Random();
     long count = 0;
@@ -101,16 +105,16 @@ public class TestRedisAdServerUserTarget {
         client.zadd(k.getBytes(), r.nextDouble(), word.getBytes());
         count++;
         if (count % 100000 == 0) {
-          System.out.println("UserViewWords :" + count);
+          log.debug("UserViewWords :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserViewAdds(Jedis client) {
-    System.out.println("Loading User View Ads data");
+    log.debug("Loading User View Ads data");
     String key = "user:viewads:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -124,16 +128,16 @@ public class TestRedisAdServerUserTarget {
         int views = r.nextInt(100);
         client.hset(k.getBytes(), Bytes.toBytes(id), Bytes.toBytes(views));
         if (count % 100000 == 0) {
-          System.out.println("UserViewAds :" + count);
+          log.debug("UserViewAds :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doUserActionAdds(Jedis client) {
-    System.out.println("Loading User Action Ads data");
+    log.debug("Loading User Action Ads data");
     String key = "user:actionads:";
     Random r = new Random();
     long start = System.currentTimeMillis();
@@ -147,11 +151,11 @@ public class TestRedisAdServerUserTarget {
         int views = r.nextInt(100);
         client.hset(k.getBytes(), Bytes.toBytes(id), Bytes.toBytes(views));
         if (count % 100000 == 0) {
-          System.out.println("UserViewAds :" + count);
+          log.debug("UserViewAds :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
   }
 }

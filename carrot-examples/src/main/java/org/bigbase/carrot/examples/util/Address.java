@@ -1,17 +1,20 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.util;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -21,6 +24,8 @@ import java.util.List;
 import java.util.Properties;
 
 public class Address extends KeyValues {
+
+  private static final Logger log = LogManager.getLogger(Address.class);
 
   Address(Properties p) {
     super(p);
@@ -75,11 +80,11 @@ public class Address extends KeyValues {
       }
       list.add(new Address(p));
       if ((list.size() % 10000) == 0) {
-        System.out.println("Loaded " + list.size());
+        log.debug("Loaded " + list.size());
       }
     }
     dis.close();
-    System.out.println(
+    log.debug(
         "Parsed file: "
             + name
             + "\nTotal records="
