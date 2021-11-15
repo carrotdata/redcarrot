@@ -33,6 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class SparseBitmapsTest {
+
   BigSortedMap map;
   Key key, key2;
   long buffer;
@@ -337,8 +338,10 @@ public class SparseBitmapsTest {
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ System.out.println("Total RAM    =" + memory);
-    /*DEBUG*/ System.out.println("Total loaded =" + bits.size());
+    /*DEBUG*/
+    System.out.println("Total RAM    =" + memory);
+    /*DEBUG*/
+    System.out.println("Total loaded =" + bits.size());
     int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     System.out.println("Edge cases ");
@@ -436,8 +439,10 @@ public class SparseBitmapsTest {
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ System.out.println("Total RAM    =" + memory);
-    /*DEBUG*/ System.out.println("Total loaded =" + bits.size());
+    /*DEBUG*/
+    System.out.println("Total RAM    =" + memory);
+    /*DEBUG*/
+    System.out.println("Total loaded =" + bits.size());
     int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
@@ -508,7 +513,7 @@ public class SparseBitmapsTest {
     // Test 6: start and end cover all
     bit = 1;
     pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, -2 * strlen, 2 * strlen);
-    assertEquals(bits.first(), (int) pos);
+    assertEquals(bits.first(), (int) pos, 0.0);
 
     bit = 0;
     pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, -2 * strlen, 2 * strlen);
@@ -518,7 +523,7 @@ public class SparseBitmapsTest {
     // Test 7: negatives
     bit = 1;
     pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, -strlen, -1);
-    assertEquals(bits.first(), (int) pos);
+    assertEquals(bits.first(), (int) pos, 0.0);
 
     System.out.println("Edge cases start=end");
 

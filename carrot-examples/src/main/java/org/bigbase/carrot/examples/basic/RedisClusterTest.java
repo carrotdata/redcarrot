@@ -13,8 +13,6 @@
  */
 package org.bigbase.carrot.examples.basic;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,7 +197,9 @@ public class RedisClusterTest {
     int count = 0;
     for (; ; ) {
       int idx = (int) index.getAndIncrement();
-      if (idx >= N) break;
+      if (idx >= N) {
+        break;
+      }
       UserSession us = userSessions.get(idx);
       count++;
       String skey = us.getUserId();
@@ -233,14 +233,16 @@ public class RedisClusterTest {
     int count = 0;
     for (; ; ) {
       int idx = (int) index.getAndIncrement();
-      if (idx >= N) break;
+      if (idx >= N) {
+        break;
+      }
       UserSession us = userSessions.get(idx);
       count++;
       String skey = us.getUserId();
       String svalue = us.toString();
       totalDataSize += skey.length() + svalue.length();
       String v = client.get(skey);
-      assertTrue(v != null && v.length() == svalue.length());
+      assert (v != null && v.length() == svalue.length());
       if (count % 10000 == 0) {
         System.out.println(Thread.currentThread().getId() + ": get " + count);
       }

@@ -13,8 +13,6 @@
  */
 package org.bigbase.carrot.examples.basic;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 
 import org.bigbase.carrot.BigSortedMap;
@@ -68,6 +66,7 @@ import org.bigbase.carrot.util.UnsafeAccess;
  * Test_consumed_RAM - RAM consumed by test.
  */
 public class SparseBitmapsComparison {
+
   static BigSortedMap map;
   static Key key;
   static long buffer;
@@ -79,7 +78,7 @@ public class SparseBitmapsComparison {
 
   static double[] dencities =
       new double[] {
-          /*0.000001, 0.00001, 0.0001, 0.001,*/
+        /*0.000001, 0.00001, 0.0001, 0.001,*/
         0.01 /*, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1*/
       };
 
@@ -174,7 +173,7 @@ public class SparseBitmapsComparison {
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
-    assertEquals(expected, count);
+    assert (expected == count);
 
     System.out.println(
         "Time for "

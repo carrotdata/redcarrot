@@ -13,10 +13,6 @@
  */
 package org.bigbase.carrot.examples.basic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,7 +161,9 @@ public class RedisStringsUserSessions {
     int count = 0;
     for (int i = 0; i < to.length; i++) {
       int idx = (int) index.getAndIncrement();
-      if (idx >= N) break;
+      if (idx >= N) {
+        break;
+      }
       count++;
       to[i] = idx;
     }
@@ -213,7 +211,9 @@ public class RedisStringsUserSessions {
       //      totalDataSize += skey.length() + svalue.length();
       //      client.set(skey, svalue);
       int len = getIndexes(idxs);
-      if (len == 0) break;
+      if (len == 0) {
+        break;
+      }
       String[] args = getSetArgs(idxs, len);
       client.mset(args);
       count += len;
@@ -257,7 +257,9 @@ public class RedisStringsUserSessions {
       //      assertTrue(v != null && v.length() == svalue.length());
 
       int len = getIndexes(idxs);
-      if (len == 0) break;
+      if (len == 0) {
+        break;
+      }
       String[] args = getGetArgs(idxs, len);
       List<String> result = client.mget(args);
       count += len;
@@ -265,7 +267,7 @@ public class RedisStringsUserSessions {
         System.out.println(Thread.currentThread().getId() + ": get " + count);
         batches++;
       }
-      assertEquals(args.length, result.size());
+      assert (args.length == result.size());
       verify(result, idxs);
 
       //      if (count % 10000 == 0) {
@@ -290,8 +292,8 @@ public class RedisStringsUserSessions {
       UserSession us = userSessions.get(idxs[i]);
       String expected = us.toString();
       String value = result.get(i);
-      assertNotNull(value);
-      assertEquals(expected, value);
+      assert (value != null);
+      assert (expected.equals(value));
     }
   }
 }

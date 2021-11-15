@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.bigbase</groupId>
     <artifactId>lz4-java</artifactId>
     <packaging>jar</packaging>
     <name>LZ4 Java</name>
-    <version>1.0.0</version>
     <url>http://www.server.com</url>
+    <version>${revision}</version>
+
     <parent>
         <groupId>org.bigbase</groupId>
         <artifactId>carrot</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
     </parent>
+
     <dependencies>
         <dependency>
             <groupId>org.bigbase</groupId>
             <artifactId>carrot-common</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.0</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -43,13 +44,15 @@
                                 <artifactItem>
                                     <groupId>org.bigbase</groupId>
                                     <artifactId>liblz4</artifactId>
-                                    <version>1.0.0</version>
+                                    <version>${revision}</version>
                                     <type>${lib.packaging}</type>
                                     <overWrite>false</overWrite>
                                     <destFileName>liblz4.${lib.packaging}</destFileName>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${project.build.directory}/classes/org/bigbase/lz4/native/${lib.path.plaftorm.suffix}</outputDirectory>
+                            <outputDirectory>
+                                ${project.build.directory}/classes/org/bigbase/lz4/native/${lib.path.plaftorm.suffix}
+                            </outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                         </configuration>
@@ -58,7 +61,5 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+
 </project>

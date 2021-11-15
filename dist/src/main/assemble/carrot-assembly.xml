@@ -13,8 +13,16 @@
                 <include>org.carrot:lz4-java:*</include>
                 <include>org.carrot:carrot-core:*</include>
                 <include>org.carrot:carrot-examples:*</include>
+                <include>${artifact}</include>
             </includes>
-            <outputDirectory>lib</outputDirectory>
+            <outputDirectory>/</outputDirectory>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <unpack>false</unpack>
+            <excludes>
+                <exclude>${artifact}</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
     <moduleSets>
@@ -22,7 +30,7 @@
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes></includes>
             <binaries>
-                <outputDirectory>lib</outputDirectory>
+                <outputDirectory>/</outputDirectory>
                 <unpack>false</unpack>
             </binaries>
         </moduleSet>

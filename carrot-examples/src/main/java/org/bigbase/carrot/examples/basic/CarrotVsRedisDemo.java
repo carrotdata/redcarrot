@@ -13,8 +13,6 @@
  */
 package org.bigbase.carrot.examples.basic;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -801,7 +799,6 @@ public class CarrotVsRedisDemo {
     }
 
     long endTime = System.currentTimeMillis();
-
     System.out.println(
         Thread.currentThread().getId()
             + ": Checked "
@@ -1026,7 +1023,7 @@ public class CarrotVsRedisDemo {
 
   private static void verify(List<String> valList, String s) {
     for (String val : valList) {
-      assertTrue(s.indexOf(val) > 0);
+      assert (s.indexOf(val) > 0);
     }
   }
 
@@ -1041,7 +1038,7 @@ public class CarrotVsRedisDemo {
 
     for (int i = 0; i < N; i++) {
       String reply = client.ping();
-      assertTrue(reply.indexOf("PONG") > 0);
+      assert (reply.indexOf("PONG") > 0);
       if ((i + 1) % 100000 == 0) {
         System.out.println(Thread.currentThread().getName() + ": pings " + (i + 1));
       }

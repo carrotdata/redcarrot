@@ -1,19 +1,20 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.zsets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -149,7 +150,7 @@ public class ZSetsMultithreadedTest {
                 int res = (int) ZSets.ZADD(map, ptr, keySize, scs, vptrs, vsizes, false);
                 assertEquals(1, res);
                 Double d = ZSets.ZSCORE(map, ptr, keySize, v.address, v.length);
-                assertEquals(scs[0], d);
+                assertEquals(scs[0], d, 0.0);
                 loaded++;
                 if (loaded % 10000 == 0) {
                   System.out.println(Thread.currentThread().getName() + " loaded " + loaded);
@@ -187,7 +188,8 @@ public class ZSetsMultithreadedTest {
                 Value v = values.get(j);
                 double expScore = scores.get(j);
                 Double res = ZSets.ZSCORE(map, ptr, keySize, v.address, v.length);
-                assertEquals(expScore, res);
+                assertNotNull(res);
+                assertEquals(expScore, res, 0.0);
                 read++;
                 if (read % 1000 == 0) {
                   System.out.println(Thread.currentThread().getName() + " read " + read);

@@ -1,15 +1,15 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.zsets;
 
@@ -38,6 +38,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class ZSetsAPITest {
+
   BigSortedMap map;
   long n = 1000;
   static Random rnd = new Random();
@@ -70,6 +71,7 @@ public class ZSetsAPITest {
   }
 
   private long dataSeed;
+
   /*
    * Loads data and sort it my field
    */
@@ -494,7 +496,7 @@ public class ZSetsAPITest {
       for (Pair<String> p : list) {
         String member = p.getFirst();
         double score = ZSets.ZSCORE(map, key, member);
-        assertEquals(score, Double.parseDouble(p.getSecond()));
+        assertEquals(score, Double.parseDouble(p.getSecond()), 0.0);
       }
     }
   }
@@ -518,12 +520,12 @@ public class ZSetsAPITest {
         String member = p.getFirst();
         double expected = Double.parseDouble(p.getSecond());
         double score = ZSets.ZSCORE(map, key, member);
-        assertEquals(score, expected);
+        assertEquals(score, expected, 0.0);
         double incr = r.nextDouble() * r.nextInt();
         double newValue = ZSets.ZINCRBY(map, key, incr, member);
-        assertEquals(expected + incr, newValue);
+        assertEquals(expected + incr, newValue, 0.0);
         score = ZSets.ZSCORE(map, key, member);
-        assertEquals(expected + incr, score);
+        assertEquals(expected + incr, score, 0.0);
       }
       if (count % 100 == 0) {
         System.out.println(count);
@@ -591,11 +593,11 @@ public class ZSetsAPITest {
       count++;
       double score = Double.parseDouble(p.getSecond());
       double value = ZSets.ZINCRBY(map, key, score, p.getFirst());
-      assertEquals(score, value);
+      assertEquals(score, value, 0.0);
       long card = ZSets.ZCARD(map, key);
       assertEquals(count, (int) card);
       value = ZSets.ZINCRBY(map, key, score, p.getFirst());
-      assertEquals(score + score, value);
+      assertEquals(score + score, value, 0.0);
       card = ZSets.ZCARD(map, key);
       assertEquals(count, (int) card);
     }
@@ -663,7 +665,7 @@ public class ZSetsAPITest {
       assertEquals(1, (int) res);
       Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
       assertNotNull(newScore);
-      assertEquals(score, newScore);
+      assertEquals(score, newScore, 0.0);
       count++;
     }
 
@@ -738,7 +740,9 @@ public class ZSetsAPITest {
       double max = Double.parseDouble(data.get(stop).getSecond());
 
       int expected = stop - start - 1; // both are exclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZCOUNT(map, key, min, false, max, false);
       assertEquals(expected, (int) count);
     }
@@ -759,7 +763,9 @@ public class ZSetsAPITest {
       double max = Double.parseDouble(data.get(stop).getSecond());
 
       int expected = stop - start; // both are inclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZCOUNT(map, key, min, true, max, false);
       assertEquals(expected, (int) count);
     }
@@ -780,7 +786,9 @@ public class ZSetsAPITest {
       double max = Double.parseDouble(data.get(stop).getSecond());
 
       int expected = stop - start; // both are inclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZCOUNT(map, key, min, false, max, true);
       assertEquals(expected, (int) count);
     }
@@ -933,7 +941,9 @@ public class ZSetsAPITest {
       String max = data.get(stop).getFirst();
 
       int expected = stop - start - 1; // both are exclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZLEXCOUNT(map, key, min, false, max, false);
       assertEquals(expected, (int) count);
     }
@@ -954,7 +964,9 @@ public class ZSetsAPITest {
       String max = data.get(stop).getFirst();
 
       int expected = stop - start; // both are inclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZLEXCOUNT(map, key, min, true, max, false);
       assertEquals(expected, (int) count);
     }
@@ -975,7 +987,9 @@ public class ZSetsAPITest {
       String max = data.get(stop).getFirst();
 
       int expected = stop - start; // both are inclusive
-      if (expected < 0) expected = 0;
+      if (expected < 0) {
+        expected = 0;
+      }
       long count = ZSets.ZLEXCOUNT(map, key, min, false, max, true);
       assertEquals(expected, (int) count);
     }
@@ -1639,7 +1653,9 @@ public class ZSetsAPITest {
 
   private boolean equals(List<Pair<String>> first, List<Pair<String>> second) {
     // we do not check nulls b/c there are no
-    if (first.size() != second.size()) return false;
+    if (first.size() != second.size()) {
+      return false;
+    }
     // Verify that we are correct
     for (int k = 0; k < first.size(); k++) {
       String expected = first.get(k).getFirst();
@@ -1814,7 +1830,9 @@ public class ZSetsAPITest {
       String start = null;
       String end = null;
       int startIdx = r.nextInt(data.size());
-      if (startIdx == 0) startIdx = 1;
+      if (startIdx == 0) {
+        startIdx = 1;
+      }
       int endIdx = startIdx - 1;
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
@@ -2039,7 +2057,9 @@ public class ZSetsAPITest {
       String start = null;
       String end = null;
       int startIdx = r.nextInt(data.size());
-      if (startIdx == 0) startIdx = 1;
+      if (startIdx == 0) {
+        startIdx = 1;
+      }
       int endIdx = startIdx - 1;
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
@@ -2102,6 +2122,7 @@ public class ZSetsAPITest {
 
     return start;
   }
+
   /**
    * Exclusive
    *
@@ -2314,7 +2335,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, false, bufSize);
@@ -2347,7 +2368,7 @@ public class ZSetsAPITest {
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
       assertEquals(
-          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()));
+          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()), 0.0);
     }
 
     // start > end
@@ -2451,7 +2472,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list =
@@ -2489,7 +2510,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2516,7 +2537,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2544,7 +2565,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
     // 3. start = end
@@ -2570,7 +2591,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2578,7 +2599,9 @@ public class ZSetsAPITest {
     for (int i = 0; i < numIterations; i++) {
       double min, max;
       int startIdx = r.nextInt(data.size());
-      if (startIdx == 0) startIdx = 1;
+      if (startIdx == 0) {
+        startIdx = 1;
+      }
       int endIdx = startIdx - 1;
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());
@@ -2693,7 +2716,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list =
@@ -2728,7 +2751,7 @@ public class ZSetsAPITest {
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
       assertEquals(
-          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()));
+          Double.parseDouble(data.get(1).getSecond()), Double.parseDouble(list.get(0).getSecond()), 0.0);
     }
 
     // start > end
@@ -2832,7 +2855,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list =
@@ -2870,7 +2893,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2897,7 +2920,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2925,7 +2948,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
     // 3. start = end
@@ -2951,7 +2974,7 @@ public class ZSetsAPITest {
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
         assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()));
+            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2959,7 +2982,9 @@ public class ZSetsAPITest {
     for (int i = 0; i < numIterations; i++) {
       double min, max;
       int startIdx = r.nextInt(data.size());
-      if (startIdx == 0) startIdx = 1;
+      if (startIdx == 0) {
+        startIdx = 1;
+      }
       int endIdx = startIdx - 1;
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());

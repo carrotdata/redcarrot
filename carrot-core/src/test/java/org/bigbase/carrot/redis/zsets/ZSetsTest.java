@@ -1,19 +1,20 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis.zsets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class ZSetsTest {
+
   BigSortedMap map;
   Key key;
   long buffer;
@@ -185,7 +187,8 @@ public class ZSetsTest {
 
     for (int i = 0; i < total; i++) {
       Double res = ZSets.ZSCORE(map, key.address, key.length, elemPtrs[i], elemSizes[i]);
-      assertEquals(scores[i], res);
+      assertNotNull(res);
+      assertEquals(scores[i], res, 0.0);
     }
 
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -222,7 +225,8 @@ public class ZSetsTest {
     assertEquals(total, (int) ZSets.ZCARD(map, key.address, key.length));
 
     for (int i = 0; i < total; i++) {
-      /*DEBUG*/ System.out.println(i);
+      /*DEBUG*/
+      System.out.println(i);
       Value v = fields.get(i);
       Double res = ZSets.ZSCORE(map, key.address, key.length, v.address, v.length);
       assertEquals(scl.get(i), res);

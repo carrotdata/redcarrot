@@ -6,34 +6,33 @@
     <artifactId>distribution</artifactId>
     <packaging>pom</packaging>
     <name>Distribution</name>
+    <version>${revision}</version>
+
     <parent>
         <groupId>org.bigbase</groupId>
         <artifactId>carrot</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.bigbase</groupId>
             <artifactId>carrot-common</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.bigbase</groupId>
             <artifactId>lz4-java</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.bigbase</groupId>
             <artifactId>carrot-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.bigbase</groupId>
             <artifactId>carrot-examples</artifactId>
-            <version>1.0.0</version>
-        </dependency>    
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -51,11 +50,12 @@
                                 <descriptor>src/main/assemble/carrot-assembly.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>carrot-${version}</finalName>
+                            <finalName>carrot-${revision}</finalName>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
