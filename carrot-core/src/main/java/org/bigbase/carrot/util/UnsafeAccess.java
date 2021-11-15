@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.util;
 
 import java.io.ByteArrayOutputStream;
@@ -38,6 +38,7 @@ public final class UnsafeAccess {
   public static boolean debug = false;
 
   public static class MallocStats {
+    private static final Logger log = LogManager.getLogger(MallocStats.class);
 
     public static interface TraceFilter {
       public boolean recordAllocationStackTrace(int size);
@@ -183,7 +184,7 @@ public final class UnsafeAccess {
     @SuppressWarnings("unused")
     private void dumpIfAlloced(String str, long address, int value, long alloced) {
       if (alloced == value) {
-        System.out.println(str + address + " size=" + alloced);
+        log.debug(str + address + " size=" + alloced);
         Thread.dumpStack();
       }
     }
@@ -210,7 +211,7 @@ public final class UnsafeAccess {
       if (!UnsafeAccess.debug) return;
       Range mem = allocMap.delete(address);
       if (mem == null) {
-        System.out.println("FATAL: not found address " + address);
+        log.debug("FATAL: not found address " + address);
         Thread.dumpStack();
         System.exit(-1);
       }
@@ -232,7 +233,7 @@ public final class UnsafeAccess {
       if (!UnsafeAccess.debug) return;
 
       if (!allocMap.inside(address, size)) {
-        System.out.println("Memory corruption: address=" + address + " size=" + size);
+        log.debug("Memory corruption: address=" + address + " size=" + size);
         Thread.dumpStack();
         System.exit(-1);
       }
@@ -253,26 +254,26 @@ public final class UnsafeAccess {
     public void printStats(boolean printOrphans) {
       if (!UnsafeAccess.debug) return;
 
-      System.out.println("\nMalloc stats:");
-      System.out.println("allocations          =" + allocEvents.get());
-      System.out.println("allocated memory     =" + allocated.get());
-      System.out.println("deallocations        =" + freeEvents.get());
-      System.out.println("deallocated memory   =" + freed.get());
-      System.out.println("leaked (current)     =" + (allocated.get() - freed.get()));
-      System.out.println("Orphaned allocations =" + (allocMap.size()));
+      log.debug("\nMalloc stats:");
+      log.debug("allocations          =" + allocEvents.get());
+      log.debug("allocated memory     =" + allocated.get());
+      log.debug("deallocations        =" + freeEvents.get());
+      log.debug("deallocated memory   =" + freed.get());
+      log.debug("leaked (current)     =" + (allocated.get() - freed.get()));
+      log.debug("Orphaned allocations =" + (allocMap.size()));
       if (allocMap.size() > 0 && printOrphans) {
-        System.out.println("Orphaned allocation sizes:");
+        log.debug("Orphaned allocation sizes:");
         for (Map.Entry<Range, Range> entry : allocMap.entrySet()) {
-          System.out.println(entry.getKey().start + " size=" + entry.getValue().size);
+          log.debug(entry.getKey().start + " size=" + entry.getValue().size);
           if (isStackTraceRecordingEnabled()) {
             String strace = stackTraceMap.get(entry.getKey().start);
             if (strace != null) {
-              System.out.println(strace);
+              log.debug(strace);
             }
           }
         }
       }
-      System.out.println();
+      log.debug("");
     }
   }
 
@@ -280,7 +281,7 @@ public final class UnsafeAccess {
   public static MallocStats mallocStats = new MallocStats();
 
   /** Logger */
-  private static final Logger LOG = LogManager.getLogger(UnsafeAccess.class);
+  private static final Logger log = LogManager.getLogger(UnsafeAccess.class);
 
   /** The great UNSAFE */
   public static final Unsafe theUnsafe;
@@ -313,7 +314,7 @@ public final class UnsafeAccess {
                       f.setAccessible(true);
                       return f.get(null);
                     } catch (Throwable e) {
-                      LOG.warn("sun.misc.Unsafe is not accessible", e);
+                      log.warn("sun.misc.Unsafe is not accessible", e);
                     }
                     return null;
                   }
@@ -431,7 +432,7 @@ public final class UnsafeAccess {
       if (address == null) return -1;
       return (Long) address;
     } catch (Throwable e) {
-      LOG.warn("java.nio.DirectByteBuffer is not accessible", e);
+      log.warn("java.nio.DirectByteBuffer is not accessible", e);
     }
     return -1;
   }

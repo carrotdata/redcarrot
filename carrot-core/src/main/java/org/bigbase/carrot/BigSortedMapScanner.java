@@ -1,32 +1,35 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Scanner;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * Scanner implementation TODO Scanner w/o thread locals WARNING: we can not create multiple
- * scanners in a single thread
- *
- * @author jenium65
+ * Scanner implementation <br>
+ * TODO Scanner w/o thread locals <br>
+ * WARNING: we can not create multiple scanners in a single thread <br>
  */
 public class BigSortedMapScanner extends Scanner {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMapScanner.class);
 
   private BigSortedMap map;
   private long startRowPtr;
@@ -34,7 +37,7 @@ public class BigSortedMapScanner extends Scanner {
   private long stopRowPtr;
   private int stopRowLength;
   private long nextBlockFirstKey;
-  private int nextBlockFirstKeySize;
+  // private int nextBlockFirstKeySize;
   private long toFree;
   private DataBlockScanner blockScanner;
   private IndexBlockScanner indexScanner;
@@ -361,7 +364,7 @@ public class BigSortedMapScanner extends Scanner {
           // firstKey.length);
           //            //nextBlockFirstKeySize = firstKey.length;
           //          } else if (res < 0) {
-          //            /*DEBUG*/ System.err.println("index block split on-the-fly");
+          //            /*DEBUG*/ log.error("index block split on-the-fly");
           //            this.currentIndexBlock  = tmp;
           //            continue;
           //          }

@@ -1,7 +1,8 @@
-bin/
 target/
 **/.settings/
 **/.classpath
 **/.project
 .idea/*
 **/*.iml
+lib/
+logs/

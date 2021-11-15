@@ -1,15 +1,15 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+/*
+  Copyright (C) 2021-present Carrot, Inc.
+
+  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+  Server Side Public License, version 1, as published by MongoDB, Inc.
+
+  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  Server Side Public License for more details.
+
+  <p>You should have received a copy of the Server Side Public License along with this program. If
+  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package org.bigbase.carrot.redis;
 
@@ -24,11 +24,14 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.util.Utils;
 
 /** Carrot node server (single thread) */
 public class CarrotNodeServer implements Runnable {
+  private static final Logger log = LogManager.getLogger(CarrotNodeServer.class);
 
   static int bufferSize = 256 * 1024;
   static CountDownLatch readyToStartLatch;
@@ -213,8 +216,7 @@ public class CarrotNodeServer implements Runnable {
 
         in.position(oldPos);
         // Process request
-        boolean shutdown = CommandProcessor.process(store, in, out);
-        this.shutdown = shutdown;
+        this.shutdown = CommandProcessor.process(store, in, out);
         // send response back
         out.flip();
         while (out.hasRemaining()) {
@@ -235,7 +237,7 @@ public class CarrotNodeServer implements Runnable {
     }
     totalReqTime += System.nanoTime() - startTime;
     if ((ricCount % 10000) == 0) {
-      // System.out.println("Avg request time ="+(totalReqTime / (1000 * ricCount)) +
+      // log.debug("Avg request time ="+(totalReqTime / (1000 * ricCount)) +
       //  " requests="+ ricCount + " iterations="+ iter);
     }
   }
@@ -271,10 +273,6 @@ public class CarrotNodeServer implements Runnable {
   }
 
   static void log(String str) {
-    System.out.println("[" + Thread.currentThread().getName() + "] " + str);
-  }
-
-  static void logError(String str) {
-    System.err.println("[" + Thread.currentThread().getName() + "] " + str);
+    log.debug("[" + Thread.currentThread().getName() + "] " + str);
   }
 }

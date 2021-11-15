@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
 
-START_HOME=$(dirname "$(realpath "$0")")
+START_HOME=$PWD
+# within instruction $(dirname "$(realpath "$0")") you can start server from any directory. No just from bin
+# for example, you can start app by root from cron. like: /bin/carrot/bin/carrot-server.sh reboot
+# it is important if you use auto-start script in case of server reboot.
+#START_HOME=$(dirname "$(realpath "$0")")
 echo Carrot server home directory is "${START_HOME}"
 
 cd "${START_HOME}" || exit
 
 . ./setenv.sh
-webapps="libs/${RELEASE}-${APP_PORT}"
-rm -rf "${webapps}"
-mkdir "${webapps}"
-cd "${webapps}" || exit 1
-tar zxvf "../${DISTRIBUTION}" >/dev/null
+
+libdir="${START_HOME}/../lib/${RELEASE}"
+rm -rf "${libdir}"
+mkdir -p "${libdir}"
+cd "${libdir}" || exit 1
+tar zxf "${START_HOME}/../dist/target/${DISTRIBUTION}" &>/dev/null
 cd ../..
-for ix in $(find "${webapps}"); do
+for ix in $(find "${libdir}"); do
   CPATH=${ix}\:${CPATH}
 done
 
-export JVM_OPTS="-cp .:${CPATH} ${APP_OPTS}"
+export JVM_OPTS="--add-opens java.base/java.nio=ALL-UNNAMED -cp .:${CPATH} ${APP_OPTS}"
 
 #===== find pid =====
 # shellcheck disable=SC2120
@@ -34,16 +39,15 @@ start() {
 
   exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS}"
   echo "${exec_cmd}"
-  nohup ${exec_cmd} >>logs/catalina.log &
+  mkdir -p logs
+  nohup ${exec_cmd} >>logs/carrot-stdout.log &
   echo "Carrot instance ${INSTANCE_NAME} is staring on PID ${PID}, please wait..."
 
-  sleep 2
-  PID=$(pid)
+  sleep 1
 
+  PID=$(pid)
   if [ ! -z "${PID}" ]; then
     echo "Carrot instance ${INSTANCE_NAME} successfully started. PID ${PID}"
-    # TODO
-    # status
     exit 0
   fi
 
@@ -64,6 +68,8 @@ stop() {
     #pelase add grace full stop here...
   fi
 
+  sleep 1
+
   PID=$(pid)
   if [ ! -z "${PID}" ]; then
     echo "Carrot server still running on instance ${INSTANCE_NAME} and can't be stopped for some reason. PID ${PID}"
@@ -79,17 +85,8 @@ stop() {
 #===== reboot =====
 reboot() {
   stop 1
-  sleep 3
+  sleep 2
   start
-}
-
-#===== status =====
-status() {
-  echo
-  echo "$(wget ${HEALTH_MONITOR})"
-  echo
-
-  exit 0
 }
 
 #===== usage =====
@@ -97,7 +94,7 @@ usage() {
   echo
   echo Usage:
   # shellcheck disable=SC2102
-  echo \$\> \./carrot-server-clt.sh [start]\|[stop]\|[reboot]\|[status]
+  echo \$\> \./carrot-server.sh [start]\|[stop]\|[reboot]
   echo
 }
 
@@ -111,8 +108,6 @@ elif [ "${cmd}" == "stop" ]; then
   stop
 elif [ "${cmd}" == "reboot" ]; then
   reboot
-elif [ "${cmd}" == "status" ]; then
-  status
 else
   usage
 fi

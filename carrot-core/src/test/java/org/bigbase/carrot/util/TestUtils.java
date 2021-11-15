@@ -262,7 +262,7 @@ public class TestUtils {
 
     for (int i = 0; i < N; i++) {
       double d = Utils.lexToDouble(ptr + i * Utils.SIZEOF_LONG);
-      assertEquals(arr[i], d);
+      assertEquals(arr[i], d, 0.0);
     }
 
     ArrayList<Key> keys = new ArrayList<Key>(N);
@@ -274,7 +274,7 @@ public class TestUtils {
     Arrays.sort(arr);
     for (int i = 0; i < arr.length; i++) {
       double d = Utils.lexToDouble(keys.get(i).address);
-      assertEquals(arr[i], d);
+      assertEquals(arr[i], d, 0.0);
     }
     keys.stream().map(x -> Utils.lexToDouble(x.address)).forEach(System.out::println);
   }

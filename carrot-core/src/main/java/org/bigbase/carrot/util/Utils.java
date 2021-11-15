@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.util;
 
 import static org.bigbase.carrot.util.UnsafeAccess.firstBitSetByte;
@@ -31,9 +31,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sun.misc.Unsafe;
 
 public class Utils {
+
+  private static final Logger log = LogManager.getLogger(Utils.class);
 
   public static final int SIZEOF_LONG = 8;
   public static final int SIZEOF_DOUBLE = 8;
@@ -1830,7 +1834,7 @@ public class Utils {
       long total = decode(ptr, num);
       long t2 = System.currentTimeMillis();
 
-      System.out.println("total=" + total + " time=" + (t2 - t1) + "ms");
+      log.debug("total=" + total + " time=" + (t2 - t1) + "ms");
     }
   }
 

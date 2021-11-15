@@ -56,7 +56,6 @@ public class SnapshotManager {
 }
 
 class SnapshotThread extends Thread {
-
   private static final Logger log = LogManager.getLogger(SnapshotThread.class);
 
   AtomicReference<BigSortedMap> storeRef = new AtomicReference<BigSortedMap>();

@@ -307,15 +307,6 @@ public final class DataBlockScanner extends Scanner {
    * @throws RetryOperationException
    */
   private void setBlock(DataBlock b) throws RetryOperationException {
-    //    if(b.isEmpty() || !b.isValid()) {
-    //      IndexBlock parent = b.indexBlock;
-    //      int indexBlockSize = parent.getDataInBlockSize();
-    //      long addr = parent.getAddress();
-    //      System.err.println("Invalid or empty data block ptr="+ b.getDataPtr() +" size = "+
-    // b.getBlockSize() +
-    //        "index ptr="+ addr + " index limit =" + (addr + indexBlockSize) +
-    //        " block offset="+ b.getIndexPtr() +" valid=" + b.isValid()+" first="+ parent.isFirst);
-    //    }
     b.decompressDataBlockIfNeeded();
     this.blockSize = BigSortedMap.maxBlockSize;
     this.dataSize = b.getDataInBlockSize();

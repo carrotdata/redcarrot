@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.io.File;
@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -43,6 +45,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 public class BigSortedMap {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMap.class);
 
   /**************** STATIC SECTION *******************************/
 
@@ -429,18 +433,18 @@ public class BigSortedMap {
 
   /** Prints global memory statistics */
   public static void printGlobalMemoryAllocationStats() {
-    System.out.println("\nGLOBAL Carrot memory allocation statistics:");
-    System.out.println("Total memory               :" + getGlobalAllocatedMemory());
-    System.out.println("Total data blocks          :" + getGlobalBlockDataSize());
-    System.out.println("Total data size            :" + getGlobalDataSize());
-    System.out.println(
+    log.debug("\nGLOBAL Carrot memory allocation statistics:");
+    log.debug("Total memory               :" + getGlobalAllocatedMemory());
+    log.debug("Total data blocks          :" + getGlobalBlockDataSize());
+    log.debug("Total data size            :" + getGlobalDataSize());
+    log.debug(
         "Total data block usage     :" + ((double) getGlobalDataSize()) / getGlobalBlockDataSize());
-    System.out.println("Total block index size     :" + getGlobalBlockIndexSize());
-    System.out.println("Total data index size      :" + getGlobalDataInIndexBlocksSize());
-    System.out.println("Total index size           :" + getGlobalIndexSize());
-    System.out.println("Total compressed data size :" + getGlobalCompressedDataSize());
-    System.out.println("Total external data size   :" + getGlobalExternalDataSize());
-    System.out.println(
+    log.debug("Total block index size     :" + getGlobalBlockIndexSize());
+    log.debug("Total data index size      :" + getGlobalDataInIndexBlocksSize());
+    log.debug("Total index size           :" + getGlobalIndexSize());
+    log.debug("Total compressed data size :" + getGlobalCompressedDataSize());
+    log.debug("Total external data size   :" + getGlobalExternalDataSize());
+    log.debug(
         "Copmpression ratio         :"
             + ((double) getGlobalDataSize() / getGlobalAllocatedMemory())
             + "\n");
@@ -651,20 +655,20 @@ public class BigSortedMap {
 
   /** Prints memory allocation statistics for the store */
   public void printMemoryAllocationStats() {
-    System.out.println(
+    log.debug(
         "\nCarrot memory allocation statistics [id=" + Thread.currentThread().getName() + "]:");
-    System.out.println("Total allocated memory     :" + getInstanceAllocatedMemory());
-    System.out.println("Total data block size      :" + getInstanceBlockDataSize());
-    System.out.println("Total data size            :" + getInstanceDataSize());
-    System.out.println(
+    log.debug("Total allocated memory     :" + getInstanceAllocatedMemory());
+    log.debug("Total data block size      :" + getInstanceBlockDataSize());
+    log.debug("Total data size            :" + getInstanceDataSize());
+    log.debug(
         "Total data block usage     :"
             + ((double) getInstanceDataSize()) / getInstanceBlockDataSize());
-    System.out.println("Total block index size     :" + getInstanceBlockIndexSize());
-    System.out.println("Total data index size      :" + getInstanceDataInIndexBlocksSize());
-    System.out.println("Total index size           :" + getInstanceIndexSize());
-    System.out.println("Total compressed data size :" + getInstanceCompressedDataSize());
-    System.out.println("Total external data size   :" + getInstanceExternalDataSize());
-    System.out.println(
+    log.debug("Total block index size     :" + getInstanceBlockIndexSize());
+    log.debug("Total data index size      :" + getInstanceDataInIndexBlocksSize());
+    log.debug("Total index size           :" + getInstanceIndexSize());
+    log.debug("Total compressed data size :" + getInstanceCompressedDataSize());
+    log.debug("Total external data size   :" + getInstanceExternalDataSize());
+    log.debug(
         "Copmpression ratio         :"
             + ((double) getInstanceDataSize() / getInstanceAllocatedMemory())
             + "\n");
@@ -885,7 +889,7 @@ public class BigSortedMap {
         count++;
         long ptr = scanner.keyAddress();
         int size = scanner.keySize();
-        System.out.println(Bytes.toHex(ptr, size));
+        log.debug(Bytes.toHex(ptr, size));
         scanner.next();
       }
     } catch (IOException e) {
@@ -933,7 +937,7 @@ public class BigSortedMap {
       totalRows += b.getNumberOfDataBlock();
       b.dumpIndexBlockExt();
     }
-    System.out.println("Total blocks=" + (totalRows) + " index blocks=" + map.size());
+    log.debug("Total blocks=" + (totalRows) + " index blocks=" + map.size());
   }
 
   private void initNodes() {
@@ -2199,8 +2203,7 @@ public class BigSortedMap {
     dispose();
     initNodes();
     long end = System.currentTimeMillis();
-    System.out.println(
-        "[" + Thread.currentThread().getName() + "] flushall took:" + (end - start) + "ms");
+    log.debug("[" + Thread.currentThread().getName() + "] flushall took:" + (end - start) + "ms");
   }
 
   public void flush(int db) {
@@ -2287,7 +2290,7 @@ public class BigSortedMap {
       return;
     }
 
-    System.out.println("Snapshot file opened: " + snapshotFile.getAbsolutePath());
+    log.debug("Snapshot file opened: " + snapshotFile.getAbsolutePath());
 
     // main loop over all index blocks
     IndexBlock ib = null, cur = null;
@@ -2370,7 +2373,7 @@ public class BigSortedMap {
               + " to "
               + oldSnapshotFile.getAbsolutePath());
     } else {
-      System.out.println("Snapshot file created: " + oldSnapshotFile.getAbsolutePath());
+      log.debug("Snapshot file created: " + oldSnapshotFile.getAbsolutePath());
     }
   }
 
@@ -2425,7 +2428,7 @@ public class BigSortedMap {
 
     RandomAccessFile raf = null;
     FileChannel fc = null;
-    System.out.println(
+    log.debug(
         "Started loading store data from: " + snapshotFile.getAbsolutePath() + " at " + new Date());
 
     try {
@@ -2464,8 +2467,7 @@ public class BigSortedMap {
           map.map.put(ib, ib);
         }
       } while (block != null);
-      System.out.println(
-          "Loaded store from: " + snapshotFile.getAbsolutePath() + " at " + new Date());
+      log.debug("Loaded store from: " + snapshotFile.getAbsolutePath() + " at " + new Date());
 
       // Last read timestamp, buffer MUST have correct position
       if (buf.remaining() < Utils.SIZEOF_LONG) {

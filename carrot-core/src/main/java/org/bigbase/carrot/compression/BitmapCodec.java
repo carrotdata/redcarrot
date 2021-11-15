@@ -1,22 +1,24 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.compression;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 /**
@@ -46,6 +48,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
  * 0000000000000001 (15 0's followed by one 1) Compression 15/6 = 2.5
  */
 public class BitmapCodec implements Codec {
+
+  private static final Logger log = LogManager.getLogger(BitmapCodec.class);
 
   static enum Scheme {
     S15_1,
@@ -256,7 +260,7 @@ public class BitmapCodec implements Codec {
       totalTime += (t2 - t1);
     }
 
-    System.out.println(
+    log.debug(
         "TZ="
             + totalZ
             + " time per byte (ns)="

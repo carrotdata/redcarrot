@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.io.IOException;
@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.redis.RedisConf;
@@ -29,27 +30,30 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 /**
- * Records are lexicographically sorted Format: <KV>+ <KV> : 0 .. 1 - key size (2 bytes: max key
- * size = 32K) 2 .. 3 - value size (2 bytes: max embedded value size = 32K if value size == -1,
- * value is stored externally, If key size == -1, both key and value are stored externally. We keep
- * embedded 8 bytes for value in this case: 8 bytes - address of K-V pair Format for external K-V:
- * 4-4-key-value (4 bytes- key/value sizes)
+ * Records are lexicographically sorted. Format:<br>
+ * <KV>+ <br>
+ * <KV> : <br>
+ * 0 .. 1 - key size (2 bytes: max key size = 32K)<br>
+ * 2 .. 3 - value size (2 bytes: max embedded value size = 32K<br>
+ * if value size == -1, value is stored externally, If key size == -1, <br>
+ * both key and value are stored externally. We keep embedded 8 bytes for value <br>
+ * in this case: 8 bytes - address of K-V pair Format for external K-V:<br>
+ * 4-key-value (4 bytes- key/value sizes)
  *
  * <p>We store K-V externally if sizeOf(Key) + sizeOf(value) + RECORD_TOTAL_OVERHEAD > 0.5 *
- * MAX_BLOCK_SIZE
+ * MAX_BLOCK_SIZE <br>
  *
- * <p><EXPIRATION> (8 bytes time in ms: 0 - never expires) <EVICTION> (8 bytes - used by eviction
- * algorithm : LRU, LFU etc) DEPRECATED <KEY> <SEQUENCEID> - 8 bytes - DEPRECATED <TYPE/DATA_TYPE> -
- * 1 byte: <VALUE> For ordering we use combination of <KEY><SEQUENCEID><TYPE> (DEPRECATED) - <KEY>
- * TODO: 1. Add support for type - DONE 2. Add support for sequenceid - DONE 3. Add support for
- * expiration field and API - DONE 4. Add support for eviction field - DONE 5 Optimize storeFence
- * usage - make sure we call it once before we release write lock We need sequenceId & type to
- * support snapshots & tx 6. check usage blockKeyLength & blockValueLength 7. Code
- * REUSE/DECOMPOSITION (IMPORTANT) 8. Implement Append (as Get/Delete/Put?)
+ * <p><br>
+ * <EXPIRATION> (8 bytes time in milliseconds: 0 - never expires) <br>
+ * <KEY> <br>
+ * <TYPE> - DEPRECATED <br>
+ * <VALUE> <br>
+ * For ordering we use <KEY><TYPE>
  */
 // @SuppressWarnings("unused")
 public final class DataBlock {
-  private static final Logger LOG = Logger.getLogger(DataBlock.class.getName());
+
+  private static final Logger log = LogManager.getLogger(DataBlock.class);
 
   /** For complex data types custom deallocators must be required */
   public static interface DeAllocator {
@@ -649,22 +653,22 @@ public final class DataBlock {
   boolean mutation = false;
 
   public void dump() {
-    System.out.println("====================================");
-    System.out.println("Address        =" + getDataPtr());
-    System.out.println("Address  index =" + getIndexPtr());
-    System.out.println("Block size     =" + getBlockSize());
-    System.out.println("Data size      =" + getDataInBlockSize());
-    System.out.println("Number k/v's   =" + getNumberOfRecords());
-    System.out.println("Compressed     =" + isCompressed());
-    System.out.println("First key      =" + Bytes.toHex(getFirstKey()));
-    System.out.println();
+    log.debug("====================================");
+    log.debug("Address        =" + getDataPtr());
+    log.debug("Address  index =" + getIndexPtr());
+    log.debug("Block size     =" + getBlockSize());
+    log.debug("Data size      =" + getDataInBlockSize());
+    log.debug("Number k/v's   =" + getNumberOfRecords());
+    log.debug("Compressed     =" + isCompressed());
+    log.debug("First key      =" + Bytes.toHex(getFirstKey()));
+    log.debug("");
   }
 
   public void dumpData() {
-    LOG.info("====================================");
-    LOG.info("Block size     =" + getBlockSize());
-    LOG.info("Data size      =" + getDataInBlockSize());
-    LOG.info("Number k/v's   =" + getNumberOfRecords());
+    log.info("====================================");
+    log.info("Block size     =" + getBlockSize());
+    log.info("Data size      =" + getDataInBlockSize());
+    log.info("Number k/v's   =" + getNumberOfRecords());
   }
 
   /**
@@ -2227,11 +2231,11 @@ public final class DataBlock {
     long stopAddress = 0;
     int dataSize = getDataInBlockSize();
     stopAddress = dataPtr + dataSize;
-    System.out.println("DataBlock records:");
+    log.debug("DataBlock records:");
     while (ptr < stopAddress) {
       long pptr = keyAddress(ptr);
       int len = keyLength(ptr);
-      System.out.println(Bytes.toHex(pptr, len));
+      log.debug(Bytes.toHex(pptr, len));
       int keylen = blockKeyLength(ptr);
       int vallen = blockValueLength(ptr);
       ptr += keylen + vallen + RECORD_TOTAL_OVERHEAD;
@@ -3343,10 +3347,10 @@ public final class DataBlock {
   }
 
   public final void dumpFirstLastKeys() {
-    System.out.println("DataBlock first=" + Bytes.toHex(getFirstKey()));
+    log.debug("DataBlock first=" + Bytes.toHex(getFirstKey()));
     byte[] last = getLastKey();
     if (last != null) {
-      System.out.println("DataBlock last =" + Bytes.toHex(getLastKey()));
+      log.debug("DataBlock last =" + Bytes.toHex(getLastKey()));
     }
   }
 

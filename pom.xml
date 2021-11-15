@@ -11,7 +11,7 @@
     <url>http://www.server.com</url>
 
     <properties>
-        <revision>1.0.0</revision>
+        <revision>0.3-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
     </properties>
@@ -85,36 +85,12 @@
 
     <build>
         <plugins>
-            <!--      <plugin>-->
-            <!--        <groupId>org.apache.maven.plugins</groupId>-->
-            <!--        <artifactId>maven-shade-plugin</artifactId>-->
-            <!--        <version>3.2.1</version>-->
-            <!--        <executions>-->
-            <!--          <execution>-->
-            <!--            <phase>package</phase>-->
-            <!--            <goals>-->
-            <!--              <goal>shade</goal>-->
-            <!--            </goals>-->
-            <!--            <configuration>-->
-            <!--              <transformers>-->
-            <!--                <transformer-->
-            <!--                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-            <!--                  <manifestEntries>-->
-            <!--                    <Main-Class>org.bigbase.carrot.redis.CarrotMain</Main-Class>-->
-            <!--                    <Build-Number>${revision}</Build-Number>-->
-            <!--                  </manifestEntries>-->
-            <!--                </transformer>-->
-            <!--              </transformers>-->
-            <!--            </configuration>-->
-            <!--          </execution>-->
-            <!--        </executions>-->
-            <!--      </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <argLine>-Xmx512m --add-opens java.base/java.nio=ALL-UNNAMED</argLine>
+                    <argLine>-Xmx4g --add-opens java.base/java.nio=ALL-UNNAMED</argLine>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
@@ -150,29 +126,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
-                <!--        <executions>-->
-                <!--          <execution>-->
-                <!--            <id>copy</id>-->
-                <!--            <phase>package</phase>-->
-                <!--            <goals>-->
-                <!--              <goal>copy</goal>-->
-                <!--            </goals>-->
-                <!--            <configuration>-->
-                <!--              <artifactItems>-->
-                <!--                <artifactItem>-->
-                <!--                  <groupId>org.bigbase</groupId>-->
-                <!--                  <artifactId>liblz4</artifactId>-->
-                <!--                  <type>so</type>-->
-                <!--                  <overWrite>true</overWrite>-->
-                <!--                  <destFileName>liblz4.so</destFileName>-->
-                <!--                </artifactItem>-->
-                <!--              </artifactItems>-->
-                <!--              <overWriteReleases>false</overWriteReleases>-->
-                <!--              <overWriteSnapshots>true</overWriteSnapshots>-->
-                <!--              <outputDirectory>${project.build.directory}/lz4-java/src/main/resources</outputDirectory>-->
-                <!--            </configuration>-->
-                <!--          </execution>-->
-                <!--        </executions>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
