@@ -141,32 +141,30 @@ releases. Persistence is supported, as well as a **SAVE** and **BGSAVE** command
 
 ### Build prerequisits
 
-Java 11+, Gnu cc compiler (any recent version will work), maven 3.x.
+Java 11+ (was tested with Java 11), Gnu cc compiler (any recent version will work), maven 3.x.
 
 ### CarrotDB source build instructions:
 
-* Copy `settings.xml.template` to `settings.xml` and edit parameters to match your folders, make sure you specify
-  correctly all C-include locations necessary to build native Java-C binding.
-
-* Use `mvn --settings settings.xml`, it will point to settings.xml to set important properties (native code in lz4
-  depends on it)
-
-- run the following command to build CarrotDB:
+* Set JAVA_HOME to point to Java 11+ installation directory (Home). Example: (MacOS):
+  ```
+  $export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.11.jdk/Contents/Home
+  ```
+* Run the following command to build CarrotDB:
 
 ```
-$ mvn --settings settings.xml clean install -DskipTests
+$ mvn clean install -DskipTests
 ```
 
 To create Eclipse environment files:
 
 ```
-$ mvn --settings settings.xml eclipse:eclipse -DskipTests
+$ mvn package eclipse:eclipse -DskipTests
 ```
 
 To run unit tests from command line:
 
 ```
-$ mvn --settings settings.xml surefire:test
+$ mvn surefire:test
 ```
 
 ## Usage and Redis client compatibility
@@ -175,6 +173,18 @@ CarrotDB was tested with Java Jedis client, it should work with other Redis clie
 support is required** to use CarrotDB at a full potential (multiple data nodes per server). **TODO**. As since CarrotDB
 is at 0.2 version it is not surprisingly that it does not have its own shell yet, but Redis ```redis-cli``` shell can be
 used instead.
+
+To start Carrot server:
+* Modify `bin/setenv.sh` and set JAVA_HOME
+
+* Start server
+```
+bin/carrot-server.sh start
+```
+* Stop server
+```
+bin/carrot-server.sh stop
+```
 
 ## Benchmark summary
 
