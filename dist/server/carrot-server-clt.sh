@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 
-START_HOME=$(dirname "$(realpath "$0")")
+START_HOME=$PWD
 echo Carrot server home directory is "${START_HOME}"
 
 cd "${START_HOME}" || exit
 
 . ./setenv.sh
-webapps="libs/${RELEASE}"
-rm -rf "${webapps}"
-mkdir "${webapps}"
-cd "${webapps}" || exit 1
-tar zxvf "../${DISTRIBUTION}" >/dev/null
+
+libdir="libs/${RELEASE}"
+rm -rf "${libdir}"
+mkdir "${libdir}"
+cd "${libdir}" || exit 1
+tar zxf "${START_HOME}/../target/${DISTRIBUTION}" &>/dev/null
 cd ../..
-for ix in $(find "${webapps}"); do
+for ix in $(find "${libdir}"); do
   CPATH=${ix}\:${CPATH}
 done
 
-export JVM_OPTS="-cp .:${CPATH} ${APP_OPTS}"
+export JVM_OPTS="--add-opens java.base/java.nio=ALL-UNNAMED -cp .:${CPATH} ${APP_OPTS}"
 
 #===== find pid =====
 # shellcheck disable=SC2120
