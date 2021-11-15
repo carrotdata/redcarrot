@@ -7,11 +7,11 @@ cd "${START_HOME}" || exit
 
 . ./setenv.sh
 
-libdir="libs/${RELEASE}"
+libdir="${START_HOME}/../lib/${RELEASE}"
 rm -rf "${libdir}"
-mkdir "${libdir}"
+mkdir -p "${libdir}"
 cd "${libdir}" || exit 1
-tar zxf "${START_HOME}/../target/${DISTRIBUTION}" &>/dev/null
+tar zxf "${START_HOME}/../dist/target/${DISTRIBUTION}" &>/dev/null
 cd ../..
 for ix in $(find "${libdir}"); do
   CPATH=${ix}\:${CPATH}
@@ -35,6 +35,7 @@ start() {
 
   exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS}"
   echo "${exec_cmd}"
+  mkdir -p logs
   nohup ${exec_cmd} >>logs/carrot-stdout.log &
   echo "Carrot instance ${INSTANCE_NAME} is staring on PID ${PID}, please wait..."
 
@@ -89,7 +90,7 @@ usage() {
   echo
   echo Usage:
   # shellcheck disable=SC2102
-  echo \$\> \./carrot-server-clt.sh [start]\|[stop]\|[reboot]
+  echo \$\> \./carrot-server.sh [start]\|[stop]\|[reboot]
   echo
 }
 
