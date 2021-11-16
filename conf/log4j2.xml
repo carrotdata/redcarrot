@@ -37,11 +37,11 @@
             <appender-ref ref="APP_SIZE_APPENDER"/>
         </Logger>
 
-        <Logger level="TRACE" name="org.apache">
+        <Logger level="WARN" name="org.apache">
             <appender-ref ref="LIB_SIZE_APPENDER"/>
         </Logger>
 
-        <Logger level="TRACE" name="com.google">
+        <Logger level="WARN" name="com.google">
             <appender-ref ref="LIB_SIZE_APPENDER"/>
         </Logger>
 
