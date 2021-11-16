@@ -118,6 +118,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
+                    <compilerArgument>
+                        -XDignore.symbol.file
+                    </compilerArgument>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -137,18 +140,6 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -237,7 +228,7 @@
                 <jemalloc.include>include_linux</jemalloc.include>
                 <lib.packaging>so</lib.packaging>
                 <lib.path.plaftorm.suffix>Linux/amd64</lib.path.plaftorm.suffix>
-                <lib.suffix></lib.suffix>
+                <lib.suffix>-linux</lib.suffix>
             </properties>
         </profile>
     </profiles>
