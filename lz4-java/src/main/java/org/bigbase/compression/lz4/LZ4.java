@@ -123,33 +123,6 @@ public class LZ4 {
     src.order(ByteOrder.nativeOrder());
     ByteBuffer dst = ByteBuffer.allocateDirect(bufSize);
     dst.order(ByteOrder.nativeOrder());
-    //		byte[] buf = test.getBytes();
-    //	    int off = 0;
-    //		while(off < bufSize){
-    //		    src.put(buf);
-    //		    off += buf.length;
-    //		}
-    //        int origSize = src.limit();
-    //		int numIterations = 100000;
-    //        long start = System.currentTimeMillis();
-    //        src.flip();
-    //        for(int i=0; i < numIterations; i++){
-    //		    dst.clear();
-    //		    int compressedSize = compress(src, dst);
-    //		//System.out.println("Original size="+origSize+" comp size="+compressedSize);
-    //		    src.position(0);
-    //		    int r = decompress(dst, src);
-    //		}
-    //		long stop = System.currentTimeMillis();
-    //
-    //		System.out.println((numIterations*1000)/(stop - start) +" of "+origSize +" blocks per sec");
-    //
-    //        byte[] b = new byte[origSize];
-    //		System.out.println("src off="+src.position()+" src.limit="+src.limit());
-    //		src.get(b);
-    //
-    //		System.out.println("Original     = "+test);
-    //		System.out.println("Decompressed = "+new String(b));
 
     String value =
         "value-value-value-value-value-value-value-value-value-value-value-value-value-value-value"
