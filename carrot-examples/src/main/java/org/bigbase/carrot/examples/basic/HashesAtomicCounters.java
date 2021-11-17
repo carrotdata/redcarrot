@@ -139,19 +139,17 @@ public class HashesAtomicCounters {
       int val = nextScoreSkewed(r);
       Hashes.HINCRBY(map, key.address, keySize, key.address + keySize, key.length - keySize, val);
       if (count % 100000 == 0) {
-        log.debug("set long " + count);
+        log.debug("set long {}", count);
       }
     }
     long endTime = System.currentTimeMillis();
 
+    // TODO is ir right calcs? keyTotalSize / N + 8
     log.debug(
-        "Loaded "
-            + keys.size()
-            + " long counters of avg size="
-            + (keyTotalSize / N + 8)
-            + " each in "
-            + (endTime - startTime)
-            + "ms.");
+        "Loaded {} long counters of avg size={} each in {}ms.",
+        keys.size(),
+        keyTotalSize / N + 8,
+        endTime - startTime);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats(false);
@@ -166,18 +164,15 @@ public class HashesAtomicCounters {
       Hashes.HINCRBYFLOAT(
           map, key.address, keySize, key.address + keySize, key.length - keySize, val);
       if (count % 100000 == 0) {
-        log.debug("set float " + count);
+        log.debug("set float {}", count);
       }
     }
     endTime = System.currentTimeMillis();
     log.debug(
-        "Loaded "
-            + keys.size()
-            + " float counters of avg size="
-            + (keyTotalSize / N + 8)
-            + " each in "
-            + (endTime - startTime)
-            + "ms.");
+        "Loaded {} float counters of avg size={} each in {}ms.",
+        +keys.size(),
+        +(keyTotalSize / N + 8),
+        +endTime - startTime);
     // Delete keys
     count = 0;
     log.debug("Deleting keys ...");
@@ -185,7 +180,7 @@ public class HashesAtomicCounters {
       int keySize = Math.max(8, key.length - 3);
       Hashes.DELETE(map, key.address, keySize);
       if (++count % 100000 == 0) {
-        log.debug("Deleted key " + count);
+        log.debug("Deleted key {}", count);
       }
     }
 
@@ -215,7 +210,7 @@ public class HashesAtomicCounters {
         System.exit(-1);
       }
       if (count % 100000 == 0) {
-        log.debug("verified " + count);
+        log.debug("verified {}", count);
       }
     }
   }

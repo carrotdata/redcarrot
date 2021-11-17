@@ -58,15 +58,15 @@ public class OperationsTest {
         break;
       }
       if (totalLoaded % 1000000 == 0) {
-        log.debug("Loaded = " + totalLoaded);
+        log.debug("Loaded = {}", totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
     map.dumpStats();
-    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
-    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-    log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Time to load= {} = {}ms", totalLoaded, end - start);
+    log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
+    log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());
   }
 
   @Test
@@ -91,7 +91,7 @@ public class OperationsTest {
         assertTrue(res);
       }
       long end = System.currentTimeMillis();
-      log.debug("Time to increment " + totalIncrement + " " + (end - start) + "ms");
+      log.debug("Time to increment {} {}ms", totalIncrement, end - start);
       BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
       long total = 0;
       while (scanner.hasNext()) {
@@ -122,13 +122,13 @@ public class OperationsTest {
       Random r = new Random();
       long seed = r.nextLong();
       r.setSeed(seed);
-      log.debug("SEED=" + seed);
+      log.debug("SEED={}", seed);
       long start = System.currentTimeMillis();
       for (int i = 0; i < totalAppend; i++) {
 
         int n = r.nextInt((int) totalLoaded) + 1;
         keySize = getKey(key, n);
-        // log.debug(" i="+i);
+        // log.debug(" i={}", i);
         append.reset();
         append.setKeyAddress(key);
         append.setKeySize(keySize);
@@ -137,7 +137,7 @@ public class OperationsTest {
         assertTrue(res);
       }
       long end = System.currentTimeMillis();
-      log.debug("Time to append " + totalAppend + " " + (end - start) + "ms");
+      log.debug("Time to append {} {}ms", totalAppend, end - start);
       BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
       long total = 0;
       while (scanner.hasNext()) {
@@ -178,15 +178,15 @@ public class OperationsTest {
         break;
       }
       if (totalLoaded % 1000000 == 0) {
-        log.debug("Loaded = " + totalLoaded);
+        log.debug("Loaded = {}", totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
     map.dumpStats();
-    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
-    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-    log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Time to load= {} ={}ms", totalLoaded, end - start);
+    log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
+    log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());
   }
 
   private int getKey(long ptr, int n) {

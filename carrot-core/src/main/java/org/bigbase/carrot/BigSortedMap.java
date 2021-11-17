@@ -2326,7 +2326,7 @@ public class BigSortedMap {
         continue;
       } catch (IOException e) {
         log.error(
-            "Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
+            "Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
         log.error("StackTrace: ", e);
         return;
       } finally {
@@ -2364,10 +2364,9 @@ public class BigSortedMap {
     boolean result = snapshotFile.renameTo(oldSnapshotFile);
     if (!result) {
       log.error(
-          "ERROR! Can not rename new snapshot file: "
-              + snapshotFile.getAbsolutePath()
-              + " to "
-              + oldSnapshotFile.getAbsolutePath());
+          "ERROR! Can not rename new snapshot file: {} to {}",
+              snapshotFile.getAbsolutePath(),
+              oldSnapshotFile.getAbsolutePath());
     } else {
       log.debug("Snapshot file created: {}", oldSnapshotFile.getAbsolutePath());
     }
@@ -2412,13 +2411,13 @@ public class BigSortedMap {
     File dir = new File(snapshotDir);
     if (dir.exists() == false) {
       dir.mkdirs();
-      log.error("Snapshot directory does not exists: " + dir.getAbsolutePath());
+      log.error("Snapshot directory does not exists: {}", dir.getAbsolutePath());
       return new BigSortedMap();
     }
 
     File snapshotFile = new File(dir, "snapshot.data");
     if (!snapshotFile.exists()) {
-      log.error("Snapshot file does not exists: " + snapshotFile.getAbsolutePath());
+      log.error("Snapshot file does not exists: {}", snapshotFile.getAbsolutePath());
       return new BigSortedMap();
     }
 
@@ -2436,7 +2435,7 @@ public class BigSortedMap {
       map = loadStoreMeta(fc);
     } catch (IOException e) {
       log.error(
-          "Loading store failed. Can not open snapshot file: " + snapshotFile.getAbsolutePath());
+          "Loading store failed. Can not open snapshot file: {}", snapshotFile.getAbsolutePath());
       return null;
     }
 
@@ -2479,14 +2478,14 @@ public class BigSortedMap {
       return map;
     } catch (IOException e) {
       log.error(
-          "Loading store failed. Corrupted (?) snapshot file: " + snapshotFile.getAbsolutePath());
+          "Loading store failed. Corrupted (?) snapshot file: {}", snapshotFile.getAbsolutePath());
       log.error("StackTrace: ", e);
     } finally {
       // Close file
       try {
         raf.close();
       } catch (IOException e) {
-        log.error("WARNING! " + e.getMessage());
+        log.error("WARNING! {}", e.getMessage());
         log.error("StackTrace: ", e);
       }
     }

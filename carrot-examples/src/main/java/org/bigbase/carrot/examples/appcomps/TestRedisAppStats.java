@@ -70,15 +70,15 @@ public class TestRedisAppStats {
       byte[] key = st.getKeyBytes();
       // client.expire(key, 100000);
       if ((i + 1) % 100000 == 0) {
-        log.debug("loaded " + (i + 1));
+        log.debug("loaded {}", i + 1);
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Loaded " + hoursToKeep + " in " + (end - start) + "ms. Press any button ...");
+    log.debug("Loaded {} {}nms. Press any button ...", hoursToKeep, end - start);
     start = System.currentTimeMillis();
     client.save();
     end = System.currentTimeMillis();
-    log.debug("save time=" + (end - start) + "ms");
+    log.debug("save time={}ms", end - start);
     System.in.read();
     client.close();
   }

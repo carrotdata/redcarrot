@@ -49,11 +49,11 @@ public class SetsAPITest {
       list.add(m);
       int res = Sets.SADD(map, key, m);
       if (res == 0) {
-        /*DEBUG*/ log.debug("Can not add " + m + " it exists=" + Sets.SISMEMBER(map, key, m));
+        log.debug("Can not add {} it exists={}", m, Sets.SISMEMBER(map, key, m));
       }
       assertEquals(1, res);
       if (i % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     return list;
@@ -65,7 +65,7 @@ public class SetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -78,7 +78,7 @@ public class SetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {}  Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -91,7 +91,7 @@ public class SetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -383,7 +383,7 @@ public class SetsAPITest {
     }
     long end = System.currentTimeMillis();
 
-    log.debug("total=" + total + " time for " + (1000 * X) + "=" + (end - start) + "ms");
+    log.debug("total={} time for {}={}ms", total, 1000 * X, end - start);
   }
 
   private int countMatches(List<String> list, int startIndex, String regex) {

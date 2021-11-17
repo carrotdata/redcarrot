@@ -104,7 +104,7 @@ public class CityLocation {
     log.debug("Loaded {}", list.size());
 
     for (int i = 0; i < 20; i++) {
-      log.debug(list.get(i));
+      log.debug("{}",list.get(i));
     }
   }
 }

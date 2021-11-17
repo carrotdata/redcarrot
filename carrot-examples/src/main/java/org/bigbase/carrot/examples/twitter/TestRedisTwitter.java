@@ -43,7 +43,7 @@ public class TestRedisTwitter {
       count++;
       u.saveToRedis(client);
       if (count % 10000 == 0) {
-        log.debug("Loaded " + count + " users");
+        log.debug("Loaded {} users", count);
       }
     }
     log.debug("Print any button ...");
@@ -64,7 +64,7 @@ public class TestRedisTwitter {
         us.saveToRedis(client);
       }
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user statuses");
+        log.debug("Loaded {} user statuses", count);
       }
     }
 
@@ -83,7 +83,7 @@ public class TestRedisTwitter {
       Timeline timeline = new Timeline(user);
       timeline.saveToRedis(client);
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user timelines");
+        log.debug("Loaded {} user timelines", count);
       }
     }
     log.debug("Print any button ...");
@@ -101,7 +101,7 @@ public class TestRedisTwitter {
       Followers followers = new Followers(user);
       followers.saveToRedis(client);
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user followers");
+        log.debug("Loaded {} user followers", count);
       }
     }
 
@@ -120,7 +120,7 @@ public class TestRedisTwitter {
       Following following = new Following(user);
       following.saveToRedis(client);
       if (count % 1000 == 0) {
-        log.debug("Loaded " + count + " user following");
+        log.debug("Loaded {} user following", count);
       }
     }
 

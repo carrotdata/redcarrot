@@ -116,7 +116,7 @@ public class TestBitmapCompression {
     AtomicInteger index = new AtomicInteger(0);
     DoubleStream ds = Arrays.stream(result).map(x -> (256 * 256) / (x / loops));
     double[] dd = ds.toArray();
-    Arrays.stream(dd).forEach(x -> log.debug(fractions[index.getAndIncrement()] + " : " + x));
+    Arrays.stream(dd).forEach(x -> log.debug("{} : {}", fractions[index.getAndIncrement()], x));
     return dd;
   }
 

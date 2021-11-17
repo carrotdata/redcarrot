@@ -113,21 +113,18 @@ public class SetsAllEnglishWords {
         Sets.SADD(map, key.address, key.length, buffer, data.length);
       }
       if ((count % 100000) == 0 && count > 0) {
-        log.debug("Loaded " + count);
+        log.debug("Loaded {}", +count);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + count * keys.size()
-            + " words, total size="
-            + totalLength
-            + " in "
-            + (endTime - startTime)
-            + "ms. RAM usage="
-            + UnsafeAccess.getAllocatedMemory());
-    log.debug("COMPRESSION=" + ((double) totalLength) / UnsafeAccess.getAllocatedMemory());
+        "Loaded {} words, total size={} in {}ms. RAM usage={}",
+        count * keys.size(),
+        totalLength,
+        endTime - startTime,
+        UnsafeAccess.getAllocatedMemory());
+    log.debug("COMPRESSION={}", (double) totalLength / UnsafeAccess.getAllocatedMemory());
     dis.close();
 
     BigSortedMap.printGlobalMemoryAllocationStats();

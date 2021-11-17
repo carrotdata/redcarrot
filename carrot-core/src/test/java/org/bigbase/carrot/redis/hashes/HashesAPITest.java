@@ -50,7 +50,7 @@ public class HashesAPITest {
       int res = Hashes.HSET(map, key, m, m);
       assertEquals(1, res);
       if (i % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     return list;
@@ -66,7 +66,7 @@ public class HashesAPITest {
       int res = Hashes.HSET(map, key, m, m);
       assertEquals(1, res);
       if (i % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     return list;
@@ -78,7 +78,7 @@ public class HashesAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {}Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -91,7 +91,7 @@ public class HashesAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -104,7 +104,7 @@ public class HashesAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {}  Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();

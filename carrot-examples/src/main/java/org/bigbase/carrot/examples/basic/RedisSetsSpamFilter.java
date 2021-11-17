@@ -101,19 +101,16 @@ public class RedisSetsSpamFilter {
         client.sadd(key, line);
       }
       if ((count % 10000) == 0 && count > 0) {
-        log.debug("Loaded " + count);
+        log.debug("Loaded {}", count);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + count * keys.length
-            + " records, total size="
-            + totalLength
-            + " in "
-            + (endTime - startTime)
-            + "ms.");
+        "Loaded {} records, total size={} in {}ms.",
+        count * keys.length,
+        totalLength,
+        +endTime - startTime);
     dis.close();
 
     log.debug("Press any key ...");

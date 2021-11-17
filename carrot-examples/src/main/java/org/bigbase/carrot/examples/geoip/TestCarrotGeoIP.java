@@ -103,12 +103,12 @@ public class TestCarrotGeoIP {
       cb.saveToCarrot(map, ptr, size);
       total++;
       if (total % 100000 == 0) {
-        log.debug("Total blocks=" + total);
+        log.debug("Total blocks={}", total);
       }
     }
     long end = System.currentTimeMillis();
 
-    log.debug("Loaded " + blockList.size() + " blocks in " + (end - start) + "ms");
+    log.debug("Loaded {} blocks in {}ms", blockList.size(), end - start);
     total = 0;
     if (locList == null) {
       locList = CityLocation.load(f2);
@@ -118,13 +118,13 @@ public class TestCarrotGeoIP {
       cl.saveToCarrot(map);
       total++;
       if (total % 100000 == 0) {
-        log.debug("Total locs=" + total);
+        log.debug("Total locs={}", total);
       }
     }
     end = System.currentTimeMillis();
 
-    log.debug("Loaded " + locList.size() + " locations in " + (end - start) + "ms");
-    log.debug("Total memory used=" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Loaded {} locations in {}ms", locList.size(), end - start);
+    log.debug("Total memory used={}", BigSortedMap.getGlobalAllocatedMemory());
 
     map.dispose();
   }

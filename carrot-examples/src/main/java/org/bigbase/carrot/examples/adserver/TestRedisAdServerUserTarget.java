@@ -82,12 +82,12 @@ public class TestRedisAdServerUserTarget {
         client.zadd(k.getBytes(), r.nextDouble(), word.getBytes());
         count++;
         if (count % 100000 == 0) {
-          log.debug("UserViewWords :" + count);
+          log.debug("UserViewWords :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewWords : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserActionWords(Jedis client) {
@@ -105,12 +105,12 @@ public class TestRedisAdServerUserTarget {
         client.zadd(k.getBytes(), r.nextDouble(), word.getBytes());
         count++;
         if (count % 100000 == 0) {
-          log.debug("UserViewWords :" + count);
+          log.debug("UserViewWords :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionWords : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserViewAdds(Jedis client) {
@@ -128,12 +128,12 @@ public class TestRedisAdServerUserTarget {
         int views = r.nextInt(100);
         client.hset(k.getBytes(), Bytes.toBytes(id), Bytes.toBytes(views));
         if (count % 100000 == 0) {
-          log.debug("UserViewAds :" + count);
+          log.debug("UserViewAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewAds : loaded {} in {}", count, end - start);
   }
 
   private static void doUserActionAdds(Jedis client) {
@@ -151,11 +151,11 @@ public class TestRedisAdServerUserTarget {
         int views = r.nextInt(100);
         client.hset(k.getBytes(), Bytes.toBytes(id), Bytes.toBytes(views));
         if (count % 100000 == 0) {
-          log.debug("UserViewAds :" + count);
+          log.debug("UserViewAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionAds : loaded {} in {}ms", count, end - start);
   }
 }

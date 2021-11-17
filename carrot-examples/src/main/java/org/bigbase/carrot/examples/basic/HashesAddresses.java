@@ -126,7 +126,7 @@ public class HashesAddresses {
         log.debug("set " + count);
       }
 
-      list.forEach(x -> x.free());
+      list.forEach(KeyValue::free);
     }
     long endTime = System.currentTimeMillis();
 

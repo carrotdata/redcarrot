@@ -170,7 +170,7 @@ public class TestCarrotTwitter {
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_size = (double) memory / numUsers;
     map.dispose();
-    log.debug("avg_user_size=" + avg_user_size + " bytes");
+    log.debug("avg_user_size={} bytes", avg_user_size);
   }
 
   private static long countRecords(BigSortedMap map) {
@@ -223,7 +223,7 @@ public class TestCarrotTwitter {
         us.saveToCarrot(map);
       }
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user statuses");
+        log.debug("Loaded {} user statuses", count);
       }
     }
     count = 0;
@@ -232,13 +232,13 @@ public class TestCarrotTwitter {
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
-        log.debug("Verified " + count + " users");
+        log.debug("Verified {} users", count);
       }
     }
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_status_size = (double) memory / numUsers;
     map.dispose();
-    log.debug("avg_user_status_size=" + avg_user_status_size + " bytes");
+    log.debug("avg_user_status_size={} bytes", avg_user_status_size);
   }
 
   private static void runUserStatusNoCompression() {
@@ -269,14 +269,14 @@ public class TestCarrotTwitter {
       Timeline timeline = new Timeline(user);
       timeline.saveToCarrot(map);
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user timelines");
+        log.debug("Loaded {} user timelines", count);
       }
     }
 
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_timeline_size = (double) memory / numUsers;
     map.dispose();
-    log.debug("avg_user_timeline_size=" + avg_user_timeline_size + " bytes");
+    log.debug("avg_user_timeline_size={} bytes", avg_user_timeline_size);
   }
 
   private static void runUserTimelinesNoCompression() {
@@ -309,7 +309,7 @@ public class TestCarrotTwitter {
       total += followers.size();
       followers.saveToCarrot(map);
       if (count % 100 == 0) {
-        log.debug("Loaded " + count + " user followers");
+        log.debug("Loaded {} user followers", count);
       }
     }
 
@@ -317,10 +317,9 @@ public class TestCarrotTwitter {
     avg_user_followers_size = (double) memory / numUsers;
     map.dispose();
     log.debug(
-        "avg_user_followers_size="
-            + avg_user_followers_size
-            + " bytes. Avg #folowers="
-            + (total / numUsers));
+        "avg_user_followers_size={} bytes. Avg #folowers={}",
+        avg_user_followers_size,
+        total / numUsers);
   }
 
   private static void runUserFollowersNoCompression() {
@@ -353,7 +352,7 @@ public class TestCarrotTwitter {
       total += following.size();
       following.saveToCarrot(map);
       if (count % 1000 == 0) {
-        log.debug("Loaded " + count + " user following");
+        log.debug("Loaded {}  user following", count);
       }
     }
 
@@ -361,10 +360,9 @@ public class TestCarrotTwitter {
     avg_user_following_size = (double) memory / numUsers;
     map.dispose();
     log.debug(
-        "avg_user_following_size="
-            + avg_user_following_size
-            + " bytes. Avg #folowing="
-            + (total / numUsers));
+        "avg_user_following_size={} bytes. Avg #folowing={}",
+        avg_user_following_size,
+        total / numUsers);
   }
 
   private static void runUserFollowingNoCompression() {

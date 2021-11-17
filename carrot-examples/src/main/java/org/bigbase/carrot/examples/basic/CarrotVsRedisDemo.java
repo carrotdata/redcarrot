@@ -57,7 +57,7 @@ public class CarrotVsRedisDemo {
     long start = System.currentTimeMillis();
     flushAll(client);
     long end = System.currentTimeMillis();
-    log.debug("flush all " + (end - start) + "ms");
+    log.debug("flush all {}ms", end - start);
 
     // main 3 tests
     start = System.currentTimeMillis();
@@ -88,12 +88,10 @@ public class CarrotVsRedisDemo {
 
     log.debug("\n************************ RESULTS *************************************");
     log.debug(
-        "\nTOTAL ELEMENTS LOADED ="
-            + formatter.format(totalLoaded)
-            + " TOTAL TIME ="
-            + ((double) (end - start)) / 1000
-            + "s, EPS ="
-            + formatter.format((totalLoaded) * 1000 / (end - start)));
+        "\nTOTAL ELEMENTS LOADED ={} TOTAL TIME ={}s, EPS ={}",
+        formatter.format(totalLoaded),
+        (double) (end - start) / 1000,
+        formatter.format(totalLoaded * 1000 / (end - start)));
 
     client.close();
   }
@@ -126,13 +124,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " sets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms.RPS={}", N, end - start, N * 1000 / (end - start));
   }
 
   private static void runClusterGetCycle() {
@@ -163,13 +155,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " gets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms.RPS={}", N, end - start, N * 1000 / (end - start));
   }
 
   private static void runClusterMGetCycle() {
@@ -200,13 +186,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " gets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms.RPS={}", N, end - start, N * 1000 / (end - start));
   }
 
   private static void runClusterMSetCycle() {
@@ -237,13 +217,7 @@ public class CarrotVsRedisDemo {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " sets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms.RPS={}", N, end - start, N * 1000 / (end - start));
   }
 
   private static void runClusterPingPongCycle() {
@@ -275,12 +249,10 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + N * NUM_THREADS
-            + " ping - pongs in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) NUM_THREADS * N) * 1000) / (end - start));
+        "Finished {} ping - pongs in {}ms. RPS={}",
+        N * NUM_THREADS,
+        end - start,
+        NUM_THREADS * N * 1000 / (end - start));
   }
 
   private static void runClusterSaddCycle() {
@@ -312,14 +284,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + (loaded.get() / SET_SIZE)
-            + " sadd x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (loaded.get() * 1000) / (end - start));
+        "Finished {} sadd x ({}) in {}ms RPS={}",
+        loaded.get() / SET_SIZE,
+        SET_SIZE,
+        end - start,
+        +loaded.get() * 1000 / (end - start));
   }
 
   private static void runClusterSismemberCycle() {
@@ -351,14 +320,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + SET_KEY_TOTAL
-            + " sismember x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
+        "Finished {} sismember x ({}) in {}ms. RPS={}",
+        SET_KEY_TOTAL,
+        SET_SIZE,
+        end - start,
+        (long) SET_KEY_TOTAL * SET_SIZE * 1000 / (end - start));
   }
 
   private static void runClusterHSetCycle() {
@@ -390,14 +356,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + (loaded.get() / SET_SIZE)
-            + " hset x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (loaded.get() * 1000) / (end - start));
+        "Finished {} hset x ({}) in {}ms/ RPS={}",
+        loaded.get() / SET_SIZE,
+        +SET_SIZE,
+        end - start,
+        loaded.get() * 1000 / (end - start));
   }
 
   private static void runClusterHexistsCycle() {
@@ -430,14 +393,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + SET_KEY_TOTAL
-            + " hexists x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
+        "Finished {} hexists x ({}) in {}ms/ RPS={}",
+        SET_KEY_TOTAL,
+        SET_SIZE,
+        end - start,
+        (long) SET_KEY_TOTAL * SET_SIZE * 1000 / (end - start));
   }
 
   private static void runClusterZAddCycle() {
@@ -469,14 +429,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + (loaded.get() / SET_SIZE)
-            + " zadd x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (loaded.get() * 1000) / (end - start));
+        "Finished {} zadd x ({}) in {}ms. RPS={}",
+        loaded.get() / SET_SIZE,
+        SET_SIZE,
+        end - start,
+        loaded.get() * 1000 / (end - start));
   }
 
   private static void runClusterZScoreCycle() {
@@ -508,14 +465,11 @@ public class CarrotVsRedisDemo {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Finished "
-            + SET_KEY_TOTAL
-            + " hexists x ("
-            + SET_SIZE
-            + ") in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) SET_KEY_TOTAL * SET_SIZE) * 1000) / (end - start));
+        "Finished {} hexists x ({}) in {}ms. RPS={}",
+        SET_KEY_TOTAL,
+        SET_SIZE,
+        end - start,
+        (long) SET_KEY_TOTAL * SET_SIZE * 1000 / (end - start));
   }
 
   private static void flushAll(RawClusterClient client) throws IOException {
@@ -526,7 +480,7 @@ public class CarrotVsRedisDemo {
     long start = System.currentTimeMillis();
     client.saveAll();
     long end = System.currentTimeMillis();
-    log.debug("Save time=" + (end - start));
+    log.debug("Save time={}", end - start);
   }
 
   private static void runClusterSet() throws IOException, OperationFailedException {

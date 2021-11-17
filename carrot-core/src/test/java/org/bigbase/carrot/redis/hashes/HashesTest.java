@@ -57,7 +57,7 @@ public class HashesTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] buf = new byte[valSize];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -73,7 +73,7 @@ public class HashesTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] buf = new byte[valSize];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -92,7 +92,7 @@ public class HashesTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("KEY SEED=" + seed);
+    log.debug("KEY SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, keySize);
     return key = new Key(ptr, keySize);
@@ -110,7 +110,7 @@ public class HashesTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -123,7 +123,7 @@ public class HashesTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -136,7 +136,7 @@ public class HashesTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {}  Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -215,17 +215,12 @@ public class HashesTest {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (keySize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - keySize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        keySize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - keySize - valSize,
+        end - start);
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -235,7 +230,7 @@ public class HashesTest {
       assertEquals(1, res);
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist=" + (end - start) + "ms");
+    log.debug("Time exist={}ms", end - start);
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) countRecords(map));
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));

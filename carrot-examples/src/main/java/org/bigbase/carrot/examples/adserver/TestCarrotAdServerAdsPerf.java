@@ -83,7 +83,7 @@ public class TestCarrotAdServerAdsPerf {
     doAdsSitePerf(map);
     doAdsSiteRank(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Total memory=" + memory);
+    log.debug("Total memory={}", memory);
     map.dispose();
   }
 
@@ -113,13 +113,13 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdsSiteRank :" + count);
+          log.debug("AdsSiteRank :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSiteRank : loaded {} in {}ms", count, end - start);
   }
 
   private static void doAdsSitePerf(BigSortedMap map) {
@@ -160,13 +160,13 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtrs[1]);
 
         if (count % 100000 == 0) {
-          log.debug("AdsSitePerf :" + count);
+          log.debug("AdsSitePerf :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    log.debug("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSitePerf : loaded {} in {}ms", count, end - start);
   }
 }
