@@ -774,7 +774,7 @@ public class Utils {
    * @param buffer buffer
    */
   public static void random16(long ptr, int len, long buffer) {
-    // log.error("random16="+ buffer);
+    // log.error("random16={}", buffer);
     UnsafeAccess.putInt(buffer, murmurHash(ptr, len, 1));
     UnsafeAccess.putInt(buffer + SIZEOF_INT, murmurHash(ptr, len, 2));
     UnsafeAccess.putInt(buffer + 2 * SIZEOF_INT, murmurHash(ptr, len, 3));
@@ -1834,7 +1834,7 @@ public class Utils {
       long total = decode(ptr, num);
       long t2 = System.currentTimeMillis();
 
-      log.debug("total=" + total + " time=" + (t2 - t1) + "ms");
+      log.debug("total={} time={}ms", total, t2 - t1);
     }
   }
 

@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.sets;
 
 import static org.bigbase.carrot.redis.util.Commons.NUM_ELEM_SIZE;
@@ -180,17 +180,16 @@ public class SetScanner extends Scanner {
   @SuppressWarnings("unused")
   private void dumpLimits() {
     log.debug(
-        "start="
-            + (startMemberPtr > 0 ? Bytes.toHex(startMemberPtr, startMemberSize) : "0")
-            + " end="
-            + (stopMemberPtr > 0 ? Bytes.toHex(stopMemberPtr, stopMemberSize) : "0"));
+        "start={} end={}",
+        startMemberPtr > 0 ? Bytes.toHex(startMemberPtr, startMemberSize) : "0",
+        stopMemberPtr > 0 ? Bytes.toHex(stopMemberPtr, stopMemberSize) : "0");
   }
 
   @SuppressWarnings("unused")
   private void dumpKey() {
     long ptr = this.mapScanner.keyAddress();
     int size = this.mapScanner.keySize();
-    log.debug("KEY=" + Bytes.toHex(ptr, size));
+    log.debug("KEY={}", Bytes.toHex(ptr, size));
   }
 
   /**

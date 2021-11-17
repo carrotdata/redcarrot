@@ -101,13 +101,13 @@ public class TestCarrotInvertedIndex {
         totalSize++;
       }
       if (i % 100 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
 
     long end = System.currentTimeMillis();
 
-    log.debug("Loaded " + totalSize + " in " + (end - start) + "ms");
+    log.debug("Loaded {} in {}ms", totalSize, end - start);
 
     long total = 0;
     int totalKeys = 0;
@@ -120,21 +120,21 @@ public class TestCarrotInvertedIndex {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Check CARD " + totalSize + " in " + (end - start) + "ms");
+    log.debug("Check CARD {} in {}ms", totalSize, end - start);
 
     if (totalKeys != numWords) {
-      log.error("total keys=" + totalKeys + " expected=" + numWords);
+      log.error("total keys={} expected={}", totalKeys, numWords);
       // System.exit(-1);
     }
 
     if (total != totalSize) {
-      log.error("total set=" + total + " expected=" + totalSize);
+      log.error("total set={} expected={}", total, totalSize);
       // System.exit(-1);
     }
 
     long allocced = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Memory usage per (4-bytes) doc ID: " + ((double) allocced) / totalSize);
-    log.debug("Memory usage: " + allocced);
+    log.debug("Memory usage per (4-bytes) doc ID: {}", ((double) allocced) / totalSize);
+    log.debug("Memory usage: {}", allocced);
 
     map.dispose();
     UnsafeAccess.free(vPtr);

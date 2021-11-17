@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.util.concurrent.CountDownLatch;
@@ -53,15 +53,15 @@ public class CarrotMain {
 
     // Wait for all of them
     for (CarrotNodeServer nodeServer : nodeServers) {
-      log.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
+      log.debug("Wait for shutdown nodeServers '{}'", nodeServer);
       nodeServer.join();
     }
     // shutdown
-    log.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
+    log.info("[{}] Shutdown finished.", Thread.currentThread().getName());
   }
 
   private static void usage() {
-    log.debug("[" + Thread.currentThread().getName() + "] " + "Usage: java org.bigbase.carrot.redis.RedisMain config_file_path");
+    log.info("[{}] Usage: java org.bigbase.carrot.redis.RedisMain config_file_path",Thread.currentThread().getName());
     System.exit(-1);
   }
 

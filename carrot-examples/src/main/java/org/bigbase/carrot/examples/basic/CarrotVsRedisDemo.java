@@ -106,7 +106,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterSet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -143,7 +143,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterGet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -180,7 +180,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterMGet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -217,7 +217,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterMSet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -254,7 +254,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterPingPong();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -291,7 +291,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterSadd();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -330,7 +330,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterSetIsMember();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -369,7 +369,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterHSet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -409,7 +409,7 @@ public class CarrotVsRedisDemo {
             runClusterHexists();
             ;
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -448,7 +448,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterZAdd();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -487,7 +487,7 @@ public class CarrotVsRedisDemo {
           try {
             runClusterZScore();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -684,8 +684,8 @@ public class CarrotVsRedisDemo {
       for (int i = 0; i < SET_SIZE; i++) {
         String member = setMembers[i];
         String result = client.sismember(key, member);
-        if (":1\r\n".equals(result) == false) {
-          log.error("sismember failed result=" + result);
+        if (!":1\r\n".equals(result)) {
+          log.error("sismember failed result={}", result);
           System.exit(-1);
         }
       }
@@ -784,8 +784,8 @@ public class CarrotVsRedisDemo {
       for (int i = 0; i < SET_SIZE; i++) {
         String member = setMembers[i];
         String result = client.hexists(key, member);
-        if (":1\r\n".equals(result) == false) {
-          log.error("hexists failed result=" + result);
+        if (!":1\r\n".equals(result)) {
+          log.error("hexists failed result={}", result);
           System.exit(-1);
         }
       }
@@ -896,13 +896,13 @@ public class CarrotVsRedisDemo {
       for (int i = 0; i < SET_SIZE; i++) {
         String member = setMembers[i];
         String result = client.zscore(key, member);
-        if ("$-1\r\n".equals(result) == true) {
-          log.error("zscore failed result=" + result);
+        if ("$-1\r\n".equals(result)) {
+          log.error("zscore failed result={}", result);
           System.exit(-1);
         }
         String exp = Double.toString(scores[i]);
-        if (result.indexOf(exp) < 0) {
-          log.error("zscore failed result=" + result);
+        if (!result.contains(exp)) {
+          log.error("zscore failed result={}", result);
           System.exit(-1);
         }
       }
@@ -1065,7 +1065,7 @@ public class CarrotVsRedisDemo {
           connList.add(openConnection(node));
         }
       } catch (IOException e) {
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 

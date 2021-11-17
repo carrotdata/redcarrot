@@ -176,7 +176,7 @@ public class BigSortedMapScannerTest {
       BigSortedMapScanner scanner = map.getPrefixScanner(ptr, size);
       int count = (int) countRows(scanner);
       if (count != expected) {
-        log.error(prefix);
+        log.error("ERROR: {}", prefix);
       }
       assertEquals(expected, count);
       scanner.close();

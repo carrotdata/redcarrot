@@ -1172,13 +1172,13 @@ public class SparseBitmapsTest {
       int res = Utils.compareTo(buffer, rangeSize, buffer2, rangeSize);
       if (res != 0) {
         log.error(i);
-        log.error("strlen1=" + strlen1);
-        log.error("strlen2=" + strlen2);
-        log.error("    off=" + off);
-        log.error("   off2=" + off2);
-        log.error("    len=" + len);
-        log.error(" before=" + before);
-        log.error("  after=" + size);
+        log.error("strlen1={}", strlen1);
+        log.error("strlen2={}", strlen2);
+        log.error("    off={}", off);
+        log.error("   off2={}", off2);
+        log.error("    len={}", len);
+        log.error(" before={}", before);
+        log.error("  after={}", size);
       }
       assertTrue(res == 0);
       long newbc =

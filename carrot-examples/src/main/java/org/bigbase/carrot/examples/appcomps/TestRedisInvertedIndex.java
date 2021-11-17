@@ -73,11 +73,11 @@ public class TestRedisInvertedIndex {
         totalSize++;
       }
       if (i % 100 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Loaded " + totalSize + " in " + (end - start) + "ms. Press any button ...");
+    log.debug("Loaded {} in {}ms. Press any button ...", totalSize, end - start);
     System.in.read();
     for (byte[] k : keys) {
       client.del(k);

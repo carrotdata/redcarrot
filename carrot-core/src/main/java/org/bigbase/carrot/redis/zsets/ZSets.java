@@ -471,7 +471,7 @@ public class ZSets {
   private static long ZSETCARD(BigSortedMap map, long keyPtr, int keySize, long card) {
     /*DEBUG*/
     //    if (card > 1000) {
-    //      log.error("ZSETCARD="+ card);
+    //      log.error("ZSETCARD={}", card);
     //    }
     //    //checkKeyArena(CARD_MEMBER_SIZE);
     //    // Build CARDINALITY member
@@ -625,7 +625,7 @@ public class ZSets {
 
   private static void dump(List<ValueScore> members) {
     for (ValueScore v : members) {
-      log.debug(v.score + " : " + Utils.toHexString(v.address, v.length));
+      log.debug("{} : {}", v.score, Utils.toHexString(v.address, v.length));
     }
   }
   /**

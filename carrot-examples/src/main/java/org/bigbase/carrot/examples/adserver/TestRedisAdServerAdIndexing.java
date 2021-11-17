@@ -62,12 +62,12 @@ public class TestRedisAdServerAdIndexing {
         client.sadd(k.getBytes(), Bytes.toBytes(id));
         count++;
         if (count % 100000 == 0) {
-          log.debug("LocAds :" + count);
+          log.debug("LocAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("LocAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("LocAds : loaded {} in {}ms", count, end - start);
   }
 
   private static String getWord(Random r) {
@@ -95,12 +95,12 @@ public class TestRedisAdServerAdIndexing {
         client.zadd(k.getBytes(), 0, Bytes.toBytes(id));
         count++;
         if (count % 100000 == 0) {
-          log.debug("WordAds :" + count);
+          log.debug("WordAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("WordAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("WordAds : loaded {} in {}ms", count, end - start);
   }
 
   static enum Type {

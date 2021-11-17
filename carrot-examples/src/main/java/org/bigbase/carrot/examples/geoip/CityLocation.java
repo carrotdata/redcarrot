@@ -101,7 +101,7 @@ public class CityLocation {
   public static void main(String[] args) throws IOException {
     List<CityLocation> list = load(args[0]);
 
-    log.debug("Loaded " + list.size());
+    log.debug("Loaded {}", list.size());
 
     for (int i = 0; i < 20; i++) {
       log.debug(list.get(i));

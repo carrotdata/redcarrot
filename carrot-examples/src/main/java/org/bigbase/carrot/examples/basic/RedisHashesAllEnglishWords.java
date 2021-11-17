@@ -83,19 +83,12 @@ public class RedisHashesAllEnglishWords {
       String key = baseKey + rem;
       client.hset(key, line, "1");
       if ((count % 10000) == 0 && count > 0) {
-        log.debug("Loaded " + count);
+        log.debug("Loaded {}", count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded "
-            + count
-            + " records, total size="
-            + totalLength
-            + " in "
-            + (endTime - startTime)
-            + "ms.");
+    log.debug("Loaded {} records, total size={} in {}ms", count, totalLength, endTime - startTime);
     dis.close();
 
     log.debug("Press any key ...");

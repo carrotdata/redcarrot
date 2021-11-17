@@ -42,7 +42,7 @@ public class SparseBitmapTest {
       UnsafeAccess.setMemory(src, size, (byte) 0);
       fill(src, pct, r);
       int compressedSize = codec.compress(src, size, dst, 2 * size);
-      log.debug("Sparsiness " + i + "% comp ratio=" + (((float) size) / compressedSize));
+      log.debug("Sparsiness {}% comp ratio={}", i, (((float) size) / compressedSize));
     }
   }
 
@@ -61,7 +61,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    log.debug("LZ4 1-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4 1-byte compression ratio={}", (((float) size) / compressedSize));
   }
 
   @Ignore
@@ -79,7 +79,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    log.debug("LZ4 2-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4 2-byte compression ratio={}", (((float) size) / compressedSize));
   }
 
   @Ignore
@@ -98,7 +98,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    log.debug("LZ4HC 1-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4HC 1-byte compression ratio={}", (((float) size) / compressedSize));
   }
 
   @Ignore

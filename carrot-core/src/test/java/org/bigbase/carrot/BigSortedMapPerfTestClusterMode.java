@@ -106,7 +106,7 @@ public class BigSortedMapPerfTestClusterMode {
         testCountRecords();
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       tearDown();
     }
@@ -130,7 +130,7 @@ public class BigSortedMapPerfTestClusterMode {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 

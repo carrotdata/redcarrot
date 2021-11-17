@@ -35,7 +35,7 @@ public class LZ4Bench {
     String fileName = args[0];
 
     File f = new File(fileName);
-    log.debug("Testing " + args[0]);
+    log.debug("Testing {}", args[0]);
     int fileSize = (int) f.length();
 
     ByteBuffer src = ByteBuffer.allocateDirect(fileSize);
@@ -49,21 +49,17 @@ public class LZ4Bench {
     while ((read += channel.read(src)) < fileSize)
       ;
 
-    log.debug("Read " + read + " bytes");
+    log.debug("Read {} bytes", read);
 
     src.flip();
     long start = System.currentTimeMillis();
     int compressedSize = LZ4.compress(src, dst);
     long end = System.currentTimeMillis();
     log.debug(
-        "Original size="
-            + fileSize
-            + " comp size="
-            + compressedSize
-            + " Ratio ="
-            + ((double) fileSize / compressedSize)
-            + " Time="
-            + (end - start)
-            + "ms");
+        "Original size={} comp size={} Ratio ={} Time={}ms",
+        fileSize,
+        compressedSize,
+        ((double) fileSize / compressedSize),
+        end - start);
   }
 }

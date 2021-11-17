@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.io.IOException;
@@ -78,12 +78,12 @@ public class TestRedisAdServerAdsPerf {
         client.zadd(k.getBytes(), r.nextDouble(), Bytes.toBytes(siteId));
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdsSiteRank :" + count);
+          log.debug("AdsSiteRank :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSiteRank : loaded {} in {}ms", count, end - start);
   }
 
   private static void doAdsSitePerf(Jedis client) {
@@ -109,11 +109,11 @@ public class TestRedisAdServerAdsPerf {
         client.hset(kk.getBytes(), field2, Bytes.toBytes(r.nextInt(100)));
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdsSitePerf :" + count);
+          log.debug("AdsSitePerf :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSitePerf : loaded {} in {}ms", count, end - start);
   }
 }

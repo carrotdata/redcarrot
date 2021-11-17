@@ -56,7 +56,7 @@ public class RedisSparseBitmapsComparison {
   private static void testPerformance() throws IOException {
     Jedis client = new Jedis("localhost");
 
-    log.debug("\nTest Redis Performance sparse bitmaps. dencity=" + dencity + "\n");
+    log.debug("\nTest Redis Performance sparse bitmaps. dencity={}\n", dencity);
     long offset = 0;
     long MAX = (long) (N / dencity);
     Random r = new Random();
@@ -66,21 +66,17 @@ public class RedisSparseBitmapsComparison {
       offset = Math.abs(r.nextLong()) % MAX;
       client.setbit("key", offset, true);
       if (i % 10000 == 0 && i > 0) {
-        log.debug("i=" + i);
+        log.debug("i={}", i);
       }
     }
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Time for "
-            + N
-            + " population dencity="
-            + dencity
-            + " bitmap size="
-            + (MAX)
-            + " new SetBit="
-            + (end - start)
-            + "ms");
+        "Time for {} population dencity={} bitmap size={} new SetBit={}ms",
+        +N,
+        dencity,
+        MAX,
+        end - start);
 
     log.debug("Press any button ...");
     System.in.read();

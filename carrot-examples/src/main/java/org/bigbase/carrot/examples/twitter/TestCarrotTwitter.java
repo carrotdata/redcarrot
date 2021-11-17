@@ -108,12 +108,12 @@ public class TestCarrotTwitter {
 
   private static void printSummary() {
     log.debug(
-        "Carrot memory usage per user (user, statuses, profile timeline, followers, following)="
-            + (avg_user_size
-                + avg_user_status_size
-                + avg_user_timeline_size
-                + avg_user_followers_size
-                + avg_user_following_size));
+        "Carrot memory usage per user (user, statuses, profile timeline, followers, following)={}",
+        avg_user_size
+            + avg_user_status_size
+            + avg_user_timeline_size
+            + avg_user_followers_size
+            + avg_user_following_size);
   }
 
   public static void main(String[] args) {
@@ -146,14 +146,14 @@ public class TestCarrotTwitter {
       count++;
       u.saveToCarrot(map);
       if (count % 10000 == 0) {
-        log.debug("Loaded " + count + " users");
+        log.debug("Loaded {} users", count);
       }
     }
 
     count = (int) countRecords(map);
 
     if (count != numUsers) {
-      log.error("count=" + count + " expected=" + numUsers);
+      log.error("count={} expected={}", count, numUsers);
       System.exit(-1);
     }
     count = 0;
@@ -164,7 +164,7 @@ public class TestCarrotTwitter {
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
-        log.debug("Verified " + (count) + " users");
+        log.debug("Verified {} users", count);
       }
     }
     long memory = BigSortedMap.getGlobalAllocatedMemory();

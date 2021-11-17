@@ -69,13 +69,12 @@ public class RedisStringsAtomicCounters {
       totalDataSize += skey.length() + 8 /*length of a counter*/;
       client.incrBy(skey, nextScoreSkewed(r));
       if (i % 10000 == 0 && i > 0) {
-        log.debug("set string " + i);
+        log.debug("set string :{}", i);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded " + N + " counters, total size=" + totalDataSize + " in " + (endTime - startTime));
+    log.debug("Loaded {} counters, total size={} in{}ms", N, totalDataSize, endTime - startTime);
 
     log.debug("Press any button ...");
     System.in.read();
@@ -89,7 +88,7 @@ public class RedisStringsAtomicCounters {
       String skey = "counter:" + i;
       client.del(skey);
       if (i % 10000 == 0 && i > 0) {
-        log.debug("del " + i);
+        log.debug("del {}", i);
       }
     }
     long endTime = System.currentTimeMillis();

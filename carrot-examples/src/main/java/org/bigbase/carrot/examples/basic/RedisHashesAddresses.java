@@ -83,14 +83,13 @@ public class RedisHashesAddresses {
       String skey = Address.getUserId(count);
       Map<String, String> map = us.getPropsMap();
       if (count % 10000 == 0) {
-        log.debug("set " + count);
+        log.debug("set {}", count);
       }
       client.hset(skey, map);
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded " + addressList.size() + " user address objects" + " in " + (endTime - startTime));
+    log.debug("Loaded {} user address objects in {}ms", addressList.size(), endTime - startTime);
     client.close();
 
     log.debug("Press any button ...");
@@ -102,7 +101,7 @@ public class RedisHashesAddresses {
       count++;
       String skey = Address.getUserId(count);
       if (count % 10000 == 0) {
-        log.debug("del " + count);
+        log.debug("del {}", count);
       }
       client.del(skey);
     }

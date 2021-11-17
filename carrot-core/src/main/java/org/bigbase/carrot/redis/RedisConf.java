@@ -76,7 +76,7 @@ public class RedisConf {
       try {
         conf = new RedisConf(file);
       } catch (IOException e) {
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       return conf;
     }
@@ -107,7 +107,7 @@ public class RedisConf {
       return Integer.parseInt(value);
     } catch (NumberFormatException e) {
       // TODO log error
-      e.printStackTrace();
+      log.error("StackTrace: ", e);
     }
     return defValue;
   }
@@ -119,7 +119,7 @@ public class RedisConf {
       return Long.parseLong(value);
     } catch (NumberFormatException e) {
       // TODO log error
-      e.printStackTrace();
+      log.error("StackTrace: ", e);
     }
     return defValue;
   }
@@ -192,7 +192,7 @@ public class RedisConf {
         CodecType codecType = CodecType.valueOf(value.toUpperCase());
         return CodecFactory.getInstance().getCodec(codecType);
       } catch (IllegalArgumentException e) {
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     return CodecFactory.getCodec(CodecType.NONE.ordinal()); // no compression
@@ -307,7 +307,7 @@ public class RedisConf {
           sizes[i] = Integer.parseInt(parts[i]);
         } catch (NumberFormatException e) {
           // TODO logging
-          log.error("Can not parse configuration value '" + DATA_BLOCK_SIZES_KEY + "'");
+          log.error("Can not parse configuration value '{}'", DATA_BLOCK_SIZES_KEY);
           return null;
         }
       }

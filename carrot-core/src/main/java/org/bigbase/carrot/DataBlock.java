@@ -654,21 +654,21 @@ public final class DataBlock {
 
   public void dump() {
     log.debug("====================================");
-    log.debug("Address        =" + getDataPtr());
-    log.debug("Address  index =" + getIndexPtr());
-    log.debug("Block size     =" + getBlockSize());
-    log.debug("Data size      =" + getDataInBlockSize());
-    log.debug("Number k/v's   =" + getNumberOfRecords());
-    log.debug("Compressed     =" + isCompressed());
-    log.debug("First key      =" + Bytes.toHex(getFirstKey()));
+    log.debug("Address        ={}", getDataPtr());
+    log.debug("Address  index ={}", getIndexPtr());
+    log.debug("Block size     ={}", getBlockSize());
+    log.debug("Data size      ={}", getDataInBlockSize());
+    log.debug("Number k/v's   ={}", getNumberOfRecords());
+    log.debug("Compressed     ={}", isCompressed());
+    log.debug("First key      ={}", Bytes.toHex(getFirstKey()));
     log.debug("");
   }
 
   public void dumpData() {
     log.info("====================================");
-    log.info("Block size     =" + getBlockSize());
-    log.info("Data size      =" + getDataInBlockSize());
-    log.info("Number k/v's   =" + getNumberOfRecords());
+    log.info("Block size     ={}", getBlockSize());
+    log.info("Data size      ={}", getDataInBlockSize());
+    log.info("Number k/v's   ={}", getNumberOfRecords());
   }
 
   /**
@@ -2235,7 +2235,7 @@ public final class DataBlock {
     while (ptr < stopAddress) {
       long pptr = keyAddress(ptr);
       int len = keyLength(ptr);
-      log.debug(Bytes.toHex(pptr, len));
+      log.debug("{}", Bytes.toHex(pptr, len));
       int keylen = blockKeyLength(ptr);
       int vallen = blockValueLength(ptr);
       ptr += keylen + vallen + RECORD_TOTAL_OVERHEAD;
@@ -3347,10 +3347,10 @@ public final class DataBlock {
   }
 
   public final void dumpFirstLastKeys() {
-    log.debug("DataBlock first=" + Bytes.toHex(getFirstKey()));
+    log.debug("DataBlock first={}", Bytes.toHex(getFirstKey()));
     byte[] last = getLastKey();
     if (last != null) {
-      log.debug("DataBlock last =" + Bytes.toHex(getLastKey()));
+      log.debug("DataBlock last ={}", Bytes.toHex(getLastKey()));
     }
   }
 

@@ -13,10 +13,6 @@
 */
 package org.bigbase.carrot.redis.sets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +29,8 @@ import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class SetScannerTest {
 
@@ -51,7 +49,7 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] buf = new byte[valSize / 2];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -69,7 +67,7 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("KEY SEED=" + seed);
+    log.debug("KEY SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, valSize);
     return new Key(ptr, valSize);
@@ -85,7 +83,7 @@ public class SetScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -98,7 +96,7 @@ public class SetScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -111,7 +109,7 @@ public class SetScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -154,7 +152,7 @@ public class SetScannerTest {
     testSinglePartialScannerReverseOpenEnd();
     tearDown();
     long end = System.currentTimeMillis();
-    log.debug("\nRUN in " + (end - start) + "ms");
+    log.debug("\nRUN in {}ms", end - start);
   }
 
   private void loadData(Key key, List<Value> values) {
@@ -168,7 +166,7 @@ public class SetScannerTest {
       int num = Sets.SADD(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
-        log.debug("add " + count);
+        log.debug("add {}", count);
       }
     }
   }
@@ -177,7 +175,7 @@ public class SetScannerTest {
   @Test
   public void testSingleFullScanner() throws IOException {
 
-    log.debug("Test single full scanner - one key " + n + " elements");
+    log.debug("Test single full scanner - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     List<Value> copy = copy(values);
@@ -187,17 +185,12 @@ public class SetScannerTest {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -206,12 +199,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       SetScanner scanner = Sets.getScanner(map, key.address, key.length, false);
       int expected = copy.size();
@@ -278,7 +271,7 @@ public class SetScannerTest {
     long mptr2 = UnsafeAccess.allocAndCopy(max2, 0, max2.length);
     int mptrSize2 = max2.length;
 
-    log.debug("Test edge conditions " + n + " elements");
+    log.debug("Test edge conditions {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -288,23 +281,19 @@ public class SetScannerTest {
     Utils.sortKeys(values);
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
+        end - start);
 
     // Direct
     SetScanner scanner =
         Sets.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, false);
-    assertTrue(scanner.hasNext() == false);
+    assert scanner != null;
+    assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
@@ -329,7 +318,7 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     int index = r.nextInt(values.size());
     int expected = index;
@@ -347,10 +336,12 @@ public class SetScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.address, v.length, false, false);
 
     if (expected == 0) {
-      assertTrue(scanner.hasNext() == false);
+      assert scanner != null;
+      assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
+    assert scanner != null;
     scanner.close();
 
     // log.debug("Result:");
@@ -407,7 +398,7 @@ public class SetScannerTest {
   @Test
   public void testSingleFullScannerReverse() throws IOException {
 
-    log.debug("Test single full scanner reverse - one key " + n + " elements");
+    log.debug("Test single full scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     List<Value> copy = copy(values);
@@ -416,17 +407,12 @@ public class SetScannerTest {
     loadData(key, values);
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -435,12 +421,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      /*DEBUG*/ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       SetScanner scanner = Sets.getScanner(map, key.address, key.length, false, true);
       int expected = copy.size();
@@ -474,7 +460,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScanner() throws IOException {
 
-    log.debug("Test single partial scanner - one key " + n + " elements");
+    log.debug("Test single partial scanner - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -484,17 +470,12 @@ public class SetScannerTest {
     List<Value> copy = copy(values);
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -503,12 +484,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      /*DEBUG*/ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -551,7 +532,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
 
-    log.debug("Test single partial scanner open start - one key " + n + " elements");
+    log.debug("Test single partial scanner open start - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -561,17 +542,12 @@ public class SetScannerTest {
     List<Value> copy = copy(values);
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -580,7 +556,7 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {

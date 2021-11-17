@@ -76,19 +76,19 @@ public class BigSortedMapTest {
       totalLoaded++;
       load(totalLoaded);
       if (totalLoaded % 100000 == 0) {
-        log.debug("Loaded " + totalLoaded);
+        log.debug("Loaded {}", totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= {} ={}ms", totalLoaded, (end - start));
     long scanned = countRecords();
-    log.debug("Scanned=" + countRecords());
-    log.debug("\nTotal memory     =" + BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data       =" + BigSortedMap.getGlobalDataSize());
-    log.debug("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
+    log.debug("Scanned={}", countRecords());
+    log.debug("\nTotal memory     ={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data       ={}", BigSortedMap.getGlobalDataSize());
+    log.debug("Compressed size    ={}", BigSortedMap.getGlobalCompressedDataSize());
     log.debug(
-        "Compression  ratio ="
-            + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
+        "Compression  ratio ={}",
+        ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
     log.debug("");
     assertEquals(totalLoaded, scanned);
   }
@@ -110,7 +110,7 @@ public class BigSortedMapTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* {} ********** Codec = NONE\n",i);
       setUp();
       allTests();
       tearDown();
@@ -123,7 +123,7 @@ public class BigSortedMapTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* {} ********** Codec = LZ4\n", i);
       setUp();
       allTests();
       tearDown();
@@ -136,7 +136,7 @@ public class BigSortedMapTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* {} ********** Codec = LZ4HC\n" , i);
       setUp();
       allTests();
       tearDown();
@@ -180,7 +180,7 @@ public class BigSortedMapTest {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Time to get " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to get {} ={}ms", totalLoaded, (end - start));
   }
 
   @Ignore

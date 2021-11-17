@@ -83,14 +83,11 @@ public class BigSortedMapTestMT {
         end = System.currentTimeMillis();
         comboPs.addAndGet((double) (totalOps * 1000) / (end - start));
         totalOps = 0;
-      } catch (RuntimeException e) {
-        e.printStackTrace();
+      } catch (RuntimeException | IOException e) {
+        log.error("StackTrace: ", e);
         System.exit(-1);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        System.exit(-1);
-      }
+      } // TODO Auto-generated catch block
+
     }
 
     private void runPutDeleteGetsScans() throws IOException {
@@ -203,7 +200,7 @@ public class BigSortedMapTestMT {
         scanAll();
       } catch (InterruptedException | BrokenBarrierException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
@@ -404,7 +401,7 @@ public class BigSortedMapTestMT {
           workers[i].join();
         } catch (InterruptedException e) {
           // TODO Auto-generated catch block
-          e.printStackTrace();
+          log.error("StackTrace: ", e);
         }
       }
 

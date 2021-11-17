@@ -140,20 +140,20 @@ public class LZ4 {
     //        for(int i=0; i < numIterations; i++){
     //		    dst.clear();
     //		    int compressedSize = compress(src, dst);
-    //		//log.debug("Original size="+origSize+" comp size="+compressedSize);
+    //    		log.debug("Original size={} comp size={}", origSize, compressedSize);
     //		    src.position(0);
     //		    int r = decompress(dst, src);
     //		}
     //		long stop = System.currentTimeMillis();
     //
-    //		log.debug((numIterations*1000)/(stop - start) +" of "+origSize +" blocks per sec");
+    //    		log.debug("{} of {} blocks per sec", (numIterations*1000)/(stop - start), origSize);
     //
     //        byte[] b = new byte[origSize];
-    //		log.debug("src off="+src.position()+" src.limit="+src.limit());
+    //    		log.debug("src off={} src.limit={}", src.position(), +src.limit());
     //		src.get(b);
     //
-    //		log.debug("Original     = "+test);
-    //		log.debug("Decompressed = "+new String(b));
+    //		log.debug("Original     ={}", test);
+    //		log.debug("Decompressed = {}", new String(b));
 
     String value =
         "value-value-value-value-value-value-value-value-value-value-value-value-value-value-value"
@@ -171,7 +171,7 @@ public class LZ4 {
     src.limit(pos);
 
     int compressedSize = compressHC(src, dst, 1);
-    log.debug("Original size=" + value.length() + " comp size=" + compressedSize);
+    log.debug("Original size={} comp size={}", value.length(), compressedSize);
 
     for (int i = 0; i < compressedSize; i++) {
       System.out.print(dst.get(DST + i) + " ");
@@ -182,14 +182,11 @@ public class LZ4 {
     dst.limit(DST + compressedSize);
     src.limit(src.capacity());
     log.debug(
-        "src.pos="
-            + dst.position()
-            + " size="
-            + dst.remaining()
-            + " dst.pos="
-            + src.position()
-            + " limit="
-            + src.limit());
+        "src.pos={} size={} dst.pos={} limit={}",
+        dst.position(),
+        dst.remaining(),
+        src.position(),
+        src.limit());
     int r = decompressHC(dst, src);
     int size = src.limit() - SRC;
     byte[] v = new byte[size];

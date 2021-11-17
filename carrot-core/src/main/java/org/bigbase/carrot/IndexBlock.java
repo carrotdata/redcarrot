@@ -775,7 +775,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
   protected void dumpIndexBlock() {
     int count = 0;
     long ptr = dataPtr;
-    log.debug("Dump index block: numDataBlocks=" + numDataBlocks);
+    log.debug("Dump index block: numDataBlocks={}", numDataBlocks);
     while (count++ < numDataBlocks) {
       int klen = keyLength(ptr);
       long keyAddress = keyAddress(ptr);
@@ -783,18 +783,18 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       UnsafeAccess.copy(keyAddress, buf, 0, klen);
       String key = Bytes.toString(buf);
       // key = key.substring(0, Math.min(16, key.length()));
-      log.debug(count + " : HEX=" + Bytes.toHex(buf) + " key=" + key + " len=" + klen);
+      log.debug("{} : HEX={} key={} len={}", count, Bytes.toHex(buf), key, klen);
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 
   void dumpFirstBlock() {
     DataBlock b = block.get();
     b.set(this, 0);
-    /*DEBUG*/ log.debug("COMPRESSED=" + b.isCompressed());
+    log.debug("COMPRESSED={}", b.isCompressed());
     b.decompressDataBlockIfNeeded();
     b.dump();
     b.compressDataBlockIfNeeded();
@@ -804,12 +804,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     int count = 0;
     long ptr = dataPtr;
     log.debug(
-        "Dump index block: numDataBlocks="
-            + numDataBlocks
-            + " dataInIndexSize="
-            + blockDataSize
-            + " address="
-            + dataPtr);
+        "Dump index block: numDataBlocks={} dataInIndexSize={} address={}",
+        numDataBlocks,
+        blockDataSize,
+        dataPtr);
 
     while (count++ < numDataBlocks) {
       DataBlock b = block.get();
@@ -820,30 +818,27 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr - dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr - dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 
   void dumpIndexBlockMeta() {
     int count = 0;
     long ptr = dataPtr;
-    log.debug("Dump index block META: numDataBlocks=" + numDataBlocks);
+    log.debug("Dump index block META: numDataBlocks={}", numDataBlocks);
     while (count++ < numDataBlocks) {
       DataBlock b = block.get();
       b.set(this, ptr - dataPtr);
       log.debug(
-          "BLOCK #"
-              + count
-              + " ptr="
-              + b.getDataPtr()
-              + " size="
-              + b.getDataInBlockSize()
-              + " compressed="
-              + b.isCompressed());
+          "BLOCK #{} ptr={} size={} compressed={}",
+          count,
+          b.getDataPtr(),
+          b.getDataInBlockSize(),
+          b.isCompressed());
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 
@@ -2063,12 +2058,12 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     byte[] first = getFirstKey();
     long lastRecordAddress = lastRecordAddress();
     if (lastRecordAddress == NOT_FOUND) {
-      log.debug("First key=" + Bytes.toHex(first) + "\nLast key = null");
+      log.debug("First key={}\nLast key = null", Bytes.toHex(first));
       return;
     }
     long lastPtr = DataBlock.keyAddress(lastRecordAddress);
     int lastSize = DataBlock.keyLength(lastRecordAddress);
-    log.debug("First key=" + Bytes.toHex(first) + "\nLast key =" + Bytes.toHex(lastPtr, lastSize));
+    log.debug("First key={}\nLast key ={}", Bytes.toHex(first), Bytes.toHex(lastPtr, lastSize));
   }
   /**
    * Get last K-V record address in this index

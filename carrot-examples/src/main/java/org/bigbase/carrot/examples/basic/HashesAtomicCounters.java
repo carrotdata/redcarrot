@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class HashesAtomicCounters {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("SEED1=" + seed);
+    log.debug("SEED1={}", seed);
     Collections.shuffle(keys, r);
   }
 
@@ -130,7 +130,7 @@ public class HashesAtomicCounters {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("SEED2=" + seed);
+    log.debug("SEED2={}", seed);
 
     for (Key key : keys) {
       count++;
@@ -206,13 +206,12 @@ public class HashesAtomicCounters {
           Hashes.HGET(
               map, key.address, keySize, key.address + keySize, key.length - keySize, buf, bufSize);
       if (size < 0) {
-        log.error(
-            "FAILED count=" + count + " keySize=" + keySize + " keyLength=" + key.length);
+        log.error("FAILED count={} keySize={} keyLength={}", count, keySize, key.length);
         System.exit(-1);
       }
       String s = Utils.toString(buf, size);
       if (Integer.parseInt(s) != val) {
-        log.error("Failed with s=" + s);
+        log.error("Failed with s={}", s);
         System.exit(-1);
       }
       if (count % 100000 == 0) {

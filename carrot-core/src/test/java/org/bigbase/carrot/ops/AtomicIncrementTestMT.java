@@ -69,7 +69,7 @@ public class AtomicIncrementTestMT {
           try {
             map.incrementLongOp(k.address, k.length, 1);
           } catch (OperationFailedException e) {
-            log.error("Increment failed.");
+            log.error("Increment failed.", e);
             break;
           }
           totalIncrements.incrementAndGet();
@@ -130,7 +130,7 @@ public class AtomicIncrementTestMT {
             runners[i].join();
           } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         }
 

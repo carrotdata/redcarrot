@@ -80,12 +80,12 @@ public class TestRedisAdServerSitePerf {
         client.zadd(k, r.nextDouble(), word);
         count++;
         if (count % 100000 == 0) {
-          log.debug("SiteWordsRank :" + count);
+          log.debug("SiteWordsRank :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteWordsRank : loaded {} in {}ms", count, end - start);
   }
 
   private static void doSiteAdsRank(Jedis client) {
@@ -101,11 +101,11 @@ public class TestRedisAdServerSitePerf {
         client.zadd(k.getBytes(), r.nextDouble(), Bytes.toBytes(adsId));
         count++;
         if (count % 100000 == 0) {
-          log.debug("SiteAdsRank :" + count);
+          log.debug("SiteAdsRank :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteAdsRank : loaded {} in {}ms", count, end - start);
   }
 }

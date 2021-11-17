@@ -45,7 +45,7 @@ public class DataBlockTest extends DataBlockTestBase {
     ArrayList<Key> keys = fillDataBlock(b);
     Random r = new Random();
 
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
     int found = 0;
     long start = System.currentTimeMillis();
     int n = 1000000;
@@ -59,8 +59,8 @@ public class DataBlockTest extends DataBlockTestBase {
       if (off > 0) found++;
     }
     assertEquals(n, found);
-    log.debug("Total found =" + found + " in " + (System.currentTimeMillis() - start) + "ms");
-    log.debug("Rate = " + (1000d * found) / (System.currentTimeMillis() - start) + " RPS");
+    log.debug("Total found = {}  in {}ms", found, + (System.currentTimeMillis() - start));
+    log.debug("Rate = {} RPS", (1000d * found) / (System.currentTimeMillis() - start));
     // b.free();
     log.debug("testBlockPutGet DONE");
   }
@@ -90,7 +90,7 @@ public class DataBlockTest extends DataBlockTestBase {
     log.debug("testBlockPutScan");
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
     long start = System.currentTimeMillis();
 
     long buffer = UnsafeAccess.malloc(16384);
@@ -109,7 +109,7 @@ public class DataBlockTest extends DataBlockTestBase {
     }
     // b.free();
     log.debug(
-        "Rate = " + (1000d * N * keys.size()) / (System.currentTimeMillis() - start) + " RPS");
+        "Rate = {} RPS", (1000d * N * keys.size()) / (System.currentTimeMillis() - start));
     log.debug("testBlockPutScan DONE");
   }
 
@@ -119,7 +119,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
 
     for (Key key : keys) {
       OpResult result = b.delete(key.address, key.length, Long.MAX_VALUE);
@@ -142,7 +142,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
     int totalKVs = keys.size();
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
@@ -171,7 +171,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
     int totalKVs = keys.size();
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
@@ -210,7 +210,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
 
     for (Key key : keys) {
       OpResult result = b.delete(key.address, key.length, Long.MAX_VALUE);

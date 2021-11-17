@@ -159,13 +159,13 @@ public abstract class KeyValues {
     try {
       long size = Hashes.HGETALL(map, keyPtr, keySize, buffer, 4096);
       if (size < 0 || size > 4096) {
-        log.error("Verification failed, size=" + size);
+        log.error("Verification failed, size={}", size);
         return false;
       }
 
       int num = UnsafeAccess.toInt(buffer);
       if (num != 2 * props.size()) {
-        log.error("Verification failed, num=" + num + " expected=" + props.size());
+        log.error("Verification failed, num={} expected={}", num, props.size());
         return false;
       }
       return true;

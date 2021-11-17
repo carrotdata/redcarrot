@@ -167,7 +167,7 @@ public class ZSetsDenialOfService {
       ZSets.ZADD(map, keyPtr, keySize, scores, memPtrs, memSizes, false);
 
       if (i % 10000 == 0 && i > 0) {
-        log.debug("zset " + i);
+        log.debug("zset {}", i);
       }
     }
     long endTime = System.currentTimeMillis();
@@ -175,19 +175,13 @@ public class ZSetsDenialOfService {
     long num = hosts.size() > 0 ? hosts.size() : N;
 
     log.debug(
-        "Loaded "
-            + num
-            + " [host, number] pairs"
-            + ", total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime)
-            + "ms. RAM usage="
-            + (UnsafeAccess.getAllocatedMemory()
-                + " RAM per record="
-                + ((double) UnsafeAccess.getAllocatedMemory() / num))
-            + " COMPRESSION="
-            + (((double) totalDataSize)) / UnsafeAccess.getAllocatedMemory());
+        "Loaded {} [host, number] pairs, total size={} in {}ms. RAM usage={} RAM per record={} COMPRESSION={}",
+        num,
+        totalDataSize,
+        endTime - startTime,
+        UnsafeAccess.getAllocatedMemory(),
+        (double) UnsafeAccess.getAllocatedMemory() / num,
+        (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.dispose();

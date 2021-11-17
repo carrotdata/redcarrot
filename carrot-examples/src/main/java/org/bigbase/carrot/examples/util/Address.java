@@ -80,19 +80,16 @@ public class Address extends KeyValues {
       }
       list.add(new Address(p));
       if ((list.size() % 10000) == 0) {
-        log.debug("Loaded " + list.size());
+        log.debug("Loaded {}", list.size());
       }
     }
     dis.close();
     log.debug(
-        "Parsed file: "
-            + name
-            + "\nTotal records="
-            + total
-            + "\nValid records="
-            + valid
-            + "\nTotalSize="
-            + totalSize);
+        "Parsed file: {}\nTotal records={}\nValid records={}\nTotalSize={}",
+        name,
+        total,
+        valid,
+        totalSize);
     return list;
   }
 

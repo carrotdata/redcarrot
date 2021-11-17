@@ -64,7 +64,7 @@ public class RedisServer {
                 RedisServer.main(new String[] {});
               } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("StackTrace: ", e);
               }
             })
         .start();
@@ -74,7 +74,7 @@ public class RedisServer {
         Thread.sleep(100);
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       log("started=" + started);
     }
@@ -158,7 +158,7 @@ public class RedisServer {
         selector.close();
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
   }

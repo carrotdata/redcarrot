@@ -110,7 +110,7 @@ public class AtomicAppendTestMT {
             runners[i].join();
           } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         }
 

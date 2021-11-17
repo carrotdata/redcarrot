@@ -1237,9 +1237,9 @@ public class Lists {
 
   @SuppressWarnings("unused")
   private static void dumpListKey(long valueBuf) {
-    log.debug("N=" + UnsafeAccess.toInt(valueBuf));
-    log.debug("FIRST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT));
-    log.debug("LAST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT + Utils.SIZEOF_LONG));
+    log.debug("N={}", UnsafeAccess.toInt(valueBuf));
+    log.debug("FIRST={}", UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT));
+    log.debug("LAST={}", UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT + Utils.SIZEOF_LONG));
   }
 
   /**

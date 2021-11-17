@@ -43,7 +43,7 @@ public class IndexBlockTest {
   public void testAll() throws RetryOperationException, IOException {
 
     for (int i = 0; i < 10; i++) {
-      log.debug("\nRun " + (i + 1) + "\n");
+      log.debug("\nRun {}} \n", (i + 1));
       testPutGet();
       testPutGetWithCompressionLZ4();
       testPutGetWithCompressionLZ4HC();
@@ -130,7 +130,7 @@ public class IndexBlockTest {
       assertTrue(res == OpResult.OK);
     }
     int after = ib.getNumberOfDataBlock();
-    log.debug("Before =" + before + " After=" + after);
+    log.debug("Before ={} After={}", before, after);
     assertTrue(before > after);
     ib.free();
     freeKeys(keys);

@@ -96,7 +96,7 @@ public class RedisClusterTest {
           try {
             runClusterLoad();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -115,13 +115,7 @@ public class RedisClusterTest {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " sets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
     index.set(0);
 
@@ -130,7 +124,7 @@ public class RedisClusterTest {
           try {
             runClusterGet();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     workers = new Thread[NUM_THREADS];
@@ -149,13 +143,7 @@ public class RedisClusterTest {
             });
     end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " gets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
     shutdownAll(client, true);
   }
@@ -211,19 +199,17 @@ public class RedisClusterTest {
       totalDataSize += skey.length() + svalue.length();
       client.set(skey, svalue);
       if (count % 10000 == 0) {
-        log.debug(Thread.currentThread().getId() + ": set " + count);
+        log.debug("{}: set {}", Thread.currentThread().getId(), count);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        Thread.currentThread().getId()
-            + ": Loaded "
-            + count
-            + " user sessions, total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime));
+        "{}: Loaded {} user sessions, total size={} in {}ms",
+        Thread.currentThread().getId(),
+        count,
+        totalDataSize,
+        endTime - startTime);
 
     client.close();
   }
@@ -248,18 +234,16 @@ public class RedisClusterTest {
       String v = client.get(skey);
       assert (v != null && v.length() == svalue.length());
       if (count % 10000 == 0) {
-        log.debug(Thread.currentThread().getId() + ": get " + count);
+        log.debug("{} get {}", Thread.currentThread().getId(), count);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        Thread.currentThread().getId()
-            + ": Read "
-            + count
-            + " user sessions"
-            + " in "
-            + (endTime - startTime));
+        "{}: Read {} user sessions in {}ms",
+        Thread.currentThread().getId(),
+        count,
+        endTime - startTime);
     client.close();
   }
 }

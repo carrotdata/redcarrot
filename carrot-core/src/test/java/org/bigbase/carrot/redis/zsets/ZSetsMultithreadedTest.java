@@ -163,7 +163,7 @@ public class ZSetsMultithreadedTest {
               int card = (int) ZSets.ZCARD(map, ptr, keySize);
               if (card != values.size()) {
                 card = (int) ZSets.ZCARD(map, ptr, keySize);
-                log.error("Second CARD=" + card);
+                log.error("Second CARD={}", card);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -230,7 +230,7 @@ public class ZSetsMultithreadedTest {
               assertTrue(res);
               card = ZSets.ZCARD(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card =" + card);
+                log.error("FAILED delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);
@@ -253,7 +253,7 @@ public class ZSetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
@@ -278,7 +278,7 @@ public class ZSetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
@@ -302,7 +302,7 @@ public class ZSetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     end = System.currentTimeMillis();

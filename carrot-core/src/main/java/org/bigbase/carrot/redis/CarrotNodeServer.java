@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class CarrotNodeServer implements Runnable {
       runner.join();
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.error("StackTrace: ", e);
     }
   }
 
@@ -98,7 +98,7 @@ public class CarrotNodeServer implements Runnable {
       // now we can sync
       runNodeServer();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("StackTrace: ", e);
     }
   }
 
@@ -143,7 +143,7 @@ public class CarrotNodeServer implements Runnable {
               processRequest(key);
             }
           } catch (IOException e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
             log("Shutting down node ...");
             store.dispose();
             store = null;
@@ -228,7 +228,7 @@ public class CarrotNodeServer implements Runnable {
       String msg = e.getMessage();
       if (!msg.equals("Connection reset by peer")) {
         // TODO
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       key.cancel();
     } finally {
@@ -237,8 +237,11 @@ public class CarrotNodeServer implements Runnable {
     }
     totalReqTime += System.nanoTime() - startTime;
     if ((ricCount % 10000) == 0) {
-      // log.debug("Avg request time ="+(totalReqTime / (1000 * ricCount)) +
-      //  " requests="+ ricCount + " iterations="+ iter);
+      //      log.debug(
+      //          "Avg request time ={} requests={} iterations={}",
+      //          totalReqTime / (1000L * ricCount),
+      //          ricCount,
+      //          iter);
     }
   }
 
@@ -273,6 +276,6 @@ public class CarrotNodeServer implements Runnable {
   }
 
   static void log(String str) {
-    log.debug("[" + Thread.currentThread().getName() + "] " + str);
+    log.debug("[{}] {}]", Thread.currentThread().getName(), str);
   }
 }

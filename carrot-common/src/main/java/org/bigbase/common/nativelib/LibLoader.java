@@ -163,7 +163,7 @@ public class LibLoader {
       // loader.
       return Class.forName(classesToPreload[0]).newInstance();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("StackTrace: ", e);
       throw new KodaError(KodaErrorCode.FAILED_TO_LOAD_NATIVE_LIBRARY, e.getMessage());
     }
   }
@@ -426,7 +426,7 @@ public class LibLoader {
         version = version.trim().replaceAll("[^0-9\\.]", "");
       }
     } catch (IOException e) {
-      log.error(e);
+      log.error("StackTrace: ", e);
     }
     return version;
   }

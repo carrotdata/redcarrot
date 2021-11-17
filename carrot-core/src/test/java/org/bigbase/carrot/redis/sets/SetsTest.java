@@ -268,7 +268,7 @@ public class SetsTest {
         t.join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     long end = System.currentTimeMillis();
