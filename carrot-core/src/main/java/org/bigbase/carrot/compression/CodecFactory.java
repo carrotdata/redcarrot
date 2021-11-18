@@ -89,9 +89,11 @@ public class CodecFactory {
         return new LZ4HCCodec();
       case NONE:
         return null;
+      default: 
+        return null;
     }
-    return null;
   }
+  
   /**
    * Gets the codec.
    *

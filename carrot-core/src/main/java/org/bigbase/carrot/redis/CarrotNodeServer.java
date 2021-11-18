@@ -61,7 +61,6 @@ public class CarrotNodeServer implements Runnable {
   private int port;
   private BigSortedMap store;
   private Thread runner;
-  private boolean shutdown = false;
 
   /**
    *
@@ -153,10 +152,10 @@ public class CarrotNodeServer implements Runnable {
         };
     // Infinite loop..
     // Keep server running
-    do {
+    while (true) {
       // Selects a set of keys whose corresponding channels are ready for I/O operations
       selector.select(action);
-    } while (!shutdown);
+    }
   }
 
   long totalReqTime = 0;
@@ -214,7 +213,12 @@ public class CarrotNodeServer implements Runnable {
 
         in.position(oldPos);
         // Process request
-        this.shutdown = CommandProcessor.process(store, in, out);
+        boolean shutdown = CommandProcessor.process(store, in, out);
+
+        // TODO: this is poor man terminator - FIXME
+        if (shutdown) {
+          shutdownNode();
+        }
         // send response back
         out.flip();
         while (out.hasRemaining()) {
@@ -234,13 +238,10 @@ public class CarrotNodeServer implements Runnable {
       release(key);
     }
     totalReqTime += System.nanoTime() - startTime;
-    if ((ricCount % 10000) == 0) {
-      //      log.debug(
-      //          "Avg request time ={} requests={} iterations={}",
-      //          totalReqTime / (1000L * ricCount),
-      //          ricCount,
-      //          iter);
-    }
+  }
+
+  private void shutdownNode() {
+    System.exit(0);
   }
 
   /**
