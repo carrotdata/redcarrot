@@ -48,8 +48,8 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
         keys.add(new Key(ptr, len));
       }
     }
-    log.debug(
-        "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
+    log.debug("M: {} D: {}",
+        BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize());
     return keys;
   }
 
