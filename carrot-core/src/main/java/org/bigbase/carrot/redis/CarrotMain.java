@@ -48,7 +48,7 @@ public class CarrotMain {
       int port = Integer.parseInt(parts[1].trim());
       nodeServers[i] = new CarrotNodeServer(host, port);
       nodeServers[i].start();
-      log.debug("Start nodeServers '{}'}", nodeServers[i]);
+      log.debug("Start nodeServers '{}'", nodeServers[i]);
     }
 
     // Wait for all of them
@@ -61,7 +61,9 @@ public class CarrotMain {
   }
 
   private static void usage() {
-    log.info("[{}] Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path",Thread.currentThread().getName());
+    log.info(
+        "[{}] Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path",
+        Thread.currentThread().getName());
     System.exit(-1);
   }
 
