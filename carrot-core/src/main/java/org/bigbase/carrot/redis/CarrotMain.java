@@ -13,29 +13,55 @@
  */
 package org.bigbase.carrot.redis;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.lists.Lists;
 
 /** Main service launcher */
 public class CarrotMain {
 
-  private static final Logger log = LogManager.getLogger(CarrotMain.class);
-
+  private static final Logger logger = LogManager.getLogger(CarrotMain.class);
+  
   public static void main(String[] args) {
-    log.info("Start CarrotMain main...");
-    if (args.length == 0) {
+    if (args.length != 2) {
       usage();
     }
-    loadConfigAndInit(args[0]);
-    startNodes();
+    if (args[1].equals("stop")) {
+      stopServer(args[0]);
+    } else if (args[1].equals("start")) {
+      startServer(args[0]);
+    } else {
+      usage();
+    }
   }
 
-  private static void startNodes() {
-    log.trace("CarrotMain startNodes...");
+  private static void stopServer(String configFile) {
+    System.out.println("Stopping Carrot Server");
+    log("Stopping Carrot server ...");
+    loadConfig(configFile);
+    RedisConf conf = RedisConf.getInstance();
+    String[] nodes = conf.getNodes();
+    List<String> list = new ArrayList<String>();
+    Arrays.stream(nodes).forEach(n -> list.add(n));
+    RawClusterClient client = new RawClusterClient(list);
+    client.shutdownAll();
+    // shutdown
+    log("Shutdown finished.");
+  }
+
+
+  private static void startServer(String configFile) {
+    
+    log("Starting Carrot server ...");
+
+    loadConfigAndInit(configFile);
     RedisConf conf = RedisConf.getInstance();
     String[] nodes = conf.getNodes();
     CarrotNodeServer[] nodeServers = new CarrotNodeServer[nodes.length];
@@ -48,33 +74,45 @@ public class CarrotMain {
       int port = Integer.parseInt(parts[1].trim());
       nodeServers[i] = new CarrotNodeServer(host, port);
       nodeServers[i].start();
-      log.debug("Start nodeServers '{}'}", nodeServers[i]);
+      logger.debug("Start nodeServers '{}'}", nodeServers[i]);
     }
 
     // Wait for all of them
     for (CarrotNodeServer nodeServer : nodeServers) {
-      log.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
+      logger.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
       nodeServer.join();
     }
     // shutdown
-    log.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
+    logger.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
   }
 
   private static void usage() {
-    log.debug("[" + Thread.currentThread().getName() + "] " + "Usage: java org.bigbase.carrot.redis.RedisMain config_file_path");
+    log("Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path [start|stop]");
     System.exit(-1);
   }
 
   private static void loadConfigAndInit(String confFilePath) {
-    log.trace("CarrotMain loadConfigAndInit...");
+    logger.trace("CarrotMain loadConfigAndInit...");
     RedisConf conf = RedisConf.getInstance(confFilePath);
     long limit = conf.getMaxMemoryLimit();
-    log.debug("Max limit memory '{}'", limit);
+    logger.debug("Max limit memory '{}'", limit);
     BigSortedMap.setGlobalMemoryLimit(limit);
     BigSortedMap.setCompressionCodec(conf.getCompressionCodec());
-    log.debug("setCompressionCodec '{}'", conf.getCompressionCodec());
+    logger.debug("setCompressionCodec '{}'", conf.getCompressionCodec());
     // Register custom memory deallocator for LIST data type
     Lists.registerDeallocator();
     Lists.registerSerDe();
+  }
+
+  private static void loadConfig(String confFilePath) {
+    RedisConf conf = RedisConf.getInstance(confFilePath);
+  }
+  
+  static void log(String str) {
+    logger.info("[{}] {}", Thread.currentThread().getName(), str);
+  }
+
+  static void logError(String str) {
+    logger.error("[{}] {}", Thread.currentThread().getName(), str);
   }
 }

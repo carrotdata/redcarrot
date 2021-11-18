@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.io.IOException;
@@ -61,7 +61,6 @@ public class CarrotNodeServer implements Runnable {
   private int port;
   private BigSortedMap store;
   private Thread runner;
-  private boolean shutdown = false;
   /**
    * Constructor with nodeId (server's port)
    *
@@ -155,9 +154,6 @@ public class CarrotNodeServer implements Runnable {
     while (true) {
       // Selects a set of keys whose corresponding channels are ready for I/O operations
       selector.select(action);
-      if (shutdown) {
-        break;
-      }
     }
   }
 
@@ -216,7 +212,12 @@ public class CarrotNodeServer implements Runnable {
 
         in.position(oldPos);
         // Process request
-        this.shutdown = CommandProcessor.process(store, in, out);
+        boolean shutdown = CommandProcessor.process(store, in, out);
+
+        // TODO: this is poor man terminator - FIXME
+        if (shutdown) {
+          shutdownNode();
+        }
         // send response back
         out.flip();
         while (out.hasRemaining()) {
@@ -236,10 +237,10 @@ public class CarrotNodeServer implements Runnable {
       release(key);
     }
     totalReqTime += System.nanoTime() - startTime;
-    if ((ricCount % 10000) == 0) {
-      // log.debug("Avg request time ="+(totalReqTime / (1000 * ricCount)) +
-      //  " requests="+ ricCount + " iterations="+ iter);
-    }
+  }
+
+  private void shutdownNode() {
+    System.exit(0);
   }
 
   /**

@@ -37,7 +37,7 @@ start() {
     exit 1
   fi
 
-  exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS}"
+  exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS} start"
   echo "${exec_cmd}"
   mkdir -p logs
   nohup ${exec_cmd} >>logs/carrot-stdout.log &
@@ -61,11 +61,10 @@ stop() {
 
   PID=$(pid)
   if [ ! -z "${PID}" ]; then
-    kill -4 "${PID}"
+    exec_cmd="${JAVA_HOME}/bin/java ${JVM_OPTS} org.bigbase.carrot.redis.CarrotMain ${APPS_PARAMS} stop"   
+    nohup ${exec_cmd} &
+    echo "Carrot instance ${INSTANCE_NAME} is terminating on PID ${PID}, please wait..."
     sleep 3
-    echo "carrot server, instance ${INSTANCE_NAME}. PID ${PID} successfully stopped"
-    ##TODO
-    #pelase add grace full stop here...
   fi
 
   sleep 1
@@ -74,7 +73,7 @@ stop() {
   if [ ! -z "${PID}" ]; then
     echo "Carrot server still running on instance ${INSTANCE_NAME} and can't be stopped for some reason. PID ${PID}"
   else
-    echo No instances of carrot server are runnning.
+    echo "No instances of Carrot server are runnning"
   fi
 
   if [ -z "${if_continue}" ]; then
