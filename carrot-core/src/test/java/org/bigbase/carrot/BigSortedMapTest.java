@@ -241,7 +241,7 @@ public class BigSortedMapTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted={} collisions={}", numDeleted, collisions);
     return list;
   }
 
