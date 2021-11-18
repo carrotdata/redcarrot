@@ -126,7 +126,7 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 loaded++;
                 if (loaded % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " loaded " + loaded);
+                  log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
                 }
               }
               int card = (int) Sets.SCARD(map, ptr, keySize);
@@ -161,7 +161,7 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 read++;
                 if (read % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " read " + read);
+                  log.debug("{} read {}", Thread.currentThread().getName(), read);
                 }
               }
             }
@@ -269,7 +269,7 @@ public class SetsMultithreadedTest {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
+    log.debug("Deleting of {} sets in {}ms", numThreads * keysNumber, end - start);
     assertEquals(0L, map.countRecords());
   }
 }

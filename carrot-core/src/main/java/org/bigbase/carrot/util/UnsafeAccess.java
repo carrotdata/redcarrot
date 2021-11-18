@@ -184,7 +184,7 @@ public final class UnsafeAccess {
     @SuppressWarnings("unused")
     private void dumpIfAlloced(String str, long address, int value, long alloced) {
       if (alloced == value) {
-        log.debug("{} size={}", str + address, alloced);
+        log.debug("{}{} size={}", str, address, alloced);
         Thread.dumpStack();
       }
     }

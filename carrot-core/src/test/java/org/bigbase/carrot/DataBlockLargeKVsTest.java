@@ -33,11 +33,11 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
   private static final Logger log = LogManager.getLogger(DataBlockLargeKVsTest.class);
 
   protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     int maxSize = 4096;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       int len = r.nextInt(maxSize) + 1;
       byte[] key = new byte[len];
       r.nextBytes(key);
@@ -49,7 +49,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
       }
     }
     log.debug(
-        "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
+        "M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize());
     return keys;
   }
 
@@ -68,7 +68,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
       List<Key> keys = fillDataBlock(b);
       for (Key key : keys) {
         int keySize = key.length;
-        int valueSize = 0;
+        int valueSize;
         DataBlock.AllocType type = DataBlock.getAllocType(keySize, keySize);
         if (type == DataBlock.AllocType.EMBEDDED) {
           continue;
@@ -85,7 +85,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
         assertTrue(res);
         long size = b.get(key.address, key.length, bufPtr, value.length, Long.MAX_VALUE);
         assertEquals(value.length, (int) size);
-        assertTrue(Utils.compareTo(bufPtr, value.length, valuePtr, value.length) == 0);
+        assertEquals(0, Utils.compareTo(bufPtr, value.length, valuePtr, value.length));
         UnsafeAccess.free(valuePtr);
         UnsafeAccess.free(bufPtr);
       }
@@ -109,7 +109,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
       List<Key> keys = fillDataBlock(b);
       for (Key key : keys) {
         int keySize = key.length;
-        int valueSize = 0;
+        int valueSize;
         DataBlock.AllocType type = DataBlock.getAllocType(keySize, keySize);
         if (type == DataBlock.AllocType.EMBEDDED) {
           if (keySize < 12) {
@@ -128,7 +128,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
         assertTrue(res);
         long size = b.get(key.address, key.length, bufPtr, value.length, Long.MAX_VALUE);
         assertEquals(value.length, (int) size);
-        assertTrue(Utils.compareTo(bufPtr, value.length, valuePtr, value.length) == 0);
+        assertEquals(0, Utils.compareTo(bufPtr, value.length, valuePtr, value.length));
       }
       assertEquals(keys.size() + 1, (int) b.getNumberOfRecords());
       scanAndVerify(b, keys);

@@ -13,11 +13,6 @@
 */
 package org.bigbase.carrot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +28,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class DataBlockTest extends DataBlockTestBase {
 
@@ -55,11 +52,11 @@ public class DataBlockTest extends DataBlockTestBase {
       int keyLength = keys.get(index).length;
       long off = b.get(keyPtr, keyLength, Long.MAX_VALUE);
       int res = Utils.compareTo(DataBlock.keyAddress(off), keyLength, keyPtr, keyLength);
-      assertTrue(res == 0);
+      assertEquals(0, res);
       if (off > 0) found++;
     }
     assertEquals(n, found);
-    log.debug("Total found = {}  in {}ms", found, + (System.currentTimeMillis() - start));
+    log.debug("Total found = {}  in {}ms", found, System.currentTimeMillis() - start);
     log.debug("Rate = {} RPS", (1000d * found) / (System.currentTimeMillis() - start));
     // b.free();
     log.debug("testBlockPutGet DONE");
@@ -98,6 +95,7 @@ public class DataBlockTest extends DataBlockTestBase {
     for (int i = 0; i < N; i++) {
       DataBlockScanner bs = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
       int count = 0;
+      assert bs != null;
       while (bs.hasNext()) {
         bs.keyValue(buffer, 0);
         bs.next();
@@ -108,8 +106,7 @@ public class DataBlockTest extends DataBlockTestBase {
       bs.close();
     }
     // b.free();
-    log.debug(
-        "Rate = {} RPS", (1000d * N * keys.size()) / (System.currentTimeMillis() - start));
+    log.debug("Rate = {} RPS", (1000d * N * keys.size()) / (System.currentTimeMillis() - start));
     log.debug("testBlockPutScan DONE");
   }
 
@@ -148,6 +145,7 @@ public class DataBlockTest extends DataBlockTestBase {
     DataBlock bb = b.split(true);
 
     IndexBlock ib = new IndexBlock(null, 4096);
+    assert bb != null;
     bb.register(ib, 0);
 
     assertEquals(totalKVs + 1, (int) bb.getNumberOfRecords() + b.getNumberOfRecords());
@@ -176,6 +174,7 @@ public class DataBlockTest extends DataBlockTestBase {
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
     IndexBlock ib = new IndexBlock(null, 4096);
+    assert bb != null;
     bb.register(ib, 0);
 
     // +1 is system key in a first block
@@ -228,7 +227,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     assertEquals(1, (int) b.getNumberOfRecords());
     // First key is a system key
-    assertTrue(Bytes.compareTo(new byte[] {0}, b.getFirstKey()) == 0);
+    assertEquals(0, Bytes.compareTo(new byte[] {0}, b.getFirstKey()));
     // b.free();
     log.debug("testCompactionFull DONE");
   }
@@ -239,10 +238,10 @@ public class DataBlockTest extends DataBlockTestBase {
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
 
     Random r = new Random();
-    ArrayList<Key> deletedKeys = new ArrayList<Key>();
+    ArrayList<Key> deletedKeys = new ArrayList<>();
     for (Key key : keys) {
       if (r.nextDouble() < 0.5) {
         OpResult result = b.delete(key.address, key.length, Long.MAX_VALUE);
@@ -270,7 +269,7 @@ public class DataBlockTest extends DataBlockTestBase {
     log.debug("testOrderedInsertion");
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    log.debug("Total inserted =" + keys.size());
+    log.debug("Total inserted ={}", keys.size());
     scanAndVerify(b, keys);
     b.free();
     log.debug("testOrderedInsertion DONE");
@@ -297,7 +296,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     // Try to insert
     boolean result = b.put(key, size, key, size, 0, 0);
-    assertEquals(false, result);
+    assertFalse(result);
 
     // Delete one record
     Key oneKey = keys.get(0);
@@ -314,7 +313,7 @@ public class DataBlockTest extends DataBlockTestBase {
         DataBlock.mustStoreExternally(size, size)
             ? DataBlock.RECORD_TOTAL_OVERHEAD + 12
             : 2 * size + DataBlock.RECORD_TOTAL_OVERHEAD;
-    boolean expResult = reqSize <= avail ? true : false;
+    boolean expResult = reqSize <= avail;
     result = b.put(key, size, key, size, 0, 0);
     assertEquals(expResult, result);
     // b.free();
@@ -352,11 +351,13 @@ public class DataBlockTest extends DataBlockTestBase {
     scanAndVerify(b, keys);
 
     DataBlockScanner scanner = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
+    assert scanner != null;
     int keySize = scanner.keySize();
     byte[] key = new byte[keySize];
     scanner.key(key, 0);
     byte[] kkey = b.getFirstKey();
-    assertTrue(Utils.compareTo(key, 0, key.length, kkey, 0, kkey.length) == 0);
+    assert kkey != null;
+    assertEquals(0, Utils.compareTo(key, 0, key.length, kkey, 0, kkey.length));
     // Close scanner - this will release read lock on a block
     scanner.close();
 
@@ -367,6 +368,7 @@ public class DataBlockTest extends DataBlockTestBase {
     assertEquals(OpResult.NOT_FOUND, res);
     scanner = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip system key
+    assert scanner != null;
     scanner.next();
     keySize = scanner.keySize();
     addr = UnsafeAccess.malloc(keySize);
@@ -392,7 +394,7 @@ public class DataBlockTest extends DataBlockTestBase {
       assertTrue(res);
       long size = b.get(key.address, key.length, bufPtr, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(bufPtr, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(bufPtr, value.length, valuePtr, value.length));
       UnsafeAccess.free(valuePtr);
       UnsafeAccess.free(bufPtr);
     }
@@ -415,7 +417,7 @@ public class DataBlockTest extends DataBlockTestBase {
       assertTrue(res);
       long size = b.get(key.address, key.length, bufPtr, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(bufPtr, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(bufPtr, value.length, valuePtr, value.length));
       UnsafeAccess.free(valuePtr);
       UnsafeAccess.free(bufPtr);
     }
@@ -447,7 +449,7 @@ public class DataBlockTest extends DataBlockTestBase {
       assertTrue(res);
       long size = b.get(key.address, key.length, bufPtr, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(bufPtr, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(bufPtr, value.length, valuePtr, value.length));
     }
     assertEquals(keys.size() + 1, (int) b.getNumberOfRecords());
     scanAndVerify(b, keys);
@@ -472,18 +474,17 @@ public class DataBlockTest extends DataBlockTestBase {
     for (int i = 0; i < toDelete; i++) {
       Key key = keys.get(i);
       OpResult res = b.delete(key.address, key.length, Long.MAX_VALUE);
-      assertTrue(res == OpResult.OK);
+      assertSame(res, OpResult.OK);
     }
     keys = keys.subList(toDelete, keys.size());
-    assertTrue((keys.size() + 1) == b.getNumberOfRecords());
+    assertEquals((keys.size() + 1), b.getNumberOfRecords());
     scanAndVerify(b, keys);
     // Now insert existing keys with val/2
-    for (int i = 0; i < keys.size(); i++) {
-      Key key = keys.get(i);
+    for (Key key : keys) {
       long addr = b.get(key.address, key.length, Long.MAX_VALUE);
       int oldValLen = DataBlock.valueLength(addr);
       boolean res = b.put(key.address, key.length, key.address, key.length / 2, Long.MAX_VALUE, 0);
-      if (res == false) {
+      if (!res) {
         if (isValidFailure(b, key, key.length / 2, oldValLen)) {
           continue;
         } else {
@@ -500,7 +501,7 @@ public class DataBlockTest extends DataBlockTestBase {
       assertTrue(addr > 0);
       int oldValLen = DataBlock.valueLength(addr);
       boolean res = b.put(key.address, key.length, key.address, key.length, Long.MAX_VALUE, 0);
-      if (res == false) {
+      if (!res) {
         if (isValidFailure(b, key, key.length, oldValLen)) {
           continue;
         } else {
@@ -514,11 +515,11 @@ public class DataBlockTest extends DataBlockTestBase {
   }
 
   protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     int keyLength = 32;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       byte[] key = new byte[keyLength];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(keyLength);
@@ -529,7 +530,7 @@ public class DataBlockTest extends DataBlockTestBase {
       }
     }
     log.debug(
-        "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
+        "M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize());
     return keys;
   }
 
@@ -542,6 +543,7 @@ public class DataBlockTest extends DataBlockTestBase {
     int count = 0;
     int prevKeySize = 0;
     // skip first system key-value
+    assert bs != null;
     bs.next();
     while (bs.hasNext()) {
       int keySize = bs.keySize();

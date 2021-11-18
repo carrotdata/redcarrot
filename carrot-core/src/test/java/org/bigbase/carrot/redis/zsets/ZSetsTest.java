@@ -13,10 +13,6 @@
 */
 package org.bigbase.carrot.redis.zsets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -34,6 +30,8 @@ import org.bigbase.carrot.util.Value;
 import org.bigbase.carrot.util.ValueScore;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ZSetsTest {
 
@@ -55,11 +53,11 @@ public class ZSetsTest {
   }
 
   private List<Value> getFields(long n) {
-    List<Value> keys = new ArrayList<Value>();
+    List<Value> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("KEYS SEED=" + seed);
+    log.debug("KEYS SEED={}", seed);
     byte[] buf = new byte[fieldSize / 2];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -73,7 +71,7 @@ public class ZSetsTest {
   }
 
   private List<Double> getScores(long n) {
-    List<Double> scores = new ArrayList<Double>();
+    List<Double> scores = new ArrayList<>();
     Random r = new Random(1);
     for (int i = 0; i < n; i++) {
       scores.add((double) r.nextInt(maxScore));
@@ -87,7 +85,7 @@ public class ZSetsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("SEED=" + seed);
+    log.debug("SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, fieldSize);
     return key = new Key(ptr, fieldSize);
@@ -116,7 +114,7 @@ public class ZSetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -129,7 +127,7 @@ public class ZSetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -142,7 +140,7 @@ public class ZSetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -185,7 +183,7 @@ public class ZSetsTest {
     long start = System.nanoTime();
     long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
     long end = System.nanoTime();
-    log.debug("call time=" + (end - start) / 1000 + "micros");
+    log.debug("call time={}micros", (end - start) / 1000);
     assertEquals(total, (int) num);
     assertEquals(total, (int) ZSets.ZCARD(map, key.address, key.length));
 
@@ -214,7 +212,7 @@ public class ZSetsTest {
 
     List<Value> fields = getFields(total);
     List<Double> scl = getScores(total);
-    List<ValueScore> list = new ArrayList<ValueScore>();
+    List<ValueScore> list = new ArrayList<>();
     for (int i = 0; i < total; i++) {
       Value v = fields.get(i);
       double score = scl.get(i);
@@ -224,7 +222,7 @@ public class ZSetsTest {
     long start = System.nanoTime();
     long num = ZSets.ZADD_NEW(map, key.address, key.length, list);
     long end = System.nanoTime();
-    log.debug("call time=" + (end - start) / 1000 + "micros");
+    log.debug("call time={}micros", (end - start) / 1000);
     assertEquals(total, (int) num);
     assertEquals(total, (int) ZSets.ZCARD(map, key.address, key.length));
 
@@ -267,18 +265,13 @@ public class ZSetsTest {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n
-                - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3))
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n
+            - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -293,7 +286,7 @@ public class ZSetsTest {
       }
     }
     end = System.currentTimeMillis();
-    log.debug(" Time for " + n + " ZSCORE=" + (end - start) + "ms");
+    log.debug(" Time for {} ZSCORE={}ms", n, end - start);
     BigSortedMap.printGlobalMemoryAllocationStats();
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
@@ -320,18 +313,13 @@ public class ZSetsTest {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n
-                - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3))
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n
+            - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -347,7 +335,7 @@ public class ZSetsTest {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for " + n + " ZREM=" + (end - start) + "ms");
+    log.debug("Time for {} ZREM={}ms", n, end - start);
     assertEquals(0, (int) map.countRecords());
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
     ZSets.DELETE(map, key.address, key.length);
@@ -383,17 +371,12 @@ public class ZSetsTest {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + setSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        setSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -402,13 +385,13 @@ public class ZSetsTest {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
       boolean res = ZSets.DELETE(map, elemPtrs[0], elemSizes[0]);
-      assertEquals(true, res);
+      assertTrue(res);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for " + n + " DELETE=" + (end - start) + "ms");
+    log.debug("Time for {} DELETE={}ms", n, end - start);
     assertEquals(0, (int) map.countRecords());
   }
 

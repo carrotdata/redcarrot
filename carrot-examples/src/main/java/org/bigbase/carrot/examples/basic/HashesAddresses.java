@@ -123,7 +123,7 @@ public class HashesAddresses {
       }
 
       if (count % 10000 == 0) {
-        log.debug("set " + count);
+        log.debug("set {}", count);
       }
 
       list.forEach(KeyValue::free);
@@ -131,16 +131,12 @@ public class HashesAddresses {
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + addressList.size()
-            + " user address objects, total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime)
-            + "ms. RAM usage="
-            + (UnsafeAccess.getAllocatedMemory())
-            + " COMPRESSION="
-            + (((double) totalDataSize)) / UnsafeAccess.getAllocatedMemory());
+        "Loaded {} user address objects, total size={} in {}ms. RAM usage={} COMPRESSION={}",
+        addressList.size(),
+        totalDataSize,
+        endTime - startTime,
+        UnsafeAccess.getAllocatedMemory(),
+        (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 

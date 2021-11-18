@@ -49,9 +49,10 @@ public class DataBlockScannerTest {
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
+    assert scanner != null;
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -66,11 +67,12 @@ public class DataBlockScannerTest {
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     ib.compressDataBlockIfNeeded();
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
+    assert scanner != null;
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -82,7 +84,7 @@ public class DataBlockScannerTest {
   @Test
   public void testReverseAll() throws IOException {
     for (int i = 0; i < 100000; i++) {
-      log.debug("\n i=" + i + "\n");
+      log.debug("\n i={}\n", i);
       testFullScanReverse();
       testOpenEndScanReverse();
       testOpenStartScanReverse();
@@ -99,11 +101,12 @@ public class DataBlockScannerTest {
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     ib.compressDataBlockIfNeeded();
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
+    assert scanner != null;
     scanner.last();
     verifyScannerReverse(scanner, keys);
     scanner.close();
@@ -118,9 +121,10 @@ public class DataBlockScannerTest {
     DataBlock ib = getDataBlock();
     List<Key> keys = fillDataBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
+    assert scanner != null;
     scanner.last();
     verifyScannerReverse(scanner, keys);
     scanner.close();
@@ -142,12 +146,13 @@ public class DataBlockScannerTest {
     Random r = new Random();
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(0, stopRowIndex);
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE);
     // Skip first system key
+    assert scanner != null;
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -163,12 +168,12 @@ public class DataBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testOpenStartScanReverse seed=" + seed);
+    log.debug("testOpenStartScanReverse seed={}", seed);
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(0, stopRowIndex);
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     if (keys.size() == 0) {
       log.debug("");
     }
@@ -196,11 +201,12 @@ public class DataBlockScannerTest {
     Random r = new Random();
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(startRowIndex, keys.size());
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
+    assert scanner != null;
     verifyScanner(scanner, keys);
     scanner.close();
     dispose(keys);
@@ -215,12 +221,12 @@ public class DataBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testOpenEndScanReverse seed=" + seed);
+    log.debug("testOpenEndScanReverse seed={}", seed);
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(startRowIndex, keys.size());
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
     if (scanner != null) {
@@ -250,9 +256,9 @@ public class DataBlockScannerTest {
     }
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(startRowIndex, stopRowIndex);
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(
             ib, startRow.address, startRow.length, stopRow.address, stopRow.length, Long.MAX_VALUE);
@@ -274,7 +280,7 @@ public class DataBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testSubScanReverse seed=" + seed);
+    log.debug("testSubScanReverse seed={}", seed);
     int startRowIndex = r.nextInt(keys.size());
     int stopRowIndex = r.nextInt(keys.size() - startRowIndex) + 1 + startRowIndex;
     if (stopRowIndex >= keys.size()) {
@@ -282,10 +288,10 @@ public class DataBlockScannerTest {
     }
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    loadedKeyDebug(keys.size());
     keys = keys.subList(startRowIndex, stopRowIndex);
 
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     // When start and stop rows are equals
     // scanner must be null
     DataBlockScanner scanner =
@@ -316,9 +322,9 @@ public class DataBlockScannerTest {
       assertEquals(key.length, valSize);
       byte[] buf = new byte[keySize];
       scanner.key(buf, 0);
-      assertTrue(Utils.compareTo(buf, 0, buf.length, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, 0, buf.length, key.address, key.length));
       scanner.value(buf, 0);
-      assertTrue(Utils.compareTo(buf, 0, buf.length, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, 0, buf.length, key.address, key.length));
       scanner.next();
     }
 
@@ -338,9 +344,9 @@ public class DataBlockScannerTest {
       assertEquals(key.length, valSize);
       byte[] buf = new byte[keySize];
       scanner.key(buf, 0);
-      assertTrue(Utils.compareTo(buf, 0, buf.length, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, 0, buf.length, key.address, key.length));
       scanner.value(buf, 0);
-      assertTrue(Utils.compareTo(buf, 0, buf.length, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, 0, buf.length, key.address, key.length));
     } while (scanner.previous());
 
     Collections.reverse(keys);
@@ -353,10 +359,10 @@ public class DataBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Fill seed=" + seed);
+    log.debug("Fill seed={}", seed);
     int length = 32;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       byte[] key = new byte[length];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(length);
@@ -366,7 +372,11 @@ public class DataBlockScannerTest {
         keys.add(new Key(ptr, length));
       }
     }
-    log.debug(b.getNumberOfRecords() + " " + b.getDataInBlockSize());
+    log.debug("{} {}", b.getNumberOfRecords(), b.getDataInBlockSize());
     return keys;
+  }
+
+  private void loadedKeyDebug(int keysize) {
+    log.debug("Loaded {} kvs", keysize);
   }
 }

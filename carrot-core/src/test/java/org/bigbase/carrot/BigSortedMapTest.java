@@ -13,9 +13,6 @@
 */
 package org.bigbase.carrot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +26,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 // TODO: MEMORY LEAK
 public class BigSortedMapTest {
@@ -110,7 +109,7 @@ public class BigSortedMapTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = NONE\n",i);
+      log.debug("\n********* {} ********** Codec = NONE\n", i);
       setUp();
       allTests();
       tearDown();
@@ -136,7 +135,7 @@ public class BigSortedMapTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4HC\n" , i);
+      log.debug("\n********* {} ********** Codec = LZ4HC\n", i);
       setUp();
       allTests();
       tearDown();
@@ -212,7 +211,7 @@ public class BigSortedMapTest {
       UnsafeAccess.copy(key, 0, keyPtr, key.length);
       boolean res = map.exists(keyPtr, key.length);
       UnsafeAccess.free(keyPtr);
-      assertEquals(false, res);
+      assertFalse(res);
     }
   }
 
@@ -241,7 +240,7 @@ public class BigSortedMapTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted={} collisions={}", numDeleted, collisions);
     return list;
   }
 

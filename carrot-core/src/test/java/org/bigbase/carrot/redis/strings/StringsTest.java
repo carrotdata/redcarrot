@@ -79,7 +79,7 @@ public class StringsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -92,7 +92,7 @@ public class StringsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -105,7 +105,7 @@ public class StringsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -225,7 +225,7 @@ public class StringsTest {
     assertTrue(res);
     long size = Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) size);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) size) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) size));
 
     long expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
@@ -471,7 +471,7 @@ public class StringsTest {
             buffer,
             bufferSize);
     assertEquals(kv.valueSize, (int) res);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
 
     // Check that expire did not change
     long expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
@@ -514,7 +514,7 @@ public class StringsTest {
             bufferSize);
     assertEquals(kv.valueSize, (int) res);
 
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
@@ -532,7 +532,7 @@ public class StringsTest {
             buffer,
             bufferSize);
     assertEquals(kv1.valueSize, (int) res);
-    assertTrue(Utils.compareTo(kv1.valuePtr, kv1.valueSize, buffer, (int) res) == 0);
+    assertEquals(0, Utils.compareTo(kv1.valuePtr, kv1.valueSize, buffer, (int) res));
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
@@ -550,7 +550,7 @@ public class StringsTest {
             buffer,
             bufferSize);
     assertEquals(kv.valueSize, (int) res);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
 
     result = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(result);
@@ -584,7 +584,7 @@ public class StringsTest {
             bufferSize);
     assertEquals(kv2.valueSize, (int) res);
 
-    assertTrue(Utils.compareTo(kv2.valuePtr, kv2.valueSize, buffer, (int) res) == 0);
+    assertEquals(0, Utils.compareTo(kv2.valuePtr, kv2.valueSize, buffer, (int) res));
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
@@ -734,33 +734,28 @@ public class StringsTest {
       boolean result =
           Strings.SET(
               map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
-      assertEquals(true, result);
+      assertTrue(result);
       if ((i + 1) % 10000 == 0) {
         log.debug(i + 1);
       }
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (totalSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() - totalSize) / n
-            + " bytes per key-value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per key-value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        totalSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() - totalSize / n,
+        end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       KeyValue kv = keyValues.get(i);
       long valueSize = Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
       assertEquals(kv.valueSize, (int) valueSize);
-      assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) valueSize) == 0);
+      assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) valueSize));
     }
     end = System.currentTimeMillis();
-    log.debug("Time GET =" + (end - start) + "ms");
+    log.debug("Time GET ={}ms", end - start);
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
@@ -777,7 +772,7 @@ public class StringsTest {
       boolean result =
           Strings.SET(
               map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
-      assertEquals(true, result);
+      assertTrue(result);
       if ((i + 1) % 10000 == 0) {
         log.debug(i + 1);
       }
@@ -787,25 +782,20 @@ public class StringsTest {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (totalSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() - totalSize) / n
-            + " bytes per key-value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per key-value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        totalSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() - totalSize / n,
+        end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       KeyValue kv = keyValues.get(i);
       boolean result = Strings.DELETE(map, kv.keyPtr, kv.keySize);
-      assertEquals(true, result);
+      assertTrue(result);
     }
     end = System.currentTimeMillis();
-    log.debug("Time DELETE =" + (end - start) + "ms");
+    log.debug("Time DELETE ={}ms", end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       KeyValue kv = keyValues.get(i);
@@ -813,7 +803,7 @@ public class StringsTest {
       assertEquals(-1, (int) result);
     }
     end = System.currentTimeMillis();
-    log.debug("Time to GET " + n + " values=" + (end - start) + "ms");
+    log.debug("Time to GET {} values={}ms", n, end - start);
   }
 
   @Ignore
@@ -831,9 +821,9 @@ public class StringsTest {
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
 
     assertEquals(2 * kv.valueSize, size);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize) == 0);
-    assertTrue(
-        Utils.compareTo(kv.valuePtr, kv.valueSize, buffer + kv.valueSize, kv.valueSize) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize));
+    assertEquals(
+        0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer + kv.valueSize, kv.valueSize));
   }
 
   @Ignore
@@ -847,7 +837,7 @@ public class StringsTest {
 
     size = Strings.GETDEL(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     assertEquals(kv.valueSize, size);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize));
 
     size = (int) Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     assertEquals(-1, (int) size); // not found
@@ -866,7 +856,7 @@ public class StringsTest {
 
     size = Strings.GETEX(map, kv.keyPtr, kv.keySize, 100, buffer, bufferSize);
     assertEquals(kv.valueSize, size);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize));
 
     long expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(100L, expire);
@@ -886,12 +876,12 @@ public class StringsTest {
     size =
         Strings.GETSET(map, kv.keyPtr, kv.keySize, kv1.valuePtr, kv1.valueSize, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) size);
-    assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize) == 0);
+    assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize));
 
     size =
         Strings.GETSET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, buffer, bufferSize);
     assertEquals(kv1.valueSize, (int) size);
-    assertTrue(Utils.compareTo(kv1.valuePtr, kv1.valueSize, buffer, kv1.valueSize) == 0);
+    assertEquals(0, Utils.compareTo(kv1.valuePtr, kv1.valueSize, buffer, kv1.valueSize));
   }
 
   @Ignore
@@ -992,11 +982,11 @@ public class StringsTest {
   private void verify(long[] arr) {
     assertEquals(arr.length, UnsafeAccess.toInt(buffer));
     long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < arr.length; i++) {
-      KeyValue kv = keyValues.get((int) arr[i]);
+    for (long l : arr) {
+      KeyValue kv = keyValues.get((int) l);
       assertEquals(kv.keySize, UnsafeAccess.toInt(ptr));
       ptr += Utils.SIZEOF_INT;
-      assertTrue(Utils.compareTo(kv.keyPtr, kv.keySize, ptr, kv.keySize) == 0);
+      assertEquals(0, Utils.compareTo(kv.keyPtr, kv.keySize, ptr, kv.keySize));
       ptr += kv.keySize;
     }
   }
@@ -1068,7 +1058,7 @@ public class StringsTest {
     // Some out of range ops
     Strings.SETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE, 1);
     long len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
-    assertEquals(2 * valueSize + 1, (int) len);
+    assertEquals(2L * valueSize + 1, len);
 
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
@@ -1095,7 +1085,7 @@ public class StringsTest {
     assertEquals(1, bit);
 
     len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
-    assertEquals(2 * valueSize + 1, (int) len);
+    assertEquals(2L * valueSize + 1, len);
 
     for (int i = 0; i < 2 * valueSize * Utils.BITS_PER_BYTE; i++) {
       bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, i);
@@ -1131,13 +1121,13 @@ public class StringsTest {
         Strings.GETRANGE(
             map, kv.keyPtr, kv.keySize, Commons.NULL_LONG, Commons.NULL_LONG, buf, bufSize);
     assertEquals(valueSize, size);
-    assertTrue(Utils.compareTo(valuePtr, valueSize, buf, valueSize) == 0);
+    assertEquals(0, Utils.compareTo(valuePtr, valueSize, buf, valueSize));
 
     // 1. start = -inf, end is in range
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     for (int i = 0; i < 100; i++) {
       long start = Commons.NULL_LONG;
@@ -1146,7 +1136,7 @@ public class StringsTest {
       size = Strings.GETRANGE(map, kv.keyPtr, kv.keySize, start, end, buf1, bufSize1);
       assertEquals(expSize, size);
       if (size > 0) {
-        assertTrue(Utils.compareTo(buf, size, buf1, size) == 0);
+        assertEquals(0, Utils.compareTo(buf, size, buf1, size));
       }
     }
 
@@ -1159,7 +1149,7 @@ public class StringsTest {
       size = Strings.GETRANGE(map, kv.keyPtr, kv.keySize, start, end, buf1, bufSize1);
       assertEquals(expSize, size);
       if (size > 0) {
-        assertTrue(Utils.compareTo(buf, size, buf1, size) == 0);
+        assertEquals(0, Utils.compareTo(buf, size, buf1, size));
       }
     }
 
@@ -1172,7 +1162,7 @@ public class StringsTest {
       size = Strings.GETRANGE(map, kv.keyPtr, kv.keySize, start, end, buf1, bufSize1);
       assertEquals(expSize, size);
       if (size > 0) {
-        assertTrue(Utils.compareTo(buf, size, buf1, size) == 0);
+        assertEquals(0, Utils.compareTo(buf, size, buf1, size));
       }
     }
     Strings.DELETE(map, kv.keyPtr, kv.keySize);
@@ -1240,7 +1230,7 @@ public class StringsTest {
               map, kv.keyPtr, kv.keySize, offset, offset + kv.valueSize - 1, buf, bufSize);
       assertEquals(kv.valueSize, size);
       if (size > 0) {
-        assertTrue(Utils.compareTo(buf, size, kv.valuePtr, kv.valueSize) == 0);
+        assertEquals(0, Utils.compareTo(buf, size, kv.valuePtr, kv.valueSize));
       }
     }
     UnsafeAccess.free(buf);
@@ -1267,7 +1257,7 @@ public class StringsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     // 1. start =-inf, end in range
     for (int i = 0; i < 100; i++) {
@@ -1344,7 +1334,7 @@ public class StringsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     // 1. start =-inf, end in range
     for (int i = 0; i < 100; i++) {

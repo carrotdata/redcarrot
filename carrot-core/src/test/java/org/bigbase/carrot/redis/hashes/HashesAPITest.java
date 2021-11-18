@@ -721,12 +721,11 @@ public class HashesAPITest {
         assertTrue(list.contains(p.getFirst()));
       }
       if (i % 100 == 0) {
-        log.debug("Skipped " + i);
+        log.debug("Skipped {}", i);
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
+    log.debug("{} random members for {} cardinality set time={}ms", numIter, N, end - start);
 
     // Check negatives
     start = System.currentTimeMillis();
@@ -737,7 +736,7 @@ public class HashesAPITest {
         assertTrue(list.contains(p.getFirst()));
       }
       if (i % 100 == 0) {
-        log.debug("Skipped " + i);
+        log.debug("Skipped {}", i);
       }
     }
     end = System.currentTimeMillis();
@@ -754,12 +753,11 @@ public class HashesAPITest {
         assertTrue(list.contains(p.getFirst()));
       }
       if (i % 100 == 0) {
-        log.debug("Skipped " + i);
+        log.debug("Skipped {}", i);
       }
     }
     end = System.currentTimeMillis();
-    log.debug(
-        numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
+    log.debug("{} random members for {} cardinality set time={}ms", numIter, N, end - start);
 
     // Check negatives
     start = System.currentTimeMillis();
@@ -772,12 +770,11 @@ public class HashesAPITest {
       }
       // log.debug();
       if (i % 100 == 0) {
-        log.debug("Skipped " + i);
+        log.debug("Skipped {}", i);
       }
     }
     end = System.currentTimeMillis();
-    log.debug(
-        numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
+    log.debug("{} random members for {} cardinality set time={}ms", numIter, N, end - start);
   }
 
   /**

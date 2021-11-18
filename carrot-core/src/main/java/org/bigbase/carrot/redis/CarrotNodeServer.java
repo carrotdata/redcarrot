@@ -62,10 +62,11 @@ public class CarrotNodeServer implements Runnable {
   private BigSortedMap store;
   private Thread runner;
   private boolean shutdown = false;
+
   /**
-   * Constructor with nodeId (server's port)
    *
-   * @param nodeId node id (server's port)
+   * @param host
+   * @param port
    */
   public CarrotNodeServer(String host, int port) {
     this.port = port;
@@ -104,11 +105,11 @@ public class CarrotNodeServer implements Runnable {
 
   private void runNodeServer() throws IOException {
     final Selector selector = Selector.open(); // selector is open here
-    log("Selector started");
+    log.debug("Selector started");
 
     // ServerSocketChannel: selectable channel for stream-oriented listening sockets
     ServerSocketChannel serverSocket = ServerSocketChannel.open();
-    log("Server socket opened");
+    log.debug("Server socket opened");
 
     InetSocketAddress serverAddr = new InetSocketAddress(host, port);
 
@@ -119,7 +120,7 @@ public class CarrotNodeServer implements Runnable {
     serverSocket.configureBlocking(false);
     int ops = serverSocket.validOps();
     serverSocket.register(selector, ops, null);
-    log("Node server started on port: " + port);
+    log.debug("[{}] Node server started on port: {}]", Thread.currentThread().getName(), port);
 
     Consumer<SelectionKey> action =
         key -> {
@@ -134,7 +135,7 @@ public class CarrotNodeServer implements Runnable {
               client.setOption(StandardSocketOptions.SO_RCVBUF, 64 * 1024);
               // Operation-set bit for read operations
               client.register(selector, SelectionKey.OP_READ);
-              log("Connection Accepted: " + client.getLocalAddress());
+              log.debug("[{}] Connection Accepted: {}]", Thread.currentThread().getName(), client.getLocalAddress());
             } else if (key.isValid() && key.isReadable()) {
               // Check if it is in use
               RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
@@ -144,21 +145,18 @@ public class CarrotNodeServer implements Runnable {
             }
           } catch (IOException e) {
             log.error("StackTrace: ", e);
-            log("Shutting down node ...");
+            log.error("Shutting down node ...");
             store.dispose();
             store = null;
-            log("Bye-bye folks. See you soon :)");
+            log.error("Bye-bye folks. See you soon :)");
           }
         };
     // Infinite loop..
     // Keep server running
-    while (true) {
+    do {
       // Selects a set of keys whose corresponding channels are ready for I/O operations
       selector.select(action);
-      if (shutdown) {
-        break;
-      }
-    }
+    } while (!shutdown);
   }
 
   long totalReqTime = 0;
@@ -270,12 +268,8 @@ public class CarrotNodeServer implements Runnable {
     long start = System.currentTimeMillis();
     store = BigSortedMap.loadStore(host, port);
     long end = System.currentTimeMillis();
-    log(" loaded data store in " + (end - start) + "ms");
+    log.debug("[{}] loaded data store in {}ms]", Thread.currentThread().getName(), end - start);
     RedisConf conf = RedisConf.getInstance();
     store.setSnapshotDir(conf.getDataDirForNode(host, port));
-  }
-
-  static void log(String str) {
-    log.debug("[{}] {}]", Thread.currentThread().getName(), str);
   }
 }

@@ -365,13 +365,13 @@ public class SetsTest {
       elemSizes[0] = values.get(i).length;
       Sets.DELETE(map, elemPtrs[0], elemSizes[0]);
       if (++count % 100000 == 0) {
-        log.debug("delete " + count);
+        log.debug("delete {}", count);
       }
     }
     end = System.currentTimeMillis();
     long recc = Commons.countRecords(map);
 
-    log.debug("Deleted " + n + " in " + (end - start) + "ms. Count=" + recc);
+    log.debug("Deleted {} in {}ms. Count={}", n, end - start, recc);
 
     assertEquals(0, (int) recc);
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -392,7 +392,7 @@ public class SetsTest {
       int num = Sets.SADD(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
-        log.debug("add " + count);
+        log.debug("add {}", count);
       }
     }
     long end = System.currentTimeMillis();
@@ -419,7 +419,7 @@ public class SetsTest {
       assertEquals(1, res);
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist=" + (end - start) + "ms");
+    log.debug("Time exist={}ms", end - start);
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(0, (int) map.countRecords());
@@ -499,19 +499,19 @@ public class SetsTest {
     long cBuffer = UnsafeAccess.malloc(2 * bufferSize);
     Codec codec = CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
     int size = codec.compress(buffer, bufferSize, cBuffer, 2 * bufferSize);
-    log.debug("Source size =" + bufferSize);
-    log.debug("LZ4HC  size =" + size);
+    log.debug("Source size ={}", bufferSize);
+    log.debug("LZ4HC  size ={}", size);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     GZIPOutputStream os = new GZIPOutputStream(baos);
     os.write(arr);
     os.close();
-    log.debug("GZIP   size =" + baos.toByteArray().length);
+    log.debug("GZIP   size ={}", baos.toByteArray().length);
 
     Path path = Files.createTempFile("data", "raw");
     File f = path.toFile();
 
-    log.debug("File=" + f.getAbsolutePath());
+    log.debug("File={}", f.getAbsolutePath());
     FileOutputStream fos = new FileOutputStream(f);
     fos.write(arr);
     fos.close();

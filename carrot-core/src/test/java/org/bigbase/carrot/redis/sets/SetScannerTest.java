@@ -561,7 +561,7 @@ public class SetScannerTest {
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = 0; // r.nextInt(copy.size());
@@ -604,7 +604,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
 
-    log.debug("Test single partial scanner open end - one key " + n + " elements");
+    log.debug("Test single partial scanner open end - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -633,12 +633,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -681,7 +681,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
 
-    log.debug("Test single partial scanner reverse - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -710,12 +710,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      /*DEBUG*/ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -758,7 +758,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
 
-    log.debug("Test single partial scanner reverse open start - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse open start - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -787,12 +787,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = 0; // r.nextInt(copy.size());
@@ -835,7 +835,7 @@ public class SetScannerTest {
   @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
 
-    log.debug("Test single partial scanner reverse open end - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse open end - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -864,12 +864,12 @@ public class SetScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -912,7 +912,7 @@ public class SetScannerTest {
   @Test
   public void testDirectScannerPerformance() throws IOException {
     // int n = 5000000; // 5M elements
-    log.debug("Test direct scanner performance " + n + " elements");
+    log.debug("Test direct scanner performance {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -943,7 +943,7 @@ public class SetScannerTest {
     scanner.close();
     assertEquals(count, (long) n);
     end = System.currentTimeMillis();
-    log.debug("Scanned " + n + " elements in " + (end - start) + "ms");
+    log.debug("Scanned {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
@@ -953,7 +953,7 @@ public class SetScannerTest {
   @Test
   public void testReverseScannerPerformance() throws IOException {
     // int n = 5000000; // 5M elements
-    log.debug("Test reverse scanner performance " + n + " elements");
+    log.debug("Test reverse scanner performance {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -985,7 +985,7 @@ public class SetScannerTest {
     assertEquals(count, (long) n);
 
     end = System.currentTimeMillis();
-    log.debug("Scanned (reversed) " + n + " elements in " + (end - start) + "ms");
+    log.debug("Scanned (reversed) {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
     values.stream().forEach(x -> UnsafeAccess.free(x.address));

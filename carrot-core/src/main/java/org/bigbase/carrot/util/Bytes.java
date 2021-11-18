@@ -147,7 +147,7 @@ public class Bytes {
   public byte[] get() {
     if (this.bytes == null) {
       throw new IllegalStateException(
-          "Uninitialiized. Null constructor " + "called w/o accompaying readFields invocation");
+          "Uninitialiized. Null constructor called w/o accompaying readFields invocation");
     }
     return this.bytes;
   }
@@ -176,7 +176,7 @@ public class Bytes {
   public int getSize() {
     if (this.bytes == null) {
       throw new IllegalStateException(
-          "Uninitialiized. Null constructor " + "called w/o accompaying readFields invocation");
+          "Uninitialiized. Null constructor called w/o accompaying readFields invocation");
     }
     return this.length;
   }
@@ -185,7 +185,7 @@ public class Bytes {
   public int getLength() {
     if (this.bytes == null) {
       throw new IllegalStateException(
-          "Uninitialiized. Null constructor " + "called w/o accompaying readFields invocation");
+          "Uninitialized. Null constructor called w/o accompanying readFields invocation");
     }
     return this.length;
   }

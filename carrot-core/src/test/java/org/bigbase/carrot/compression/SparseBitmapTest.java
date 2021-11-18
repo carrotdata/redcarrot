@@ -118,7 +118,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    log.debug("LZ4HC 2-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4HC 2-byte compression ratio={}", (float) size / compressedSize);
   }
 
   private void fill(long src, double pct, Random r) {

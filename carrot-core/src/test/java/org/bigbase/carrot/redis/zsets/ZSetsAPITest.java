@@ -50,7 +50,7 @@ public class ZSetsAPITest {
   static {
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    log.debug("Global seed=" + seed);
+    log.debug("Global seed={}", seed);
   }
 
   /*
@@ -67,7 +67,7 @@ public class ZSetsAPITest {
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
@@ -94,7 +94,7 @@ public class ZSetsAPITest {
       assertEquals(1, (int) res);
       list.add(new Pair<String>(m, score));
       if ((i + 1) % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     Collections.sort(
@@ -130,7 +130,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Data map seed=" + seed);
+    log.debug("Data map seed={}", seed);
     for (int i = 0; i < numKeys; i++) {
       String key = Utils.getRandomStr(r, 12);
       map.put(key, loadData(key, n));
@@ -149,7 +149,7 @@ public class ZSetsAPITest {
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
-        log.debug("Loaded " + i);
+        log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
@@ -162,7 +162,7 @@ public class ZSetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -175,7 +175,7 @@ public class ZSetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -188,7 +188,7 @@ public class ZSetsAPITest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -290,7 +290,7 @@ public class ZSetsAPITest {
     testZREVRANGE();
     tearDown();
     long end = System.currentTimeMillis();
-    log.debug("Run time=" + (end - start) + "ms");
+    log.debug("Run time={}ms", end - start);
   }
 
   private List<String> fieldList(List<Pair<String>> list) {
@@ -515,7 +515,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     int count = 0;
     for (String key : data.keySet()) {
       count++;
@@ -547,7 +547,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     for (String key : data.keySet()) {
       boolean res = ZSets.DELETE(map, key);
       assertTrue(res);
@@ -567,7 +567,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     int count = 0;
     for (String key : data.keySet()) {
       count++;
@@ -622,7 +622,7 @@ public class ZSetsAPITest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     int numMembers = 10000;
     String key = "key";
     List<Pair<String>> data = loadData(key, numMembers);
@@ -1664,7 +1664,7 @@ public class ZSetsAPITest {
     for (int k = 0; k < first.size(); k++) {
       String expected = first.get(k).getFirst();
       String result = second.get(k).getFirst();
-      if (expected.equals(result) != true) {
+      if (!expected.equals(result)) {
         return false;
       }
     }
@@ -3065,7 +3065,7 @@ public class ZSetsAPITest {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations = 1000;
 
@@ -3106,24 +3106,17 @@ public class ZSetsAPITest {
       long total = ZSets.ZREMRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive);
       if (total != expectedNum) {
         log.debug(
-            "min="
-                + min
-                + " max="
-                + max
-                + " startIdx="
-                + startIdx
-                + " endIdx="
-                + endIdx
-                + " minInclusive="
-                + startInclusive
-                + " maxInclusive="
-                + endInclusive
-                + " test seed="
-                + seed
-                + " data seed="
-                + dataSeed);
-        log.debug("START: score=" + min + " field=" + data.get(startIdx).getFirst());
-        log.debug("STOP : score=" + max + " field=" + data.get(endIdx).getFirst());
+            "min={} max={} startIdx={} endIdx={} minInclusive={} maxInclusive={} test seed={} data seed={}",
+            min,
+            max,
+            startIdx,
+            endIdx,
+            startInclusive,
+            endInclusive,
+            seed,
+            dataSeed);
+        log.debug("START: score={} field={}", min, data.get(startIdx).getFirst());
+        log.debug("STOP : score{} field={}", max, data.get(endIdx).getFirst());
 
       } else {
         assertEquals(expectedNum, (int) total);
@@ -3136,14 +3129,12 @@ public class ZSetsAPITest {
         String member = expected.getFirst();
         long rank = ZSets.ZRANK(map, key, member);
         if (rank >= 0) {
-          /*DEBUG*/ log.debug(
-              "FOUND #"
-                  + (k - loopStart)
-                  + " expected score="
-                  + expected.getSecond()
-                  + " field="
-                  + expected.getFirst());
-          /*DEBUG*/ log.debug("Actual score=" + ZSets.ZSCORE(map, key, member));
+          log.debug(
+              "FOUND #{} expected score={} field={}",
+              k - loopStart,
+              expected.getSecond(),
+              expected.getFirst());
+          log.debug("Actual score={}", ZSets.ZSCORE(map, key, member));
         }
         assertEquals(-1, (int) rank);
       }
@@ -3226,7 +3217,7 @@ public class ZSetsAPITest {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations = 1000;
 
@@ -3251,14 +3242,7 @@ public class ZSetsAPITest {
       long total = ZSets.ZREMRANGEBYRANK(map, key, startIdx, endIdx);
       if (total != expectedNum) {
         log.debug(
-            " startIdx="
-                + startIdx
-                + " endIdx="
-                + endIdx
-                + " test seed="
-                + seed
-                + " data seed="
-                + dataSeed);
+            " startIdx={} endIdx={} test seed={} data seed={}", startIdx, endIdx, seed, dataSeed);
       }
       assertEquals(expectedNum, (int) total);
       // Verify that we are correct
@@ -3330,17 +3314,15 @@ public class ZSetsAPITest {
       String key, int numMembers, boolean startInclusive, boolean endInclusive) {
 
     log.debug(
-        "numMembers="
-            + numMembers
-            + " startInclusive="
-            + startInclusive
-            + " endInclusive="
-            + endInclusive);
+        "numMembers={} startInclusive={} endInclusive={}",
+        numMembers,
+        startInclusive,
+        endInclusive);
 
     Random r = new Random();
     long seed = 276634853598895472L; // r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     int numIterations = 1000;
     List<Pair<String>> data = null;
     // Test with normal ranges startInclusive = false, endInclusive = false

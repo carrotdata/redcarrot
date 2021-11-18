@@ -83,7 +83,7 @@ public class SparseBitmapsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -96,7 +96,7 @@ public class SparseBitmapsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -109,7 +109,7 @@ public class SparseBitmapsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -155,7 +155,7 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     int totalCount = 0;
 
@@ -168,12 +168,12 @@ public class SparseBitmapsTest {
       }
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (bit != 0) {
-        log.debug("FAILED i=" + i + " offset =" + offset);
+        log.debug("FAILED i={} offset ={}", i, offset);
       }
       assertEquals(0, bit);
       bit = SparseBitmaps.SGETBIT(map, key.address, key.length, offset);
       if (bit != 1) {
-        log.debug("i=" + i + " offset=" + offset);
+        log.debug("i={} offset={}", i, offset);
       }
       assertEquals(1, bit);
       totalCount++;
@@ -186,14 +186,14 @@ public class SparseBitmapsTest {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(totalCount, (int) count);
 
-    /*DEBUG*/ log.debug("totalCount=" + totalCount + " N=" + N);
-    /*DEBUG*/ log.debug("Total RAM=" + UnsafeAccess.getAllocatedMemory());
+    /*DEBUG*/ log.debug("totalCount={} N={}", totalCount, N);
+    /*DEBUG*/ log.debug("Total RAM={}", UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     long end = System.currentTimeMillis();
 
-    log.debug("Time for " + N + " new SetBit/GetBit/CountBits =" + (end - start) + "ms");
+    log.debug("Time for {} new SetBit/GetBit/CountBits ={}", N, end - start);
 
     Random rr = new Random();
     rr.setSeed(seed);
@@ -213,7 +213,7 @@ public class SparseBitmapsTest {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(0, (int) count);
     end = System.currentTimeMillis();
-    log.debug("Time for " + N + " existing SetBit/GetBit/CountBits =" + (end - start) + "ms");
+    log.debug("Time for {} existing SetBit/GetBit/CountBits ={}ms", N, end - start);
   }
 
   @Ignore
@@ -240,20 +240,20 @@ public class SparseBitmapsTest {
         max = offset;
       }
       if (i % 100000 == 0) {
-        log.debug("SetBit " + i);
+        log.debug("SetBit {}", i);
       }
     }
     long end = System.currentTimeMillis();
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ log.debug("Total RAM    =" + memory);
-    /*DEBUG*/ log.debug("Total loaded =" + expected);
+    log.debug("Total RAM    ={}", memory);
+    log.debug("Total loaded ={}", expected);
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(expected, count);
 
-    log.debug("Time for " + N + " new SetBit=" + (end - start) + "ms");
-    log.debug("Compression ratio=" + (((double) max) / (8 * memory)));
+    log.debug("Time for {} new SetBit={}ms", N, end - start);
+    log.debug("Compression ratio={}", (double) max / (8 * memory));
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     r.setSeed(seed);
@@ -263,11 +263,11 @@ public class SparseBitmapsTest {
       int bit = SparseBitmaps.SGETBIT(map, key.address, key.length, offset);
       assertEquals(1, bit);
       if (i % 100000 == 0) {
-        log.debug("GetBit " + i);
+        log.debug("GetBit {}", i);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for " + N + " GetBit=" + (end - start) + "ms");
+    log.debug("Time for {} GetBit={}ms", N, end - start);
 
     r.setSeed(seed);
 
@@ -277,11 +277,11 @@ public class SparseBitmapsTest {
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 0);
       assertEquals(1, bit);
       if (i % 100000 == 0) {
-        log.debug("SetBit erase " + i);
+        log.debug("SetBit erase {}", i);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for " + N + " SetBit erase=" + (end - start) + "ms");
+    log.debug("Time for {} SetBit erase={}ms", N, end - start);
     assertEquals(0, (int) map.countRecords());
   }
 
@@ -304,12 +304,12 @@ public class SparseBitmapsTest {
         expected--;
       }
       if (i % 100000 == 0) {
-        log.debug("DeleteEixts " + i);
+        log.debug("DeleteEixts {}", i);
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ log.debug("Total RAM    =" + memory);
-    /*DEBUG*/ log.debug("Total loaded =" + expected);
+    /*DEBUG*/ log.debug("Total RAM    ={}", memory);
+    /*DEBUG*/ log.debug("Total loaded ={}", expected);
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
@@ -330,21 +330,21 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<Integer>();
     for (int i = 0; i < N / 10; i++) {
       offset = Math.abs(r.nextInt());
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (i % 100000 == 0) {
-        log.debug("BitCounts " + i);
+        log.debug("BitCounts {}", i);
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
     /*DEBUG*/
-    log.debug("Total RAM    =" + memory);
+    log.debug("Total RAM    ={}", memory);
     /*DEBUG*/
-    log.debug("Total loaded =" + bits.size());
+    log.debug("Total loaded ={}", bits.size());
     int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     log.debug("Edge cases ");
@@ -391,7 +391,7 @@ public class SparseBitmapsTest {
       assertEquals(expected, (int) count);
 
       if (i % 1000 == 0) {
-        log.debug("start=end " + i);
+        log.debug("start=end {}", i);
       }
     }
     log.debug("Random tests");
@@ -413,7 +413,7 @@ public class SparseBitmapsTest {
       long total = SparseBitmaps.SBITCOUNT(map, key.address, key.length, start, end);
       assertEquals(expected, (int) total);
       if (i % 1000 == 0) {
-        log.debug("random bc " + i);
+        log.debug("random bc {}", i);
       }
     }
 
@@ -431,21 +431,21 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<Integer>();
     for (int i = 0; i < N / 10; i++) {
       offset = Math.abs(r.nextInt());
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (i % 100000 == 0) {
-        log.debug("BitPos " + i);
+        log.debug("BitPos {}", i);
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
     /*DEBUG*/
-    log.debug("Total RAM    =" + memory);
+    log.debug("Total RAM    ={}", memory);
     /*DEBUG*/
-    log.debug("Total loaded =" + bits.size());
+    log.debug("Total loaded ={}", bits.size());
     int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
@@ -541,7 +541,7 @@ public class SparseBitmapsTest {
       pos = SparseBitmaps.SBITPOS(map, key.address, key.length, 0, index, index);
       assertEquals(expected, (int) pos);
       if (i % 10000 == 0) {
-        log.debug("start=end " + i);
+        log.debug("start=end {}", i);
       }
     }
 
@@ -567,7 +567,7 @@ public class SparseBitmapsTest {
       pos = SparseBitmaps.SBITPOS(map, key.address, key.length, 0, start, end);
       assertEquals(expected, (int) pos);
       if (i % 10000 == 0) {
-        log.debug("random bc " + i);
+        log.debug("random bc {}", i);
       }
     }
 
@@ -589,7 +589,7 @@ public class SparseBitmapsTest {
       offset = Math.abs(r.nextInt());
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (i % 100000 == 0) {
-        log.debug("BitCounts " + i);
+        log.debug("BitCounts {}", i);
       }
     }
     long strlen = SparseBitmaps.SSTRLEN(map, key.address, key.length);
@@ -611,16 +611,15 @@ public class SparseBitmapsTest {
       }
       long total = SparseBitmaps.SBITCOUNT(map, key.address, key.length, start, end);
       if (i % 1000 == 0) {
-        log.debug("random bc " + i);
+        log.debug("random bc {}", i);
       }
     }
     long endTime = System.currentTimeMillis();
     log.debug(
-        "SBITCOUNT for bitmap="
-            + strlen
-            + " long ="
-            + ((double) 1000 * 1000) / (endTime - startTime)
-            + " RPS");
+        "SBITCOUNT for bitmap={} long ={} RPS",
+        strlen,
+        (double) 1000 * 1000 / (endTime - startTime));
+
     SparseBitmaps.DELETE(map, key.address, key.length);
     assertFalse(SparseBitmaps.EXISTS(map, key.address, key.length));
     assertEquals(0, (int) map.countRecords());
@@ -786,7 +785,7 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<Integer>();
 
     for (int i = 0; i < N / 10; i++) {
@@ -794,12 +793,12 @@ public class SparseBitmapsTest {
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (i % 100000 == 0) {
-        log.debug("BitGetRange " + i);
+        log.debug("BitGetRange {}", i);
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    log.debug("Total RAM    =" + memory);
-    log.debug("Total loaded =" + bits.size());
+    log.debug("Total RAM    ={}", memory);
+    log.debug("Total loaded ={}", bits.size());
 
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
@@ -906,7 +905,7 @@ public class SparseBitmapsTest {
       UnsafeAccess.putByte(buffer, (byte) 0);
 
       if (i % 10000 == 0) {
-        log.debug("start=end " + i);
+        log.debug("start=end {}", i);
       }
     }
 
@@ -932,7 +931,7 @@ public class SparseBitmapsTest {
       assertEquals(expected, (int) count);
 
       if (i % 100 == 0) {
-        log.debug("random bc " + i);
+        log.debug("random bc {}", i);
       }
     }
 
@@ -971,7 +970,7 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long max = -Long.MAX_VALUE;
     long start = System.currentTimeMillis();
@@ -998,13 +997,13 @@ public class SparseBitmapsTest {
 
     long end = System.currentTimeMillis();
 
-    log.debug("\nTotal RAM=" + UnsafeAccess.getAllocatedMemory() + "\n");
+    log.debug("\nTotal RAM={}\n", UnsafeAccess.getAllocatedMemory());
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(totalCount, count);
-    log.debug("Time for " + N + " SetBit/BitCount/StrLength =" + (end - start) + "ms");
+    log.debug("Time for {} SetBit/BitCount/StrLength ={}ms", N, end - start);
   }
 
   @Ignore
@@ -1016,7 +1015,7 @@ public class SparseBitmapsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<Integer>();
     log.debug("Loading first sparse ");
     for (int i = 0; i < N / 10; i++) {
@@ -1024,11 +1023,11 @@ public class SparseBitmapsTest {
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if ((i + 1) % 100000 == 0) {
-        log.debug("BitSetRange " + (i + 1));
+        log.debug("BitSetRange {}", i + 1);
       }
     }
 
-    log.debug("Loaded key1 " + bits.size() + " bits");
+    log.debug("Loaded key1 {} bits", bits.size());
 
     key2 = getKey();
     log.debug("Loading second sparse ");
@@ -1039,10 +1038,10 @@ public class SparseBitmapsTest {
       bits2.add((int) offset);
       SparseBitmaps.SSETBIT(map, key2.address, key2.length, offset, 1);
       if ((i + 1) % 100000 == 0) {
-        log.debug("BitSetRange2 " + (i + 1));
+        log.debug("BitSetRange2 {}", i + 1);
       }
     }
-    log.debug("Loaded key2 " + bits2.size() + " bits");
+    log.debug("Loaded key2 {} bits", bits2.size());
 
     long strlen1 = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen1, SparseBitmaps.SSTRLEN(map, key.address, key.length));
@@ -1098,7 +1097,7 @@ public class SparseBitmapsTest {
       assertEquals(bc + rbc1 - rbc2, newbc);
       bc = newbc;
       if ((i + 1) % 1000 == 0) {
-        log.debug("small " + (i + 1));
+        log.debug("small {}", i + 1);
       }
     }
     // Test 2: running larger overwrites
@@ -1130,7 +1129,7 @@ public class SparseBitmapsTest {
       assertEquals(bc + rbc1 - rbc2, newbc);
       bc = newbc;
       if ((i + 1) % 1000 == 0) {
-        log.debug("large " + (i + 1));
+        log.debug("large {}", i + 1);
       }
     }
 
@@ -1180,7 +1179,7 @@ public class SparseBitmapsTest {
         log.error(" before={}", before);
         log.error("  after={}", size);
       }
-      assertTrue(res == 0);
+      assertEquals(0, res);
       long newbc =
           SparseBitmaps.SBITCOUNT(
               map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG);
@@ -1191,7 +1190,7 @@ public class SparseBitmapsTest {
       bc = newbc;
       strlen2 = size;
       if ((i + 1) % 1000 == 0) {
-        log.debug("large out " + (i + 1));
+        log.debug("large out {}", i + 1);
       }
     }
 

@@ -113,7 +113,7 @@ public class ZSetsMultithreadedTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 100; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       setUp();
       runTest();
       tearDown();
@@ -157,7 +157,7 @@ public class ZSetsMultithreadedTest {
                 assertEquals(scs[0], d, 0.0);
                 loaded++;
                 if (loaded % 10000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " loaded " + loaded);
+                  log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
                 }
               }
               int card = (int) ZSets.ZCARD(map, ptr, keySize);
@@ -196,7 +196,7 @@ public class ZSetsMultithreadedTest {
                 assertEquals(expScore, res, 0.0);
                 read++;
                 if (read % 1000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " read " + read);
+                  log.debug("{} read {}", Thread.currentThread().getName(), read);
                 }
               }
             }
@@ -261,11 +261,7 @@ public class ZSetsMultithreadedTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     log.debug(
-        "Loading "
-            + (numThreads * keysNumber * setSize)
-            + " elements os done in "
-            + (end - start)
-            + "ms");
+        "Loading {} elements os done in {}ms", numThreads * keysNumber * setSize, end - start);
     log.debug("Reading data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
@@ -285,11 +281,7 @@ public class ZSetsMultithreadedTest {
     end = System.currentTimeMillis();
 
     log.debug(
-        "Reading "
-            + (numThreads * keysNumber * setSize)
-            + " elements os done in "
-            + (end - start)
-            + "ms");
+        "Reading {} elements os done in {}ms", numThreads * keysNumber * setSize, end - start);
     log.debug("Deleting  data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
@@ -306,7 +298,7 @@ public class ZSetsMultithreadedTest {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
+    log.debug("Deleting of {} sets in {}ms", numThreads * keysNumber, end - start);
     assertEquals(0L, map.countRecords());
   }
 }

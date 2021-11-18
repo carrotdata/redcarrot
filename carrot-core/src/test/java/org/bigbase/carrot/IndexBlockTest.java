@@ -13,9 +13,6 @@
 */
 package org.bigbase.carrot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +27,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Test;
 import org.junit.Ignore;
+
+import static org.junit.Assert.*;
 
 public class IndexBlockTest {
 
@@ -85,7 +84,7 @@ public class IndexBlockTest {
     for (Key key : keys) {
       long valuePtr = UnsafeAccess.malloc(key.length);
       long size = ib.get(key.address, key.length, valuePtr, key.length, Long.MAX_VALUE);
-      assertTrue(size == key.length);
+      assertEquals(size, key.length);
       int res = Utils.compareTo(key.address, key.length, valuePtr, key.length);
       assertEquals(0, res);
       UnsafeAccess.free(valuePtr);
@@ -127,7 +126,7 @@ public class IndexBlockTest {
     List<Key> toDelete = keys.subList(0, keys.size() / 2);
     for (Key key : toDelete) {
       OpResult res = ib.delete(key.address, key.length, Long.MAX_VALUE);
-      assertTrue(res == OpResult.OK);
+      assertSame(res, OpResult.OK);
     }
     int after = ib.getNumberOfDataBlock();
     log.debug("Before ={} After={}", before, after);
@@ -166,7 +165,7 @@ public class IndexBlockTest {
       long valuePtr = UnsafeAccess.malloc(key.length);
 
       long size = ib.get(key.address, key.length, valuePtr, key.length, Long.MAX_VALUE);
-      assertTrue(size == key.length);
+      assertEquals(size, key.length);
       int res = Utils.compareTo(key.address, key.length, valuePtr, key.length);
       assertEquals(0, res);
       UnsafeAccess.free(valuePtr);
@@ -193,7 +192,7 @@ public class IndexBlockTest {
       if (splitRequires.contains(key)) {
         assertTrue(size > 0);
       } else {
-        assertTrue(size == DataBlock.NOT_FOUND);
+        assertEquals(DataBlock.NOT_FOUND, size);
       }
       UnsafeAccess.free(valuePtr);
     }
@@ -230,7 +229,7 @@ public class IndexBlockTest {
     for (Key key : keys) {
       long valuePtr = UnsafeAccess.malloc(key.length);
       long size = ib.get(key.address, key.length, valuePtr, key.length, Long.MAX_VALUE);
-      assertTrue(size == key.length);
+      assertEquals(size, key.length);
       int res = Utils.compareTo(key.address, key.length, valuePtr, key.length);
       assertEquals(0, res);
       UnsafeAccess.free(valuePtr);
@@ -259,7 +258,7 @@ public class IndexBlockTest {
       if (splitRequires.contains(key)) {
         assertTrue(size > 0);
       } else {
-        assertTrue(size == DataBlock.NOT_FOUND);
+        assertEquals(DataBlock.NOT_FOUND, size);
       }
       UnsafeAccess.free(valuePtr);
     }
@@ -267,7 +266,7 @@ public class IndexBlockTest {
     for (Key key : keys.subList(keys.size() / 2, keys.size())) {
       long valuePtr = UnsafeAccess.malloc(key.length);
       long size = ib.get(key.address, key.length, valuePtr, key.length, Long.MAX_VALUE);
-      assertTrue(size == key.length);
+      assertEquals(size, key.length);
       int res = Utils.compareTo(key.address, key.length, valuePtr, key.length);
       assertEquals(0, res);
       UnsafeAccess.free(valuePtr);
@@ -311,7 +310,7 @@ public class IndexBlockTest {
       assertTrue(res);
       long size = ib.get(key.address, key.length, buf, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(buf, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, value.length, valuePtr, value.length));
       UnsafeAccess.free(valuePtr);
       UnsafeAccess.free(buf);
     }
@@ -356,7 +355,7 @@ public class IndexBlockTest {
       assertTrue(res);
       long size = ib.get(key.address, key.length, buf, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(buf, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, value.length, valuePtr, value.length));
       UnsafeAccess.free(valuePtr);
       UnsafeAccess.free(buf);
     }
@@ -409,7 +408,7 @@ public class IndexBlockTest {
       assertTrue(res);
       long size = ib.get(key.address, key.length, buf, value.length, Long.MAX_VALUE);
       assertEquals(value.length, (int) size);
-      assertTrue(Utils.compareTo(buf, value.length, valuePtr, value.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, value.length, valuePtr, value.length));
       UnsafeAccess.free(valuePtr);
       UnsafeAccess.free(buf);
     }
@@ -492,10 +491,10 @@ public class IndexBlockTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Fill seed=" + seed);
+    log.debug("Fill seed={}", seed);
     int kvSize = 32;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       byte[] key = new byte[kvSize];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(kvSize);
@@ -508,13 +507,10 @@ public class IndexBlockTest {
       }
     }
     log.debug(
-        "Number of data blocks="
-            + b.getNumberOfDataBlock()
-            + " "
-            + " index block data size ="
-            + b.getDataInBlockSize()
-            + " num records="
-            + keys.size());
+        "Number of data blocks={} index block data size ={} num records={}",
+        b.getNumberOfDataBlock(),
+        b.getDataInBlockSize(),
+        keys.size());
     return keys;
   }
 }

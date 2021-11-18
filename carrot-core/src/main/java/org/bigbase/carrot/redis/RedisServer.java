@@ -76,7 +76,7 @@ public class RedisServer {
         // TODO Auto-generated catch block
         log.error("StackTrace: ", e);
       }
-      log("started=" + started);
+      log.debug("started={}", started);
     }
   }
 
@@ -87,21 +87,21 @@ public class RedisServer {
    * @throws IOException
    */
   public static void main(String[] args) throws IOException {
-    log("Carrot-Redis server starting ...");
+    log.debug("Carrot-Redis server starting ...");
     String confFilePath = args.length > 0 ? args[0] : null;
     initStore(confFilePath);
-    log("Internal store started");
+    log.debug("Internal store started");
 
     startRequestHandlers();
-    log("Executor service started");
+    log.debug("Executor service started");
 
     // Selector: multiplexor of SelectableChannel objects
     final Selector selector = Selector.open(); // selector is open here
-    log("Selector started");
+    log.debug("Selector started");
 
     // ServerSocketChannel: selectable channel for stream-oriented listening sockets
     ServerSocketChannel serverSocket = ServerSocketChannel.open();
-    log("Server socket opened");
+    log.debug("Server socket opened");
 
     int port = RedisConf.getInstance().getServerPort();
     InetSocketAddress serverAddr = new InetSocketAddress("localhost", port);
@@ -113,7 +113,7 @@ public class RedisServer {
     serverSocket.configureBlocking(false);
     int ops = serverSocket.validOps();
     serverSocket.register(selector, ops, null);
-    log("Carrot-Redis server started on port = " + port);
+    log.debug("Carrot-Redis server started on port = {}", port);
 
     started = true;
 
@@ -128,7 +128,7 @@ public class RedisServer {
               client.setOption(StandardSocketOptions.TCP_NODELAY, true);
               // Operation-set bit for read operations
               client.register(selector, SelectionKey.OP_READ);
-              log("Connection Accepted: " + client.getLocalAddress());
+              log.debug("Connection Accepted: {}", client.getLocalAddress());
             } else if (key.isValid() && key.isReadable()) {
               // Check if it is in use
               RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
@@ -136,12 +136,12 @@ public class RedisServer {
               service.submit(key);
             }
           } catch (IOException e) {
-            log("Shutting down server ...");
+            log.debug("Shutting down server ...");
             service.shutdown();
             store.dispose();
             store = null;
             service = null;
-            log("Bye-bye folks. See you soon :)");
+            log.debug("Bye-bye folks. See you soon :)");
           }
         };
     // Infinite loop..
@@ -181,9 +181,5 @@ public class RedisServer {
     int numThreads = conf.getWorkingThreadPoolSize();
     service = RequestHandlers.create(store, numThreads);
     service.start();
-  }
-
-  static void log(String str) {
-    log.debug(str);
   }
 }

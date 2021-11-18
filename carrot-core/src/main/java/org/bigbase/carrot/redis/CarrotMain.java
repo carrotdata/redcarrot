@@ -61,7 +61,7 @@ public class CarrotMain {
   }
 
   private static void usage() {
-    log.info("[{}] Usage: java org.bigbase.carrot.redis.RedisMain config_file_path",Thread.currentThread().getName());
+    log.info("[{}] Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path",Thread.currentThread().getName());
     System.exit(-1);
   }
 

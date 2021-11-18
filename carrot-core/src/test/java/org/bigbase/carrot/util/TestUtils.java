@@ -158,7 +158,7 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    log.debug("Time =" + (end - start) + " total=" + total);
+    log.debug("Time ={} total={}", end - start, total);
   }
 
   @Test

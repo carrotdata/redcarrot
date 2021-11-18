@@ -148,7 +148,7 @@ public class TestRedisAdServerAdIndexing {
       client.zadd(key.getBytes(), base, Bytes.toBytes(i));
     }
     long end = System.currentTimeMillis();
-    log.debug("AdBase : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdBase : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdWords(Jedis client) {

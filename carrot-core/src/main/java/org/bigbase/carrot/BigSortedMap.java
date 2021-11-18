@@ -2282,7 +2282,7 @@ public class BigSortedMap {
       // Save store meta data
       saveStoreMeta(fc);
     } catch (IOException e) {
-      log.error("Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
+      log.error("Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
       log.error("StackTrace: ", e);
       return;
     }

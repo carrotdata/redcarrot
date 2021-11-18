@@ -157,7 +157,7 @@ public class TestCarrotAdServerUserTarget {
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionWords : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserViewAds(BigSortedMap map) {

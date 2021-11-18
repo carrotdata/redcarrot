@@ -62,20 +62,20 @@ public class BigSortedMapScannerLargeKVsTest {
     List<Key> deleted = delete((int) totalLoaded / 5);
     keys.removeAll(deleted);
     // Update total loaded
-    log.debug("Adjusted size by " + deleted.size() + " keys");
+    log.debug("Adjusted size by {} keys", deleted.size());
     totalLoaded -= deleted.size();
     deallocate(deleted);
 
     long end = System.currentTimeMillis();
-    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= {} ={}ms", totalLoaded, end - start);
     verifyGets(keys);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long scanned = verifyScanner(scanner, keys);
     scanner.close();
-    log.debug("Scanned=" + scanned);
-    log.debug("\nTotal memory      =" + BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data      =" + BigSortedMap.getGlobalDataSize());
-    log.debug("Compression ratio =" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Scanned={}", scanned);
+    log.debug("\nTotal memory      ={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data        ={}", BigSortedMap.getGlobalDataSize());
+    log.debug("Compression ratio   ={}", BigSortedMap.getGlobalBlockIndexSize());
     log.debug("");
     assertEquals(totalLoaded, scanned);
   }
@@ -116,7 +116,7 @@ public class BigSortedMapScannerLargeKVsTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* {} ********** Codec = NONE\n", i);
       setUp();
       allTests();
       tearDown();
@@ -129,7 +129,7 @@ public class BigSortedMapScannerLargeKVsTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* {} ********** Codec = LZ4\n", i);
       setUp();
       allTests();
       tearDown();
@@ -142,7 +142,7 @@ public class BigSortedMapScannerLargeKVsTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* {} ********** Codec = LZ4HC\n", i);
       setUp();
       allTests();
       tearDown();
@@ -158,21 +158,16 @@ public class BigSortedMapScannerLargeKVsTest {
       int keySize = scanner.keySize();
       if (keySize != keys.get(counter + delta).length) {
         log.debug(
-            "counter="
-                + counter
-                + " expected key size="
-                + keys.get(counter).length
-                + " found="
-                + keySize);
+            "counter={} expected key size={} found={}", counter, keys.get(counter).length, keySize);
         delta++;
       }
       long buf = UnsafeAccess.malloc(keySize);
       Key key = keys.get(counter + delta);
       scanner.key(buf, keySize);
-      assertTrue(Utils.compareTo(buf, keySize, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, keySize, key.address, key.length));
       int size = scanner.value(buf, keySize);
       assertEquals(keySize, size);
-      assertTrue(Utils.compareTo(buf, keySize, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, keySize, key.address, key.length));
 
       UnsafeAccess.free(buf);
       scanner.next();
@@ -186,7 +181,7 @@ public class BigSortedMapScannerLargeKVsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("FILL SEED=" + seed);
+    log.debug("FILL SEED={}", seed);
     int maxSize = 2048;
     boolean result = true;
     while (true) {
@@ -233,7 +228,7 @@ public class BigSortedMapScannerLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(keys.size(), (int) count);
     scanner.close();
   }
@@ -266,7 +261,7 @@ public class BigSortedMapScannerLargeKVsTest {
     Collections.reverse(keys);
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(keys.size(), (int) count);
     scanner.close();
   }
@@ -343,7 +338,7 @@ public class BigSortedMapScannerLargeKVsTest {
     long seed = r.nextLong();
     r.setSeed(seed);
     int toDelete = r.nextInt((int) totalLoaded);
-    log.debug("testDirectMemoryFullMapScannerWithDeletes SEED=" + seed + " toDelete=" + toDelete);
+    log.debug("testDirectMemoryFullMapScannerWithDeletes SEED={} toDelete={}", seed, toDelete);
     List<Key> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
@@ -369,7 +364,7 @@ public class BigSortedMapScannerLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(totalLoaded - toDelete, count);
     scanner.close();
     undelete(deletedKeys);
@@ -384,12 +379,10 @@ public class BigSortedMapScannerLargeKVsTest {
     r.setSeed(seed);
     int toDelete = r.nextInt((int) totalLoaded);
     log.debug(
-        "testDirectMemoryFullMapScannerWithDeletesReverse SEED="
-            + seed
-            + " toDelete="
-            + toDelete
-            + " expected="
-            + (totalLoaded - toDelete));
+        "testDirectMemoryFullMapScannerWithDeletesReverse SEED={} toDelete={} expected={}",
+        seed,
+        toDelete,
+        totalLoaded - toDelete);
     List<Key> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
@@ -415,7 +408,7 @@ public class BigSortedMapScannerLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(totalLoaded - toDelete, count);
     scanner.close();
     undelete(deletedKeys);
@@ -444,7 +437,7 @@ public class BigSortedMapScannerLargeKVsTest {
       UnsafeAccess.free(prev);
     }
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     return count;
   }
 
@@ -482,7 +475,7 @@ public class BigSortedMapScannerLargeKVsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Delete seed =" + seed);
+    log.debug("Delete seed ={}", seed);
     int numDeleted = 0;
     long valPtr = UnsafeAccess.malloc(1);
     List<Key> list = new ArrayList<Key>();
@@ -502,7 +495,7 @@ public class BigSortedMapScannerLargeKVsTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted={}  collisions={}", numDeleted, collisions);
     return list;
   }
 
@@ -517,14 +510,12 @@ public class BigSortedMapScannerLargeKVsTest {
     for (Key key : keys) {
       count++;
       boolean res = map.put(key.address, key.length, key.address, key.length, 0);
-      if (res == false) {
+      if (!res) {
         log.debug(
-            "Count = "
-                + count
-                + " total="
-                + keys.size()
-                + " memory ="
-                + BigSortedMap.getGlobalAllocatedMemory());
+            "Count = {} total={} memory ={}",
+            count,
+            keys.size(),
+            BigSortedMap.getGlobalAllocatedMemory());
       }
       assertTrue(res);
     }
