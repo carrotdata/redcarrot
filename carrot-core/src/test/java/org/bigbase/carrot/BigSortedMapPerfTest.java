@@ -53,7 +53,7 @@ public class BigSortedMapPerfTest {
       totalLoaded++;
       if (totalLoaded % 100000 == 0) {
         log.debug(
-            "Loaded " + totalLoaded + " RAM alocated=" + BigSortedMap.getGlobalAllocatedMemory());
+            "Loaded {} RAM alocated={}", totalLoaded, BigSortedMap.getGlobalAllocatedMemory());
       }
     }
     long end = System.currentTimeMillis();
@@ -65,7 +65,7 @@ public class BigSortedMapPerfTest {
             + "ms"
             + " RPS="
             + (totalLoaded * 1000) / (end - start));
-    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
   }
 
   @Test
@@ -80,7 +80,7 @@ public class BigSortedMapPerfTest {
     }
     long end = System.currentTimeMillis();
 
-    log.debug(totalScanned * 1000 / (end - start) + " RPS");
+    log.debug("{} RPS", totalScanned * 1000 / (end - start));
     assertEquals(n * totalLoaded, totalScanned);
   }
 
