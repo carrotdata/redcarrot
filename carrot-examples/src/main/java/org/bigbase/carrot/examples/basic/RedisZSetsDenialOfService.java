@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.DataInputStream;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -56,6 +58,8 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisZSetsDenialOfService {
 
+  private static final Logger log = LogManager.getLogger(RedisZSetsDenialOfService.class);
+
   /*
    * Maximum request count
    */
@@ -71,10 +75,10 @@ public class RedisZSetsDenialOfService {
     // Now load hosts
     if (args.length > 0) {
       loadHosts(args[0]);
-      System.out.println("RUN Redis - REAL DATA");
+      log.debug("RUN Redis - REAL DATA");
       runTest();
     } else {
-      System.out.println("You forgot host site list file. Boom. Exited.");
+      log.debug("You forgot host site list file. Boom. Exited.");
     }
   }
 
@@ -110,14 +114,14 @@ public class RedisZSetsDenialOfService {
       double score = getNextScore();
       client.zadd(key, score, host);
       if (i % 10000 == 0 && i > 0) {
-        System.out.println("zadd " + i);
+        log.debug("zadd " + i);
       }
     }
     long endTime = System.currentTimeMillis();
 
     long num = max;
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + num
             + " [host, number] pairs"

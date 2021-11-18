@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.strings;
 
 import static org.junit.Assert.assertEquals;
@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -37,6 +39,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class StringsTest {
+
+  private static final Logger log = LogManager.getLogger(StringsTest.class);
+
   BigSortedMap map;
   Key key;
   long buffer;
@@ -72,9 +77,9 @@ public class StringsTest {
   @Test
   public void runAllNoCompression() throws OperationFailedException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -85,9 +90,9 @@ public class StringsTest {
   @Test
   public void runAllCompressionLZ4() throws OperationFailedException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 1; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -98,9 +103,9 @@ public class StringsTest {
   @Test
   public void runAllCompressionLZ4HC() throws OperationFailedException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 10; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -201,7 +206,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testGetExpire() {
-    System.out.println("Test Get expire");
+    log.debug("Test Get expire");
     KeyValue kv = keyValues.get(0);
 
     Random r = new Random();
@@ -290,7 +295,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetIfNotExists() {
-    System.out.println("Test SETNX with options");
+    log.debug("Test SETNX with options");
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -307,7 +312,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetIfExists() {
-    System.out.println("Test SETXX with options");
+    log.debug("Test SETXX with options");
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -328,7 +333,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetWithTTL() {
-    System.out.println("Test SET with TTL options");
+    log.debug("Test SET with TTL options");
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -431,7 +436,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetGetWithTTL() {
-    System.out.println("Test SETGET with TTL options");
+    log.debug("Test SETGET with TTL options");
     KeyValue kv = keyValues.get(0);
     KeyValue kv1 = keyValues.get(1);
     KeyValue kv2 = keyValues.get(2);
@@ -588,7 +593,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testIncrementLongWrongFormat() {
-    System.out.println("Test Increment Long wrong format");
+    log.debug("Test Increment Long wrong format");
     KeyValue kv = keyValues.get(0);
     Strings.SET(
         map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
@@ -603,7 +608,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testIncrementDoubleWrongFormat() {
-    System.out.println("Test Increment Double wrong format");
+    log.debug("Test Increment Double wrong format");
     KeyValue kv = keyValues.get(0);
     Strings.SET(
         map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
@@ -618,7 +623,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testIncrementLong() throws OperationFailedException {
-    System.out.println("Test Increment Long ");
+    log.debug("Test Increment Long ");
 
     KeyValue kv = keyValues.get(0);
 
@@ -669,7 +674,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testIncrementDouble() throws OperationFailedException {
-    System.out.println("Test Increment Double ");
+    log.debug("Test Increment Double ");
 
     KeyValue kv = keyValues.get(0);
 
@@ -719,7 +724,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetGet() {
-    System.out.println("Test Strings Set/Get ");
+    log.debug("Test Strings Set/Get ");
 
     long start = System.currentTimeMillis();
     long totalSize = 0;
@@ -731,11 +736,11 @@ public class StringsTest {
               map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
       assertEquals(true, result);
       if ((i + 1) % 10000 == 0) {
-        System.out.println(i + 1);
+        log.debug(i + 1);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         "Total allocated memory ="
             + BigSortedMap.getGlobalAllocatedMemory()
             + " for "
@@ -755,14 +760,14 @@ public class StringsTest {
       assertTrue(Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) valueSize) == 0);
     }
     end = System.currentTimeMillis();
-    System.out.println("Time GET =" + (end - start) + "ms");
+    log.debug("Time GET =" + (end - start) + "ms");
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
   @Ignore
   @Test
   public void testSetRemove() {
-    System.out.println("Test Strings Set/Remove ");
+    log.debug("Test Strings Set/Remove ");
 
     long start = System.currentTimeMillis();
     long totalSize = 0;
@@ -774,14 +779,14 @@ public class StringsTest {
               map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
       assertEquals(true, result);
       if ((i + 1) % 10000 == 0) {
-        System.out.println(i + 1);
+        log.debug(i + 1);
       }
     }
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     long end = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         "Total allocated memory ="
             + BigSortedMap.getGlobalAllocatedMemory()
             + " for "
@@ -800,7 +805,7 @@ public class StringsTest {
       assertEquals(true, result);
     }
     end = System.currentTimeMillis();
-    System.out.println("Time DELETE =" + (end - start) + "ms");
+    log.debug("Time DELETE =" + (end - start) + "ms");
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       KeyValue kv = keyValues.get(i);
@@ -808,13 +813,13 @@ public class StringsTest {
       assertEquals(-1, (int) result);
     }
     end = System.currentTimeMillis();
-    System.out.println("Time to GET " + n + " values=" + (end - start) + "ms");
+    log.debug("Time to GET " + n + " values=" + (end - start) + "ms");
   }
 
   @Ignore
   @Test
   public void testAppend() {
-    System.out.println("Test Strings Append ");
+    log.debug("Test Strings Append ");
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -834,7 +839,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testGetDelete() {
-    System.out.println("Test Strings GetDelete operation ");
+    log.debug("Test Strings GetDelete operation ");
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -853,7 +858,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testGetEx() {
-    System.out.println("Test Strings GetEx operation ");
+    log.debug("Test Strings GetEx operation ");
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -870,7 +875,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testGetSet() {
-    System.out.println("Test Strings GetSet operation ");
+    log.debug("Test Strings GetSet operation ");
     KeyValue kv = keyValues.get(0);
     KeyValue kv1 = keyValues.get(1);
 
@@ -892,7 +897,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testStrLength() {
-    System.out.println("Test Strings StrLength operation ");
+    log.debug("Test Strings StrLength operation ");
     KeyValue kv = keyValues.get(0);
     long size = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
     assertEquals(0L, size);
@@ -905,7 +910,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testSetEx() {
-    System.out.println("Test Strings SetEx operation ");
+    log.debug("Test Strings SetEx operation ");
     KeyValue kv = keyValues.get(0);
 
     boolean res = Strings.SETEX(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 100);
@@ -923,7 +928,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testPSetEx() {
-    System.out.println("Test Strings PSetEx operation ");
+    log.debug("Test Strings PSetEx operation ");
     KeyValue kv = keyValues.get(0);
 
     boolean res = Strings.PSETEX(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 100);
@@ -941,7 +946,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testMget() {
-    System.out.println("Test Strings MGet operation ");
+    log.debug("Test Strings MGet operation ");
     for (KeyValue kv : keyValues) {
       // we use key as a value b/c its small
       Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.keyPtr, kv.keySize);
@@ -999,7 +1004,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testMSet() {
-    System.out.println("Test Strings MSet operation ");
+    log.debug("Test Strings MSet operation ");
     Strings.MSET(map, keyValues);
     for (KeyValue kv : keyValues) {
       assertTrue(Strings.keyExists(map, kv.keyPtr, kv.keySize));
@@ -1009,7 +1014,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testMSetNX() {
-    System.out.println("Test Strings MSetNX operation ");
+    log.debug("Test Strings MSetNX operation ");
     boolean res = Strings.MSETNX(map, keyValues);
     assertTrue(res);
     for (KeyValue kv : keyValues) {
@@ -1103,7 +1108,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testGetRange() {
-    System.out.println("Test Strings GetRange");
+    log.debug("Test Strings GetRange");
     testGetRangeInternal(1000);
     testGetRangeInternal(10000);
   }
@@ -1132,7 +1137,7 @@ public class StringsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
 
     for (int i = 0; i < 100; i++) {
       long start = Commons.NULL_LONG;
@@ -1207,7 +1212,7 @@ public class StringsTest {
   @Test
   public void testSetRange() {
 
-    System.out.println("Test Strings SetRange");
+    log.debug("Test Strings SetRange");
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1245,7 +1250,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testBitCount() {
-    System.out.println("Test Strings BitCount");
+    log.debug("Test Strings BitCount");
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1262,7 +1267,7 @@ public class StringsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
 
     // 1. start =-inf, end in range
     for (int i = 0; i < 100; i++) {
@@ -1319,7 +1324,7 @@ public class StringsTest {
   @Ignore
   @Test
   public void testBitPosition() {
-    System.out.println("Test Strings BitPos");
+    log.debug("Test Strings BitPos");
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1339,7 +1344,7 @@ public class StringsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("Test seed=" + seed);
+    log.debug("Test seed=" + seed);
 
     // 1. start =-inf, end in range
     for (int i = 0; i < 100; i++) {

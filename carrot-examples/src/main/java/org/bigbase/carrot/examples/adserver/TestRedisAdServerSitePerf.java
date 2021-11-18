@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Utils;
 
@@ -44,6 +46,8 @@ import redis.clients.jedis.Jedis;
  */
 public class TestRedisAdServerSitePerf {
 
+  private static final Logger log = LogManager.getLogger(TestRedisAdServerSitePerf.class);
+
   static final int MAX_ADS = 10000;
   static final int MAX_WORDS = 10000;
   static final int MAX_SITES = 1000;
@@ -56,14 +60,14 @@ public class TestRedisAdServerSitePerf {
     Jedis client = new Jedis("localhost");
     doSiteAdsRank(client);
     doSiteWordsRank(client);
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
     client.flushAll();
     client.close();
   }
 
   private static void doSiteWordsRank(Jedis client) {
-    System.out.println("Loading SiteWordsRank data");
+    log.debug("Loading SiteWordsRank data");
     String key = "sites:words:rank:";
     Random r = new Random();
     long count = 0;
@@ -76,16 +80,16 @@ public class TestRedisAdServerSitePerf {
         client.zadd(k, r.nextDouble(), word);
         count++;
         if (count % 100000 == 0) {
-          System.out.println("SiteWordsRank :" + count);
+          log.debug("SiteWordsRank :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
   }
 
   private static void doSiteAdsRank(Jedis client) {
-    System.out.println("Loading  SiteAdsRank data");
+    log.debug("Loading  SiteAdsRank data");
     String key = "sites:ads:rank:";
     Random r = new Random();
     long count = 0;
@@ -97,11 +101,11 @@ public class TestRedisAdServerSitePerf {
         client.zadd(k.getBytes(), r.nextDouble(), Bytes.toBytes(adsId));
         count++;
         if (count % 100000 == 0) {
-          System.out.println("SiteAdsRank :" + count);
+          log.debug("SiteAdsRank :" + count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
   }
 }

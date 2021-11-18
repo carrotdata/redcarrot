@@ -1,25 +1,30 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.compression;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class SparseBitmapTest {
+
+  private static final Logger log = LogManager.getLogger(SparseBitmapTest.class);
+
   int size = 4096;
 
   // @Ignore
@@ -37,7 +42,7 @@ public class SparseBitmapTest {
       UnsafeAccess.setMemory(src, size, (byte) 0);
       fill(src, pct, r);
       int compressedSize = codec.compress(src, size, dst, 2 * size);
-      System.out.println("Sparsiness " + i + "% comp ratio=" + (((float) size) / compressedSize));
+      log.debug("Sparsiness " + i + "% comp ratio=" + (((float) size) / compressedSize));
     }
   }
 
@@ -56,7 +61,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4 1-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4 1-byte compression ratio=" + (((float) size) / compressedSize));
   }
 
   @Ignore
@@ -74,7 +79,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4 2-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4 2-byte compression ratio=" + (((float) size) / compressedSize));
   }
 
   @Ignore
@@ -93,7 +98,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4HC 1-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4HC 1-byte compression ratio=" + (((float) size) / compressedSize));
   }
 
   @Ignore
@@ -113,7 +118,7 @@ public class SparseBitmapTest {
     }
 
     int compressedSize = codec.compress(src, size, dst, 2 * size);
-    System.out.println("LZ4HC 2-byte compression ratio=" + (((float) size) / compressedSize));
+    log.debug("LZ4HC 2-byte compression ratio=" + (((float) size) / compressedSize));
   }
 
   private void fill(long src, double pct, Random r) {

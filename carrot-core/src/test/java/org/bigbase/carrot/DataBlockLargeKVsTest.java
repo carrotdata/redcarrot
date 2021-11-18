@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -21,12 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Test;
 
 public class DataBlockLargeKVsTest extends DataBlockTest {
+
+  private static final Logger log = LogManager.getLogger(DataBlockLargeKVsTest.class);
 
   protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
     ArrayList<Key> keys = new ArrayList<Key>();
@@ -44,7 +48,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
         keys.add(new Key(ptr, len));
       }
     }
-    System.out.println(
+    log.debug(
         "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
     return keys;
   }
@@ -57,7 +61,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
    */
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSmallerValueSize- Large KVs");
+    log.debug("testOverwriteSmallerValueSize- Large KVs");
     for (int i = 0; i < 1000; i++) {
       Random r = new Random();
       DataBlock b = getDataBlock();
@@ -97,7 +101,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
    */
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteLargerValueSize- Large KVs");
+    log.debug("testOverwriteLargerValueSize- Large KVs");
 
     for (int i = 0; i < 1000; i++) {
       Random r = new Random();

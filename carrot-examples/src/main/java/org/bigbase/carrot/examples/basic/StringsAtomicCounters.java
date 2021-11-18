@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -58,6 +60,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
  */
 public class StringsAtomicCounters {
 
+  private static final Logger log = LogManager.getLogger(StringsAtomicCounters.class);
+
   static {
     UnsafeAccess.debug = true;
   }
@@ -82,13 +86,13 @@ public class StringsAtomicCounters {
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("RUN compression = NONE");
+    log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
-    System.out.println("RUN compression = LZ4");
+    log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    System.out.println("RUN compression = LZ4HC");
+    log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -104,12 +108,12 @@ public class StringsAtomicCounters {
       count++;
       Strings.INCRBY(map, key.address, key.length, r.nextInt(MAX_VALUE));
       if (count % 100000 == 0) {
-        System.out.println("set long " + count);
+        log.debug("set long " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + keys.size()
             + " long counters of avg size="
@@ -133,13 +137,13 @@ public class StringsAtomicCounters {
     //      count++;
     //      Strings.INCRBYFLOAT(map, key.address, key.length, 1d);
     //      if (count % 100000 == 0) {
-    //        System.out.println("set float "+ count);
+    //        log.debug("set float "+ count);
     //      }
     //    }
     //
     //    endTime = System.currentTimeMillis();
     //
-    //    System.out.println("Loaded " + keys.size() +" double counters of avg size="
+    //    log.debug("Loaded " + keys.size() +" double counters of avg size="
     // +(keyTotalSize/N + 8)+ " each in "
     //        + (endTime - startTime) + "ms. RAM usage="+ (UnsafeAccess.getAllocatedMemory() -
     // keyTotalSize));

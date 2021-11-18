@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -76,6 +78,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class HashesAtomicCounters {
 
+  private static final Logger log = LogManager.getLogger(HashesAtomicCounters.class);
+
   static {
     // UnsafeAccess.debug = true;
   }
@@ -98,19 +102,19 @@ public class HashesAtomicCounters {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED1=" + seed);
+    log.debug("SEED1=" + seed);
     Collections.shuffle(keys, r);
   }
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("RUN compression = NONE");
+    log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
-    System.out.println("RUN compression = LZ4");
+    log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    System.out.println("RUN compression = LZ4HC");
+    log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
     Utils.freeKeys(keys);
@@ -126,7 +130,7 @@ public class HashesAtomicCounters {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED2=" + seed);
+    log.debug("SEED2=" + seed);
 
     for (Key key : keys) {
       count++;
@@ -135,12 +139,12 @@ public class HashesAtomicCounters {
       int val = nextScoreSkewed(r);
       Hashes.HINCRBY(map, key.address, keySize, key.address + keySize, key.length - keySize, val);
       if (count % 100000 == 0) {
-        System.out.println("set long " + count);
+        log.debug("set long " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + keys.size()
             + " long counters of avg size="
@@ -162,11 +166,11 @@ public class HashesAtomicCounters {
       Hashes.HINCRBYFLOAT(
           map, key.address, keySize, key.address + keySize, key.length - keySize, val);
       if (count % 100000 == 0) {
-        System.out.println("set float " + count);
+        log.debug("set float " + count);
       }
     }
     endTime = System.currentTimeMillis();
-    System.out.println(
+    log.debug(
         "Loaded "
             + keys.size()
             + " float counters of avg size="
@@ -176,12 +180,12 @@ public class HashesAtomicCounters {
             + "ms.");
     // Delete keys
     count = 0;
-    System.out.println("Deleting keys ...");
+    log.debug("Deleting keys ...");
     for (Key key : keys) {
       int keySize = Math.max(8, key.length - 3);
       Hashes.DELETE(map, key.address, keySize);
       if (++count % 100000 == 0) {
-        System.out.println("Deleted key " + count);
+        log.debug("Deleted key " + count);
       }
     }
 
@@ -202,17 +206,17 @@ public class HashesAtomicCounters {
           Hashes.HGET(
               map, key.address, keySize, key.address + keySize, key.length - keySize, buf, bufSize);
       if (size < 0) {
-        System.err.println(
+        log.error(
             "FAILED count=" + count + " keySize=" + keySize + " keyLength=" + key.length);
         System.exit(-1);
       }
       String s = Utils.toString(buf, size);
       if (Integer.parseInt(s) != val) {
-        System.err.println("Failed with s=" + s);
+        log.error("Failed with s=" + s);
         System.exit(-1);
       }
       if (count % 100000 == 0) {
-        System.out.println("verified " + count);
+        log.debug("verified " + count);
       }
     }
   }

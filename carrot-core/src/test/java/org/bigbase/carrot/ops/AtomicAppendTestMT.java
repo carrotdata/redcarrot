@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.ops;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.ops.Append;
@@ -32,6 +34,8 @@ import org.junit.Test;
  * number of appends.
  */
 public class AtomicAppendTestMT {
+
+  private static final Logger log = LogManager.getLogger(AtomicAppendTestMT.class);
 
   static BigSortedMap map;
   static AtomicLong totalLoaded = new AtomicLong();
@@ -77,7 +81,7 @@ public class AtomicAppendTestMT {
           assertTrue(result);
         }
         if (totalLoaded.get() % 1000000 == 0) {
-          System.out.println(getName() + " loaded = " + totalLoaded + " appends=" + totalAppends);
+          log.debug(getName() + " loaded = " + totalLoaded + " appends=" + totalAppends);
         }
       } // end while
       UnsafeAccess.free(ptr);
@@ -88,7 +92,7 @@ public class AtomicAppendTestMT {
   @Test
   public void testAppend() throws IOException {
     for (int k = 1; k <= 100; k++) {
-      System.out.println("Append test run #" + k);
+      log.debug("Append test run #" + k);
 
       BigSortedMap.setMaxBlockSize(4096);
       map = new BigSortedMap(1000000000L);
@@ -123,7 +127,7 @@ public class AtomicAppendTestMT {
         assertEquals((totalAppends.get() + totalLoaded.get()) * 8, total);
         assertEquals(totalLoaded.get(), count);
         map.dumpStats();
-        System.out.println(
+        log.debug(
             "Time to load= "
                 + totalLoaded
                 + " and to append ="
@@ -131,9 +135,9 @@ public class AtomicAppendTestMT {
                 + "="
                 + (end - start)
                 + "ms");
-        System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-        System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-        System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+        log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+        log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
+        log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
           map.dispose();

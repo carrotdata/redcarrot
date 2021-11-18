@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.twitter;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.IndexBlock;
@@ -92,6 +94,8 @@ import org.bigbase.carrot.compression.CodecType;
  */
 public class TestCarrotTwitter {
 
+  private static final Logger log = LogManager.getLogger(TestCarrotTwitter.class);
+
   static {
     // UnsafeAccess.debug = true;
   }
@@ -103,7 +107,7 @@ public class TestCarrotTwitter {
   static double avg_user_following_size;
 
   private static void printSummary() {
-    System.out.println(
+    log.debug(
         "Carrot memory usage per user (user, statuses, profile timeline, followers, following)="
             + (avg_user_size
                 + avg_user_status_size
@@ -142,14 +146,14 @@ public class TestCarrotTwitter {
       count++;
       u.saveToCarrot(map);
       if (count % 10000 == 0) {
-        System.out.println("Loaded " + count + " users");
+        log.debug("Loaded " + count + " users");
       }
     }
 
     count = (int) countRecords(map);
 
     if (count != numUsers) {
-      System.err.println("count=" + count + " expected=" + numUsers);
+      log.error("count=" + count + " expected=" + numUsers);
       System.exit(-1);
     }
     count = 0;
@@ -160,13 +164,13 @@ public class TestCarrotTwitter {
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
-        System.out.println("Verified " + (count) + " users");
+        log.debug("Verified " + (count) + " users");
       }
     }
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_size = (double) memory / numUsers;
     map.dispose();
-    System.out.println("avg_user_size=" + avg_user_size + " bytes");
+    log.debug("avg_user_size=" + avg_user_size + " bytes");
   }
 
   private static long countRecords(BigSortedMap map) {
@@ -189,19 +193,19 @@ public class TestCarrotTwitter {
   }
 
   private static void runUsersNoCompression() {
-    System.out.println("\nTest Users, compression=None");
+    log.debug("\nTest Users, compression=None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runUsers();
   }
 
   private static void runUsersLZ4Compression() {
-    System.out.println("\nTest Users, compression=LZ4");
+    log.debug("\nTest Users, compression=LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runUsers();
   }
 
   private static void runUsersLZ4HCCompression() {
-    System.out.println("\nTest Users, compression=LZ4HC");
+    log.debug("\nTest Users, compression=LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runUsers();
   }
@@ -219,7 +223,7 @@ public class TestCarrotTwitter {
         us.saveToCarrot(map);
       }
       if (count % 100 == 0) {
-        System.out.println("Loaded " + count + " user statuses");
+        log.debug("Loaded " + count + " user statuses");
       }
     }
     count = 0;
@@ -228,29 +232,29 @@ public class TestCarrotTwitter {
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
-        System.out.println("Verified " + count + " users");
+        log.debug("Verified " + count + " users");
       }
     }
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_status_size = (double) memory / numUsers;
     map.dispose();
-    System.out.println("avg_user_status_size=" + avg_user_status_size + " bytes");
+    log.debug("avg_user_status_size=" + avg_user_status_size + " bytes");
   }
 
   private static void runUserStatusNoCompression() {
-    System.out.println("\nTest User Status, compression=None");
+    log.debug("\nTest User Status, compression=None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runUserStatuses();
   }
 
   private static void runUserStatusLZ4Compression() {
-    System.out.println("\nTest User Status, compression=LZ4");
+    log.debug("\nTest User Status, compression=LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runUserStatuses();
   }
 
   private static void runUserStatusLZ4HCCompression() {
-    System.out.println("\nTest User Status, compression=LZ4HC");
+    log.debug("\nTest User Status, compression=LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runUserStatuses();
   }
@@ -265,30 +269,30 @@ public class TestCarrotTwitter {
       Timeline timeline = new Timeline(user);
       timeline.saveToCarrot(map);
       if (count % 100 == 0) {
-        System.out.println("Loaded " + count + " user timelines");
+        log.debug("Loaded " + count + " user timelines");
       }
     }
 
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_timeline_size = (double) memory / numUsers;
     map.dispose();
-    System.out.println("avg_user_timeline_size=" + avg_user_timeline_size + " bytes");
+    log.debug("avg_user_timeline_size=" + avg_user_timeline_size + " bytes");
   }
 
   private static void runUserTimelinesNoCompression() {
-    System.out.println("\nTest User Timeline, compression=None");
+    log.debug("\nTest User Timeline, compression=None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runUserTimelines();
   }
 
   private static void runUserTimelineLZ4Compression() {
-    System.out.println("\nTest User Timeline, compression=LZ4");
+    log.debug("\nTest User Timeline, compression=LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runUserTimelines();
   }
 
   private static void runUserTimelineLZ4HCCompression() {
-    System.out.println("\nTest User Timeline, compression=LZ4HC");
+    log.debug("\nTest User Timeline, compression=LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runUserTimelines();
   }
@@ -305,14 +309,14 @@ public class TestCarrotTwitter {
       total += followers.size();
       followers.saveToCarrot(map);
       if (count % 100 == 0) {
-        System.out.println("Loaded " + count + " user followers");
+        log.debug("Loaded " + count + " user followers");
       }
     }
 
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_followers_size = (double) memory / numUsers;
     map.dispose();
-    System.out.println(
+    log.debug(
         "avg_user_followers_size="
             + avg_user_followers_size
             + " bytes. Avg #folowers="
@@ -320,19 +324,19 @@ public class TestCarrotTwitter {
   }
 
   private static void runUserFollowersNoCompression() {
-    System.out.println("\nTest User Followers, compression=None");
+    log.debug("\nTest User Followers, compression=None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runUserFollowers();
   }
 
   private static void runUserFollowersLZ4Compression() {
-    System.out.println("\nTest User Followers, compression=LZ4");
+    log.debug("\nTest User Followers, compression=LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runUserFollowers();
   }
 
   private static void runUserFollowersLZ4HCCompression() {
-    System.out.println("\nTest User Followers, compression=LZ4HC");
+    log.debug("\nTest User Followers, compression=LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runUserFollowers();
   }
@@ -349,14 +353,14 @@ public class TestCarrotTwitter {
       total += following.size();
       following.saveToCarrot(map);
       if (count % 1000 == 0) {
-        System.out.println("Loaded " + count + " user following");
+        log.debug("Loaded " + count + " user following");
       }
     }
 
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_following_size = (double) memory / numUsers;
     map.dispose();
-    System.out.println(
+    log.debug(
         "avg_user_following_size="
             + avg_user_following_size
             + " bytes. Avg #folowing="
@@ -364,19 +368,19 @@ public class TestCarrotTwitter {
   }
 
   private static void runUserFollowingNoCompression() {
-    System.out.println("\nTest User Following, compression=None");
+    log.debug("\nTest User Following, compression=None");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runUserFollowing();
   }
 
   private static void runUserFollowingLZ4Compression() {
-    System.out.println("\nTest User Following, compression=LZ4");
+    log.debug("\nTest User Following, compression=LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runUserFollowing();
   }
 
   private static void runUserFollowingLZ4HCCompression() {
-    System.out.println("\nTest User Following, compression=LZ4HC");
+    log.debug("\nTest User Following, compression=LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runUserFollowing();
   }

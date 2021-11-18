@@ -1,33 +1,37 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
 
+  private static final Logger log = LogManager.getLogger(IndexBlockScannerLargeKVsTest.class);
+
   protected ArrayList<Key> fillIndexBlock(IndexBlock b) throws RetryOperationException {
     ArrayList<Key> keys = new ArrayList<Key>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("FILL seed=" + seed);
+    log.debug("FILL seed=" + seed);
     int maxSize = 2048;
     boolean result = true;
     while (true) {
@@ -46,7 +50,7 @@ public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
         break;
       }
     }
-    System.out.println(
+    log.debug(
         "Number of data blocks="
             + b.getNumberOfDataBlock()
             + " index block data size ="

@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.commands;
 
 import static org.bigbase.carrot.util.Utils.byteBufferToString;
@@ -24,6 +24,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.CommandProcessor;
 import org.bigbase.carrot.redis.RedisConf;
@@ -35,6 +37,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 public abstract class CommandBase {
+
+  private static final Logger log = LogManager.getLogger(CommandBase.class);
 
   protected static final String SKIP_VERIFY = "@"; // Skip verify if expected reply equals
   protected BigSortedMap map;
@@ -61,7 +65,7 @@ public abstract class CommandBase {
 
   @Test
   public void testValidRequests() {
-    /*DEBUG*/ System.out.println("testValidRequests starts");
+    /*DEBUG*/ log.debug("testValidRequests starts");
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
 
@@ -70,14 +74,14 @@ public abstract class CommandBase {
       out.clear();
       String inline = validRequests[i];
       String request = Utils.inlineToRedisRequest(inline);
-      System.out.println("REQUEST:");
-      System.out.println(inline);
-      // System.out.println(request);
+      log.debug("REQUEST:");
+      log.debug(inline);
+      // log.debug(request);
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
-      System.out.println("\nRESULT:");
-      System.out.println(result);
+      log.debug("\nRESULT:");
+      log.debug(result);
 
       if (validResponses[i].equals(SKIP_VERIFY)) {
         // TODO: we need some verification
@@ -85,7 +89,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ System.out.println("testValidRequests finishes");
+    /*DEBUG*/ log.debug("testValidRequests finishes");
   }
 
   private static boolean serverStarted = false;
@@ -99,7 +103,7 @@ public abstract class CommandBase {
     if (System.getProperty("surefire") != null) return;
     // Start server
     // Connect client
-    /*DEBUG*/ System.out.println("testValidRequestsNetworkMode starts");
+    /*DEBUG*/ log.debug("testValidRequestsNetworkMode starts");
 
     if (!serverStarted) {
       RedisServer.start();
@@ -121,16 +125,16 @@ public abstract class CommandBase {
       String request = Utils.inlineToRedisRequest(inline);
       String expResponse = validResponses[i];
       byte[] expBytes = new byte[expResponse.length()];
-      System.out.println("REQUEST:");
-      System.out.println(inline);
+      log.debug("REQUEST:");
+      log.debug(inline);
 
       os.write(request.getBytes());
       is.readFully(expBytes);
 
       String result = new String(expBytes);
 
-      System.out.println("\nRESULT:");
-      System.out.println(result);
+      log.debug("\nRESULT:");
+      log.debug(result);
 
       if (validResponses[i].equals(SKIP_VERIFY)) {
         // TODO: we need some verification
@@ -138,7 +142,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ System.out.println("testValidRequestsNetworkMode finishes");
+    /*DEBUG*/ log.debug("testValidRequestsNetworkMode finishes");
   }
 
   private String[] addFlushallRequest(String[] requests) {
@@ -157,7 +161,7 @@ public abstract class CommandBase {
 
   @Test
   public void testValidRequestsInline() {
-    /*DEBUG*/ System.out.println("testValidRequestsInline starts");
+    /*DEBUG*/ log.debug("testValidRequestsInline starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -170,17 +174,17 @@ public abstract class CommandBase {
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
       if (validResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ System.out.println("testValidRequestsInline finishes");
+    /*DEBUG*/ log.debug("testValidRequestsInline finishes");
   }
 
   @Test
   public void testValidRequestsDirectBuffer() {
-    /*DEBUG*/ System.out.println("testValidRequestsDirectBuffer starts");
+    /*DEBUG*/ log.debug("testValidRequestsDirectBuffer starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -193,17 +197,17 @@ public abstract class CommandBase {
       CommandProcessor.process(map, inDirect, outDirect);
       String result = byteBufferToString(outDirect);
       if (validResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ System.out.println("testValidRequestsDirectBuffer finishes");
+    /*DEBUG*/ log.debug("testValidRequestsDirectBuffer finishes");
   }
 
   @Test
   public void testValidRequestsInlineDirectBuffer() {
-    /*DEBUG*/ System.out.println("testValidRequestsInlineDirectBuffer starts");
+    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -216,12 +220,12 @@ public abstract class CommandBase {
       CommandProcessor.process(map, inDirect, outDirect);
       String result = byteBufferToString(outDirect);
       if (validResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ System.out.println("testValidRequestsInlineDirectBuffer starts");
+    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer starts");
   }
   // INVALID REQUESTS
 
@@ -234,12 +238,12 @@ public abstract class CommandBase {
       out.clear();
       String inline = invalidRequests[i];
       String request = Utils.inlineToRedisRequest(inline);
-      System.out.println(inline);
+      log.debug(inline);
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
       if (invalidResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(invalidResponses[i], result);
       }
@@ -259,7 +263,7 @@ public abstract class CommandBase {
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
       if (invalidResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(invalidResponses[i], result);
       }
@@ -279,7 +283,7 @@ public abstract class CommandBase {
       CommandProcessor.process(map, inDirect, outDirect);
       String result = byteBufferToString(outDirect);
       if (invalidResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(invalidResponses[i], result);
       }
@@ -299,7 +303,7 @@ public abstract class CommandBase {
       CommandProcessor.process(map, inDirect, outDirect);
       String result = byteBufferToString(outDirect);
       if (invalidResponses[i].equals(SKIP_VERIFY)) {
-        System.out.println(result);
+        log.debug(result);
       } else {
         assertEquals(invalidResponses[i], result);
       }

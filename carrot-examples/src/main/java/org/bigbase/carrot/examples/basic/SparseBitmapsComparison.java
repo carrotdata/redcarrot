@@ -1,20 +1,22 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -67,6 +69,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
  */
 public class SparseBitmapsComparison {
 
+  private static final Logger log = LogManager.getLogger(SparseBitmapsComparison.class);
+
   static BigSortedMap map;
   static Key key;
   static long buffer;
@@ -92,7 +96,7 @@ public class SparseBitmapsComparison {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    System.out.println("SEED=" + seed);
+    log.debug("SEED=" + seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, keySize);
     return new Key(ptr, keySize);
@@ -113,34 +117,31 @@ public class SparseBitmapsComparison {
 
   private static void runAllNoCompression() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
-      System.out.println(
-          "*************** RUN = " + (i + 1) + " Compression=NULL, dencity=" + dencity);
+      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL, dencity=" + dencity);
       allTests();
     }
   }
 
   private static void runAllCompressionLZ4() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
-      System.out.println(
-          "*************** RUN = " + (i + 1) + " Compression=LZ4, dencity=" + dencity);
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4, dencity=" + dencity);
       allTests();
     }
   }
 
   private static void runAllCompressionLZ4HC() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
 
-      System.out.println(
-          "*************** RUN = " + (i + 1) + " Compression=LZ4HC, dencity=" + dencity);
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC, dencity=" + dencity);
       allTests();
     }
   }
@@ -153,7 +154,7 @@ public class SparseBitmapsComparison {
 
   private static void testPerformance() {
 
-    System.out.println("\nTest Performance\n");
+    log.debug("\nTest Performance\n");
     long offset = 0;
     long MAX = (long) (N / dencity);
     Random r = new Random();
@@ -169,13 +170,13 @@ public class SparseBitmapsComparison {
     }
     long end = System.currentTimeMillis();
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ System.out.println("Total RAM=" + memory + " MAX=" + MAX + "\n");
+    /*DEBUG*/ log.debug("Total RAM=" + memory + " MAX=" + MAX + "\n");
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assert (expected == count);
 
-    System.out.println(
+    log.debug(
         "Time for "
             + N
             + " population dencity="
@@ -185,7 +186,7 @@ public class SparseBitmapsComparison {
             + " new SetBit="
             + (end - start)
             + "ms");
-    System.out.println("COMPRESSION ratio =" + (((double) MAX) / (8 * memory)));
+    log.debug("COMPRESSION ratio =" + (((double) MAX) / (8 * memory)));
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 

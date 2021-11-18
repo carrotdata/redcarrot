@@ -1,24 +1,28 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.commands;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.redis.util.Utils;
 import org.junit.Test;
 
 public class TestUtilMethods {
+
+  private static final Logger log = LogManager.getLogger(TestUtilMethods.class);
 
   private String[] inline =
       new String[] {
@@ -40,9 +44,9 @@ public class TestUtilMethods {
   public void testInlineConversion() {
     for (int i = 0; i < inline.length; i++) {
       String conv = Utils.inlineToRedisRequest(inline[i]);
-      System.out.println(inline[i]);
-      System.out.println(expected[i]);
-      System.out.println(conv);
+      log.debug(inline[i]);
+      log.debug(expected[i]);
+      log.debug(conv);
       assertEquals(expected[i], conv);
     }
   }

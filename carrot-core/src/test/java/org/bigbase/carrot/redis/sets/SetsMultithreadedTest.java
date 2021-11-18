@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.sets;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -30,6 +32,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class SetsMultithreadedTest {
+
+  private static final Logger log = LogManager.getLogger(SetsMultithreadedTest.class);
 
   BigSortedMap map;
   int valueSize = 16;
@@ -72,9 +76,9 @@ public class SetsMultithreadedTest {
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 100; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
       setUp();
       runTest();
       tearDown();
@@ -87,9 +91,9 @@ public class SetsMultithreadedTest {
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println();
+    log.debug("");
     for (int i = 0; i < 100; i++) {
-      System.out.println("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
       setUp();
       runTest();
       tearDown();
@@ -122,13 +126,13 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 loaded++;
                 if (loaded % 1000000 == 0) {
-                  System.out.println(Thread.currentThread().getName() + " loaded " + loaded);
+                  log.debug(Thread.currentThread().getName() + " loaded " + loaded);
                 }
               }
               int card = (int) Sets.SCARD(map, ptr, keySize);
               if (card != values.size()) {
                 card = (int) Sets.SCARD(map, ptr, keySize);
-                System.err.println("Second CARD=" + card);
+                log.error("Second CARD=" + card);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -157,7 +161,7 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 read++;
                 if (read % 1000000 == 0) {
-                  System.out.println(Thread.currentThread().getName() + " read " + read);
+                  log.debug(Thread.currentThread().getName() + " read " + read);
                 }
               }
             }
@@ -190,7 +194,7 @@ public class SetsMultithreadedTest {
               assertTrue(res);
               card = Sets.SCARD(map, ptr, keySize);
               if (card != 0) {
-                System.err.println("FAILED delete, card =" + card);
+                log.error("FAILED delete, card =" + card);
                 System.exit(-1);
               }
               assertEquals(0L, card);
@@ -199,7 +203,7 @@ public class SetsMultithreadedTest {
           }
         };
 
-    System.out.println("Loading data");
+    log.debug("Loading data");
     Thread[] workers = new Thread[numThreads];
 
     long start = System.currentTimeMillis();
@@ -219,13 +223,13 @@ public class SetsMultithreadedTest {
 
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loading "
             + (numThreads * keysNumber * setSize)
             + " elements os done in "
             + (end - start)
             + "ms");
-    System.out.println("Reading data");
+    log.debug("Reading data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
       workers[i] = new Thread(get, Integer.toString(i));
@@ -243,13 +247,13 @@ public class SetsMultithreadedTest {
 
     end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Reading "
             + (numThreads * keysNumber * setSize)
             + " elements os done in "
             + (end - start)
             + "ms");
-    System.out.println("Deleting  data");
+    log.debug("Deleting  data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
       workers[i] = new Thread(delete, Integer.toString(i));
@@ -265,8 +269,7 @@ public class SetsMultithreadedTest {
       }
     }
     end = System.currentTimeMillis();
-    System.out.println(
-        "Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
+    log.debug("Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
     assertEquals(0L, map.countRecords());
   }
 }

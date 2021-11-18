@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.sets;
 
 import static org.bigbase.carrot.redis.util.Commons.KEY_SIZE;
@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.DataBlock;
@@ -54,6 +56,8 @@ import org.bigbase.carrot.util.ValueScore;
  * } +N
  */
 public class Sets {
+
+  private static final Logger log = LogManager.getLogger(Sets.class);
 
   private static ThreadLocal<Long> keyArena =
       new ThreadLocal<Long>() {
@@ -286,7 +290,7 @@ public class Sets {
   @SuppressWarnings("unused")
   private static void dump(List<Value> members) {
     for (Value v : members) {
-      System.out.println(Utils.toHexString(v.address, v.length));
+      log.debug(Utils.toHexString(v.address, v.length));
     }
   }
 
@@ -2132,8 +2136,8 @@ public class Sets {
       int eSizeSize = Utils.sizeUVInt(eSize);
 
       if (eSize != expSize) {
-        System.out.println("Dump value , elements=" + total);
-        System.out.println("CORRUPT eSize=" + eSize + " index (+1)=" + count);
+        log.debug("Dump value , elements=" + total);
+        log.debug("CORRUPT eSize=" + eSize + " index (+1)=" + count);
         return true;
       }
       off += eSize + eSizeSize;

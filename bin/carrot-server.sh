@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 START_HOME=$PWD
+# within instruction $(dirname "$(realpath "$0")") you can start server from any directory. No just from bin
+# for example, you can start app by root from cron. like: /bin/carrot/bin/carrot-server.sh reboot
+# it is important if you use auto-start script in case of server reboot.
+#START_HOME=$(dirname "$(realpath "$0")")
 echo Carrot server home directory is "${START_HOME}"
 
 cd "${START_HOME}" || exit

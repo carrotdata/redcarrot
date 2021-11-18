@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.DataInputStream;
@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -48,11 +50,13 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisHashesAllEnglishWords {
 
+  private static final Logger log = LogManager.getLogger(RedisHashesAllEnglishWords.class);
+
   public static void main(String[] args) throws IOException {
     if (args.length == 0) {
       usage();
     }
-    System.out.println("RUN Redis test");
+    log.debug("RUN Redis test");
     runTest(args[0]);
   }
 
@@ -79,12 +83,12 @@ public class RedisHashesAllEnglishWords {
       String key = baseKey + rem;
       client.hset(key, line, "1");
       if ((count % 10000) == 0 && count > 0) {
-        System.out.println("Loaded " + count);
+        log.debug("Loaded " + count);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + count
             + " records, total size="
@@ -94,7 +98,7 @@ public class RedisHashesAllEnglishWords {
             + "ms.");
     dis.close();
 
-    System.out.println("Press any key ...");
+    log.debug("Press any key ...");
     System.in.read();
 
     for (int i = 0; i < 300; i++) {
@@ -106,7 +110,7 @@ public class RedisHashesAllEnglishWords {
   }
 
   private static void usage() {
-    System.out.println(
+    log.debug(
         "usage: java org.bigbase.carrot.examples.RedisHashesAllEnglishWords domain_list_file");
     System.exit(-1);
   }

@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.ops.OperationFailedException;
 
 import redis.clients.jedis.Jedis;
@@ -42,18 +44,20 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisStringsAtomicCounters {
 
+  private static final Logger log = LogManager.getLogger(RedisStringsAtomicCounters.class);
+
   static long N = 1000000;
   static long totalDataSize = 0;
   static int MAX_VALUE = 1000;
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
-    System.out.println("RUN Redis");
+    log.debug("RUN Redis");
     runTest();
   }
 
   private static void runTest() throws IOException, OperationFailedException {
-    System.out.println("Running Redis Strings test ...");
+    log.debug("Running Redis Strings test ...");
 
     Jedis client = new Jedis("localhost");
     totalDataSize = 0;
@@ -65,15 +69,15 @@ public class RedisStringsAtomicCounters {
       totalDataSize += skey.length() + 8 /*length of a counter*/;
       client.incrBy(skey, nextScoreSkewed(r));
       if (i % 10000 == 0 && i > 0) {
-        System.out.println("set string " + i);
+        log.debug("set string " + i);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded " + N + " counters, total size=" + totalDataSize + " in " + (endTime - startTime));
 
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
     deleteAll(client);
     client.close();
@@ -85,12 +89,12 @@ public class RedisStringsAtomicCounters {
       String skey = "counter:" + i;
       client.del(skey);
       if (i % 10000 == 0 && i > 0) {
-        System.out.println("del " + i);
+        log.debug("del " + i);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println("Deleted " + N + " counters" + " in " + (endTime - startTime));
+    log.debug("Deleted " + N + " counters" + " in " + (endTime - startTime));
   }
 
   private static int nextScoreSkewed(Random r) {

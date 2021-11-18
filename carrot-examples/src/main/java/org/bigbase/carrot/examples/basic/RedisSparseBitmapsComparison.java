@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -41,6 +43,8 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisSparseBitmapsComparison {
 
+  private static final Logger log = LogManager.getLogger(RedisSparseBitmapsComparison.class);
+
   static int bufferSize = 64;
   static int keySize = 8;
   static int N = 1000000;
@@ -52,7 +56,7 @@ public class RedisSparseBitmapsComparison {
   private static void testPerformance() throws IOException {
     Jedis client = new Jedis("localhost");
 
-    System.out.println("\nTest Redis Performance sparse bitmaps. dencity=" + dencity + "\n");
+    log.debug("\nTest Redis Performance sparse bitmaps. dencity=" + dencity + "\n");
     long offset = 0;
     long MAX = (long) (N / dencity);
     Random r = new Random();
@@ -62,12 +66,12 @@ public class RedisSparseBitmapsComparison {
       offset = Math.abs(r.nextLong()) % MAX;
       client.setbit("key", offset, true);
       if (i % 10000 == 0 && i > 0) {
-        System.out.println("i=" + i);
+        log.debug("i=" + i);
       }
     }
     long end = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Time for "
             + N
             + " population dencity="
@@ -78,7 +82,7 @@ public class RedisSparseBitmapsComparison {
             + (end - start)
             + "ms");
 
-    System.out.println("Press any button ...");
+    log.debug("Press any button ...");
     System.in.read();
     client.del("key");
     client.close();

@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertTrue;
@@ -22,6 +22,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Test;
@@ -29,6 +31,9 @@ import org.junit.Test;
 import com.google.common.util.concurrent.AtomicDouble;
 
 public class BigSortedMapTestMT {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMapTestMT.class);
+
   static int totalThreads = 6;
   static AtomicDouble putsPs = new AtomicDouble();
   static AtomicDouble comboPs = new AtomicDouble();
@@ -89,7 +94,7 @@ public class BigSortedMapTestMT {
     }
 
     private void runPutDeleteGetsScans() throws IOException {
-      System.out.println(Thread.currentThread().getName() + "-test runPutDeleteGetsScans ");
+      log.debug(Thread.currentThread().getName() + "-test runPutDeleteGetsScans ");
 
       int num = (int) totalLoaded.get();
       long start = System.currentTimeMillis();
@@ -176,7 +181,7 @@ public class BigSortedMapTestMT {
           }
         }
         if (i % 1000000 == 0) {
-          System.out.println(
+          log.debug(
               Thread.currentThread().getName()
                   + "- "
                   + i
@@ -193,7 +198,7 @@ public class BigSortedMapTestMT {
 
       long end = System.currentTimeMillis();
       totalOps = num;
-      System.out.println("Time to get " + num + " =" + (end - start) + "ms");
+      log.debug("Time to get " + num + " =" + (end - start) + "ms");
       try {
         scanAll();
       } catch (InterruptedException | BrokenBarrierException e) {
@@ -244,7 +249,7 @@ public class BigSortedMapTestMT {
     }
 
     private void runPuts() {
-      System.out.println(Thread.currentThread().getName() + "-test PUTs");
+      log.debug(Thread.currentThread().getName() + "-test PUTs");
       long start = System.currentTimeMillis();
       long totalSize = 0;
       while (true) {
@@ -263,13 +268,12 @@ public class BigSortedMapTestMT {
 
         totalOps++;
         if (n % 1000000 == 0) {
-          System.out.println(Thread.currentThread().getName() + "- " + n);
+          log.debug(Thread.currentThread().getName() + "- " + n);
         }
       }
 
       long end = System.currentTimeMillis();
-      System.out.println(
-          "Time to put " + totalOps + " = " + (end - start) + "ms. Total size=" + totalSize);
+      log.debug("Time to put " + totalOps + " = " + (end - start) + "ms. Total size=" + totalSize);
     }
 
     private boolean put() {
@@ -346,7 +350,7 @@ public class BigSortedMapTestMT {
         if (count > 1) {
           int result = Utils.compareTo(current, keySize, prev, keySize);
           if (result <= 0) {
-            System.out.println(
+            log.debug(
                 result
                     + " prevVersion="
                     + prevVersion
@@ -370,7 +374,7 @@ public class BigSortedMapTestMT {
         UnsafeAccess.free(prev);
       }
       long end = System.currentTimeMillis();
-      System.out.println(
+      log.debug(
           Thread.currentThread().getName() + " scanned " + count + " in " + (end - start) + "ms");
     }
   }
@@ -386,7 +390,7 @@ public class BigSortedMapTestMT {
     while (cycle++ < totalCycles) {
       totalLoaded.set(0);
       totalDeleted.set(0);
-      System.out.println("LOOP=" + cycle);
+      log.debug("LOOP=" + cycle);
       BigSortedMap map = new BigSortedMap((long) 1 * 1024 * 1024 * 1024);
 
       Worker[] workers = new Worker[totalThreads];
@@ -404,7 +408,7 @@ public class BigSortedMapTestMT {
         }
       }
 
-      System.out.println(
+      log.debug(
           "MEM="
               + BigSortedMap.getGlobalAllocatedMemory()
               + "\nDATA="
@@ -412,7 +416,7 @@ public class BigSortedMapTestMT {
               + "\nUTILIZATION="
               + (((double) BigSortedMap.getGlobalDataSize())
                   / BigSortedMap.getGlobalAllocatedMemory()));
-      System.out.println(
+      log.debug(
           "num threads="
               + totalThreads
               + " PUT="

@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.util;
 
 import static org.junit.Assert.assertEquals;
@@ -23,10 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestUtils {
+
+  private static final Logger log = LogManager.getLogger(TestUtils.class);
 
   public static byte[] greaterThan(byte[] arr) {
     byte[] buf = new byte[arr.length];
@@ -82,9 +86,9 @@ public class TestUtils {
   public void testDirectBufferAddress() {
     ByteBuffer buf = ByteBuffer.allocateDirect(16);
     long addr = UnsafeAccess.address(buf);
-    System.out.println("addr=" + addr);
+    log.debug("addr=" + addr);
     addr = UnsafeAccess.address(buf);
-    System.out.println("addr=" + addr);
+    log.debug("addr=" + addr);
     int N = 1000000;
     long[] ptrs = new long[N];
 
@@ -96,7 +100,7 @@ public class TestUtils {
       long end = System.nanoTime();
       total += (end - start);
     }
-    System.out.println("Time for " + N + " address() =" + total);
+    log.debug("Time for " + N + " address() =" + total);
   }
 
   @Test
@@ -139,7 +143,7 @@ public class TestUtils {
 
   @Test
   public void testDoubleConversions() {
-    System.out.println("testDoubleConversions");
+    log.debug("testDoubleConversions");
     long ptr = UnsafeAccess.malloc(30);
     int size = 30;
 
@@ -150,16 +154,16 @@ public class TestUtils {
       double d = r.nextDouble() - 0.5d;
       int len = Utils.doubleToStr(d, ptr, size);
       double dd = Utils.strToDouble(ptr, len);
-      System.out.println(d + " " + dd);
+      log.debug(d + " " + dd);
       total += dd;
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time =" + (end - start) + " total=" + total);
+    log.debug("Time =" + (end - start) + " total=" + total);
   }
 
   @Test
   public void testLongConversions() {
-    System.out.println("testLongConversions");
+    log.debug("testLongConversions");
     long ptr = UnsafeAccess.malloc(30);
     int size = 30;
 
@@ -174,12 +178,12 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time =" + (end - start) + " total=" + total);
+    log.debug("Time =" + (end - start) + " total=" + total);
   }
 
   @Test
   public void testLongConversionsBytes() {
-    System.out.println("testLongConversions byte arrays");
+    log.debug("testLongConversions byte arrays");
     byte[] buf = new byte[30];
 
     Random r = new Random();
@@ -193,12 +197,12 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time =" + (end - start) + " total=" + total);
+    log.debug("Time =" + (end - start) + " total=" + total);
   }
 
   @Test
   public void testLongConversionsBuffers() {
-    System.out.println("testLongConversions byte buffers");
+    log.debug("testLongConversions byte buffers");
     ByteBuffer buf = ByteBuffer.allocate(30);
 
     Random r = new Random();
@@ -212,7 +216,7 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time =" + (end - start) + " total=" + total);
+    log.debug("Time =" + (end - start) + " total=" + total);
   }
 
   @Test
@@ -293,7 +297,7 @@ public class TestUtils {
     Utils.sortKeys(list);
 
     for (Key k : list) {
-      System.out.println(Long.MAX_VALUE - UnsafeAccess.toLong(k.address));
+      log.debug(Long.MAX_VALUE - UnsafeAccess.toLong(k.address));
     }
   }
 
@@ -304,7 +308,7 @@ public class TestUtils {
     int count = 1000;
     while (max > count) {
       long[] arr = Utils.randomDistinctArray(max, count);
-      System.out.println("max=" + max + " count=" + count);
+      log.debug("max=" + max + " count=" + count);
       verifyUnique(arr);
       max >>>= 1;
     }

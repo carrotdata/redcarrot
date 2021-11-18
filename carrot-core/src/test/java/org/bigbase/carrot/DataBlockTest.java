@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Bytes;
@@ -34,14 +36,16 @@ import org.junit.Test;
 
 public class DataBlockTest extends DataBlockTestBase {
 
+  private static final Logger log = LogManager.getLogger(DataBlockTest.class);
+
   @Test
   public void testBlockPutGet() throws RetryOperationException {
-    System.out.println("testBlockPutGet");
+    log.debug("testBlockPutGet");
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
     Random r = new Random();
 
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
     int found = 0;
     long start = System.currentTimeMillis();
     int n = 1000000;
@@ -55,11 +59,10 @@ public class DataBlockTest extends DataBlockTestBase {
       if (off > 0) found++;
     }
     assertEquals(n, found);
-    System.out.println(
-        "Total found =" + found + " in " + (System.currentTimeMillis() - start) + "ms");
-    System.out.println("Rate = " + (1000d * found) / (System.currentTimeMillis() - start) + " RPS");
+    log.debug("Total found =" + found + " in " + (System.currentTimeMillis() - start) + "ms");
+    log.debug("Rate = " + (1000d * found) / (System.currentTimeMillis() - start) + " RPS");
     // b.free();
-    System.out.println("testBlockPutGet DONE");
+    log.debug("testBlockPutGet DONE");
   }
 
   byte[] key;
@@ -84,10 +87,10 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testBlockPutScan() throws RetryOperationException, IOException {
-    System.out.println("testBlockPutScan");
+    log.debug("testBlockPutScan");
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
     long start = System.currentTimeMillis();
 
     long buffer = UnsafeAccess.malloc(16384);
@@ -105,18 +108,18 @@ public class DataBlockTest extends DataBlockTestBase {
       bs.close();
     }
     // b.free();
-    System.out.println(
+    log.debug(
         "Rate = " + (1000d * N * keys.size()) / (System.currentTimeMillis() - start) + " RPS");
-    System.out.println("testBlockPutScan DONE");
+    log.debug("testBlockPutScan DONE");
   }
 
   @Test
   public void testBlockPutDelete() throws RetryOperationException {
-    System.out.println("testBlockPutDelete");
+    log.debug("testBlockPutDelete");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
 
     for (Key key : keys) {
       OpResult result = b.delete(key.address, key.length, Long.MAX_VALUE);
@@ -130,16 +133,16 @@ public class DataBlockTest extends DataBlockTestBase {
       assertEquals(DataBlock.NOT_FOUND, result);
     }
     // b.free();
-    System.out.println("testBlockPutDelete DONE");
+    log.debug("testBlockPutDelete DONE");
   }
 
   @Test
   public void testBlockSplit() throws RetryOperationException, IOException {
-    System.out.println("testBlockSplit");
+    log.debug("testBlockSplit");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
     int totalKVs = keys.size();
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
@@ -159,16 +162,16 @@ public class DataBlockTest extends DataBlockTestBase {
     scanAndVerify(b);
     // b.free();
     // bb.free();
-    System.out.println("testBlockSplit DONE");
+    log.debug("testBlockSplit DONE");
   }
 
   @Test
   public void testBlockMerge() throws RetryOperationException, IOException {
-    System.out.println("testBlockMerge");
+    log.debug("testBlockMerge");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
     int totalKVs = keys.size();
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
@@ -189,25 +192,25 @@ public class DataBlockTest extends DataBlockTestBase {
     assertEquals(totalDataSize, (int) b.getDataInBlockSize());
 
     scanAndVerify(b);
-    System.out.println("testBlockMerge after scanAndVerify");
+    log.debug("testBlockMerge after scanAndVerify");
 
     // b.free();
-    System.out.println("testBlockMerge FREE b");
+    log.debug("testBlockMerge FREE b");
 
     // TODO: fix this later
     //    bb.free();
-    System.out.println("testBlockMerge FREE bb");
+    log.debug("testBlockMerge FREE bb");
 
-    System.out.println("testBlockMerge DONE");
+    log.debug("testBlockMerge DONE");
   }
 
   @Test
   public void testCompactionFull() throws RetryOperationException {
-    System.out.println("testCompactionFull");
+    log.debug("testCompactionFull");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
 
     for (Key key : keys) {
       OpResult result = b.delete(key.address, key.length, Long.MAX_VALUE);
@@ -227,16 +230,16 @@ public class DataBlockTest extends DataBlockTestBase {
     // First key is a system key
     assertTrue(Bytes.compareTo(new byte[] {0}, b.getFirstKey()) == 0);
     // b.free();
-    System.out.println("testCompactionFull DONE");
+    log.debug("testCompactionFull DONE");
   }
 
   @Test
   public void testCompactionPartial() throws RetryOperationException {
-    System.out.println("testCompactionPartial");
+    log.debug("testCompactionPartial");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
 
     Random r = new Random();
     ArrayList<Key> deletedKeys = new ArrayList<Key>();
@@ -259,23 +262,23 @@ public class DataBlockTest extends DataBlockTestBase {
 
     assertEquals(keys.size() - deletedKeys.size() + 1, (int) b.getNumberOfRecords());
     // b.free();
-    System.out.println("testCompactionPartial DONE");
+    log.debug("testCompactionPartial DONE");
   }
 
   @Test
   public void testOrderedInsertion() throws RetryOperationException, IOException {
-    System.out.println("testOrderedInsertion");
+    log.debug("testOrderedInsertion");
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
-    System.out.println("Total inserted =" + keys.size());
+    log.debug("Total inserted =" + keys.size());
     scanAndVerify(b, keys);
     b.free();
-    System.out.println("testOrderedInsertion DONE");
+    log.debug("testOrderedInsertion DONE");
   }
 
   @Test
   public void testBlockPutAfterDelete() throws RetryOperationException {
-    System.out.println("testBlockPutAfterDelete");
+    log.debug("testBlockPutAfterDelete");
 
     DataBlock b = getDataBlock();
     ArrayList<Key> keys = fillDataBlock(b);
@@ -284,7 +287,7 @@ public class DataBlockTest extends DataBlockTestBase {
     int blockSize = b.getBlockSize();
     int avail = blockSize - dataSize - DataBlock.RECORD_TOTAL_OVERHEAD;
     if (avail >= blockSize / 2) {
-      System.out.println("Skip test");
+      log.debug("Skip test");
       return;
     } else if (avail < 0) {
       avail = 62;
@@ -329,7 +332,7 @@ public class DataBlockTest extends DataBlockTestBase {
   @Test
   public void testCompressionDecompression() throws RetryOperationException, IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    System.out.println("testCompression");
+    log.debug("testCompression");
 
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -341,7 +344,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testFirstKey() throws IOException {
-    System.out.println("testFirstKey");
+    log.debug("testFirstKey");
 
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -376,7 +379,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testOverwriteSameValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSameValueSize");
+    log.debug("testOverwriteSameValueSize");
     Random r = new Random();
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -399,7 +402,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteSmallerValueSize");
+    log.debug("testOverwriteSmallerValueSize");
     Random r = new Random();
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -422,7 +425,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteLargerValueSize");
+    log.debug("testOverwriteLargerValueSize");
     Random r = new Random();
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -452,7 +455,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
   @Test
   public void testOverwriteOnUpdateEnabled() throws RetryOperationException, IOException {
-    System.out.println("testOverwriteOnUpdateEnabled");
+    log.debug("testOverwriteOnUpdateEnabled");
 
     DataBlock b = getDataBlock();
     List<Key> keys = fillDataBlock(b);
@@ -525,7 +528,7 @@ public class DataBlockTest extends DataBlockTestBase {
         keys.add(new Key(ptr, keyLength));
       }
     }
-    System.out.println(
+    log.debug(
         "M: " + BigSortedMap.getGlobalAllocatedMemory() + " D:" + BigSortedMap.getGlobalDataSize());
     return keys;
   }

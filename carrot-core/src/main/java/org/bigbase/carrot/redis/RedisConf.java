@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.io.File;
@@ -18,12 +18,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 
 /** Class which keeps all the configuration parameters for Redis server */
 public class RedisConf {
+
+  private static final Logger log = LogManager.getLogger(RedisConf.class);
 
   public static final String CONF_REDIS_NODES = "redis.nodes";
 
@@ -303,7 +307,7 @@ public class RedisConf {
           sizes[i] = Integer.parseInt(parts[i]);
         } catch (NumberFormatException e) {
           // TODO logging
-          System.err.println("Can not parse configuration value '" + DATA_BLOCK_SIZES_KEY + "'");
+          log.error("Can not parse configuration value '" + DATA_BLOCK_SIZES_KEY + "'");
           return null;
         }
       }

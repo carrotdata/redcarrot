@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.lists;
 
 import static org.bigbase.carrot.redis.util.Commons.KEY_SIZE;
@@ -21,6 +21,8 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.redis.util.Commons;
@@ -38,6 +40,8 @@ import org.bigbase.carrot.util.Utils;
  * <p>Current limitation: Maximum list size is 2 ^31 ~ 2 billion elements
  */
 public class Lists {
+
+  private static final Logger log = LogManager.getLogger(Lists.class);
 
   public static enum Side {
     LEFT,
@@ -1233,10 +1237,9 @@ public class Lists {
 
   @SuppressWarnings("unused")
   private static void dumpListKey(long valueBuf) {
-    System.out.println("N=" + UnsafeAccess.toInt(valueBuf));
-    System.out.println("FIRST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT));
-    System.out.println(
-        "LAST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT + Utils.SIZEOF_LONG));
+    log.debug("N=" + UnsafeAccess.toInt(valueBuf));
+    log.debug("FIRST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT));
+    log.debug("LAST=" + UnsafeAccess.toLong(valueBuf + Utils.SIZEOF_INT + Utils.SIZEOF_LONG));
   }
 
   /**

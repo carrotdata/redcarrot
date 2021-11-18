@@ -16,6 +16,8 @@ package org.bigbase.carrot.redis;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.commands.RedisCommand;
 import org.bigbase.carrot.redis.commands.SHUTDOWN;
@@ -24,6 +26,8 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 
 public class CommandProcessor {
+
+  private static final Logger log = LogManager.getLogger(CommandProcessor.class);
 
   /*
    * Default memory buffer size for IO operations
@@ -122,7 +126,7 @@ public class CommandProcessor {
     cmd.executeCommand(storage, inbuf, outbuf, BUFFER_SIZE);
     executeTotal += System.nanoTime() - start;
     if (count % 10000 == 0) {
-      // System.out.println(" command exe avg=" + (executeTotal / (1000 * count)));
+      // log.debug(" command exe avg=" + (executeTotal / (1000 * count)));
     }
     if (cmd.autoconvertToRedis()) {
       // Convert response to Redis format

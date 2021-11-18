@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.ops;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.util.Key;
@@ -35,6 +37,8 @@ import org.junit.Test;
  * number of increments.
  */
 public class AtomicIncrementTestMT {
+
+  private static final Logger log = LogManager.getLogger(AtomicIncrementTestMT.class);
 
   static BigSortedMap map;
   static AtomicLong totalLoaded = new AtomicLong();
@@ -65,7 +69,7 @@ public class AtomicIncrementTestMT {
           try {
             map.incrementLongOp(k.address, k.length, 1);
           } catch (OperationFailedException e) {
-            System.err.println("Increment failed.");
+            log.error("Increment failed.");
             break;
           }
           totalIncrements.incrementAndGet();
@@ -82,7 +86,7 @@ public class AtomicIncrementTestMT {
             keys.add(k);
           }
           if (totalLoaded.get() % 1000000 == 0) {
-            System.out.println(
+            log.debug(
                 getName()
                     + " loaded = "
                     + totalLoaded
@@ -108,7 +112,7 @@ public class AtomicIncrementTestMT {
   @Test
   public void testIncrement() throws IOException {
     for (int k = 1; k <= 1; k++) {
-      System.out.println("Increment test run #" + k);
+      log.debug("Increment test run #" + k);
 
       BigSortedMap.setMaxBlockSize(4096);
       map = new BigSortedMap(10000000000L);
@@ -140,12 +144,12 @@ public class AtomicIncrementTestMT {
           total += UnsafeAccess.toLong(addr);
           scanner.next();
         }
-        System.out.println("totalLoaded=" + totalLoaded + " actual=" + count);
+        log.debug("totalLoaded=" + totalLoaded + " actual=" + count);
 
         assertEquals(totalIncrements.get(), total);
         // CHECK THIS
         assertEquals(keys.size(), (int) count);
-        System.out.println(
+        log.debug(
             "Time to load= "
                 + totalLoaded
                 + " and to increment ="
@@ -153,9 +157,9 @@ public class AtomicIncrementTestMT {
                 + "="
                 + (end - start)
                 + "ms");
-        System.out.println("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-        System.out.println("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-        System.out.println("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+        log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+        log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
+        log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
           map.dispose();

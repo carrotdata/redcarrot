@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis.zsets;
 
 import static org.bigbase.carrot.redis.util.Commons.KEY_SIZE;
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.HashScanner;
@@ -73,6 +75,8 @@ import org.bigbase.carrot.util.ValueScore;
  * optimizes small LIST, HASH, ZSET into ziplist representation.
  */
 public class ZSets {
+
+  private static final Logger log = LogManager.getLogger(ZSets.class);
 
   private static final int CARD_MEMBER_SIZE = 1; // just 0
 
@@ -431,7 +435,7 @@ public class ZSets {
       //      } else if (vsize > 0){
       //        //TODO - collision detected
       //        //PANIC
-      //        System.err.println("ZCARD collision detected");
+      //        log.error("ZCARD collision detected");
       //        Thread.dumpStack();
       //        System.exit(-1);
       //      }
@@ -467,7 +471,7 @@ public class ZSets {
   private static long ZSETCARD(BigSortedMap map, long keyPtr, int keySize, long card) {
     /*DEBUG*/
     //    if (card > 1000) {
-    //      System.err.println("ZSETCARD="+ card);
+    //      log.error("ZSETCARD="+ card);
     //    }
     //    //checkKeyArena(CARD_MEMBER_SIZE);
     //    // Build CARDINALITY member
@@ -621,7 +625,7 @@ public class ZSets {
 
   private static void dump(List<ValueScore> members) {
     for (ValueScore v : members) {
-      System.out.println(v.score + " : " + Utils.toHexString(v.address, v.length));
+      log.debug(v.score + " : " + Utils.toHexString(v.address, v.length));
     }
   }
   /**

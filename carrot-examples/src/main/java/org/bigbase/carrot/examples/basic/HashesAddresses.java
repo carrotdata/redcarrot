@@ -1,21 +1,23 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.basic;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
@@ -64,6 +66,8 @@ import org.bigbase.carrot.util.Utils;
  */
 public class HashesAddresses {
 
+  private static final Logger log = LogManager.getLogger(HashesAddresses.class);
+
   static {
     UnsafeAccess.debug = true;
   }
@@ -80,13 +84,13 @@ public class HashesAddresses {
 
     addressList = Address.loadFromFile(args[0]);
 
-    System.out.println("RUN compression = NONE");
+    log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
-    System.out.println("RUN compression = LZ4");
+    log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    System.out.println("RUN compression = LZ4HC");
+    log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
   }
@@ -114,19 +118,19 @@ public class HashesAddresses {
 
       int num = Hashes.HSET(map, keyBuf, keySize, list);
       if (num != list.size()) {
-        System.err.println("ERROR in HSET");
+        log.error("ERROR in HSET");
         System.exit(-1);
       }
 
       if (count % 10000 == 0) {
-        System.out.println("set " + count);
+        log.debug("set " + count);
       }
 
       list.forEach(x -> x.free());
     }
     long endTime = System.currentTimeMillis();
 
-    System.out.println(
+    log.debug(
         "Loaded "
             + addressList.size()
             + " user address objects, total size="

@@ -1,25 +1,29 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.compression.lz4;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.common.nativelib.LibLoader;
 
 @SuppressWarnings("unused")
 public class LZ4 {
+
+  private static final Logger log = LogManager.getLogger(LZ4.class);
 
   static {
     LibLoader.loadNativeLibrary("lz4");
@@ -140,17 +144,17 @@ public class LZ4 {
     src.limit(pos);
 
     int compressedSize = compressHC(src, dst, 1);
-    System.out.println("Original size=" + value.length() + " comp size=" + compressedSize);
+    log.debug("Original size=" + value.length() + " comp size=" + compressedSize);
 
     for (int i = 0; i < compressedSize; i++) {
       System.out.print(dst.get(DST + i) + " ");
     }
-    System.out.println();
+    log.debug("");
     src.position(SRC);
     dst.position(DST);
     dst.limit(DST + compressedSize);
     src.limit(src.capacity());
-    System.out.println(
+    log.debug(
         "src.pos="
             + dst.position()
             + " size="
@@ -165,8 +169,8 @@ public class LZ4 {
     src.position(SRC);
     src.get(v);
     String newValue = new String(v);
-    System.out.println(value);
-    System.out.println(newValue);
-    System.out.println(newValue.equals(value));
+    log.debug(value);
+    log.debug(newValue);
+    log.debug(newValue.equals(value));
   }
 }

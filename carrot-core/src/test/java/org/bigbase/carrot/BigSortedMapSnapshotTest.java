@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -26,6 +28,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class BigSortedMapSnapshotTest {
+
+  private static final Logger log = LogManager.getLogger(BigSortedMapSnapshotTest.class);
 
   BigSortedMap map;
   long totalLoaded;
@@ -190,27 +194,27 @@ public class BigSortedMapSnapshotTest {
       totalLoaded++;
       load(totalLoaded);
       if (totalLoaded % 1000000 == 0) {
-        System.out.println("Loaded " + totalLoaded);
+        log.debug("Loaded " + totalLoaded);
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
     long scanned = countRecords();
     start = System.currentTimeMillis();
-    System.out.println("Scanned=" + scanned + " in " + (start - end) + "ms");
-    System.out.println("\nTotal memory       =" + BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println("Total   data       =" + BigSortedMap.getGlobalDataSize());
-    System.out.println("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
-    System.out.println(
+    log.debug("Scanned=" + scanned + " in " + (start - end) + "ms");
+    log.debug("\nTotal memory       =" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data       =" + BigSortedMap.getGlobalDataSize());
+    log.debug("Compressed size    =" + BigSortedMap.getGlobalCompressedDataSize());
+    log.debug(
         "Compression  ratio ="
             + ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
-    System.out.println();
+    log.debug("");
     assertEquals(totalLoaded, scanned);
   }
 
   private void tearDown() {
     map.dispose();
-    System.out.println("Memory stat after teardown:");
+    log.debug("Memory stat after teardown:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats();
   }
@@ -229,7 +233,7 @@ public class BigSortedMapSnapshotTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* " + i + " ********** Codec = NONE\n");
       allTests();
       UnsafeAccess.mallocStats();
     }
@@ -240,7 +244,7 @@ public class BigSortedMapSnapshotTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
       allTests();
       UnsafeAccess.mallocStats();
     }
@@ -251,7 +255,7 @@ public class BigSortedMapSnapshotTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      System.out.println("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
       allTests();
       UnsafeAccess.mallocStats();
     }
@@ -260,16 +264,16 @@ public class BigSortedMapSnapshotTest {
   @Ignore
   @Test
   public void testSnapshotNoExternalNoCustomAllocations() throws IOException {
-    System.out.println("\nTestSnapshotNoExteranlNoCustomAllocations");
+    log.debug("\nTestSnapshotNoExteranlNoCustomAllocations");
     long start = System.currentTimeMillis();
     map.snapshot();
     long end = System.currentTimeMillis();
-    System.out.println("snapshot create=" + (end - start) + "ms");
-    /*DEBUG*/ System.out.println("\nAfter snapshot:");
+    log.debug("snapshot create=" + (end - start) + "ms");
+    /*DEBUG*/ log.debug("\nAfter snapshot:");
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     map.dispose();
-    /*DEBUG*/ System.out.println("\nAfter dispose:");
+    /*DEBUG*/ log.debug("\nAfter dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     start = System.currentTimeMillis();
@@ -287,27 +291,27 @@ public class BigSortedMapSnapshotTest {
     map.syncStatsToGlobal();
 
     end = System.currentTimeMillis();
-    System.out.println("snapshot load=" + (end - start) + "ms");
-    /*DEBUG*/ System.out.println("\nAfter load:");
+    log.debug("snapshot load=" + (end - start) + "ms");
+    /*DEBUG*/ log.debug("\nAfter load:");
     map.printMemoryAllocationStats();
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     start = System.currentTimeMillis();
     long records = countRecords();
     end = System.currentTimeMillis();
-    System.out.println("Scanned " + records + " in " + (end - start) + "ms");
+    log.debug("Scanned " + records + " in " + (end - start) + "ms");
     assertEquals(totalLoaded, records);
 
     start = System.currentTimeMillis();
     verifyRecords();
     end = System.currentTimeMillis();
-    System.out.println("Verified " + records + " in " + (end - start) + "ms");
+    log.debug("Verified " + records + " in " + (end - start) + "ms");
   }
 
   @Ignore
   @Test
   public void testSnapshotWithExternalNoCustomAllocations() throws IOException {
-    System.out.println("\nTestSnapshotWithExternalNoCustomAllocations");
+    log.debug("\nTestSnapshotWithExternalNoCustomAllocations");
     int extValueLoaded = Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows are with external value
     int extKeyValueLoaded =
         Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows with external key-value
@@ -320,13 +324,13 @@ public class BigSortedMapSnapshotTest {
     long start = System.currentTimeMillis();
     map.snapshot();
     long end = System.currentTimeMillis();
-    System.out.println("snapshot create=" + (end - start) + "ms");
-    /*DEBUG*/ System.out.println("\nAfter snapshot:");
+    log.debug("snapshot create=" + (end - start) + "ms");
+    /*DEBUG*/ log.debug("\nAfter snapshot:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
     map.dispose();
-    /*DEBUG*/ System.out.println("\nAfter dispose:");
+    /*DEBUG*/ log.debug("\nAfter dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
@@ -343,14 +347,14 @@ public class BigSortedMapSnapshotTest {
     map.syncStatsToGlobal();
 
     end = System.currentTimeMillis();
-    System.out.println("snapshot load=" + (end - start) + "ms");
-    /*DEBUG*/ System.out.println("\nAfter load:");
+    log.debug("snapshot load=" + (end - start) + "ms");
+    /*DEBUG*/ log.debug("\nAfter load:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
     start = System.currentTimeMillis();
     long records = countRecords();
     end = System.currentTimeMillis();
-    System.out.println("Scanned " + records + " in " + (end - start) + "ms");
+    log.debug("Scanned " + records + " in " + (end - start) + "ms");
     assertEquals(totalLoaded + extraLoaded, records);
 
     start = System.currentTimeMillis();
@@ -358,6 +362,6 @@ public class BigSortedMapSnapshotTest {
     verifyExtValueRecords(extValueLoaded);
     verifyExtKeyValueRecords(extKeyValueLoaded);
     end = System.currentTimeMillis();
-    System.out.println("Verified " + records + " in " + (end - start) + "ms");
+    log.debug("Verified " + records + " in " + (end - start) + "ms");
   }
 }

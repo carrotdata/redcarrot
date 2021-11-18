@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot;
 
 import java.io.IOException;
@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
@@ -28,10 +30,9 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /**
- * TODO: <br> 
+ * TODO: <br>
  * 1. minimize block overhead <br>
- * 2. Check logic 3. Do not keep address, but index in a array of
- * addresses (?) <br>
+ * 2. Check logic 3. Do not keep address, but index in a array of addresses (?) <br>
  *
  * <p>Records are sorted Format: [DATA_BLOCK_STATIC_PREFIX][BLOCK_START_KEY]
  *
@@ -43,13 +44,15 @@ import org.bigbase.carrot.util.Utils;
  * numRecords (2 bytes) <br>
  * seqNumberSplitOrMerge (1 byte) - no need for single thread version <br>
  * aux (1 byte) <br>
- * numExternalAllocs (2 bytes) <br> 
+ * numExternalAllocs (2 bytes) <br>
  * numCustomAllocs (2 bytes) <br>
  *
  * <p>[BLOCK_START_KEY] = [len][key] [len] - 2 bytes [key] - key data [version] - 8 bytes [type] - 1
  * byte (DELETE=0, PUT =1)
  */
 public final class IndexBlock implements Comparable<IndexBlock> {
+
+  private static final Logger log = LogManager.getLogger(IndexBlock.class);
 
   public static final int KEY_SIZE_LENGTH = 2;
   public static final long NOT_FOUND = -1L;
@@ -772,7 +775,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
   protected void dumpIndexBlock() {
     int count = 0;
     long ptr = dataPtr;
-    System.out.println("Dump index block: numDataBlocks=" + numDataBlocks);
+    log.debug("Dump index block: numDataBlocks=" + numDataBlocks);
     while (count++ < numDataBlocks) {
       int klen = keyLength(ptr);
       long keyAddress = keyAddress(ptr);
@@ -780,18 +783,18 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       UnsafeAccess.copy(keyAddress, buf, 0, klen);
       String key = Bytes.toString(buf);
       // key = key.substring(0, Math.min(16, key.length()));
-      System.out.println(count + " : HEX=" + Bytes.toHex(buf) + " key=" + key + " len=" + klen);
+      log.debug(count + " : HEX=" + Bytes.toHex(buf) + " key=" + key + " len=" + klen);
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      System.out.println("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
     }
   }
 
   void dumpFirstBlock() {
     DataBlock b = block.get();
     b.set(this, 0);
-    /*DEBUG*/ System.out.println("COMPRESSED=" + b.isCompressed());
+    /*DEBUG*/ log.debug("COMPRESSED=" + b.isCompressed());
     b.decompressDataBlockIfNeeded();
     b.dump();
     b.compressDataBlockIfNeeded();
@@ -800,7 +803,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
   void dumpIndexBlockExt() {
     int count = 0;
     long ptr = dataPtr;
-    System.out.println(
+    log.debug(
         "Dump index block: numDataBlocks="
             + numDataBlocks
             + " dataInIndexSize="
@@ -817,18 +820,18 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      System.out.println("FATAL: (ptr - dataPtr - dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr - dataSize)=" + (ptr - dataPtr - blockDataSize));
     }
   }
 
   void dumpIndexBlockMeta() {
     int count = 0;
     long ptr = dataPtr;
-    System.out.println("Dump index block META: numDataBlocks=" + numDataBlocks);
+    log.debug("Dump index block META: numDataBlocks=" + numDataBlocks);
     while (count++ < numDataBlocks) {
       DataBlock b = block.get();
       b.set(this, ptr - dataPtr);
-      System.out.println(
+      log.debug(
           "BLOCK #"
               + count
               + " ptr="
@@ -840,7 +843,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      System.out.println("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
+      log.debug("FATAL: (ptr - dataPtr -dataSize)=" + (ptr - dataPtr - blockDataSize));
     }
   }
 
@@ -2060,13 +2063,12 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     byte[] first = getFirstKey();
     long lastRecordAddress = lastRecordAddress();
     if (lastRecordAddress == NOT_FOUND) {
-      System.out.println("First key=" + Bytes.toHex(first) + "\nLast key = null");
+      log.debug("First key=" + Bytes.toHex(first) + "\nLast key = null");
       return;
     }
     long lastPtr = DataBlock.keyAddress(lastRecordAddress);
     int lastSize = DataBlock.keyLength(lastRecordAddress);
-    System.out.println(
-        "First key=" + Bytes.toHex(first) + "\nLast key =" + Bytes.toHex(lastPtr, lastSize));
+    log.debug("First key=" + Bytes.toHex(first) + "\nLast key =" + Bytes.toHex(lastPtr, lastSize));
   }
   /**
    * Get last K-V record address in this index
