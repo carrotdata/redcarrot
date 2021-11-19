@@ -147,7 +147,7 @@ public class LZ4 {
     log.debug("Original size={} comp size={}", value.length(), compressedSize);
 
     for (int i = 0; i < compressedSize; i++) {
-      System.out.print(dst.get(DST + i) + " ");
+      log.debug("{} ", dst.get(DST + i));
     }
     log.debug("");
     src.position(SRC);

@@ -93,7 +93,7 @@ public class RedisStringsAtomicCounters {
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug("Deleted " + N + " counters" + " in " + (endTime - startTime));
+    log.debug("Deleted {} counters in {}ms", N, endTime - startTime);
   }
 
   private static int nextScoreSkewed(Random r) {

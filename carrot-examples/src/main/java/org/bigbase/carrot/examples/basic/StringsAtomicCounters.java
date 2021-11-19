@@ -114,7 +114,7 @@ public class StringsAtomicCounters {
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded {} long counters of avg size={} each in {}ms/ RAM usage={}",
+        "Loaded {} long counters of avg size={} each in {}ms. RAM usage={}",
         keys.size(),
         keyTotalSize / N + 8,
         endTime - startTime,
@@ -144,7 +144,7 @@ public class StringsAtomicCounters {
 //        "Loaded {} double counters of avg size={} each in {}ms. RAM usage={}",
 //        keys.size(),
 //        +(keyTotalSize / N + 8),
-//        +endTime - startTime,
+//        endTime - startTime,
 //        UnsafeAccess.getAllocatedMemory() - keyTotalSize);
     BigSortedMap.printGlobalMemoryAllocationStats();
 

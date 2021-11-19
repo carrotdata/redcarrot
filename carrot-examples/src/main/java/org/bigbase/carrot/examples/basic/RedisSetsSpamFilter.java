@@ -110,7 +110,7 @@ public class RedisSetsSpamFilter {
         "Loaded {} records, total size={} in {}ms.",
         count * keys.length,
         totalLength,
-        +endTime - startTime);
+        endTime - startTime);
     dis.close();
 
     log.debug("Press any key ...");

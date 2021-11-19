@@ -73,7 +73,7 @@ public class RedisSparseBitmapsComparison {
 
     log.debug(
         "Time for {} population dencity={} bitmap size={} new SetBit={}ms",
-        +N,
+        N,
         dencity,
         MAX,
         end - start);

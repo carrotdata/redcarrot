@@ -288,7 +288,7 @@ public class CarrotVsRedisDemo {
         loaded.get() / SET_SIZE,
         SET_SIZE,
         end - start,
-        +loaded.get() * 1000 / (end - start));
+        loaded.get() * 1000 / (end - start));
   }
 
   private static void runClusterSismemberCycle() {
@@ -358,7 +358,7 @@ public class CarrotVsRedisDemo {
     log.debug(
         "Finished {} hset x ({}) in {}ms/ RPS={}",
         loaded.get() / SET_SIZE,
-        +SET_SIZE,
+        SET_SIZE,
         end - start,
         loaded.get() * 1000 / (end - start));
   }

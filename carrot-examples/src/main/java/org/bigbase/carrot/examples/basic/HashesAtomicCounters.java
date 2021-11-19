@@ -170,9 +170,9 @@ public class HashesAtomicCounters {
     endTime = System.currentTimeMillis();
     log.debug(
         "Loaded {} float counters of avg size={} each in {}ms.",
-        +keys.size(),
-        +(keyTotalSize / N + 8),
-        +endTime - startTime);
+        keys.size(),
+        (keyTotalSize / N + 8),
+        endTime - startTime);
     // Delete keys
     count = 0;
     log.debug("Deleting keys ...");
