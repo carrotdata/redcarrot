@@ -74,7 +74,7 @@ public class TestRedisAppStats {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Loaded {} {}nms. Press any button ...", hoursToKeep, end - start);
+    log.debug("Loaded {} {}ms. Press any button ...", hoursToKeep, end - start);
     start = System.currentTimeMillis();
     client.save();
     end = System.currentTimeMillis();
