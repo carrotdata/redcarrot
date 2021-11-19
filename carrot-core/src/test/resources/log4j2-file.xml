@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration status="info">
+
+    <properties>
+        <property name="JUNIT_FILE" value="./logs/carrot-core-junit.log"/>
+    </properties>
+
+    <appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
+        </Console>
+
+        <RollingRandomAccessFile name="APP_SIZE_APPENDER" fileName="${JUNIT_FILE}"
+                                 filePattern="${JUNIT_FILE}.%d{yyyy-MM-dd}.%i.gz">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+    </appenders>
+
+    <Loggers>
+        <Logger level="DEBUG" name="org.bigbase" additivity="false">
+            <AppenderRef ref="APP_SIZE_APPENDER"/>
+        </Logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+
+</configuration>
