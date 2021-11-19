@@ -22,10 +22,6 @@
         <Logger level="DEBUG" name="org.bigbase">
             <appender-ref ref="APP_SIZE_APPENDER"/>
         </Logger>
-
-        <Root level="INFO">
-            <appender-ref ref="APP_SIZE_APPENDER"/>
-        </Root>
     </Loggers>
 
 </configuration>
