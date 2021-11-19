@@ -13,8 +13,6 @@
 */
 package org.bigbase.carrot.redis.sets;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +39,8 @@ import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class SetsTest {
 
@@ -127,7 +127,7 @@ public class SetsTest {
       assertEquals(1, result);
     }
     List<byte[]> members = Sets.SMEMBERS(map, key.address, key.length, values.size() * valSize * 2);
-    assert members != null;
+    assertNotNull(members);
     for (byte[] v : members) {
       log.debug("{}", Bytes.toHex(v));
     }

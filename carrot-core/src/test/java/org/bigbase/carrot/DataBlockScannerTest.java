@@ -13,9 +13,6 @@
 */
 package org.bigbase.carrot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +28,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class DataBlockScannerTest {
 
@@ -52,7 +51,7 @@ public class DataBlockScannerTest {
     loadedKeyDebug(keys.size());
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -72,7 +71,7 @@ public class DataBlockScannerTest {
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -106,7 +105,7 @@ public class DataBlockScannerTest {
     ib.decompressDataBlockIfNeeded();
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.last();
     verifyScannerReverse(scanner, keys);
     scanner.close();
@@ -124,7 +123,7 @@ public class DataBlockScannerTest {
     loadedKeyDebug(keys.size());
     DataBlockScanner scanner = DataBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip first system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.last();
     verifyScannerReverse(scanner, keys);
     scanner.close();
@@ -152,7 +151,7 @@ public class DataBlockScannerTest {
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE);
     // Skip first system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.next();
     verifyScanner(scanner, keys);
     scanner.close();
@@ -206,7 +205,7 @@ public class DataBlockScannerTest {
     log.debug("Selected {} kvs", keys.size());
     DataBlockScanner scanner =
         DataBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
-    assert scanner != null;
+    assertNotNull(scanner);
     verifyScanner(scanner, keys);
     scanner.close();
     dispose(keys);

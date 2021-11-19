@@ -294,7 +294,7 @@ public class HashScannerTest {
     HashScanner scanner =
         Hashes.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, false);
-    assert scanner != null;
+    assertNotNull(scanner);
     assertFalse(scanner.hasNext());
     scanner.close();
 
@@ -308,7 +308,7 @@ public class HashScannerTest {
     scanner =
         Hashes.getScanner(
             map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, false);
-    assert scanner != null;
+    assertNotNull(scanner);
     assertFalse(scanner.hasNext());
     scanner.close();
 
@@ -332,12 +332,12 @@ public class HashScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.keyPtr, v.keySize, false, false);
 
     if (expected == 0) {
-      assert scanner != null;
+      assertNotNull(scanner);
       assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.close();
 
     // Reverse
@@ -349,7 +349,7 @@ public class HashScannerTest {
       assertNull(scanner);
     } else {
       assertEquals(expected, Utils.countReverse(scanner));
-      assert scanner != null;
+      assertNotNull(scanner);
       scanner.close();
     }
     // Always close ALL scanners
@@ -363,12 +363,12 @@ public class HashScannerTest {
             map, key.address, key.length, v.keyPtr, v.keySize, mptr2, mptrSize2, false, false);
 
     if (expected == 0) {
-      assert scanner != null;
+      assertNotNull(scanner);
       assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.close();
 
     // Reverse
@@ -380,7 +380,7 @@ public class HashScannerTest {
       assertNull(scanner);
     } else {
       assertEquals(expected, Utils.countReverse(scanner));
-      assert scanner != null;
+      assertNotNull(scanner);
       scanner.close();
     }
 
@@ -947,7 +947,7 @@ public class HashScannerTest {
 
     start = System.currentTimeMillis();
     long count = 0;
-    assert scanner != null;
+    assertNotNull(scanner);
     while (scanner.hasNext()) {
       count++;
       scanner.next();

@@ -95,7 +95,7 @@ public class DataBlockTest extends DataBlockTestBase {
     for (int i = 0; i < N; i++) {
       DataBlockScanner bs = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
       int count = 0;
-      assert bs != null;
+      assertNotNull(bs);
       while (bs.hasNext()) {
         bs.keyValue(buffer, 0);
         bs.next();
@@ -145,7 +145,7 @@ public class DataBlockTest extends DataBlockTestBase {
     DataBlock bb = b.split(true);
 
     IndexBlock ib = new IndexBlock(null, 4096);
-    assert bb != null;
+    assertNotNull(bb);
     bb.register(ib, 0);
 
     assertEquals(totalKVs + 1, (int) bb.getNumberOfRecords() + b.getNumberOfRecords());
@@ -174,7 +174,7 @@ public class DataBlockTest extends DataBlockTestBase {
     int totalDataSize = b.getDataInBlockSize();
     DataBlock bb = b.split(true);
     IndexBlock ib = new IndexBlock(null, 4096);
-    assert bb != null;
+    assertNotNull(ib);
     bb.register(ib, 0);
 
     // +1 is system key in a first block
@@ -351,12 +351,12 @@ public class DataBlockTest extends DataBlockTestBase {
     scanAndVerify(b, keys);
 
     DataBlockScanner scanner = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
-    assert scanner != null;
+    assertNotNull(scanner);
     int keySize = scanner.keySize();
     byte[] key = new byte[keySize];
     scanner.key(key, 0);
     byte[] kkey = b.getFirstKey();
-    assert kkey != null;
+    assertNotNull(kkey);
     assertEquals(0, Utils.compareTo(key, 0, key.length, kkey, 0, kkey.length));
     // Close scanner - this will release read lock on a block
     scanner.close();
@@ -368,7 +368,7 @@ public class DataBlockTest extends DataBlockTestBase {
     assertEquals(OpResult.NOT_FOUND, res);
     scanner = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
     // Skip system key
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.next();
     keySize = scanner.keySize();
     addr = UnsafeAccess.malloc(keySize);
@@ -543,7 +543,7 @@ public class DataBlockTest extends DataBlockTestBase {
     int count = 0;
     int prevKeySize = 0;
     // skip first system key-value
-    assert bs != null;
+    assertNotNull(bs);
     bs.next();
     while (bs.hasNext()) {
       int keySize = bs.keySize();

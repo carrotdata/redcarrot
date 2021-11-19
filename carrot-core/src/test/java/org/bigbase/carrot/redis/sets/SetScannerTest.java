@@ -292,7 +292,7 @@ public class SetScannerTest {
     SetScanner scanner =
         Sets.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, false);
-    assert scanner != null;
+    assertNotNull(scanner);
     assertFalse(scanner.hasNext());
     scanner.close();
 
@@ -336,12 +336,12 @@ public class SetScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.address, v.length, false, false);
 
     if (expected == 0) {
-      assert scanner != null;
+      assertNotNull(scanner);
       assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
-    assert scanner != null;
+    assertNotNull(scanner);
     scanner.close();
 
     // log.debug("Result:");
