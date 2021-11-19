@@ -19,11 +19,11 @@
     </appenders>
 
     <Loggers>
-        <Logger level="DEBUG" name="org.bigbase">
+        <Logger level="DEBUG" name="org.bigbase" additivity="false">
             <appender-ref ref="APP_SIZE_APPENDER"/>
         </Logger>
 
-        <Root level="INFO">
+        <Root level="ERROR">
             <appender-ref ref="APP_SIZE_APPENDER"/>
         </Root>
     </Loggers>
