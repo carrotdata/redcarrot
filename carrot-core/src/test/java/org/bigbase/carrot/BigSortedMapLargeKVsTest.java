@@ -64,19 +64,19 @@ public class BigSortedMapLargeKVsTest {
     List<Key> deleted = delete((int) totalLoaded / 5);
     keys.removeAll(deleted);
     // Update total loaded
-    log.debug("Adjusted size by " + deleted.size() + " keys");
+    log.debug("Adjusted size by {} keys", deleted.size());
     totalLoaded -= deleted.size();
     deallocate(deleted);
     long end = System.currentTimeMillis();
-    log.debug("Time to load= " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to load= {} = {}ms", totalLoaded, end - start);
     verifyGets(keys);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long scanned = verifyScanner(scanner, keys);
     scanner.close();
-    log.debug("Scanned=" + scanned);
-    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-    log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+    log.debug("Scanned={}", scanned);
+    log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
+    log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());
     assertEquals(totalLoaded, scanned);
   }
 
@@ -99,7 +99,7 @@ public class BigSortedMapLargeKVsTest {
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = NONE\n");
+      log.debug("\n********* {} ********** Codec = NONE\n", i);
       setUp();
       allTests();
       tearDown();
@@ -113,7 +113,7 @@ public class BigSortedMapLargeKVsTest {
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4\n");
+      log.debug("\n********* {} ********** Codec = LZ4\n", i);
       setUp();
       allTests();
       tearDown();
@@ -127,7 +127,7 @@ public class BigSortedMapLargeKVsTest {
   public void runAllCompressionLZ4HC() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     for (int i = 0; i < 1; i++) {
-      log.debug("\n********* " + i + " ********** Codec = LZ4HC\n");
+      log.debug("\n********* {}} ********** Codec = LZ4HC\n", i);
       setUp();
       allTests();
       tearDown();
@@ -170,7 +170,7 @@ public class BigSortedMapLargeKVsTest {
       try {
         long size = map.get(key.address, key.length, valPtr, key.length, Long.MAX_VALUE);
         assertEquals(key.length, (int) size);
-        assertTrue(Utils.compareTo(key.address, key.length, valPtr, (int) size) == 0);
+        assertEquals(0, Utils.compareTo(key.address, key.length, valPtr, (int) size));
       } catch (Throwable t) {
         throw t;
       } finally {
@@ -178,7 +178,7 @@ public class BigSortedMapLargeKVsTest {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Time to get " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to get {} ={}ms", totalLoaded, end - start);
   }
 
   @Ignore
@@ -192,11 +192,12 @@ public class BigSortedMapLargeKVsTest {
         boolean result = map.exists(key.address, key.length);
         assertTrue(result);
       } catch (Throwable t) {
+        log.error("StackTrace: ", t);
         throw t;
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("Time to exist " + totalLoaded + " =" + (end - start) + "ms");
+    log.debug("Time to exist {} ={}ms", totalLoaded, end - start);
   }
 
   @Ignore
@@ -224,7 +225,7 @@ public class BigSortedMapLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(keys.size(), (int) count);
     scanner.close();
   }
@@ -254,7 +255,7 @@ public class BigSortedMapLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(keys.size(), (int) count);
     scanner.close();
   }
@@ -309,7 +310,7 @@ public class BigSortedMapLargeKVsTest {
       UnsafeAccess.free(prev);
     }
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     return count;
   }
 
@@ -321,7 +322,7 @@ public class BigSortedMapLargeKVsTest {
     long seed = 5442916859658824595L; // r.nextLong();
     r.setSeed(seed);
     int toDelete = r.nextInt((int) totalLoaded);
-    log.debug("testFullMapScannerWithDeletes SEED=" + seed + " toDelete=" + toDelete);
+    log.debug("testFullMapScannerWithDeletes SEED={} toDelete={}", seed, toDelete);
     List<Key> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
@@ -347,7 +348,7 @@ public class BigSortedMapLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(totalLoaded - toDelete, count);
     scanner.close();
     undelete(deletedKeys);
@@ -361,7 +362,7 @@ public class BigSortedMapLargeKVsTest {
     long seed = r.nextLong();
     r.setSeed(seed);
     int toDelete = r.nextInt((int) totalLoaded);
-    log.debug("testDirectMemoryFullMapScannerWithDeletes SEED=" + seed + " toDelete=" + toDelete);
+    log.debug("testDirectMemoryFullMapScannerWithDeletes SEED={} toDelete={}", seed, toDelete);
     List<Key> deletedKeys = delete(toDelete);
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
@@ -387,7 +388,7 @@ public class BigSortedMapLargeKVsTest {
     }
 
     long end = System.currentTimeMillis();
-    log.debug("Scanned " + count + " in " + (end - start) + "ms");
+    log.debug("Scanned {} in {}ms", count, end - start);
     assertEquals(totalLoaded - toDelete, count);
     scanner.close();
     undelete(deletedKeys);
@@ -415,14 +416,12 @@ public class BigSortedMapLargeKVsTest {
     for (Key key : keys) {
       count++;
       boolean res = map.put(key.address, key.length, key.address, key.length, 0);
-      if (res == false) {
+      if (!res) {
         log.debug(
-            "Count = "
-                + count
-                + " total="
-                + keys.size()
-                + " memory ="
-                + BigSortedMap.getGlobalAllocatedMemory());
+            "Count = {} total={} memory ={}",
+            count,
+            keys.size(),
+            BigSortedMap.getGlobalAllocatedMemory());
       }
       assertTrue(res);
     }
@@ -432,7 +431,7 @@ public class BigSortedMapLargeKVsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Delete seed =" + seed);
+    log.debug("Delete seed ={}", seed);
     int numDeleted = 0;
     long valPtr = UnsafeAccess.malloc(1);
     List<Key> list = new ArrayList<Key>();
@@ -452,7 +451,7 @@ public class BigSortedMapLargeKVsTest {
       }
     }
     UnsafeAccess.free(valPtr);
-    log.debug("Deleted=" + numDeleted + " collisions=" + collisions);
+    log.debug("Deleted={} collisions={}", numDeleted, collisions);
     return list;
   }
 
@@ -474,21 +473,16 @@ public class BigSortedMapLargeKVsTest {
       int keySize = scanner.keySize();
       if (keySize != keys.get(counter + delta).length) {
         log.debug(
-            "counter="
-                + counter
-                + " expected key size="
-                + keys.get(counter).length
-                + " found="
-                + keySize);
+            "counter={} expected key size={} found={}", counter, keys.get(counter).length, keySize);
         delta++;
       }
       long buf = UnsafeAccess.malloc(keySize);
       Key key = keys.get(counter + delta);
       scanner.key(buf, keySize);
-      assertTrue(Utils.compareTo(buf, keySize, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, keySize, key.address, key.length));
       int size = scanner.value(buf, keySize);
       assertEquals(keySize, size);
-      assertTrue(Utils.compareTo(buf, keySize, key.address, key.length) == 0);
+      assertEquals(0, Utils.compareTo(buf, keySize, key.address, key.length));
 
       UnsafeAccess.free(buf);
       scanner.next();
@@ -502,7 +496,7 @@ public class BigSortedMapLargeKVsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("FILL SEED=" + seed);
+    log.debug("FILL SEED={}", seed);
     int maxSize = 2048;
     boolean result = true;
     long total = 0;
@@ -515,7 +509,7 @@ public class BigSortedMapLargeKVsTest {
       long keyPtr = UnsafeAccess.malloc(len);
       UnsafeAccess.copy(key, 0, keyPtr, len);
       result = map.put(keyPtr, len, keyPtr, len, 0);
-      total += 2 * len;
+      total += 2L * len;
       if (result) {
         keys.add(new Key(keyPtr, len));
       } else {
@@ -524,12 +518,10 @@ public class BigSortedMapLargeKVsTest {
       }
     }
     log.debug(
-        "Loaded "
-            + keys.size()
-            + " records, size="
-            + total
-            + " limit="
-            + BigSortedMap.getGlobalMemoryLimit());
+        "Loaded {} records, size={} limit={}",
+        keys.size(),
+        total,
+        BigSortedMap.getGlobalMemoryLimit());
     return keys;
   }
 }

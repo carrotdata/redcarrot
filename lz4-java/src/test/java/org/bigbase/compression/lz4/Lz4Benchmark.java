@@ -45,7 +45,7 @@ public class Lz4Benchmark {
                       f.setAccessible(true);
                       return f.get(null);
                     } catch (Throwable e) {
-                      log.error("sun.misc.Unsafe is not accessible: " + e.getMessage());
+                      log.error("sun.misc.Unsafe is not accessible: ", e);
                     }
                     return null;
                   }
@@ -60,15 +60,15 @@ public class Lz4Benchmark {
     fillBlocks(address);
     long buf = unsafe.allocateMemory(blockSize);
     for (int k = 0; k < 10; k++) {
-      log.debug("iteration " + (k + 1));
+      log.debug("iteration {}", k + 1);
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < numBlocks; i++) {
-        long src = address + i * blockSize;
+        long src = address + (long) i * blockSize;
         int r = LZ4.compressDirectAddress(src, blockSize, buf, blockSize);
         int size = LZ4.decompressDirectAddress(buf, r, src, blockSize);
       }
       long endTime = System.currentTimeMillis();
-      log.debug(numBlocks * 1000 / (endTime - startTime) + " block comp/decomp per sec");
+      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / endTime - startTime);
     }
     unsafe.freeMemory(address);
     unsafe.freeMemory(buf);
@@ -82,16 +82,16 @@ public class Lz4Benchmark {
     fillBlocks(address);
     long buf = unsafe.allocateMemory(blockSize);
     for (int k = 0; k < 10; k++) {
-      log.debug("iteration " + (k + 1));
+      log.debug("iteration {}", k + 1);
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < numBlocks; i++) {
         int n = r.nextInt((int) numBlocks);
-        long src = address + n * blockSize;
+        long src = address + (long) n * blockSize;
         int r = LZ4.compressDirectAddress(src, blockSize, buf, blockSize);
         int size = LZ4.decompressDirectAddress(buf, r, src, blockSize);
       }
       long endTime = System.currentTimeMillis();
-      log.debug(numBlocks * 1000 / (endTime - startTime) + " block comp/decomp per sec");
+      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / endTime - startTime);
     }
     unsafe.freeMemory(address);
     unsafe.freeMemory(buf);

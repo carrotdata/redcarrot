@@ -89,7 +89,7 @@ public class RedisStringsUserSessions {
           try {
             runLoad();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     Thread[] workers = new Thread[NUM_THREADS];
@@ -108,13 +108,7 @@ public class RedisStringsUserSessions {
             });
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " sets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
     index.set(0);
 
@@ -123,7 +117,7 @@ public class RedisStringsUserSessions {
           try {
             runGets();
           } catch (Exception e) {
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         };
     workers = new Thread[NUM_THREADS];
@@ -142,18 +136,12 @@ public class RedisStringsUserSessions {
             });
     end = System.currentTimeMillis();
 
-    log.debug(
-        "Finished "
-            + N
-            + " gets in "
-            + (end - start)
-            + "ms. RPS="
-            + (((long) N) * 1000) / (end - start));
+    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
     start = System.currentTimeMillis();
     client.save();
     end = System.currentTimeMillis();
-    log.debug("DB save took " + (end - start) + "ms");
+    log.debug("DB save took {}ms", end - start);
     client.close();
   }
 
@@ -222,20 +210,18 @@ public class RedisStringsUserSessions {
       client.mset(args);
       count += len;
       if (count / 100000 >= batches) {
-        log.debug(Thread.currentThread().getId() + ": set " + count);
+        log.debug("{}: set {}", Thread.currentThread().getId(), count);
         batches++;
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        Thread.currentThread().getId()
-            + ": Loaded "
-            + count
-            + " user sessions, total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime));
+        "{}: Loaded {} user sessions, total size={} in {}ms",
+        Thread.currentThread().getId(),
+        count,
+        totalDataSize,
+        endTime - startTime);
 
     client.close();
   }
@@ -268,25 +254,23 @@ public class RedisStringsUserSessions {
       List<String> result = client.mget(args);
       count += len;
       if (count / 100000 >= batches) {
-        log.debug(Thread.currentThread().getId() + ": get " + count);
+        log.debug("{}: get {}", Thread.currentThread().getId(), count);
         batches++;
       }
       assert (args.length == result.size());
       verify(result, idxs);
 
       //      if (count % 10000 == 0) {
-      //        log.debug(Thread.currentThread().getId() +": get "+ count);
+      //        log.debug("{}: get {}", Thread.currentThread().getId(), count);
       //      }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        Thread.currentThread().getId()
-            + ": Read "
-            + count
-            + " user sessions"
-            + " in "
-            + (endTime - startTime));
+            "{}: Read {} user sessions in {}ms",
+            Thread.currentThread().getId(),
+            count,
+            endTime - startTime);
     client.close();
   }
 

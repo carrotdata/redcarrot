@@ -1,16 +1,16 @@
-/**
- * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
- * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.examples.adserver;
 
 import java.util.Random;
@@ -83,7 +83,7 @@ public class TestCarrotAdServerAdsPerf {
     doAdsSitePerf(map);
     doAdsSiteRank(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Total memory=" + memory);
+    log.debug("Total memory={}", memory);
     map.dispose();
   }
 
@@ -113,13 +113,13 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdsSiteRank :" + count);
+          log.debug("AdsSiteRank :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("AdsSiteRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSiteRank : loaded {} in {}ms", count, end - start);
   }
 
   private static void doAdsSitePerf(BigSortedMap map) {
@@ -160,13 +160,13 @@ public class TestCarrotAdServerAdsPerf {
         UnsafeAccess.free(mPtrs[1]);
 
         if (count % 100000 == 0) {
-          log.debug("AdsSitePerf :" + count);
+          log.debug("AdsSitePerf :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    log.debug("AdsSitePerf : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdsSitePerf : loaded {} in {}ms", count, end - start);
   }
 }

@@ -97,8 +97,7 @@ public class TestCarrotAppStats {
     }
     long end = System.currentTimeMillis();
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug(
-        "Loaded " + hoursToKeep + " in " + (end - start) + "ms. RAM usage=" + memory + " bytes");
+    log.debug("Loaded {} in {}ms RAM usage={} bytes", hoursToKeep, end - start, memory);
     map.dispose();
   }
 }

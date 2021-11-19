@@ -83,7 +83,7 @@ public class TestCarrotAdServerSitePerf {
     doSiteAdsRank(map);
     doSiteWordsRank(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Total memory=" + memory);
+    log.debug("Total memory={}", memory);
     map.dispose();
   }
 
@@ -112,13 +112,13 @@ public class TestCarrotAdServerSitePerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("SiteWordsRank :" + count);
+          log.debug("SiteWordsRank :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("SiteWordsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteWordsRank : loaded {} in {}ms", count, end - start);
   }
 
   private static void doSiteAdsRank(BigSortedMap map) {
@@ -147,12 +147,12 @@ public class TestCarrotAdServerSitePerf {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("SiteAdsRank :" + count);
+          log.debug("SiteAdsRank :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("SiteAdsRank : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("SiteAdsRank : loaded {} in {}ms", count, end - start);
   }
 }

@@ -86,9 +86,9 @@ public class TestUtils {
   public void testDirectBufferAddress() {
     ByteBuffer buf = ByteBuffer.allocateDirect(16);
     long addr = UnsafeAccess.address(buf);
-    log.debug("addr=" + addr);
+    log.debug("addr={}", addr);
     addr = UnsafeAccess.address(buf);
-    log.debug("addr=" + addr);
+    log.debug("addr={}", addr);
     int N = 1000000;
     long[] ptrs = new long[N];
 
@@ -100,7 +100,7 @@ public class TestUtils {
       long end = System.nanoTime();
       total += (end - start);
     }
-    log.debug("Time for " + N + " address() =" + total);
+    log.debug("Time for {} address() ={}", N, total);
   }
 
   @Test
@@ -154,11 +154,11 @@ public class TestUtils {
       double d = r.nextDouble() - 0.5d;
       int len = Utils.doubleToStr(d, ptr, size);
       double dd = Utils.strToDouble(ptr, len);
-      log.debug(d + " " + dd);
+      log.debug("{} {}", d, dd);
       total += dd;
     }
     long end = System.currentTimeMillis();
-    log.debug("Time =" + (end - start) + " total=" + total);
+    log.debug("Time ={} total={}", end - start, total);
   }
 
   @Test
@@ -178,7 +178,7 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    log.debug("Time =" + (end - start) + " total=" + total);
+    log.debug("Time ={} total={}", end - start, total);
   }
 
   @Test
@@ -197,7 +197,7 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    log.debug("Time =" + (end - start) + " total=" + total);
+    log.debug("Time ={} total={}", end - start, total);
   }
 
   @Test
@@ -216,7 +216,7 @@ public class TestUtils {
       total += dd;
     }
     long end = System.currentTimeMillis();
-    log.debug("Time =" + (end - start) + " total=" + total);
+    log.debug("Time ={} total={}", end - start, total);
   }
 
   @Test
@@ -297,7 +297,7 @@ public class TestUtils {
     Utils.sortKeys(list);
 
     for (Key k : list) {
-      log.debug(Long.MAX_VALUE - UnsafeAccess.toLong(k.address));
+      log.debug("{}", Long.MAX_VALUE - UnsafeAccess.toLong(k.address));
     }
   }
 
@@ -308,7 +308,7 @@ public class TestUtils {
     int count = 1000;
     while (max > count) {
       long[] arr = Utils.randomDistinctArray(max, count);
-      log.debug("max=" + max + " count=" + count);
+      log.debug("max={} count={}", max, count);
       verifyUnique(arr);
       max >>>= 1;
     }

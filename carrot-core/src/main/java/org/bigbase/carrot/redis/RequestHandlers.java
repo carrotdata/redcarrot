@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.io.IOException;
@@ -73,8 +73,8 @@ public class RequestHandlers {
   }
 
   public void start() {
-    Arrays.stream(workers).forEach(x -> x.start());
-    log.debug("Started request handlers: count=" + workers.length);
+    Arrays.stream(workers).forEach(Thread::start);
+    log.debug("Started request handlers: count={}", workers.length);
   }
 
   /**
@@ -256,7 +256,7 @@ class WorkThread extends Thread {
           int limit = out.limit();
           byte[] bb = new byte[limit];
           out.get(bb);
-          log.debug("SERVER:\n" + new String(bb));
+          log.debug("SERVER:\n{}", new String(bb));
           out.position(0);
           out.limit(limit);
           while (out.hasRemaining()) {
@@ -268,7 +268,7 @@ class WorkThread extends Thread {
         String msg = e.getMessage();
         if (!msg.equals("Connection reset by peer")) {
           // TODO
-          e.printStackTrace();
+          log.error("StackTrace: ", e);
         }
       } finally {
         // Release selection key - ready for the next request

@@ -13,8 +13,6 @@
 */
 package org.bigbase.carrot.redis.sets;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +40,8 @@ import org.bigbase.carrot.util.Value;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class SetsTest {
 
   private static final Logger log = LogManager.getLogger(SetsTest.class);
@@ -63,7 +63,7 @@ public class SetsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] buf = new byte[valSize / 2];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -80,7 +80,7 @@ public class SetsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] buf = new byte[valSize];
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
@@ -97,7 +97,7 @@ public class SetsTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("KEY SEED=" + seed);
+    log.debug("KEY SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, valSize);
     return key = new Key(ptr, valSize);
@@ -127,8 +127,9 @@ public class SetsTest {
       assertEquals(1, result);
     }
     List<byte[]> members = Sets.SMEMBERS(map, key.address, key.length, values.size() * valSize * 2);
+    assertNotNull(members);
     for (byte[] v : members) {
-      log.debug(Bytes.toHex(v));
+      log.debug("{}", Bytes.toHex(v));
     }
     tearDown();
   }
@@ -139,7 +140,7 @@ public class SetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -152,7 +153,7 @@ public class SetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -165,7 +166,7 @@ public class SetsTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -184,7 +185,7 @@ public class SetsTest {
     testAddMultiDelete();
     tearDown();
     long end = System.currentTimeMillis();
-    log.debug("\nRUN in " + (end - start) + "ms");
+    log.debug("\nRUN in {}ma", end - start);
   }
 
   @Ignore
@@ -195,7 +196,7 @@ public class SetsTest {
   }
 
   private void perfRun(int n) {
-    log.debug("Performance test run with " + n);
+    log.debug("Performance test run with {}", n);
     map = new BigSortedMap(10000000000L);
 
     int toQuery = 1000000;
@@ -210,7 +211,7 @@ public class SetsTest {
       assertEquals(1, res);
       count++;
       if (count % 1000000 == 0) {
-        log.debug("Loaded " + count);
+        log.debug("Loaded {}", count);
       }
     }
     Random r = new Random();
@@ -223,13 +224,13 @@ public class SetsTest {
         Sets.SADD(map, key.address, key.length, ptr, size);
         UnsafeAccess.free(ptr);
         if ((i > nn) && (i % 1000000 == 0)) {
-          log.debug("Loaded " + (i));
+          log.debug("Loaded {}", i);
         }
       }
     }
     long end = System.currentTimeMillis();
 
-    log.debug(n + " items: load=" + ((double) n * 1000 / (end - start)) + " RPS");
+    log.debug("{} items: load={} RPS", n, (double) n * 1000 / (end - start));
     assertEquals(n, (int) Sets.SCARD(map, key.address, key.length));
 
     Runnable run =
@@ -250,7 +251,7 @@ public class SetsTest {
     // runRead(8, run, toQuery);
     runRead(16, run, toQuery);
 
-    log.debug("Skip List Map Size=" + map.getMap().size());
+    log.debug("Skip List Map Size={}", map.getMap().size());
     tearDown();
   }
 
@@ -268,15 +269,14 @@ public class SetsTest {
         t.join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     long end = System.currentTimeMillis();
     log.debug(
-        +numThreads
-            + " threads READ perf="
-            + ((double) numThreads * toQuery * 1000 / (end - start))
-            + " RPS");
+        "{} threads READ perf={} RPS",
+        numThreads,
+        +(double) numThreads * toQuery * 1000 / (end - start));
   }
 
   @Ignore
@@ -294,22 +294,17 @@ public class SetsTest {
       int num = Sets.SADD(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
-        log.debug("add " + count);
+        log.debug("add {}", count);
       }
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
+        +end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -321,11 +316,11 @@ public class SetsTest {
           Sets.SISMEMBER(map, key.address, key.length, values.get(i).address, values.get(i).length);
       assertEquals(1, res);
       if (++count % 100000 == 0) {
-        log.debug("ismember " + count);
+        log.debug("ismember {}", count);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist=" + (end - start) + "ms");
+    log.debug("Time exist={}ms", end - start);
     BigSortedMap.printGlobalMemoryAllocationStats();
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
@@ -345,7 +340,7 @@ public class SetsTest {
       int num = Sets.SADD(map, elemPtrs[0], elemSizes[0], elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
-        log.debug("add " + count);
+        log.debug("add {}", count);
       }
     }
     long end = System.currentTimeMillis();
@@ -370,13 +365,13 @@ public class SetsTest {
       elemSizes[0] = values.get(i).length;
       Sets.DELETE(map, elemPtrs[0], elemSizes[0]);
       if (++count % 100000 == 0) {
-        log.debug("delete " + count);
+        log.debug("delete {}", count);
       }
     }
     end = System.currentTimeMillis();
     long recc = Commons.countRecords(map);
 
-    log.debug("Deleted " + n + " in " + (end - start) + "ms. Count=" + recc);
+    log.debug("Deleted {} in {}ms. Count={}", n, end - start, recc);
 
     assertEquals(0, (int) recc);
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -397,7 +392,7 @@ public class SetsTest {
       int num = Sets.SADD(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
-        log.debug("add " + count);
+        log.debug("add {}", count);
       }
     }
     long end = System.currentTimeMillis();
@@ -424,7 +419,7 @@ public class SetsTest {
       assertEquals(1, res);
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist=" + (end - start) + "ms");
+    log.debug("Time exist={}ms", end - start);
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(0, (int) map.countRecords());
@@ -504,19 +499,19 @@ public class SetsTest {
     long cBuffer = UnsafeAccess.malloc(2 * bufferSize);
     Codec codec = CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
     int size = codec.compress(buffer, bufferSize, cBuffer, 2 * bufferSize);
-    log.debug("Source size =" + bufferSize);
-    log.debug("LZ4HC  size =" + size);
+    log.debug("Source size ={}", bufferSize);
+    log.debug("LZ4HC  size ={}", size);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     GZIPOutputStream os = new GZIPOutputStream(baos);
     os.write(arr);
     os.close();
-    log.debug("GZIP   size =" + baos.toByteArray().length);
+    log.debug("GZIP   size ={}", baos.toByteArray().length);
 
     Path path = Files.createTempFile("data", "raw");
     File f = path.toFile();
 
-    log.debug("File=" + f.getAbsolutePath());
+    log.debug("File={}", f.getAbsolutePath());
     FileOutputStream fos = new FileOutputStream(f);
     fos.write(arr);
     fos.close();

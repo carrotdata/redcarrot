@@ -26,11 +26,11 @@ public class DataBlockScannerLargeKVsTest extends DataBlockScannerTest {
   private static final Logger log = LogManager.getLogger(DataBlockScannerLargeKVsTest.class);
 
   protected ArrayList<Key> fillDataBlock(DataBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     int maxSize = 2048;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       int len = r.nextInt(maxSize) + 2;
       byte[] key = new byte[len];
       r.nextBytes(key);
@@ -41,7 +41,7 @@ public class DataBlockScannerLargeKVsTest extends DataBlockScannerTest {
         keys.add(new Key(ptr, len));
       }
     }
-    log.debug("records=" + b.getNumberOfRecords() + "  data size=" + b.getDataInBlockSize());
+    log.debug("records={}  data size={}", b.getNumberOfRecords(), b.getDataInBlockSize());
     return keys;
   }
 }

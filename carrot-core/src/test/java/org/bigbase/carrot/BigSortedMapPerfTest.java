@@ -19,8 +19,6 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,7 +32,7 @@ public class BigSortedMapPerfTest {
 
   @BeforeClass
   public static void setUp() {
-    log.debug("Set up: block = 4096; Mem=" + 10000000);
+    log.debug("Set up: block = 4096; Mem={}", 10000000);
 
     // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
 
@@ -46,14 +44,14 @@ public class BigSortedMapPerfTest {
       byte[] key = ("KEY" + (totalLoaded)).getBytes();
       byte[] value = ("VALUE" + (totalLoaded)).getBytes();
       boolean res = map.put(key, 0, key.length, value, 0, value.length, 0);
-      if (res == false) {
+      if (!res) {
         totalLoaded--;
         break;
       }
       totalLoaded++;
       if (totalLoaded % 100000 == 0) {
         log.debug(
-            "Loaded " + totalLoaded + " RAM alocated=" + BigSortedMap.getGlobalAllocatedMemory());
+            "Loaded {} RAM alocated={}", totalLoaded, BigSortedMap.getGlobalAllocatedMemory());
       }
     }
     long end = System.currentTimeMillis();
@@ -65,7 +63,7 @@ public class BigSortedMapPerfTest {
             + "ms"
             + " RPS="
             + (totalLoaded * 1000) / (end - start));
-    log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
   }
 
   @Test
@@ -74,13 +72,13 @@ public class BigSortedMapPerfTest {
     int n = 10;
     long start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
-      log.debug("Scan Run started " + i);
+      log.debug("Scan Run started {}", i);
       totalScanned += countRecords();
-      log.debug("Scan Run finished " + i);
+      log.debug("Scan Run finished {}", i);
     }
     long end = System.currentTimeMillis();
 
-    log.debug(totalScanned * 1000 / (end - start) + " RPS");
+    log.debug("{} RPS", totalScanned * 1000 / (end - start));
     assertEquals(n * totalLoaded, totalScanned);
   }
 

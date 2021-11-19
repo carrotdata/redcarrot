@@ -50,7 +50,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
       Random r = new Random();
       IndexBlock b = getIndexBlock(4096);
       ArrayList<Key> keys = fillIndexBlock(b);
-      log.debug("KEYS =" + keys.size());
+      log.debug("KEYS ={}", keys.size());
       for (Key key : keys) {
         int keySize = key.length;
         int valueSize = 0;
@@ -70,7 +70,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
         assertTrue(res);
         long size = b.get(key.address, keySize, buf, valueSize, Long.MAX_VALUE);
         assertEquals(valueSize, (int) size);
-        assertTrue(Utils.compareTo(buf, valueSize, valuePtr, valueSize) == 0);
+        assertEquals(0, Utils.compareTo(buf, valueSize, valuePtr, valueSize));
         UnsafeAccess.free(valuePtr);
         UnsafeAccess.free(buf);
       }
@@ -115,7 +115,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
         assertTrue(res);
         long size = b.get(key.address, keySize, buf, valueSize, Long.MAX_VALUE);
         assertEquals(valueSize, (int) size);
-        assertTrue(Utils.compareTo(buf, valueSize, valuePtr, valueSize) == 0);
+        assertEquals(0, Utils.compareTo(buf, valueSize, valuePtr, valueSize));
         UnsafeAccess.free(valuePtr);
         UnsafeAccess.free(buf);
       }
@@ -126,16 +126,16 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
   }
 
   protected ArrayList<Key> fillIndexBlock(IndexBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    /*DEBUG*/ log.debug("FILL SEED=" + seed);
+    log.debug("FILL SEED={}", seed);
     int maxSize = 4096;
     boolean result = true;
     int count = 0;
-    while (result == true) {
-      /*DEBUG*/ log.debug(count++);
+    while (result) {
+      log.debug(count++);
       byte[] key = new byte[r.nextInt(maxSize) + 2];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(key.length);
@@ -148,13 +148,10 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
       }
     }
     log.debug(
-        "Number of data blocks="
-            + b.getNumberOfDataBlock()
-            + " "
-            + " index block data size ="
-            + b.getDataInBlockSize()
-            + " num records="
-            + keys.size());
+        "Number of data blocks={} index block data size ={} num records={}",
+        b.getNumberOfDataBlock(),
+        b.getDataInBlockSize(),
+        keys.size());
     return keys;
   }
 }

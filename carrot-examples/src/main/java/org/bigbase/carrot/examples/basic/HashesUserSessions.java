@@ -131,24 +131,20 @@ public class HashesUserSessions {
       }
 
       if (count % 10000 == 0) {
-        log.debug("set " + count);
+        log.debug("set {}", count);
       }
 
-      list.forEach(x -> x.free());
+      list.forEach(KeyValue::free);
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + userSessions.size()
-            + " user sessions, total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime)
-            + "ms. RAM usage="
-            + (UnsafeAccess.getAllocatedMemory())
-            + " COMPRESSION="
-            + (((double) totalDataSize)) / UnsafeAccess.getAllocatedMemory());
+        "Loaded {} user sessions, total size={} in {}ms. RAM usage={} COMPRESSION={}",
+        userSessions.size(),
+        totalDataSize,
+        endTime - startTime,
+        UnsafeAccess.getAllocatedMemory(),
+        (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.dispose();

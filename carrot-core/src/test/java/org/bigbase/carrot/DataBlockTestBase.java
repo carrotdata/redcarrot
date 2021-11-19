@@ -13,6 +13,7 @@
 */
 package org.bigbase.carrot;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class DataBlockTestBase {
     DataBlockScanner bs = DataBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
     int prevKeySize = 0;
     int count = 0;
+    assertNotNull(bs);
     while (bs.hasNext()) {
       int keySize = bs.keySize();
       buffer = UnsafeAccess.malloc(keySize);
@@ -83,6 +85,6 @@ public class DataBlockTestBase {
     }
     UnsafeAccess.free(tmp);
     bs.close();
-    log.debug("Scanned =" + count);
+    log.debug("Scanned {}", count);
   }
 }

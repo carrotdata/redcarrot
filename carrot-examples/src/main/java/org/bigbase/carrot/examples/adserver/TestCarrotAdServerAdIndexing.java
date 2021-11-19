@@ -135,7 +135,7 @@ public class TestCarrotAdServerAdIndexing {
     doWordAds(map);
     doAdWords(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Total memory=" + memory);
+    log.debug("Total memory={}", memory);
     map.dispose();
   }
 
@@ -160,13 +160,13 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("LocAds :" + count);
+          log.debug("LocAds :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("LocAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("LocAds : loaded {} in {}ms", count, end - start);
   }
 
   private static void doWordAds(BigSortedMap map) {
@@ -191,13 +191,13 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("WordAds :" + count);
+          log.debug("WordAds :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("WordAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("WordAds : loaded {} in {}ms", count, end - start);
   }
 
   static enum Type {
@@ -230,7 +230,7 @@ public class TestCarrotAdServerAdIndexing {
     UnsafeAccess.free(keyPtr);
 
     long end = System.currentTimeMillis();
-    log.debug("AdType : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdType : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdeCPM(BigSortedMap map) {
@@ -252,7 +252,7 @@ public class TestCarrotAdServerAdIndexing {
     }
     UnsafeAccess.free(keyPtr);
     long end = System.currentTimeMillis();
-    log.debug("AdeCPM : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdeCPM : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdBase(BigSortedMap map) {
@@ -274,7 +274,7 @@ public class TestCarrotAdServerAdIndexing {
     }
     UnsafeAccess.free(keyPtr);
     long end = System.currentTimeMillis();
-    log.debug("AdBase : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdBase : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdWords(BigSortedMap map) {
@@ -297,12 +297,12 @@ public class TestCarrotAdServerAdIndexing {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdWords :" + count);
+          log.debug("AdWords :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("AdWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdWords : loaded {} in {}ms", count, end - start);
   }
 }

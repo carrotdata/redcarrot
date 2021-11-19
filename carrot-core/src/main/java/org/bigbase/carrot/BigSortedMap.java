@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -434,20 +435,19 @@ public class BigSortedMap {
   /** Prints global memory statistics */
   public static void printGlobalMemoryAllocationStats() {
     log.debug("\nGLOBAL Carrot memory allocation statistics:");
-    log.debug("Total memory               :" + getGlobalAllocatedMemory());
-    log.debug("Total data blocks          :" + getGlobalBlockDataSize());
-    log.debug("Total data size            :" + getGlobalDataSize());
+    log.debug("Total memory               :{}", getGlobalAllocatedMemory());
+    log.debug("Total data blocks          :{}", getGlobalBlockDataSize());
+    log.debug("Total data size            :{}", getGlobalDataSize());
     log.debug(
-        "Total data block usage     :" + ((double) getGlobalDataSize()) / getGlobalBlockDataSize());
-    log.debug("Total block index size     :" + getGlobalBlockIndexSize());
-    log.debug("Total data index size      :" + getGlobalDataInIndexBlocksSize());
-    log.debug("Total index size           :" + getGlobalIndexSize());
-    log.debug("Total compressed data size :" + getGlobalCompressedDataSize());
-    log.debug("Total external data size   :" + getGlobalExternalDataSize());
+        "Total data block usage     :{}", (double) getGlobalDataSize() / getGlobalBlockDataSize());
+    log.debug("Total block index size     :{}", getGlobalBlockIndexSize());
+    log.debug("Total data index size      :{}", getGlobalDataInIndexBlocksSize());
+    log.debug("Total index size           :{}", getGlobalIndexSize());
+    log.debug("Total compressed data size :{}", getGlobalCompressedDataSize());
+    log.debug("Total external data size   :{}", getGlobalExternalDataSize());
     log.debug(
-        "Copmpression ratio         :"
-            + ((double) getGlobalDataSize() / getGlobalAllocatedMemory())
-            + "\n");
+        "Copmpression ratio         :{}\n",
+        (double) getGlobalDataSize() / getGlobalAllocatedMemory());
   }
 
   /**
@@ -655,23 +655,21 @@ public class BigSortedMap {
 
   /** Prints memory allocation statistics for the store */
   public void printMemoryAllocationStats() {
+    log.debug("\nCarrot memory allocation statistics [id={}]:", Thread.currentThread().getName());
+    log.debug("Total allocated memory     :{}", getInstanceAllocatedMemory());
+    log.debug("Total data block size      :{}", getInstanceBlockDataSize());
+    log.debug("Total data size            :{}", getInstanceDataSize());
     log.debug(
-        "\nCarrot memory allocation statistics [id=" + Thread.currentThread().getName() + "]:");
-    log.debug("Total allocated memory     :" + getInstanceAllocatedMemory());
-    log.debug("Total data block size      :" + getInstanceBlockDataSize());
-    log.debug("Total data size            :" + getInstanceDataSize());
+        "Total data block usage     :{}",
+        (double) getInstanceDataSize() / getInstanceBlockDataSize());
+    log.debug("Total block index size     :{}", getInstanceBlockIndexSize());
+    log.debug("Total data index size      :{}", getInstanceDataInIndexBlocksSize());
+    log.debug("Total index size           :{}", getInstanceIndexSize());
+    log.debug("Total compressed data size :{}", getInstanceCompressedDataSize());
+    log.debug("Total external data size   :{}", getInstanceExternalDataSize());
     log.debug(
-        "Total data block usage     :"
-            + ((double) getInstanceDataSize()) / getInstanceBlockDataSize());
-    log.debug("Total block index size     :" + getInstanceBlockIndexSize());
-    log.debug("Total data index size      :" + getInstanceDataInIndexBlocksSize());
-    log.debug("Total index size           :" + getInstanceIndexSize());
-    log.debug("Total compressed data size :" + getInstanceCompressedDataSize());
-    log.debug("Total external data size   :" + getInstanceExternalDataSize());
-    log.debug(
-        "Copmpression ratio         :"
-            + ((double) getInstanceDataSize() / getInstanceAllocatedMemory())
-            + "\n");
+        "Copmpression ratio         :{}",
+        (double) getInstanceDataSize() / getInstanceAllocatedMemory());
   }
 
   /**
@@ -889,7 +887,7 @@ public class BigSortedMap {
         count++;
         long ptr = scanner.keyAddress();
         int size = scanner.keySize();
-        log.debug(Bytes.toHex(ptr, size));
+        log.debug("{}", Bytes.toHex(ptr, size));
         scanner.next();
       }
     } catch (IOException e) {
@@ -937,7 +935,7 @@ public class BigSortedMap {
       totalRows += b.getNumberOfDataBlock();
       b.dumpIndexBlockExt();
     }
-    log.debug("Total blocks=" + (totalRows) + " index blocks=" + map.size());
+    log.debug("Total blocks={} index blocks={}", totalRows, map.size());
   }
 
   private void initNodes() {
@@ -1150,7 +1148,7 @@ public class BigSortedMap {
             // MUST ALWAYS BE true
             assert (r);
           } else if (res != OpResult.OK) {
-            log.error("PANIC! Unexpected result of delete operation: " + res);
+            log.error("PANIC! Unexpected result of delete operation: {}", res);
             Thread.dumpStack();
             System.exit(-1);
           }
@@ -2203,7 +2201,7 @@ public class BigSortedMap {
     dispose();
     initNodes();
     long end = System.currentTimeMillis();
-    log.debug("[" + Thread.currentThread().getName() + "] flushall took:" + (end - start) + "ms");
+    log.debug("[{}] flushall took:{}ms", Thread.currentThread().getName(), end - start);
   }
 
   public void flush(int db) {
@@ -2268,9 +2266,9 @@ public class BigSortedMap {
       snapshotDir = RedisConf.getInstance().getDataDir(0);
     }
     File dir = new File(snapshotDir);
-    if (dir.exists() == false) {
-      if (dir.mkdirs() == false) {
-        log.error("Snapshot failed. Can not create directory: " + dir.getAbsolutePath());
+    if (!dir.exists()) {
+      if (!dir.mkdirs()) {
+        log.error("Snapshot failed. Can not create directory: {}", dir.getAbsolutePath());
         return;
       }
     }
@@ -2284,13 +2282,12 @@ public class BigSortedMap {
       // Save store meta data
       saveStoreMeta(fc);
     } catch (IOException e) {
-      log.error(
-          "Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
-      e.printStackTrace();
+      log.error("Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
+      log.error("StackTrace: ", e);
       return;
     }
 
-    log.debug("Snapshot file opened: " + snapshotFile.getAbsolutePath());
+    log.debug("Snapshot file opened: {}", snapshotFile.getAbsolutePath());
 
     // main loop over all index blocks
     IndexBlock ib = null, cur = null;
@@ -2329,8 +2326,8 @@ public class BigSortedMap {
         continue;
       } catch (IOException e) {
         log.error(
-            "Snapshot failed. Can not create snapshot file: " + snapshotFile.getAbsolutePath());
-        e.printStackTrace();
+            "Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
+        log.error("StackTrace: ", e);
         return;
       } finally {
         if (cur != null && locked) {
@@ -2351,8 +2348,7 @@ public class BigSortedMap {
       setLastSnapshotTimestamp(timestamp);
       raf.close();
     } catch (IOException e) {
-      log.error("WARNING! " + e.getMessage());
-      e.printStackTrace();
+      log.error("WARNING! StackTrace: ", e);
       // TODO: what to do?
     }
 
@@ -2368,12 +2364,11 @@ public class BigSortedMap {
     boolean result = snapshotFile.renameTo(oldSnapshotFile);
     if (!result) {
       log.error(
-          "ERROR! Can not rename new snapshot file: "
-              + snapshotFile.getAbsolutePath()
-              + " to "
-              + oldSnapshotFile.getAbsolutePath());
+          "ERROR! Can not rename new snapshot file: {} to {}",
+              snapshotFile.getAbsolutePath(),
+              oldSnapshotFile.getAbsolutePath());
     } else {
-      log.debug("Snapshot file created: " + oldSnapshotFile.getAbsolutePath());
+      log.debug("Snapshot file created: {}", oldSnapshotFile.getAbsolutePath());
     }
   }
 
@@ -2416,20 +2411,22 @@ public class BigSortedMap {
     File dir = new File(snapshotDir);
     if (dir.exists() == false) {
       dir.mkdirs();
-      log.error("Snapshot directory does not exists: " + dir.getAbsolutePath());
+      log.error("Snapshot directory does not exists: {}", dir.getAbsolutePath());
       return new BigSortedMap();
     }
 
     File snapshotFile = new File(dir, "snapshot.data");
     if (!snapshotFile.exists()) {
-      log.error("Snapshot file does not exists: " + snapshotFile.getAbsolutePath());
+      log.error("Snapshot file does not exists: {}", snapshotFile.getAbsolutePath());
       return new BigSortedMap();
     }
 
     RandomAccessFile raf = null;
     FileChannel fc = null;
     log.debug(
-        "Started loading store data from: " + snapshotFile.getAbsolutePath() + " at " + new Date());
+        "Started loading store data from: {} at {}",
+        snapshotFile.getAbsolutePath(),
+        LocalDateTime.now());
 
     try {
       raf = new RandomAccessFile(snapshotFile, "r");
@@ -2438,7 +2435,7 @@ public class BigSortedMap {
       map = loadStoreMeta(fc);
     } catch (IOException e) {
       log.error(
-          "Loading store failed. Can not open snapshot file: " + snapshotFile.getAbsolutePath());
+          "Loading store failed. Can not open snapshot file: {}", snapshotFile.getAbsolutePath());
       return null;
     }
 
@@ -2467,7 +2464,7 @@ public class BigSortedMap {
           map.map.put(ib, ib);
         }
       } while (block != null);
-      log.debug("Loaded store from: " + snapshotFile.getAbsolutePath() + " at " + new Date());
+      log.debug("Loaded store from: {} at {}", snapshotFile.getAbsolutePath(), LocalDateTime.now());
 
       // Last read timestamp, buffer MUST have correct position
       if (buf.remaining() < Utils.SIZEOF_LONG) {
@@ -2481,15 +2478,15 @@ public class BigSortedMap {
       return map;
     } catch (IOException e) {
       log.error(
-          "Loading store failed. Corrupted (?) snapshot file: " + snapshotFile.getAbsolutePath());
-      e.printStackTrace();
+          "Loading store failed. Corrupted (?) snapshot file: {}", snapshotFile.getAbsolutePath());
+      log.error("StackTrace: ", e);
     } finally {
       // Close file
       try {
         raf.close();
       } catch (IOException e) {
-        log.error("WARNING! " + e.getMessage());
-        e.printStackTrace();
+        log.error("WARNING! {}", e.getMessage());
+        log.error("StackTrace: ", e);
       }
     }
     return null;

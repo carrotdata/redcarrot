@@ -64,7 +64,7 @@ public class CityBlock {
       list.add(block);
       total++;
       if (total % 100000 == 0) {
-        log.debug("Loaded " + total);
+        log.debug("Loaded {}", total);
       }
     }
     dis.close();
@@ -118,10 +118,10 @@ public class CityBlock {
   public static void main(String[] args) throws IOException {
     List<CityBlock> list = load(args[0]);
 
-    log.debug("Loaded " + list.size());
+    log.debug("Loaded {}", list.size());
 
     for (int i = 0; i < 20; i++) {
-      log.debug(list.get(i));
+      log.debug("{}", list.get(i));
     }
   }
 }

@@ -81,7 +81,7 @@ public class AtomicAppendTestMT {
           assertTrue(result);
         }
         if (totalLoaded.get() % 1000000 == 0) {
-          log.debug(getName() + " loaded = " + totalLoaded + " appends=" + totalAppends);
+          log.debug(getName() + " loaded = {} appends={}", totalLoaded, totalAppends);
         }
       } // end while
       UnsafeAccess.free(ptr);
@@ -92,7 +92,7 @@ public class AtomicAppendTestMT {
   @Test
   public void testAppend() throws IOException {
     for (int k = 1; k <= 100; k++) {
-      log.debug("Append test run #" + k);
+      log.debug("Append test run #{}", k);
 
       BigSortedMap.setMaxBlockSize(4096);
       map = new BigSortedMap(1000000000L);
@@ -110,7 +110,7 @@ public class AtomicAppendTestMT {
             runners[i].join();
           } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         }
 
@@ -128,16 +128,10 @@ public class AtomicAppendTestMT {
         assertEquals(totalLoaded.get(), count);
         map.dumpStats();
         log.debug(
-            "Time to load= "
-                + totalLoaded
-                + " and to append ="
-                + totalAppends
-                + "="
-                + (end - start)
-                + "ms");
-        log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-        log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-        log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+            "Time to load= {} and to append ={}={}ms", totalLoaded, totalAppends, end - start);
+        log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+        log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
+        log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
           map.dispose();

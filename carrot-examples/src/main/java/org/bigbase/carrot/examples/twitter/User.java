@@ -55,7 +55,7 @@ public class User extends KeyValues {
   static {
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    log.debug("SEED=" + seed);
+    log.debug("SEED={}", seed);
   }
 
   static int[] perc =

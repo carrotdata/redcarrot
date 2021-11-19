@@ -79,7 +79,7 @@ public class HashesMultithreadedTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 100; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       setUp();
       runTest();
       tearDown();
@@ -94,7 +94,7 @@ public class HashesMultithreadedTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 100; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       setUp();
       runTest();
       tearDown();
@@ -127,16 +127,16 @@ public class HashesMultithreadedTest {
                 assertEquals(1, res);
                 loaded++;
                 if (loaded % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " loaded " + loaded);
+                  log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
                 }
               }
               int card = (int) Hashes.HLEN(map, ptr, keySize);
               if (card != values.size()) {
-                log.error("First CARD=" + card);
+                log.error("First CARD={}", card);
                 // int total = Hashes.elsize.get();
                 // int[] prev = Arrays.copyOf(Hashes.elarr.get(), total);
                 card = (int) Hashes.HLEN(map, ptr, keySize);
-                log.error("Second CARD=" + card);
+                log.error("Second CARD={}", card);
 
                 // int total2 = Hashes.elsize.get();
                 // int[] prev2 = Arrays.copyOf(Hashes.elarr.get(), total2);
@@ -152,13 +152,13 @@ public class HashesMultithreadedTest {
 
           private void dump(int[] prev, int total, int[] prev2, int total2) {
             // total2 > total
-            log.error("total=" + total + " total2=" + total2);
+            log.error("total={}, total2={}", total, total2);
             int i = 0;
             for (; i < total; i++) {
-              log.error(prev[i] + " " + prev2[i]);
+              log.error("{} {}", prev[i], prev2[i]);
             }
             for (; i < total2; i++) {
-              log.error("** " + prev2[i]);
+              log.error("** {}", prev2[i]);
             }
           }
         };
@@ -184,7 +184,7 @@ public class HashesMultithreadedTest {
                 assertEquals(0, Utils.compareTo(v.address, v.length, buffer, valueSize));
                 read++;
                 if (read % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " read " + read);
+                  log.debug("{} read {}", Thread.currentThread().getName(), read);
                 }
               }
             }
@@ -218,7 +218,7 @@ public class HashesMultithreadedTest {
               assertTrue(res);
               card = Hashes.HLEN(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card =" + card);
+                log.error("FAILED delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);
@@ -241,18 +241,14 @@ public class HashesMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Loading "
-            + (numThreads * keysNumber * setSize)
-            + " elements os done in "
-            + (end - start)
-            + "ms");
+        "Loading {} elements os done in {}ms", (numThreads * keysNumber * setSize), end - start);
     log.debug("Reading data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
@@ -265,18 +261,14 @@ public class HashesMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
     end = System.currentTimeMillis();
 
     log.debug(
-        "Reading "
-            + (numThreads * keysNumber * setSize)
-            + " elements os done in "
-            + (end - start)
-            + "ms");
+        "Reading {} elements os done in {}ms", (numThreads * keysNumber * setSize), end - start);
     log.debug("Deleting  data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
@@ -289,11 +281,11 @@ public class HashesMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
+    log.debug("Deleting of {} sets in {}ms", numThreads * keysNumber, end - start);
     assertEquals(0L, map.countRecords());
   }
 }

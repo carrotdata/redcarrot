@@ -290,7 +290,7 @@ public class Sets {
   @SuppressWarnings("unused")
   private static void dump(List<Value> members) {
     for (Value v : members) {
-      log.debug(Utils.toHexString(v.address, v.length));
+      log.debug("{}", Utils.toHexString(v.address, v.length));
     }
   }
 
@@ -2136,8 +2136,8 @@ public class Sets {
       int eSizeSize = Utils.sizeUVInt(eSize);
 
       if (eSize != expSize) {
-        log.debug("Dump value , elements=" + total);
-        log.debug("CORRUPT eSize=" + eSize + " index (+1)=" + count);
+        log.debug("Dump value , elements={}", total);
+        log.debug("CORRUPT eSize={} index (+1)={}", eSize, count);
         return true;
       }
       off += eSize + eSizeSize;

@@ -144,10 +144,10 @@ public class LZ4 {
     src.limit(pos);
 
     int compressedSize = compressHC(src, dst, 1);
-    log.debug("Original size=" + value.length() + " comp size=" + compressedSize);
+    log.debug("Original size={} comp size={}", value.length(), compressedSize);
 
     for (int i = 0; i < compressedSize; i++) {
-      System.out.print(dst.get(DST + i) + " ");
+      log.debug("{} ", dst.get(DST + i));
     }
     log.debug("");
     src.position(SRC);
@@ -155,14 +155,11 @@ public class LZ4 {
     dst.limit(DST + compressedSize);
     src.limit(src.capacity());
     log.debug(
-        "src.pos="
-            + dst.position()
-            + " size="
-            + dst.remaining()
-            + " dst.pos="
-            + src.position()
-            + " limit="
-            + src.limit());
+        "src.pos={} size={} dst.pos={} limit={}",
+        dst.position(),
+        dst.remaining(),
+        src.position(),
+        src.limit());
     int r = decompressHC(dst, src);
     int size = src.limit() - SRC;
     byte[] v = new byte[size];

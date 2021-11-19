@@ -52,7 +52,7 @@ public class BigSortedMapTestMT {
     byte[] keyBuf = new byte[keySize];
     int[] valueSizeDistribution =
         new int[] {10 /*p0*/, 100 /*p50*/, 220 /*p90*/, 450 /*p95*/, 3000 /*p99*/, 9500 /*p100*/};
-    double[] pp = new double[] {0, 0.5, 0.9, 0.95, 0.99, 1.0};
+//    double[] pp = new double[] {0, 0.5, 0.9, 0.95, 0.99, 1.0};
     Random r = new Random();
 
     public Worker(BigSortedMap map, String name) {
@@ -83,25 +83,21 @@ public class BigSortedMapTestMT {
         end = System.currentTimeMillis();
         comboPs.addAndGet((double) (totalOps * 1000) / (end - start));
         totalOps = 0;
-      } catch (RuntimeException e) {
-        e.printStackTrace();
+      } catch (RuntimeException | IOException e) {
+        log.error("StackTrace: ", e);
         System.exit(-1);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        System.exit(-1);
-      }
+      } // TODO Auto-generated catch block
     }
 
     private void runPutDeleteGetsScans() throws IOException {
-      log.debug(Thread.currentThread().getName() + "-test runPutDeleteGetsScans ");
+      log.debug("{} test runPutDeleteGetsScans", Thread.currentThread().getName());
 
       int num = (int) totalLoaded.get();
       long start = System.currentTimeMillis();
       Random r = new Random();
       for (int i = 0; i < num; i++) {
         double d = r.nextDouble();
-        boolean result = false;
+        boolean result;
         if (BigSortedMap.getGlobalAllocatedMemory() < 0.99 * BigSortedMap.getGlobalMemoryLimit()) {
           if (d < 0.30) {
             result = put();
@@ -182,38 +178,34 @@ public class BigSortedMapTestMT {
         }
         if (i % 1000000 == 0) {
           log.debug(
-              Thread.currentThread().getName()
-                  + "- "
-                  + i
-                  + " allocated="
-                  + BigSortedMap.getGlobalAllocatedMemory()
-                  + " data="
-                  + BigSortedMap.getGlobalDataSize()
-                  + " index="
-                  + BigSortedMap.getGlobalIndexSize()
-                  + " max="
-                  + BigSortedMap.getGlobalMemoryLimit());
+              "{}- {} allocated={} data={} index={} max={}",
+              Thread.currentThread().getName(),
+              i,
+              BigSortedMap.getGlobalAllocatedMemory(),
+              BigSortedMap.getGlobalDataSize(),
+              BigSortedMap.getGlobalIndexSize(),
+              BigSortedMap.getGlobalMemoryLimit());
         }
       }
 
       long end = System.currentTimeMillis();
       totalOps = num;
-      log.debug("Time to get " + num + " =" + (end - start) + "ms");
+      log.debug("Time to get {} ={}ms", num, end - start);
       try {
         scanAll();
       } catch (InterruptedException | BrokenBarrierException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
-    private final void getKey(long v) {
+    private void getKey(long v) {
       r.setSeed(v);
       r.nextBytes(keyBuf);
       UnsafeAccess.copy(keyBuf, 0, key, keySize);
     }
 
-    private final int getValueSize() {
+    private int getValueSize() {
       double d = r.nextDouble();
       int size;
       int start, end;
@@ -249,7 +241,7 @@ public class BigSortedMapTestMT {
     }
 
     private void runPuts() {
-      log.debug(Thread.currentThread().getName() + "-test PUTs");
+      log.debug("{}-test PUTs", Thread.currentThread().getName());
       long start = System.currentTimeMillis();
       long totalSize = 0;
       while (true) {
@@ -261,19 +253,19 @@ public class BigSortedMapTestMT {
         int valueSize = getValueSize();
         totalSize += keySize + valueSize;
         boolean res = map.put(key, keySize, value, valueSize, 0);
-        if (res == false) {
+        if (!res) {
           totalLoaded.decrementAndGet();
           break;
         }
 
         totalOps++;
         if (n % 1000000 == 0) {
-          log.debug(Thread.currentThread().getName() + "- " + n);
+          log.debug("{}- {}", Thread.currentThread().getName(), n);
         }
       }
 
       long end = System.currentTimeMillis();
-      log.debug("Time to put " + totalOps + " = " + (end - start) + "ms. Total size=" + totalSize);
+      log.debug("Time to put {} = {} ms. Total size={}", totalOps, end - start, totalSize);
     }
 
     private boolean put() {
@@ -351,15 +343,12 @@ public class BigSortedMapTestMT {
           int result = Utils.compareTo(current, keySize, prev, keySize);
           if (result <= 0) {
             log.debug(
-                result
-                    + " prevVersion="
-                    + prevVersion
-                    + " prevType="
-                    + prevType
-                    + " curVersion="
-                    + scanner.keyVersion()
-                    + " curType="
-                    + scanner.keyOpType());
+                "{} prevVersion={} prevType={} curVersion={} curType={}",
+                result,
+                prevVersion,
+                prevType,
+                scanner.keyVersion(),
+                scanner.keyOpType());
           }
           assertTrue(result > 0);
         }
@@ -374,13 +363,12 @@ public class BigSortedMapTestMT {
         UnsafeAccess.free(prev);
       }
       long end = System.currentTimeMillis();
-      log.debug(
-          Thread.currentThread().getName() + " scanned " + count + " in " + (end - start) + "ms");
+      log.debug("{} scanned {} in {}ms", Thread.currentThread().getName(), count, end - start);
     }
   }
 
   @Test
-  public void testPerf() throws IOException {
+  public void testPerf() {
 
     BigSortedMap.setMaxBlockSize(4096);
     // int numThreads = 8;
@@ -390,8 +378,8 @@ public class BigSortedMapTestMT {
     while (cycle++ < totalCycles) {
       totalLoaded.set(0);
       totalDeleted.set(0);
-      log.debug("LOOP=" + cycle);
-      BigSortedMap map = new BigSortedMap((long) 1 * 1024 * 1024 * 1024);
+      log.debug("LOOP={}", cycle);
+      BigSortedMap map = new BigSortedMap((long) 1024 * 1024 * 1024);
 
       Worker[] workers = new Worker[totalThreads];
       for (int i = 0; i < totalThreads; i++) {
@@ -404,27 +392,21 @@ public class BigSortedMapTestMT {
           workers[i].join();
         } catch (InterruptedException e) {
           // TODO Auto-generated catch block
-          e.printStackTrace();
+          log.error("StackTrace: ", e);
         }
       }
 
       log.debug(
-          "MEM="
-              + BigSortedMap.getGlobalAllocatedMemory()
-              + "\nDATA="
-              + BigSortedMap.getGlobalDataSize()
-              + "\nUTILIZATION="
-              + (((double) BigSortedMap.getGlobalDataSize())
-                  / BigSortedMap.getGlobalAllocatedMemory()));
+          "MEM={}\nDATA={}\nUTILIZATION={}",
+          BigSortedMap.getGlobalAllocatedMemory(),
+          BigSortedMap.getGlobalDataSize(),
+          (double) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
       log.debug(
-          "num threads="
-              + totalThreads
-              + " PUT="
-              + putsPs.get()
-              + " GET="
-              + comboPs.get()
-              + " SCAN="
-              + scanPs.get());
+          "num threads={} PUT={} GET={} SCAN={}",
+          totalThreads,
+          putsPs.get(),
+          comboPs.get(),
+          scanPs.get());
       map.dispose();
       putsPs.set(0);
       comboPs.set(0);

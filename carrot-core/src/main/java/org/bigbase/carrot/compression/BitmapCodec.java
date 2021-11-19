@@ -260,11 +260,7 @@ public class BitmapCodec implements Codec {
       totalTime += (t2 - t1);
     }
 
-    log.debug(
-        "TZ="
-            + totalZ
-            + " time per byte (ns)="
-            + ((double) totalTime) / (8 * numCycles * arr.length));
+    log.debug("TZ={} time per byte (ns)={}",totalZ, ((double) totalTime) / (8 * numCycles * arr.length));
   }
 
   private static long timeIt(long[] arr) {

@@ -114,7 +114,7 @@ public class RedisZSetsDenialOfService {
       double score = getNextScore();
       client.zadd(key, score, host);
       if (i % 10000 == 0 && i > 0) {
-        log.debug("zadd " + i);
+        log.debug("zadd {}", i);
       }
     }
     long endTime = System.currentTimeMillis();
@@ -122,14 +122,10 @@ public class RedisZSetsDenialOfService {
     long num = max;
 
     log.debug(
-        "Loaded "
-            + num
-            + " [host, number] pairs"
-            + ", total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime)
-            + "ms. Press any button ...");
+        "Loaded {} [host, number] pairs, total size={} in {}ms. Press any button ...",
+        num,
+        totalDataSize,
+        endTime - startTime);
     System.in.read();
 
     client.del(key);

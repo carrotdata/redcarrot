@@ -69,7 +69,7 @@ public class AtomicIncrementTestMT {
           try {
             map.incrementLongOp(k.address, k.length, 1);
           } catch (OperationFailedException e) {
-            log.error("Increment failed.");
+            log.error("Increment failed.", e);
             break;
           }
           totalIncrements.incrementAndGet();
@@ -87,15 +87,12 @@ public class AtomicIncrementTestMT {
           }
           if (totalLoaded.get() % 1000000 == 0) {
             log.debug(
-                getName()
-                    + " loaded = "
-                    + totalLoaded
-                    + " increments="
-                    + totalIncrements
-                    + " mem="
-                    + BigSortedMap.getGlobalAllocatedMemory()
-                    + " max="
-                    + BigSortedMap.getGlobalMemoryLimit());
+                "{} loaded = {} increments={} mem={} max={}",
+                getName(),
+                totalLoaded,
+                totalIncrements,
+                BigSortedMap.getGlobalAllocatedMemory(),
+                BigSortedMap.getGlobalMemoryLimit());
           }
         }
       } // end while
@@ -112,7 +109,7 @@ public class AtomicIncrementTestMT {
   @Test
   public void testIncrement() throws IOException {
     for (int k = 1; k <= 1; k++) {
-      log.debug("Increment test run #" + k);
+      log.debug("Increment test run #{}", k);
 
       BigSortedMap.setMaxBlockSize(4096);
       map = new BigSortedMap(10000000000L);
@@ -130,7 +127,7 @@ public class AtomicIncrementTestMT {
             runners[i].join();
           } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("StackTrace: ", e);
           }
         }
 
@@ -144,22 +141,19 @@ public class AtomicIncrementTestMT {
           total += UnsafeAccess.toLong(addr);
           scanner.next();
         }
-        log.debug("totalLoaded=" + totalLoaded + " actual=" + count);
+        log.debug("totalLoaded={} actual={}", totalLoaded, count);
 
         assertEquals(totalIncrements.get(), total);
         // CHECK THIS
         assertEquals(keys.size(), (int) count);
         log.debug(
-            "Time to load= "
-                + totalLoaded
-                + " and to increment ="
-                + totalIncrements
-                + "="
-                + (end - start)
-                + "ms");
-        log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
-        log.debug("Total   data=" + BigSortedMap.getGlobalBlockDataSize());
-        log.debug("Total  index=" + BigSortedMap.getGlobalBlockIndexSize());
+            "Time to load= {} and to increment ={}={}ms",
+            totalLoaded,
+            totalIncrements,
+            end - start);
+        log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+        log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
+        log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());
       } finally {
         if (map != null) {
           map.dispose();

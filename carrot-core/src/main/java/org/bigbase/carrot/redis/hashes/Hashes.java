@@ -372,7 +372,7 @@ public class Hashes {
         count += set.getAdded();
 
         if (count % 100000 == 0) {
-          log.debug("Loaded " + count);
+          log.debug("Loaded {}", count);
         }
       }
       return count;
@@ -865,7 +865,7 @@ public class Hashes {
         scanner.close();
       } catch (IOException e) {
         // should never be thrown
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       return total;
     } finally {

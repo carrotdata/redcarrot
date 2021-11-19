@@ -78,7 +78,7 @@ public class SetsMultithreadedTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 100; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       setUp();
       runTest();
       tearDown();
@@ -93,7 +93,7 @@ public class SetsMultithreadedTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 100; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {}  Compression=LZ4", i + 1);
       setUp();
       runTest();
       tearDown();
@@ -126,13 +126,13 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 loaded++;
                 if (loaded % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " loaded " + loaded);
+                  log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
                 }
               }
               int card = (int) Sets.SCARD(map, ptr, keySize);
               if (card != values.size()) {
                 card = (int) Sets.SCARD(map, ptr, keySize);
-                log.error("Second CARD=" + card);
+                log.error("Second CARD={}", card);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -161,7 +161,7 @@ public class SetsMultithreadedTest {
                 assertEquals(1, res);
                 read++;
                 if (read % 1000000 == 0) {
-                  log.debug(Thread.currentThread().getName() + " read " + read);
+                  log.debug("{} read {}", Thread.currentThread().getName(), read);
                 }
               }
             }
@@ -194,7 +194,7 @@ public class SetsMultithreadedTest {
               assertTrue(res);
               card = Sets.SCARD(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card =" + card);
+                log.error("FAILED delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);
@@ -217,7 +217,7 @@ public class SetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
@@ -241,7 +241,7 @@ public class SetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 
@@ -265,11 +265,11 @@ public class SetsMultithreadedTest {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Deleting of " + numThreads * keysNumber + " sets in " + (end - start) + "ms");
+    log.debug("Deleting of {} sets in {}ms", numThreads * keysNumber, end - start);
     assertEquals(0L, map.countRecords());
   }
 }

@@ -108,20 +108,17 @@ public class StringsAtomicCounters {
       count++;
       Strings.INCRBY(map, key.address, key.length, r.nextInt(MAX_VALUE));
       if (count % 100000 == 0) {
-        log.debug("set long " + count);
+        log.debug("set long {}", count);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + keys.size()
-            + " long counters of avg size="
-            + (keyTotalSize / N + 8)
-            + " each in "
-            + (endTime - startTime)
-            + "ms. RAM usage="
-            + (UnsafeAccess.getAllocatedMemory() - keyTotalSize));
+        "Loaded {} long counters of avg size={} each in {}ms. RAM usage={}",
+        keys.size(),
+        keyTotalSize / N + 8,
+        endTime - startTime,
+        UnsafeAccess.getAllocatedMemory() - keyTotalSize);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Delete all
@@ -137,16 +134,18 @@ public class StringsAtomicCounters {
     //      count++;
     //      Strings.INCRBYFLOAT(map, key.address, key.length, 1d);
     //      if (count % 100000 == 0) {
-    //        log.debug("set float "+ count);
+    //        log.debug("set float {}", count);
     //      }
     //    }
     //
     //    endTime = System.currentTimeMillis();
     //
-    //    log.debug("Loaded " + keys.size() +" double counters of avg size="
-    // +(keyTotalSize/N + 8)+ " each in "
-    //        + (endTime - startTime) + "ms. RAM usage="+ (UnsafeAccess.getAllocatedMemory() -
-    // keyTotalSize));
+//    log.debug(
+//        "Loaded {} double counters of avg size={} each in {}ms. RAM usage={}",
+//        keys.size(),
+//        +(keyTotalSize / N + 8),
+//        endTime - startTime,
+//        UnsafeAccess.getAllocatedMemory() - keyTotalSize);
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     map.dispose();

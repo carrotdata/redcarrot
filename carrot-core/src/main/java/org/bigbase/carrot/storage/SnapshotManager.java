@@ -1,18 +1,19 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.storage;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,10 +47,7 @@ public class SnapshotManager {
     boolean result = worker.take(store, sync);
     if (!result) {
       // WARN
-      log.debug(
-          "WARNING! Active snapshot started at "
-              + worker.getLastSnapshotTime()
-              + " is still in progress.");
+      log.debug("WARNING! Active snapshot started at {}", worker.getLastSnapshotTime());
     }
     return result;
   }
@@ -86,7 +84,7 @@ class SnapshotThread extends Thread {
   }
 
   public void run() {
-    log.debug("Thread " + getName() + " started at " + new Date());
+    log.debug("Thread {} started at {}", getName(), LocalDateTime.now());
     for (; ; ) {
       try {
         wait();
@@ -97,11 +95,11 @@ class SnapshotThread extends Thread {
       if (map == null) {
         continue;
       }
-      log.debug("Snapshot started at " + lastSnapshotTime);
+      log.debug("Snapshot started at {}", lastSnapshotTime);
       lastSnapshotTime = new Date();
       map.snapshot();
       storeRef.set(null);
-      log.debug("Snapshot finished at " + new Date());
+      log.debug("Snapshot finished at {}", LocalDateTime.now());
     }
   }
 }

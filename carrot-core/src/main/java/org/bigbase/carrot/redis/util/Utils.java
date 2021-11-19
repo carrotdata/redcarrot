@@ -64,11 +64,11 @@ public class Utils {
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      /*DEBUG*/ log.error(
-          "PANIC!!! - wrong message format: pos = "
-              + buf.position()
-              + " remaining="
-              + buf.remaining());
+      log.error(
+          "PANIC!!! - wrong message format: pos = '{}{}{}'",
+          buf.position(),
+          " remaining=",
+          buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;
@@ -129,11 +129,11 @@ public class Utils {
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      /*DEBUG*/ log.error(
-          "PANIC!!! - wrong message format: pos = "
-              + buf.position()
-              + " remaining="
-              + buf.remaining());
+      log.error(
+          "PANIC!!! - wrong message format: pos = '{}{}{}'",
+          buf.position(),
+          " remaining=",
+          buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;

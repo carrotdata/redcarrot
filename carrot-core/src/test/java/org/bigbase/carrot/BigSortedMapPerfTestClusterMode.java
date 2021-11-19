@@ -27,7 +27,7 @@ public class BigSortedMapPerfTestClusterMode {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapPerfTestClusterMode.class);
 
-  class SingleRun implements Runnable {
+  static class SingleRun implements Runnable {
 
     BigSortedMap map;
     long totalLoaded;
@@ -42,30 +42,26 @@ public class BigSortedMapPerfTestClusterMode {
         byte[] key = ("KEY" + (totalLoaded)).getBytes();
         byte[] value = ("VALUE" + (totalLoaded)).getBytes();
         boolean res = map.put(key, 0, key.length, value, 0, value.length, 0);
-        if (res == false) {
+        if (!res) {
           totalLoaded--;
           break;
         }
         totalLoaded++;
         if (totalLoaded % 100000 == 0) {
           log.debug(
-              Thread.currentThread().getId()
-                  + ": Loaded "
-                  + totalLoaded
-                  + " RAM alocated="
-                  + BigSortedMap.getGlobalAllocatedMemory());
+              "{}: Loaded {} RAM allocated={}",
+              Thread.currentThread().getId(),
+              totalLoaded,
+              BigSortedMap.getGlobalAllocatedMemory());
         }
       }
       long end = System.currentTimeMillis();
       log.debug(
-          "Time to load="
-              + totalLoaded
-              + " ="
-              + (end - start)
-              + "ms"
-              + " RPS="
-              + (totalLoaded * 1000) / (end - start));
-      log.debug("Total memory=" + BigSortedMap.getGlobalAllocatedMemory());
+          "Time to load={} ={}ms RPS={}",
+          totalLoaded,
+          end - start,
+          totalLoaded * 1000 / (end - start));
+      log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
     }
 
     private void tearDown() {
@@ -77,14 +73,13 @@ public class BigSortedMapPerfTestClusterMode {
       int n = 10;
       long start = System.currentTimeMillis();
       for (int i = 0; i < n; i++) {
-        log.debug(Thread.currentThread().getId() + ": Scan Run started " + i);
+        log.debug("{}: Scan Run started {}", Thread.currentThread().getId(), i);
         totalScanned += countRecords();
-        log.debug(Thread.currentThread().getId() + ": Scan Run finished " + i);
+        log.debug("{}: Scan Run finished {}", Thread.currentThread().getId(), i);
       }
       long end = System.currentTimeMillis();
 
-      log.debug(
-          Thread.currentThread().getId() + ": " + totalScanned * 1000 / (end - start) + " RPS");
+      log.debug("{}: {} RPS", Thread.currentThread().getId(), totalScanned * 1000 / (end - start));
       assertEquals(n * totalLoaded, totalScanned);
     }
 
@@ -106,7 +101,7 @@ public class BigSortedMapPerfTestClusterMode {
         testCountRecords();
       } catch (IOException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
       tearDown();
     }
@@ -130,7 +125,7 @@ public class BigSortedMapPerfTestClusterMode {
         workers[i].join();
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.error("StackTrace: ", e);
       }
     }
 

@@ -92,19 +92,17 @@ public class RedisHashesAtomicCounters {
 
       client.hincrBy(key, field, nextScoreSkewed(r));
       if (i % 10000 == 0 && i > 0) {
-        log.debug("set hash " + i);
+        log.debug("set hash {}", i);
       }
     }
     long endTime = System.currentTimeMillis();
 
     log.debug(
-        "Loaded "
-            + N
-            + " counters into hash, total size="
-            + totalDataSize
-            + " in "
-            + (endTime - startTime)
-            + "ms");
+        "Loaded {} counters into hash, total size={} in {}ms",
+        N,
+        totalDataSize,
+        endTime - startTime);
+
     log.debug("Press any button ...");
     System.in.read();
 
@@ -120,12 +118,12 @@ public class RedisHashesAtomicCounters {
       skey = skey.substring(0, keySize);
       client.del(skey);
       if (i % 10000 == 0 && i > 0) {
-        log.debug("del " + i);
+        log.debug("del {}", i);
       }
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug("Deleted " + N + " counters" + " in " + (endTime - startTime) + "ms");
+    log.debug("Deleted {} counters {}ms", N, endTime - startTime);
   }
 
   private static int nextScoreSkewed(Random r) {

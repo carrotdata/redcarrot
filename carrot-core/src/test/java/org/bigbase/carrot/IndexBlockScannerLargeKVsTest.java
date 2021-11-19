@@ -27,13 +27,12 @@ public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
   private static final Logger log = LogManager.getLogger(IndexBlockScannerLargeKVsTest.class);
 
   protected ArrayList<Key> fillIndexBlock(IndexBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("FILL seed=" + seed);
+    log.debug("FILL seed={}", seed);
     int maxSize = 2048;
-    boolean result = true;
     while (true) {
       int len = r.nextInt(maxSize - 2) + 2;
       byte[] key = new byte[len];
@@ -42,8 +41,7 @@ public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
       len = key.length;
       long ptr = UnsafeAccess.malloc(len);
       UnsafeAccess.copy(key, 0, ptr, len);
-      result = b.put(ptr, len, ptr, len, 0, 0);
-      if (result) {
+      if (b.put(ptr, len, ptr, len, 0, 0)) {
         keys.add(new Key(ptr, len));
       } else {
         UnsafeAccess.free(ptr);
@@ -51,12 +49,10 @@ public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
       }
     }
     log.debug(
-        "Number of data blocks="
-            + b.getNumberOfDataBlock()
-            + " index block data size ="
-            + b.getDataInBlockSize()
-            + " num records="
-            + keys.size());
+        "Number of data blocks={} index block data size ={} num records={}",
+        b.getNumberOfDataBlock(),
+        b.getDataInBlockSize(),
+        keys.size());
     // b.dumpIndexBlockExt();
     return keys;
   }

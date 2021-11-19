@@ -43,7 +43,7 @@ public class IndexBlockScannerTest {
   @Test
   public void testAll() throws IOException {
     for (int i = 0; i < 1; i++) {
-      log.debug("\nRUN " + i + "\n");
+      log.debug("\nRUN {}\n", i);
       testFullScan();
       testFullScanWithCompressionLZ4();
       testFullScanWithCompressionLZ4HC();
@@ -81,7 +81,7 @@ public class IndexBlockScannerTest {
     IndexBlock ib = getIndexBlock(4096);
     List<Key> keys = fillIndexBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     IndexBlockScanner scanner = IndexBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE);
     verifyScanner(scanner, keys);
     scanner.close();
@@ -114,7 +114,7 @@ public class IndexBlockScannerTest {
     IndexBlock ib = getIndexBlock(4096);
     List<Key> keys = fillIndexBlock(ib);
     Utils.sortKeys(keys);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     // This creates reverse scanner
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(ib, 0, 0, 0, 0, Long.MAX_VALUE, null, true);
@@ -160,12 +160,12 @@ public class IndexBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("seed=" + seed);
+    log.debug("seed={}", seed);
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(0, stopRowIndex);
-    log.debug("Selected " + newkeys.size() + " kvs");
+    log.debug("Selected {} kvs", newkeys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE);
     verifyScanner(scanner, newkeys);
@@ -202,12 +202,12 @@ public class IndexBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testOpenStartScan seed=" + seed);
+    log.debug("testOpenStartScan seed={}", seed);
     int stopRowIndex = r.nextInt(keys.size());
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(0, stopRowIndex);
-    log.debug("Selected " + newkeys.size() + " kvs");
+    log.debug("Selected {} kvs", newkeys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(
             ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE, null, true);
@@ -247,9 +247,9 @@ public class IndexBlockScannerTest {
     Random r = new Random();
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, keys.size());
-    log.debug("Selected " + newkeys.size() + " kvs");
+    log.debug("Selected {} kvs", newkeys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE);
     verifyScanner(scanner, newkeys);
@@ -286,13 +286,13 @@ public class IndexBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testOpenEndScanReverse seed=" + seed);
+    log.debug("testOpenEndScanReverse seed={}", seed);
 
     int startRowIndex = r.nextInt(keys.size());
     Key startRow = keys.get(startRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, keys.size());
-    log.debug("Selected " + newkeys.size() + " kvs");
+    log.debug("Selected {} kvs", newkeys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(
             ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE, null, true);
@@ -339,9 +339,9 @@ public class IndexBlockScannerTest {
     }
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, stopRowIndex);
-    log.debug("Selected " + newkeys.size() + " kvs");
+    log.debug("Selected {} kvs", newkeys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(
             ib, startRow.address, startRow.length, stopRow.address, stopRow.length, Long.MAX_VALUE);
@@ -380,7 +380,7 @@ public class IndexBlockScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("testSubScanReverse seed=" + seed);
+    log.debug("testSubScanReverse seed={}", seed);
 
     int startRowIndex = r.nextInt(keys.size());
     int stopRowIndex = r.nextInt(keys.size());
@@ -392,9 +392,9 @@ public class IndexBlockScannerTest {
 
     Key startRow = keys.get(startRowIndex);
     Key stopRow = keys.get(stopRowIndex);
-    log.debug("Loaded " + keys.size() + " kvs");
+    log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, stopRowIndex);
-    log.debug("Selected " + keys.size() + " kvs");
+    log.debug("Selected {} kvs", keys.size());
     IndexBlockScanner scanner =
         IndexBlockScanner.getScanner(
             ib,
@@ -441,14 +441,14 @@ public class IndexBlockScannerTest {
         Key key = keys.get(count - 1);
         int keySize = dbscn.keySize();
         int valSize = dbscn.valueSize();
-        // log.debug("expected size="+ key.length +" actual="+ keySize);
+        //         log.debug("expected size={} actual={}",key.length, keySize);
         assertEquals(key.length, keySize);
         assertEquals(key.length, valSize);
         byte[] buf = new byte[keySize];
         dbscn.key(buf, 0);
-        assertTrue(Utils.compareTo(buf, 0, keySize, key.address, key.length) == 0);
+        assertEquals(0, Utils.compareTo(buf, 0, keySize, key.address, key.length));
         dbscn.value(buf, 0);
-        assertTrue(Utils.compareTo(buf, 0, valSize, key.address, key.length) == 0);
+        assertEquals(0, Utils.compareTo(buf, 0, valSize, key.address, key.length));
         dbscn.next();
       }
     }
@@ -477,9 +477,9 @@ public class IndexBlockScannerTest {
         assertEquals(key.length, valSize);
         byte[] buf = new byte[keySize];
         dbscn.key(buf, 0);
-        assertTrue(Utils.compareTo(buf, 0, keySize, key.address, key.length) == 0);
+        assertEquals(0, Utils.compareTo(buf, 0, keySize, key.address, key.length));
         dbscn.value(buf, 0);
-        assertTrue(Utils.compareTo(buf, 0, valSize, key.address, key.length) == 0);
+        assertEquals(0, Utils.compareTo(buf, 0, valSize, key.address, key.length));
       } while (dbscn.previous());
       dbscn.close();
     } while ((dbscn = scanner.previousBlockScanner()) != null);
@@ -494,14 +494,14 @@ public class IndexBlockScannerTest {
   }
 
   protected List<Key> fillIndexBlock(IndexBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("FILL seed=" + seed);
+    log.debug("FILL seed={}", seed);
     int kvSize = 32;
     boolean result = true;
-    while (result == true) {
+    while (result) {
       byte[] key = new byte[kvSize];
       r.nextBytes(key);
       long ptr = UnsafeAccess.malloc(kvSize);
@@ -514,13 +514,10 @@ public class IndexBlockScannerTest {
       }
     }
     log.debug(
-        "Number of data blocks="
-            + b.getNumberOfDataBlock()
-            + " "
-            + " index block data size ="
-            + b.getDataInBlockSize()
-            + " num records="
-            + keys.size());
+        "Number of data blocks={} index block data size ={} num records{}",
+        b.getNumberOfDataBlock(),
+        b.getDataInBlockSize(),
+        keys.size());
     return keys;
   }
 }

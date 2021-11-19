@@ -230,7 +230,7 @@ public class Server {
       while (true) {
         waitForWork();
         /*DEBUG*/
-        log.debug("[" + Thread.currentThread().getName() + "] BGSAVE started");
+        log.debug("[{}] BGSAVE started", Thread.currentThread().getName());
         BigSortedMap map = schedules.get(0);
         map.snapshot();
         schedules.remove(0);

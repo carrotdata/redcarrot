@@ -13,13 +13,10 @@
 */
 package org.bigbase.carrot.redis.hashes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +30,8 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class HashScannerTest {
 
@@ -53,7 +52,7 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("VALUES SEED=" + seed);
+    log.debug("VALUES SEED={}", seed);
     byte[] vbuf = new byte[valSize];
     byte[] fbuf = new byte[fieldSize];
     for (int i = 0; i < n; i++) {
@@ -74,7 +73,7 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("KEY SEED=" + seed);
+    log.debug("KEY SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, valSize);
     return new Key(ptr, valSize);
@@ -90,7 +89,7 @@ public class HashScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL");
+      log.debug("*************** RUN = {} Compression=NULL", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -103,7 +102,7 @@ public class HashScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4");
+      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -116,7 +115,7 @@ public class HashScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
     for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC");
+      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
       allTests();
       BigSortedMap.printGlobalMemoryAllocationStats();
       UnsafeAccess.mallocStats.printStats();
@@ -159,7 +158,7 @@ public class HashScannerTest {
     testSinglePartialScannerReverseOpenEnd();
     tearDown();
     long end = System.currentTimeMillis();
-    log.debug("\nRUN in " + (end - start) + "ms");
+    log.debug("\nRUN in {}ms", end - start);
   }
 
   private void loadData(Key key, List<KeyValue> values) {
@@ -172,7 +171,7 @@ public class HashScannerTest {
   @Test
   public void testSingleFullScanner() throws IOException {
 
-    log.debug("Test single full scanner - one key " + n + " elements");
+    log.debug("Test single full scanner - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -182,17 +181,12 @@ public class HashScannerTest {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte field-values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte field-values. Overhead={} bytes per value. Time to load:{} ",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -201,12 +195,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      /*DEBUG*/ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       HashScanner scanner =
           Hashes.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, false);
@@ -278,7 +272,7 @@ public class HashScannerTest {
     long mptr2 = UnsafeAccess.allocAndCopy(max2, 0, max2.length);
     int mptrSize2 = max2.length;
 
-    log.debug("Test edge conditions " + n + " elements");
+    log.debug("Test edge conditions {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -289,48 +283,45 @@ public class HashScannerTest {
     Utils.sortKeyValues(values);
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
+        end - start);
 
     // Direct
     HashScanner scanner =
         Hashes.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, false);
-    assertTrue(scanner.hasNext() == false);
+    assertNotNull(scanner);
+    assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
     scanner =
         Hashes.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, true);
-    assertTrue(scanner == null);
+    assertNull(scanner);
 
     // Direct
     scanner =
         Hashes.getScanner(
             map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, false);
-    assertTrue(scanner.hasNext() == false);
+    assertNotNull(scanner);
+    assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
     scanner =
         Hashes.getScanner(
             map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, true);
-    assertTrue(scanner == null);
+    assertNull(scanner);
 
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     int index = r.nextInt(values.size());
     int expected = index;
@@ -341,10 +332,12 @@ public class HashScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.keyPtr, v.keySize, false, false);
 
     if (expected == 0) {
-      assertTrue(scanner.hasNext() == false);
+      assertNotNull(scanner);
+      assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
+    assertNotNull(scanner);
     scanner.close();
 
     // Reverse
@@ -353,9 +346,10 @@ public class HashScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.keyPtr, v.keySize, false, true);
 
     if (expected == 0) {
-      assertTrue(scanner == null);
+      assertNull(scanner);
     } else {
       assertEquals(expected, Utils.countReverse(scanner));
+      assertNotNull(scanner);
       scanner.close();
     }
     // Always close ALL scanners
@@ -369,10 +363,12 @@ public class HashScannerTest {
             map, key.address, key.length, v.keyPtr, v.keySize, mptr2, mptrSize2, false, false);
 
     if (expected == 0) {
-      assertTrue(scanner.hasNext() == false);
+      assertNotNull(scanner);
+      assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
+    assertNotNull(scanner);
     scanner.close();
 
     // Reverse
@@ -381,9 +377,10 @@ public class HashScannerTest {
             map, key.address, key.length, v.keyPtr, v.keySize, mptr2, mptrSize2, false, true);
 
     if (expected == 0) {
-      assertTrue(scanner == null);
+      assertNull(scanner);
     } else {
       assertEquals(expected, Utils.countReverse(scanner));
+      assertNotNull(scanner);
       scanner.close();
     }
 
@@ -404,7 +401,7 @@ public class HashScannerTest {
   @Test
   public void testSingleFullScannerReverse() throws IOException {
 
-    log.debug("Test single full scanner reverse - one key " + n + " elements");
+    log.debug("Test single full scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -414,17 +411,12 @@ public class HashScannerTest {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte field-values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte field-values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -433,12 +425,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size=" + copy.size());
+      log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       HashScanner scanner =
           Hashes.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, true);
@@ -476,7 +468,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScanner() throws IOException {
 
-    log.debug("Test single partial scanner - one key " + n + " elements");
+    log.debug("Test single partial scanner - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -487,17 +479,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -506,12 +493,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      log.debug("Hash size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -558,7 +545,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
 
-    log.debug("Test single partial scanner open start - one key " + n + " elements");
+    log.debug("Test single partial scanner open start - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -569,17 +556,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -588,12 +570,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      log.debug("Hash size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = 0;
@@ -604,7 +586,7 @@ public class HashScannerTest {
       long endPtr = copy.get(endIndex).keyPtr;
       int endSize = copy.get(endIndex).keySize;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
       HashScanner scanner =
           Hashes.getScanner(
               map, key.address, key.length, startPtr, startSize, endPtr, endSize, false, false);
@@ -640,7 +622,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
 
-    log.debug("Test single partial scanner open end - one key " + n + " elements");
+    log.debug("Test single partial scanner open end - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -650,17 +632,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -669,12 +646,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      log.debug("Hash size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -721,7 +698,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
 
-    log.debug("Test single partial scanner reverse - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -731,17 +708,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -750,12 +722,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      /*DEBUG*/ log.debug("Hash size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -802,7 +774,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
 
-    log.debug("Test single partial scanner reverse open start - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse open start - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -812,17 +784,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} fot {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -831,12 +798,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      log.debug("Hash size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = 0; // r.nextInt(copy.size());
@@ -883,7 +850,7 @@ public class HashScannerTest {
   @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
 
-    log.debug("Test single partial scanner reverse open end - one key " + n + " elements");
+    log.debug("Test single partial scanner reverse open end - one key {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -893,17 +860,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + (fieldSize + valSize)
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        fieldSize + valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
+        end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -912,12 +874,12 @@ public class HashScannerTest {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed=" + seed);
+    log.debug("Test seed={}", seed);
 
     long card = 0;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Hash size=" + copy.size());
+      /*DEBUG*/ log.debug("Hash size={}", copy.size());
 
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
@@ -965,7 +927,7 @@ public class HashScannerTest {
   @Test
   public void testDirectScannerPerformance() throws IOException {
     int n = 5000; // 5M elements
-    log.debug("Test direct scanner performance " + n + " elements");
+    log.debug("Test direct scanner performance {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -974,22 +936,18 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
+        end - start);
 
     HashScanner scanner = Hashes.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, false);
 
     start = System.currentTimeMillis();
     long count = 0;
+    assertNotNull(scanner);
     while (scanner.hasNext()) {
       count++;
       scanner.next();
@@ -997,7 +955,7 @@ public class HashScannerTest {
     scanner.close();
     assertEquals(count, (long) n);
     end = System.currentTimeMillis();
-    log.debug("Scanned " + n + " elements in " + (end - start) + "ms");
+    log.debug("Scanned {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
     values.stream()
@@ -1012,7 +970,7 @@ public class HashScannerTest {
   @Test
   public void testReverseScannerPerformance() throws IOException {
     int n = 5000; // 5M elements
-    log.debug("Test reverse scanner performance " + n + " elements");
+    log.debug("Test reverse scanner performance {} elements", n);
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -1022,17 +980,12 @@ public class HashScannerTest {
     long end = System.currentTimeMillis();
 
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
+        +end - start);
 
     HashScanner scanner = Hashes.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, true);
 
@@ -1041,12 +994,12 @@ public class HashScannerTest {
 
     do {
       count++;
-    } while (scanner.previous());
+    } while (Objects.requireNonNull(scanner).previous());
     scanner.close();
     assertEquals(count, (long) n);
 
     end = System.currentTimeMillis();
-    log.debug("Scanned (reversed) " + n + " elements in " + (end - start) + "ms");
+    log.debug("Scanned (reversed) {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
     values.stream()

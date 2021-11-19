@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.redis;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import org.bigbase.carrot.redis.lists.Lists;
 /** Main service launcher */
 public class CarrotMain {
 
-  private static final Logger logger = LogManager.getLogger(CarrotMain.class);
+  private static final Logger log = LogManager.getLogger(CarrotMain.class);
   
   public static void main(String[] args) {
     if (args.length != 2) {
@@ -74,16 +74,16 @@ public class CarrotMain {
       int port = Integer.parseInt(parts[1].trim());
       nodeServers[i] = new CarrotNodeServer(host, port);
       nodeServers[i].start();
-      logger.debug("Start nodeServers '{}'}", nodeServers[i]);
+      log.debug("Start nodeServers '{}'", nodeServers[i]);
     }
 
     // Wait for all of them
     for (CarrotNodeServer nodeServer : nodeServers) {
-      logger.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
+      log.debug("Wait for shutdown nodeServers '{}'}", nodeServer);
       nodeServer.join();
     }
     // shutdown
-    logger.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
+    log.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
   }
 
   private static void usage() {
@@ -92,13 +92,13 @@ public class CarrotMain {
   }
 
   private static void loadConfigAndInit(String confFilePath) {
-    logger.trace("CarrotMain loadConfigAndInit...");
+    log.trace("CarrotMain loadConfigAndInit...");
     RedisConf conf = RedisConf.getInstance(confFilePath);
     long limit = conf.getMaxMemoryLimit();
-    logger.debug("Max limit memory '{}'", limit);
+    log.debug("Max limit memory '{}'", limit);
     BigSortedMap.setGlobalMemoryLimit(limit);
     BigSortedMap.setCompressionCodec(conf.getCompressionCodec());
-    logger.debug("setCompressionCodec '{}'", conf.getCompressionCodec());
+    log.debug("setCompressionCodec '{}'", conf.getCompressionCodec());
     // Register custom memory deallocator for LIST data type
     Lists.registerDeallocator();
     Lists.registerSerDe();
@@ -107,12 +107,8 @@ public class CarrotMain {
   private static void loadConfig(String confFilePath) {
     RedisConf conf = RedisConf.getInstance(confFilePath);
   }
-  
-  static void log(String str) {
-    logger.info("[{}] {}", Thread.currentThread().getName(), str);
-  }
 
-  static void logError(String str) {
-    logger.error("[{}] {}", Thread.currentThread().getName(), str);
+  static void log(String str) {
+    log.info("[{}] {}", Thread.currentThread().getName(), str);
   }
 }

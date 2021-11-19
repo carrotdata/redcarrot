@@ -62,12 +62,12 @@ public class TestRedisAdServerAdIndexing {
         client.sadd(k.getBytes(), Bytes.toBytes(id));
         count++;
         if (count % 100000 == 0) {
-          log.debug("LocAds :" + count);
+          log.debug("LocAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("LocAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("LocAds : loaded {} in {}ms", count, end - start);
   }
 
   private static String getWord(Random r) {
@@ -95,12 +95,12 @@ public class TestRedisAdServerAdIndexing {
         client.zadd(k.getBytes(), 0, Bytes.toBytes(id));
         count++;
         if (count % 100000 == 0) {
-          log.debug("WordAds :" + count);
+          log.debug("WordAds :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("WordAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("WordAds : loaded {} in {}ms", count, end - start);
   }
 
   static enum Type {
@@ -121,7 +121,7 @@ public class TestRedisAdServerAdIndexing {
       client.hset(key.getBytes(), Bytes.toBytes(i), val.getBytes());
     }
     long end = System.currentTimeMillis();
-    log.debug("AdType : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdType : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdeCPM(Jedis client) {
@@ -134,7 +134,7 @@ public class TestRedisAdServerAdIndexing {
       client.zadd(key.getBytes(), eCPM, Bytes.toBytes(i));
     }
     long end = System.currentTimeMillis();
-    log.debug("AdeCPM : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdeCPM : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdBase(Jedis client) {
@@ -148,7 +148,7 @@ public class TestRedisAdServerAdIndexing {
       client.zadd(key.getBytes(), base, Bytes.toBytes(i));
     }
     long end = System.currentTimeMillis();
-    log.debug("AdBase : loaded " + MAX_ADS + " in " + (end - start) + "ms");
+    log.debug("AdBase : loaded {} in {}ms", MAX_ADS, end - start);
   }
 
   private static void doAdWords(Jedis client) {
@@ -167,11 +167,11 @@ public class TestRedisAdServerAdIndexing {
         client.sadd(k.getBytes(), word.getBytes());
         count++;
         if (count % 100000 == 0) {
-          log.debug("AdWords :" + count);
+          log.debug("AdWords :{}", count);
         }
       }
     }
     long end = System.currentTimeMillis();
-    log.debug("AdWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("AdWords : loaded {} in {}ms", count, end - start);
   }
 }

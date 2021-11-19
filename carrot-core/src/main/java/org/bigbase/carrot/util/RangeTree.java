@@ -1,16 +1,16 @@
 /*
-  Copyright (C) 2021-present Carrot, Inc.
+ Copyright (C) 2021-present Carrot, Inc.
 
-  <p>This program is free software: you can redistribute it and/or modify it under the terms of the
-  Server Side Public License, version 1, as published by MongoDB, Inc.
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
 
-  <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  Server Side Public License for more details.
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
 
-  <p>You should have received a copy of the Server Side Public License along with this program. If
-  not, see <http://www.mongodb.com/licensing/server-side-public-license>.
- */
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
 package org.bigbase.carrot.util;
 
 import java.util.Map;
@@ -65,18 +65,9 @@ public class RangeTree {
     boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
     if (!result && r != null) {
       log.debug(
-          "Check FAILED for range ["
-              + start
-              + ","
-              + size
-              + "] Found allocation ["
-              + r.start
-              + ","
-              + r.size
-              + "]");
+          "Check FAILED for range [{},{}] Found allocation [{},{}]", start, size, r.start, r.size);
     } else if (!result) {
-      log.debug(
-          "Check FAILED for range [" + start + "," + size + "] No allocation found.");
+      log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
     }
     return result;
   }

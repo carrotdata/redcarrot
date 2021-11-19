@@ -164,11 +164,11 @@ public class LZ4HCCodec implements Codec {
     src.put(buf);
     src.flip();
     int compSize = codec.compress(src, dst);
-    log.debug("Size=" + str.length() + " compressed =" + compSize);
+    log.debug("Size={} compressed ={}", str.length(), compSize);
 
     src.clear();
 
     int decSize = codec.decompress(dst, src);
-    log.debug("Size=" + str.length() + " decompressed =" + decSize);
+    log.debug("Size={} decompressed ={}", str.length(), decSize);
   }
 }

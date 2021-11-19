@@ -96,7 +96,7 @@ public class SparseBitmapsComparison {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("SEED=" + seed);
+    log.debug("SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, keySize);
     return new Key(ptr, keySize);
@@ -120,7 +120,7 @@ public class SparseBitmapsComparison {
     log.debug("");
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
-      log.debug("*************** RUN = " + (i + 1) + " Compression=NULL, dencity=" + dencity);
+      log.debug("*************** RUN = {} Compression=NULL, dencity={}", i + 1, dencity);
       allTests();
     }
   }
@@ -130,7 +130,7 @@ public class SparseBitmapsComparison {
     log.debug("");
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4, dencity=" + dencity);
+      log.debug("*************** RUN = {} Compression=LZ4, dencity={}", i + 1, dencity);
       allTests();
     }
   }
@@ -141,7 +141,7 @@ public class SparseBitmapsComparison {
     for (int i = 0; i < dencities.length; i++) {
       dencity = dencities[i];
 
-      log.debug("*************** RUN = " + (i + 1) + " Compression=LZ4HC, dencity=" + dencity);
+      log.debug("*************** RUN = {} Compression=LZ4HC, dencity={}", i + 1, dencity);
       allTests();
     }
   }
@@ -170,23 +170,19 @@ public class SparseBitmapsComparison {
     }
     long end = System.currentTimeMillis();
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ log.debug("Total RAM=" + memory + " MAX=" + MAX + "\n");
+    /*DEBUG*/ log.debug("Total RAM={} MAX={}\n", memory, MAX);
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assert (expected == count);
 
     log.debug(
-        "Time for "
-            + N
-            + " population dencity="
-            + dencity
-            + " bitmap size="
-            + (MAX)
-            + " new SetBit="
-            + (end - start)
-            + "ms");
-    log.debug("COMPRESSION ratio =" + (((double) MAX) / (8 * memory)));
+        "Time for {} population dencity={} bitmap size={} new SetBit={}ms.",
+        N,
+        dencity,
+        MAX,
+        end - start);
+    log.debug("COMPRESSION ratio ={}", (double) MAX / (8 * memory));
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 

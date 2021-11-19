@@ -84,7 +84,7 @@ public class TestCarrotAdServerUserTarget {
     doUserViewAds(map);
     doUserActionAds(map);
     long memory = BigSortedMap.getGlobalAllocatedMemory();
-    log.debug("Total memory=" + memory);
+    log.debug("Total memory={}", memory);
     map.dispose();
   }
 
@@ -115,13 +115,13 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("UserViewWords :" + count);
+          log.debug("UserViewWords :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("UserViewWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewWords : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserActionWords(BigSortedMap map) {
@@ -151,13 +151,13 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
-          log.debug("UserActionWords :" + count);
+          log.debug("UserActionWords :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
     long end = System.currentTimeMillis();
-    log.debug("UserActionWords : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionWords : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserViewAds(BigSortedMap map) {
@@ -185,14 +185,14 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(vPtr);
         UnsafeAccess.free(mPtr);
         if (count % 100000 == 0) {
-          log.debug("UserViewAds :" + count);
+          log.debug("UserViewAds :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    log.debug("UserViewAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserViewAds : loaded {} in {}ms", count, end - start);
   }
 
   private static void doUserActionAds(BigSortedMap map) {
@@ -220,13 +220,13 @@ public class TestCarrotAdServerUserTarget {
         UnsafeAccess.free(vPtr);
         UnsafeAccess.free(mPtr);
         if (count % 100000 == 0) {
-          log.debug("UserActionAds :" + count);
+          log.debug("UserActionAds :{}", count);
         }
       }
       UnsafeAccess.free(keyPtr);
     }
 
     long end = System.currentTimeMillis();
-    log.debug("UserActionAds : loaded " + count + " in " + (end - start) + "ms");
+    log.debug("UserActionAds : loaded {} in {}ms", count, end - start);
   }
 }
