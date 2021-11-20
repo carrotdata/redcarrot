@@ -19,37 +19,72 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class BigSortedMapLargeKVsTest {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapLargeKVsTest.class);
 
   static long buffer = UnsafeAccess.malloc(64 * 1024);
 
-  BigSortedMap map;
-  long totalLoaded;
-  List<Key> keys;
-
+  /*
+   * Static block
+   */
+  static BigSortedMap map;
+  static long totalLoaded;
+  static List<Key> keys;
+  static long MaxMemory = 10000000; // ~ 10MB
+  static Codec codec;
+  
   static {
-    UnsafeAccess.debug = true;
+   // UnsafeAccess.debug = true;
   }
 
+  @Parameterized.Parameters (name = "Run with codec={0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] { 
+      {CodecFactory.getInstance().getCodec(CodecType.NONE)}, 
+      {CodecFactory.getInstance().getCodec(CodecType.LZ4)}
+      });
+  }
+  
+  @AfterClass
+  public static void cleanAll() {
+    tearDown();
+  }
+  
+  public BigSortedMapLargeKVsTest(Object c) throws IOException {
+    super();
+    codec = (Codec) c;
+    // Tear down previous run if it was
+    tearDown();
+    // set up for new run
+    setUp();
+  }
+  
   private void setUp() throws IOException {
+    
+    BigSortedMap.setCompressionCodec(codec);
     BigSortedMap.setMaxBlockSize(4096);
-    map = new BigSortedMap(100000000);
+    map = new BigSortedMap(MaxMemory);
     log.debug("After map creation:");
     map.printMemoryAllocationStats();
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -80,74 +115,24 @@ public class BigSortedMapLargeKVsTest {
     assertEquals(totalLoaded, scanned);
   }
 
-  private void tearDown() {
+  private static void tearDown() {
+    if (map == null) return;
     map.printMemoryAllocationStats();
     map.dispose();
     map.printMemoryAllocationStats();
     // Free keys
     deallocate(keys);
+    map = null;
   }
 
-  private void deallocate(List<Key> keys) {
+  private static void deallocate(List<Key> keys) {
     for (Key key : keys) {
       UnsafeAccess.free(key.address);
     }
     keys.clear();
   }
 
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = NONE\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
 
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {}} ********** Codec = LZ4HC\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  protected void allTests() throws IOException {
-    testGetAfterLoad();
-    testExists();
-    testFullMapScanner();
-    testDeleteUndeleted();
-    testFullMapScannerWithDeletes();
-    testDirectMemoryAllRangesMapScanner();
-    testDirectMemoryFullMapScanner();
-    testDirectMemoryFullMapScannerWithDeletes();
-  }
-
-  @Ignore
   @Test
   public void testDeleteUndeleted() throws IOException {
     log.debug("testDeleteUndeleted");
@@ -157,7 +142,6 @@ public class BigSortedMapLargeKVsTest {
     assertEquals(totalLoaded, countRecords());
   }
 
-  @Ignore
   @Test
   public void testGetAfterLoad() {
     log.debug("testGetAfterLoad");
@@ -181,7 +165,6 @@ public class BigSortedMapLargeKVsTest {
     log.debug("Time to get {} ={}ms", totalLoaded, end - start);
   }
 
-  @Ignore
   @Test
   public void testExists() {
     log.debug("testExists");
@@ -200,7 +183,6 @@ public class BigSortedMapLargeKVsTest {
     log.debug("Time to exist {} ={}ms", totalLoaded, end - start);
   }
 
-  @Ignore
   @Test
   public void testFullMapScanner() throws IOException {
     log.debug("testFullMap ");
@@ -230,7 +212,6 @@ public class BigSortedMapLargeKVsTest {
     scanner.close();
   }
 
-  @Ignore
   @Test
   public void testDirectMemoryFullMapScanner() throws IOException {
     log.debug("testDirectMemoryFullMapScanner ");
@@ -260,7 +241,6 @@ public class BigSortedMapLargeKVsTest {
     scanner.close();
   }
 
-  @Ignore
   @Test
   public void testDirectMemoryAllRangesMapScanner() throws IOException {
     log.debug("testDirectMemoryAllRangesMapScanner ");
@@ -314,12 +294,11 @@ public class BigSortedMapLargeKVsTest {
     return count;
   }
 
-  @Ignore
   @Test
   public void testFullMapScannerWithDeletes() throws IOException {
     log.debug("testFullMapScannerWithDeletes ");
     Random r = new Random();
-    long seed = 5442916859658824595L; // r.nextLong();
+    long seed = r.nextLong();
     r.setSeed(seed);
     int toDelete = r.nextInt((int) totalLoaded);
     log.debug("testFullMapScannerWithDeletes SEED={} toDelete={}", seed, toDelete);
@@ -354,7 +333,6 @@ public class BigSortedMapLargeKVsTest {
     undelete(deletedKeys);
   }
 
-  @Ignore
   @Test
   public void testDirectMemoryFullMapScannerWithDeletes() throws IOException {
     log.debug("testDirectMemoryFullMapScannerWithDeletes ");

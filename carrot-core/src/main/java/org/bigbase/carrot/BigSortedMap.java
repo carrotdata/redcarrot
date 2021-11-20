@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -434,7 +433,7 @@ public class BigSortedMap {
 
   /** Prints global memory statistics */
   public static void printGlobalMemoryAllocationStats() {
-    log.debug("\nGLOBAL Carrot memory allocation statistics:");
+    log.debug("GLOBAL Carrot memory allocation statistics:");
     log.debug("Total memory               :{}", getGlobalAllocatedMemory());
     log.debug("Total data blocks          :{}", getGlobalBlockDataSize());
     log.debug("Total data size            :{}", getGlobalDataSize());
@@ -446,7 +445,7 @@ public class BigSortedMap {
     log.debug("Total compressed data size :{}", getGlobalCompressedDataSize());
     log.debug("Total external data size   :{}", getGlobalExternalDataSize());
     log.debug(
-        "Copmpression ratio         :{}\n",
+        "Compression ratio         :{}",
         (double) getGlobalDataSize() / getGlobalAllocatedMemory());
   }
 
@@ -655,7 +654,7 @@ public class BigSortedMap {
 
   /** Prints memory allocation statistics for the store */
   public void printMemoryAllocationStats() {
-    log.debug("\nCarrot memory allocation statistics [id={}]:", Thread.currentThread().getName());
+    log.debug("Carrot memory allocation statistics [id={}]:", Thread.currentThread().getName());
     log.debug("Total allocated memory     :{}", getInstanceAllocatedMemory());
     log.debug("Total data block size      :{}", getInstanceBlockDataSize());
     log.debug("Total data size            :{}", getInstanceDataSize());
@@ -668,7 +667,7 @@ public class BigSortedMap {
     log.debug("Total compressed data size :{}", getInstanceCompressedDataSize());
     log.debug("Total external data size   :{}", getInstanceExternalDataSize());
     log.debug(
-        "Copmpression ratio         :{}",
+        "Compression ratio         :{}",
         (double) getInstanceDataSize() / getInstanceAllocatedMemory());
   }
 
