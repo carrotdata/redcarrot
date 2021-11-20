@@ -2,7 +2,7 @@
 <configuration status="info">
 
     <properties>
-        <property name="JUNIT_FILE" value="./logs/carrot-core-junit.log"/>
+        <property name="JUNIT_FILE" value="../logs/carrot-junit.log"/>
     </properties>
 
     <appenders>
