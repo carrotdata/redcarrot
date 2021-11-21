@@ -25,12 +25,14 @@ public class CarrotCoreBase {
   public static void cleanAll() throws IOException {
     // Tear down previous run if it was
     tearDown();
-    // set up for new run
-    setUp();
   }
 
   public CarrotCoreBase(Object c) throws IOException {
     codec = (Codec) c;
+    // Tear down previous run if it was
+    tearDown();
+    // set up for new run
+    setUp();
   }
 
   @Parameterized.Parameters(name = "Run with codec={0}")
