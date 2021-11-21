@@ -22,8 +22,11 @@ public class CarrotCoreBase {
   // }
 
   @AfterClass
-  public static void cleanAll() {
+  public static void cleanAll() throws IOException {
+    // Tear down previous run if it was
     tearDown();
+    // set up for new run
+    setUp();
   }
 
   public CarrotCoreBase(Object c) throws IOException {
