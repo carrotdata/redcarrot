@@ -21,18 +21,8 @@ public class CarrotCoreBase {
   //  UnsafeAccess.debug = true;
   // }
 
-  @AfterClass
-  public static void cleanAll() throws IOException {
-    // Tear down previous run if it was
-    tearDown();
-  }
-
   public CarrotCoreBase(Object c) throws IOException {
     codec = (Codec) c;
-    // Tear down previous run if it was
-    tearDown();
-    // set up for new run
-    setUp();
   }
 
   @Parameterized.Parameters(name = "Run with codec={0}")
@@ -44,10 +34,6 @@ public class CarrotCoreBase {
           //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
         });
   }
-
-  protected static void tearDown() {}
-
-  protected static void setUp() throws IOException {}
 
   protected String getParameters() {
     return String.format(

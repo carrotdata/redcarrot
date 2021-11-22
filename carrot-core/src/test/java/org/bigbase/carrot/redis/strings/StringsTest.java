@@ -23,6 +23,7 @@ import org.bigbase.carrot.redis.util.MutationOptions;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class StringsTest extends CarrotCoreBase {
     return keyValues;
   }
 
-  protected static void setUp() throws IOException {
+  private static void setUp() {
     map = new BigSortedMap(1000000000);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
@@ -1257,7 +1258,8 @@ public class StringsTest extends CarrotCoreBase {
     return pos;
   }
 
-  protected static void tearDown() {
+  @AfterClass
+  public static void tearDown() {
     // Dispose
     if (Objects.isNull(map)) return;
 

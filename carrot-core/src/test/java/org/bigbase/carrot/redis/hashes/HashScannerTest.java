@@ -27,6 +27,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -46,7 +47,7 @@ public class HashScannerTest extends CarrotCoreBase {
     setUp();
   }
 
-  private List<KeyValue> getKeyValues(long n) {
+  private static List<KeyValue> getKeyValues(long n) {
     List<KeyValue> values = new ArrayList<>();
 
     Random r = new Random();
@@ -67,7 +68,7 @@ public class HashScannerTest extends CarrotCoreBase {
     return values;
   }
 
-  private Key getKey() {
+  private static Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -79,7 +80,7 @@ public class HashScannerTest extends CarrotCoreBase {
     return new Key(ptr, valSize);
   }
 
-  protected static void setUp() {
+  public static void setUp() {
     map = new BigSortedMap(1000000000L);
   }
 
@@ -918,11 +919,11 @@ public class HashScannerTest extends CarrotCoreBase {
         });
   }
 
-  private <T> List<T> copy(List<T> src) {
+  private static <T> List<T> copy(List<T> src) {
     return new ArrayList<>(src);
   }
 
-  private void deleteRandom(
+  private static void deleteRandom(
       BigSortedMap map, long keyPtr, int keySize, List<KeyValue> copy, Random r) {
     int toDelete = copy.size() < 10 ? copy.size() : r.nextInt(copy.size() / 2);
     for (int i = 0; i < toDelete; i++) {
@@ -933,7 +934,8 @@ public class HashScannerTest extends CarrotCoreBase {
     }
   }
 
-  protected static void tearDown() {
+  @AfterClass
+  public static void tearDown() {
     // Dispose
     if (Objects.isNull(map)) return;
 

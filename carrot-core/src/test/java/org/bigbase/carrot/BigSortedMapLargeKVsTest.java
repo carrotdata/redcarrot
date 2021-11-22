@@ -20,6 +20,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,7 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
@@ -48,7 +50,7 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
     setUp();
   }
 
-  protected static void setUp() throws IOException {
+  public static void setUp() throws IOException {
 
     BigSortedMap.setCompressionCodec(codec);
     BigSortedMap.setMaxBlockSize(MAX_BLOCK_SIZE);
@@ -83,8 +85,10 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
     assertEquals(totalLoaded, scanned);
   }
 
-  protected static void tearDown() {
-    if (map == null) return;
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     map.printMemoryAllocationStats();
     map.dispose();
     map.printMemoryAllocationStats();
