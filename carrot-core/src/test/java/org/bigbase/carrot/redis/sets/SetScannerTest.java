@@ -16,36 +16,38 @@ package org.bigbase.carrot.redis.sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SetScannerTest {
+public class SetScannerTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetScannerTest.class);
 
-  BigSortedMap map;
-  int valSize = 16;
-  long n = 100000;
+  static BigSortedMap map;
+  static int valSize = 16;
+  static long n = 100000L;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public SetScannerTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  private List<Value> getValues(long n) {
-    List<Value> values = new ArrayList<Value>();
+  private static List<Value> getValues(long n) {
+    List<Value> values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -61,7 +63,7 @@ public class SetScannerTest {
     return values;
   }
 
-  private Key getKey() {
+  private static Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -73,96 +75,17 @@ public class SetScannerTest {
     return new Key(ptr, valSize);
   }
 
-  private void setUp() {
-    map = new BigSortedMap(1000000000);
+  public static void setUp() {
+    map = new BigSortedMap(1000000000L);
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() throws IOException {
-    long start = System.currentTimeMillis();
-    setUp();
-    testDirectScannerPerformance();
-    tearDown();
-    setUp();
-    testReverseScannerPerformance();
-    tearDown();
-    setUp();
-    testEdgeConditions();
-    tearDown();
-    setUp();
-    testSingleFullScanner();
-    tearDown();
-    setUp();
-    testSingleFullScannerReverse();
-    tearDown();
-    setUp();
-    testSinglePartialScanner();
-    tearDown();
-    setUp();
-    testSinglePartialScannerOpenStart();
-    tearDown();
-    setUp();
-    testSinglePartialScannerOpenEnd();
-    tearDown();
-    setUp();
-    testSinglePartialScannerReverse();
-    tearDown();
-    setUp();
-    testSinglePartialScannerReverseOpenStart();
-    tearDown();
-    setUp();
-    testSinglePartialScannerReverseOpenEnd();
-    tearDown();
-    long end = System.currentTimeMillis();
-    log.debug("\nRUN in {}ms", end - start);
-  }
-
-  private void loadData(Key key, List<Value> values) {
+  private static void loadData(Key key, List<Value> values) {
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
     long count = 0;
-    int n = values.size();
-    for (int i = 0; i < n; i++) {
-      elemPtrs[0] = values.get(i).address;
-      elemSizes[0] = values.get(i).length;
+    for (Value value : values) {
+      elemPtrs[0] = value.address;
+      elemSizes[0] = value.length;
       int num = Sets.SADD(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(1, num);
       if (++count % 100000 == 0) {
@@ -171,11 +94,10 @@ public class SetScannerTest {
     }
   }
 
-  @Ignore
   @Test
   public void testSingleFullScanner() throws IOException {
+    log.debug("Test single full scanner - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single full scanner - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     List<Value> copy = copy(values);
@@ -201,7 +123,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       log.debug("Set size={}", copy.size());
@@ -229,12 +151,12 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testEdgeConditions() throws IOException {
+    log.debug("testEdgeConditions {}", getParameters());
 
     byte[] zero1 = new byte[] {0};
     byte[] zero2 = new byte[] {0, 0};
@@ -300,20 +222,22 @@ public class SetScannerTest {
     scanner =
         Sets.getScanner(
             map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, true);
-    assertTrue(scanner == null);
+    assertNull(scanner);
 
     // Direct
     scanner =
         Sets.getScanner(
             map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, false);
-    assertTrue(scanner.hasNext() == false);
+
+    assertNotNull(scanner);
+    assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
     scanner =
         Sets.getScanner(
             map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, true);
-    assertTrue(scanner == null);
+    assertNull(scanner);
 
     Random r = new Random();
     long seed = r.nextLong();
@@ -352,8 +276,9 @@ public class SetScannerTest {
             map, key.address, key.length, zptr1, zptrSize1, v.address, v.length, false, true);
 
     if (expected == 0) {
-      assertTrue(scanner == null);
+      assertNull(scanner);
     } else {
+      assertNotNull(scanner);
       assertEquals(expected, Utils.countReverse(scanner));
       scanner.close();
     }
@@ -368,10 +293,13 @@ public class SetScannerTest {
             map, key.address, key.length, v.address, v.length, mptr2, mptrSize2, false, false);
 
     if (expected == 0) {
-      assertTrue(scanner.hasNext() == false);
+      assertNotNull(scanner);
+      assertFalse(scanner.hasNext());
     } else {
       assertEquals(expected, Utils.count(scanner));
     }
+
+    assertNotNull(scanner);
     scanner.close();
 
     // Reverse
@@ -380,9 +308,10 @@ public class SetScannerTest {
             map, key.address, key.length, v.address, v.length, mptr2, mptrSize2, false, true);
 
     if (expected == 0) {
-      assertTrue(scanner == null);
+      assertNull(scanner);
     } else {
       assertEquals(expected, Utils.countReverse(scanner));
+      assertNotNull(scanner);
       scanner.close();
     }
 
@@ -391,14 +320,13 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSingleFullScannerReverse() throws IOException {
+    log.debug("Test single full scanner reverse - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single full scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     List<Value> copy = copy(values);
@@ -423,7 +351,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       /*DEBUG*/ log.debug("Set size={}", copy.size());
@@ -453,14 +381,13 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScanner() throws IOException {
+    log.debug("Test single partial scanner - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single partial scanner - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -486,7 +413,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       /*DEBUG*/ log.debug("Set size={}", copy.size());
@@ -500,7 +427,7 @@ public class SetScannerTest {
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
       SetScanner scanner =
           Sets.getScanner(
               map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
@@ -525,14 +452,14 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
+    log.debug(
+        "Test single partial scanner open start - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single partial scanner open start - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -558,7 +485,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       log.debug("Set size={}", copy.size());
@@ -572,7 +499,7 @@ public class SetScannerTest {
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
       SetScanner scanner =
           Sets.getScanner(
               map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
@@ -597,14 +524,13 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
+    log.debug("Test single partial scanner open end - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single partial scanner open end - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -635,7 +561,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       log.debug("Set size={}", copy.size());
@@ -649,7 +575,7 @@ public class SetScannerTest {
       long endPtr = 0; // copy.get(endIndex).address;
       int endSize = 0; // copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
       SetScanner scanner =
           Sets.getScanner(
               map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
@@ -674,14 +600,13 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
+    log.debug("Test single partial scanner reverse - one key {} elements {}", n, getParameters());
 
-    log.debug("Test single partial scanner reverse - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -712,7 +637,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       /*DEBUG*/ log.debug("Set size={}", copy.size());
@@ -726,7 +651,7 @@ public class SetScannerTest {
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
 
       SetScanner scanner =
           Sets.getScanner(
@@ -751,14 +676,16 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
+    log.debug(
+        "Test single partial scanner reverse open start - one key {} elements {}",
+        n,
+        getParameters());
 
-    log.debug("Test single partial scanner reverse open start - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -789,7 +716,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       log.debug("Set size={}", copy.size());
@@ -803,7 +730,7 @@ public class SetScannerTest {
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
 
       SetScanner scanner =
           Sets.getScanner(
@@ -828,14 +755,16 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
+    log.debug(
+        "Test single partial scanner reverse open end - one key {} elements {}",
+        n,
+        getParameters());
 
-    log.debug("Test single partial scanner reverse open end - one key {} elements", n);
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -866,7 +795,7 @@ public class SetScannerTest {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
 
-    long card = 0;
+    long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
       log.debug("Set size={}", copy.size());
@@ -880,7 +809,7 @@ public class SetScannerTest {
       long endPtr = 0; // copy.get(endIndex).address;
       int endSize = 0; // copy.get(endIndex).length;
 
-      int expected = (int) (endIndex - startIndex);
+      int expected = endIndex - startIndex;
 
       SetScanner scanner =
           Sets.getScanner(
@@ -905,14 +834,14 @@ public class SetScannerTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testDirectScannerPerformance() throws IOException {
     // int n = 5000000; // 5M elements
-    log.debug("Test direct scanner performance {} elements", n);
+    log.debug("Test direct scanner performance {} elements {}", n, getParameters());
+
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -936,24 +865,25 @@ public class SetScannerTest {
 
     start = System.currentTimeMillis();
     long count = 0;
+    assertNotNull(scanner);
     while (scanner.hasNext()) {
       count++;
       scanner.next();
     }
     scanner.close();
-    assertEquals(count, (long) n);
+    assertEquals(count, n);
     end = System.currentTimeMillis();
     log.debug("Scanned {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
   @Test
   public void testReverseScannerPerformance() throws IOException {
     // int n = 5000000; // 5M elements
-    log.debug("Test reverse scanner performance {} elements", n);
+    log.debug("Test reverse scanner performance {} elements {}", n, getParameters());
+
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -977,31 +907,27 @@ public class SetScannerTest {
 
     start = System.currentTimeMillis();
     long count = 0;
-
+    assertNotNull(scanner);
     do {
       count++;
     } while (scanner.previous());
     scanner.close();
-    assertEquals(count, (long) n);
+    assertEquals(count, n);
 
     end = System.currentTimeMillis();
     log.debug("Scanned (reversed) {} elements in {}ms", n, end - start);
     // Free memory
     UnsafeAccess.free(key.address);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  private <T> List<T> copy(List<T> src) {
-    List<T> copy = new ArrayList<T>();
-    for (T t : src) {
-      copy.add(t);
-    }
-    return copy;
+  private static <T> List<T> copy(List<T> src) {
+    return new ArrayList<>(src);
   }
 
-  private void deleteRandom(
+  private static void deleteRandom(
       BigSortedMap map, long keyPtr, int keySize, List<Value> copy, Random r) {
-    int toDelete = copy.size() < 10 ? copy.size() : r.nextInt((int) copy.size() / 2);
+    int toDelete = copy.size() < 10 ? copy.size() : r.nextInt(copy.size() / 2);
     for (int i = 0; i < toDelete; i++) {
       int n = r.nextInt(copy.size());
       Value v = copy.remove(n);
@@ -1010,7 +936,10 @@ public class SetScannerTest {
     }
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
     UnsafeAccess.mallocStats.printStats();

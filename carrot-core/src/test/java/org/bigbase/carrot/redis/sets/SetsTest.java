@@ -19,46 +19,46 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.redis.util.Commons;
-import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SetsTest {
+public class SetsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetsTest.class);
 
-  BigSortedMap map;
-  Key key;
-  long buffer;
-  int bufferSize = 64;
-  int valSize = 16;
-  long n = 1000000;
-  List<Value> values;
+  static BigSortedMap map;
+  static Key key;
+  static long buffer;
+  static int bufferSize = 64;
+  static int valSize = 16;
+  static long n = 1000000;
+  static List<Value> values;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public SetsTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  private List<Value> getValues(long n) {
+  private static List<Value> getValues(long n) {
     List<Value> values = new ArrayList<Value>();
     Random r = new Random();
     long seed = r.nextLong();
@@ -75,7 +75,7 @@ public class SetsTest {
     return values;
   }
 
-  private List<Value> getRandomValues(long n) {
+  private static List<Value> getRandomValues(long n) {
     List<Value> values = new ArrayList<Value>();
     Random r = new Random();
     long seed = r.nextLong();
@@ -91,7 +91,7 @@ public class SetsTest {
     return values;
   }
 
-  private Key getKey() {
+  private static Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -103,89 +103,10 @@ public class SetsTest {
     return key = new Key(ptr, valSize);
   }
 
-  private void setUp() {
+  public void setUp() {
     map = new BigSortedMap(1000000000);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
-  }
-
-  @Test
-  public void testMultiAdd() {
-    log.debug("Test multi add");
-    map = new BigSortedMap(1000000000);
-    values = getRandomValues(1000);
-
-    List<Value> copy = new ArrayList<Value>();
-    values.stream().forEach(x -> copy.add(x));
-
-    Key key = getKey();
-    int num = Sets.SADD(map, key.address, key.length, copy);
-    assertEquals(values.size(), num);
-    assertEquals(values.size(), (int) Sets.SCARD(map, key.address, key.length));
-    for (Value v : values) {
-      int result = Sets.SISMEMBER(map, key.address, key.length, v.address, v.length);
-      assertEquals(1, result);
-    }
-    List<byte[]> members = Sets.SMEMBERS(map, key.address, key.length, values.size() * valSize * 2);
-    assertNotNull(members);
-    for (byte[] v : members) {
-      log.debug("{}", Bytes.toHex(v));
-    }
-    tearDown();
-  }
-
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() throws IOException {
-    long start = System.currentTimeMillis();
-    setUp();
-    testSADDSISMEMBER();
-    tearDown();
-    setUp();
-    testAddRemove();
-    tearDown();
-    setUp();
-    testAddMultiDelete();
-    tearDown();
-    long end = System.currentTimeMillis();
-    log.debug("\nRUN in {}ma", end - start);
   }
 
   @Ignore
@@ -195,7 +116,7 @@ public class SetsTest {
     perfRun(100000000);
   }
 
-  private void perfRun(int n) {
+  private static void perfRun(int n) {
     log.debug("Performance test run with {}", n);
     map = new BigSortedMap(10000000000L);
 
@@ -255,7 +176,7 @@ public class SetsTest {
     tearDown();
   }
 
-  private void runRead(int numThreads, Runnable run, int toQuery) {
+  private static void runRead(int numThreads, Runnable run, int toQuery) {
 
     long start = System.currentTimeMillis();
     Thread[] pool = new Thread[numThreads];
@@ -279,10 +200,10 @@ public class SetsTest {
         +(double) numThreads * toQuery * 1000 / (end - start));
   }
 
-  @Ignore
   @Test
   public void testSADDSISMEMBER() {
-    log.debug("Test SADDSISMEMBER");
+    log.debug("Test SADDSISMEMBER {}", getParameters());
+
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
@@ -326,10 +247,10 @@ public class SetsTest {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testAddMultiDelete() throws IOException {
-    log.debug("Test Add Multi Delete");
+    log.debug("Test Add Multi Delete {}", getParameters());
+
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
     long count = 0;
@@ -377,10 +298,10 @@ public class SetsTest {
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
-  @Ignore
   @Test
   public void testAddRemove() {
-    log.debug("Test Add Remove");
+    log.debug("Test Add Remove {}", getParameters());
+
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
@@ -517,7 +438,10 @@ public class SetsTest {
     fos.close();
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
     if (key != null) {

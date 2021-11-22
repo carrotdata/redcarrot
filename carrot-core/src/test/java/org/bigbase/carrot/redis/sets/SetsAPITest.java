@@ -39,7 +39,7 @@ public class SetsAPITest extends CarrotCoreBase {
     setUp();
   }
 
-  private List<String> loadData(String key, int n) {
+  private static List<String> loadData(String key, int n) {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
