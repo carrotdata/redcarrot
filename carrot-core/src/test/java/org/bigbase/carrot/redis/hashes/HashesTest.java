@@ -19,11 +19,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
@@ -32,28 +34,31 @@ import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class HashesTest {
+public class HashesTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesTest.class);
 
-  BigSortedMap map;
-  Key key;
-  long buffer;
-  int bufferSize = 64;
-  int keySize = 8;
-  int valSize = 8;
-  long n = 2000000;
-  List<Value> values;
+  static BigSortedMap map;
+  static Key key;
+  static long buffer;
+  static int bufferSize = 64;
+  static int keySize = 8;
+  static int valSize = 8;
+  static long n = 2000000;
+  static List<Value> values;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public HashesTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  private List<Value> getValues(long n) {
-    List<Value> values = new ArrayList<Value>();
+  private static List<Value> getValues(long n) {
+    List<Value> values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -69,7 +74,7 @@ public class HashesTest {
   }
 
   private List<KeyValue> getKeyValues(int n) {
-    List<KeyValue> list = new ArrayList<KeyValue>(n);
+    List<KeyValue> list = new ArrayList<>(n);
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -98,70 +103,13 @@ public class HashesTest {
     return key = new Key(ptr, keySize);
   }
 
-  private void setUp() {
-    map = new BigSortedMap(1000000000);
+  public static void setUp() {
+    map = new BigSortedMap(1000000000L);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {}  Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() throws IOException {
-    setUp();
-    testNullValues();
-    tearDown();
-    setUp();
-    testSetExists();
-    tearDown();
-    setUp();
-    testAddRemove();
-    tearDown();
-    setUp();
-    testSetGet();
-    tearDown();
-    setUp();
-    testAddRemoveMulti();
-    tearDown();
-  }
-
-  long countRecords(BigSortedMap map) throws IOException {
+  static long countRecords(BigSortedMap map) {
     return map.countRecords();
   }
 
@@ -169,10 +117,10 @@ public class HashesTest {
   @Test
   public void testMultiSet() {
     log.debug("\nTest Multi Set");
-    map = new BigSortedMap(1000000000);
+    map = new BigSortedMap(1000000000L);
     List<KeyValue> list = getKeyValues(1000);
-    List<KeyValue> copy = new ArrayList<KeyValue>(list.size());
-    list.stream().forEach(x -> copy.add(x));
+    List<KeyValue> copy = new ArrayList<>(list.size());
+    copy.addAll(list);
 
     Key key = getKey();
     int nn = Hashes.HSET(map, key.address, key.length, copy);
@@ -191,18 +139,17 @@ public class HashesTest {
     map.dispose();
     UnsafeAccess.free(buffer);
     UnsafeAccess.free(key.address);
-    list.stream()
-        .forEach(
-            x -> {
-              UnsafeAccess.free(x.keyPtr);
-              UnsafeAccess.free(x.valuePtr);
-            });
+    list.forEach(
+        x -> {
+          UnsafeAccess.free(x.keyPtr);
+          UnsafeAccess.free(x.valuePtr);
+        });
   }
 
-  @Ignore
   @Test
-  public void testSetExists() throws IOException {
-    log.debug("\nTest Set - Exists");
+  public void testSetExists() {
+    log.debug("\nTest Set - Exists {}", getParameters());
+
     Key key = getKey();
     long elemPtr;
     int elemSize;
@@ -236,10 +183,10 @@ public class HashesTest {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testNullValues() {
-    log.debug("\nTest Set - Null values");
+    log.debug("\nTest Set - Null values {}", getParameters());
+
     Key key = getKey();
     long NULL = UnsafeAccess.malloc(1);
     String[] fields = new String[] {"f1", "f2", "f3", "f4"};
@@ -290,10 +237,10 @@ public class HashesTest {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
-  public void testSetGet() throws IOException {
-    log.debug("\nTest Set - Get");
+  public void testSetGet() {
+    log.debug("\nTest Set - Get {}", getParameters());
+
     Key key = getKey();
     long elemPtr;
     int elemSize;
@@ -315,7 +262,7 @@ public class HashesTest {
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
     start = System.currentTimeMillis();
-    long buffer = UnsafeAccess.malloc(2 * valSize);
+    long buffer = UnsafeAccess.malloc(2L * valSize);
     int bufferSize = 2 * valSize;
 
     for (int i = 0; i < n; i++) {
@@ -343,10 +290,10 @@ public class HashesTest {
     UnsafeAccess.free(buffer);
   }
 
-  @Ignore
   @Test
-  public void testAddRemove() throws IOException {
-    log.debug("Test Add - Remove");
+  public void testAddRemove() {
+    log.debug("Test Add - Remove {}", getParameters());
+
     Key key = getKey();
     long elemPtr;
     int elemSize;
@@ -383,10 +330,9 @@ public class HashesTest {
     assertEquals(0, (int) recc);
   }
 
-  @Ignore
   @Test
-  public void testAddRemoveMulti() throws IOException {
-    log.debug("Test Add - Remove Multi keys");
+  public void testAddRemoveMulti() {
+    log.debug("Test Add - Remove Multi keys {}", getParameters());
 
     long elemPtr;
     int elemSize;
@@ -422,7 +368,10 @@ public class HashesTest {
     assertEquals(0, (int) recc);
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
     if (key != null) {

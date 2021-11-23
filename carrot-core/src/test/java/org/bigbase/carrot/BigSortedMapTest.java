@@ -16,33 +16,34 @@ package org.bigbase.carrot;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 // TODO: MEMORY LEAK
-public class BigSortedMapTest {
+public class BigSortedMapTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapTest.class);
 
-  BigSortedMap map;
-  long totalLoaded;
-  long MAX_ROWS = 1000000;
+  static BigSortedMap map;
+  static long totalLoaded;
+  static long MAX_ROWS = 1000000;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public BigSortedMapTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  long countRecords() throws IOException {
+  private static long countRecords() throws IOException {
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long counter = 0;
     while (scanner.hasNext()) {
@@ -53,7 +54,7 @@ public class BigSortedMapTest {
     return counter;
   }
 
-  private boolean load(long totalLoaded) {
+  private static void load(long totalLoaded) {
     byte[] key = ("KEY" + (totalLoaded)).getBytes();
     byte[] value = ("VALUE" + (totalLoaded)).getBytes();
     long keyPtr = UnsafeAccess.malloc(key.length);
@@ -63,10 +64,10 @@ public class BigSortedMapTest {
     boolean result = map.put(keyPtr, key.length, valPtr, value.length, 0);
     UnsafeAccess.free(keyPtr);
     UnsafeAccess.free(valPtr);
-    return result;
+    log.debug("loaded: {}", result);
   }
 
-  public void setUp() throws IOException {
+  public static void setUp() throws IOException {
     BigSortedMap.setMaxBlockSize(4096);
     map = new BigSortedMap(100000000);
     totalLoaded = 0;
@@ -92,72 +93,33 @@ public class BigSortedMapTest {
     assertEquals(totalLoaded, scanned);
   }
 
-  public void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     map.dispose();
   }
 
-  private void allTests() throws IOException {
-    testDeleteUndeleted();
-    testExists();
-    testPutGet();
+  @Test
+  public void testCumulative() throws IOException {
+    deleteUndeleted();
+    exists();
+    putGet();
 
     // This call must be the last
-    testFlushAll();
+    flushAll();
   }
 
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = NONE\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4HC\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void testDeleteUndeleted() throws IOException {
-    log.debug("testDeleteUndeleted");
+  private void deleteUndeleted() throws IOException {
+    log.debug("testDeleteUndeleted {}", getParameters());
     List<byte[]> keys = delete(100);
     assertEquals(totalLoaded - 100, countRecords());
     undelete(keys);
     assertEquals(totalLoaded, countRecords());
   }
 
-  @Ignore
-  @Test
-  public void testPutGet() {
-    log.debug("testPutGet");
+  private void putGet() {
+    log.debug("testPutGet {}", getParameters());
 
     long start = System.currentTimeMillis();
     for (int i = 1; i <= totalLoaded; i++) {
@@ -170,9 +132,7 @@ public class BigSortedMapTest {
       try {
         long size = map.get(keyPtr, key.length, valPtr, value.length, Long.MAX_VALUE);
         assertEquals(value.length, (int) size);
-        assertTrue(Utils.compareTo(value, 0, value.length, valPtr, (int) size) == 0);
-      } catch (Throwable t) {
-        throw t;
+        assertEquals(0, Utils.compareTo(value, 0, value.length, valPtr, (int) size));
       } finally {
         UnsafeAccess.free(keyPtr);
         UnsafeAccess.free(valPtr);
@@ -182,10 +142,8 @@ public class BigSortedMapTest {
     log.debug("Time to get {} ={}ms", totalLoaded, (end - start));
   }
 
-  @Ignore
-  @Test
-  public void testExists() {
-    log.debug("testExists");
+  private void exists() {
+    log.debug("testExists {}", getParameters());
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + (i)).getBytes();
@@ -193,14 +151,12 @@ public class BigSortedMapTest {
       UnsafeAccess.copy(key, 0, keyPtr, key.length);
       boolean res = map.exists(keyPtr, key.length);
       UnsafeAccess.free(keyPtr);
-      assertEquals(true, res);
+      assertTrue(res);
     }
   }
 
-  @Ignore
-  @Test
-  public void testFlushAll() {
-    log.debug("testFlushAll");
+  private void flushAll() {
+    log.debug("testFlushAll {}", getParameters());
 
     map.flushAll();
 
@@ -215,11 +171,11 @@ public class BigSortedMapTest {
     }
   }
 
-  private List<byte[]> delete(int num) {
+  private static List<byte[]> delete(int num) {
     Random r = new Random();
     int numDeleted = 0;
     long valPtr = UnsafeAccess.malloc(1);
-    List<byte[]> list = new ArrayList<byte[]>();
+    List<byte[]> list = new ArrayList<>();
     int collisions = 0;
     while (numDeleted < num) {
       int i = r.nextInt((int) totalLoaded) + 1;
@@ -244,7 +200,7 @@ public class BigSortedMapTest {
     return list;
   }
 
-  private void undelete(List<byte[]> keys) {
+  private static void undelete(List<byte[]> keys) {
     for (byte[] key : keys) {
       byte[] value = ("VALUE" + new String(key).substring(3)).getBytes();
       long keyPtr = UnsafeAccess.malloc(key.length);

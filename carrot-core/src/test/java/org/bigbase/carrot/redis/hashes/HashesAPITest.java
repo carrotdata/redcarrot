@@ -18,30 +18,32 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.util.Pair;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
-public class HashesAPITest {
+public class HashesAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesAPITest.class);
 
-  BigSortedMap map;
+  static BigSortedMap map;
 
-  private List<String> loadData(String key, int n) {
+  public HashesAPITest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
+  }
+
+  private static List<String> loadData(String key, int n) {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
@@ -56,7 +58,7 @@ public class HashesAPITest {
     return list;
   }
 
-  private List<String> loadDataRandomSize(String key, int n) {
+  private static List<String> loadDataRandomSize(String key, int n) {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
@@ -72,111 +74,10 @@ public class HashesAPITest {
     return list;
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {}Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {}  Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() throws IOException {
-    setUp();
-    testHashIncrementFloat();
-    tearDown();
-
-    setUp();
-    testHashIncrement();
-    tearDown();
-
-    setUp();
-    testHashExists();
-    tearDown();
-
-    setUp();
-    testHashGet();
-    tearDown();
-
-    setUp();
-    testHashDelete();
-    tearDown();
-
-    setUp();
-    testHashGetAllAPI();
-    tearDown();
-
-    setUp();
-    testHashKeysAPI();
-    tearDown();
-
-    setUp();
-    testHashMultiGet();
-    tearDown();
-
-    setUp();
-    testHashSetNonExistent();
-    tearDown();
-
-    setUp();
-    testHashValueLength();
-    tearDown();
-
-    setUp();
-    testHashValuesAPI();
-    tearDown();
-
-    setUp();
-    testScannerRandomMembers();
-    tearDown();
-
-    setUp();
-    testScannerRandomMembersEdgeCases();
-    tearDown();
-
-    setUp();
-    testSscanNoRegex();
-    tearDown();
-
-    setUp();
-    testSscanWithRegex();
-    tearDown();
-  }
-
-  @Ignore
   @Test
   public void testHashExists() {
-    log.debug("Test Hashes HEXISTS API call");
+    log.debug("Test Hashes HEXISTS API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
@@ -202,10 +103,10 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashGet() {
-    log.debug("Test Hashes HGET API call");
+    log.debug("Test Hashes HGET API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
@@ -237,11 +138,11 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashIncrementFloat() throws OperationFailedException {
+    log.debug("Test Hashes HINCRBYFLOAT API call {}", getParameters());
+
     int N = 10000;
-    log.debug("Test Hashes HINCRBYFLOAT API call");
     List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
@@ -266,11 +167,11 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashIncrement() throws OperationFailedException {
+    log.debug("Test Hashes HINCRBY API call {}", getParameters());
+
     int N = 10000;
-    log.debug("Test Hashes HINCRBY API call");
     List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
@@ -295,10 +196,10 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashDelete() {
-    log.debug("Test Hashes HDEL API call");
+    log.debug("Test Hashes HDEL API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
@@ -359,10 +260,10 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashSetNonExistent() {
-    log.debug("Test Hashes HSETNX API call");
+    log.debug("Test Hashes HSETNX API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
@@ -386,10 +287,10 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashValueLength() {
-    log.debug("Test Hashes HSTRLEN API call");
+    log.debug("Test Hashes HSTRLEN API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
@@ -415,10 +316,10 @@ public class HashesAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testHashMultiGet() {
-    log.debug("Test Sets HMGET API call");
+    log.debug("Test Sets HMGET API call {}", getParameters());
+
     int X = 1000;
     String key = "key";
     List<String> list = loadData(key, X);
@@ -455,7 +356,7 @@ public class HashesAPITest {
     assertNull(result.get(4));
   }
 
-  private String[] getRandom(List<String> list, int count) {
+  private static String[] getRandom(List<String> list, int count) {
     long[] arr = Utils.randomDistinctArray(list.size(), count);
     String[] ss = new String[count];
     for (int i = 0; i < arr.length; i++) {
@@ -464,10 +365,10 @@ public class HashesAPITest {
     return ss;
   }
 
-  @Ignore
   @Test
   public void testHashGetAllAPI() {
-    log.debug("Test Hashes HGETALL API call");
+    log.debug("Test Hashes HGETALL API call {}", getParameters());
+
     // Load X elements
     int X = 1000;
     String key = "key";
@@ -488,10 +389,10 @@ public class HashesAPITest {
     assertEquals(0, fieldValues.size());
   }
 
-  @Ignore
   @Test
   public void testHashKeysAPI() {
-    log.debug("Test Hashes HKEYS API call");
+    log.debug("Test Hashes HKEYS API call {}", getParameters());
+
     // Load X elements
     int X = 1000;
     String key = "key";
@@ -508,10 +409,10 @@ public class HashesAPITest {
     assertEquals(0, keys.size());
   }
 
-  @Ignore
   @Test
   public void testHashValuesAPI() {
-    log.debug("Test Hashes HVALUES API call");
+    log.debug("Test Hashes HVALUES API call {}", getParameters());
+
     // Load X elements
     int X = 1000;
     String key = "key";
@@ -529,10 +430,10 @@ public class HashesAPITest {
     assertTrue(list.containsAll(values));
   }
 
-  @Ignore
   @Test
   public void testSscanNoRegex() {
-    log.debug("Test Hashes HSCAN API call w/o regex pattern");
+    log.debug("Test Hashes HSCAN API call w/o regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -578,7 +479,7 @@ public class HashesAPITest {
     assertEquals(0, total);
   }
 
-  private int countMatches(List<String> list, int startIndex, String regex) {
+  private static int countMatches(List<String> list, int startIndex, String regex) {
     int total = 0;
     List<String> subList = list.subList(startIndex, list.size());
     for (String s : subList) {
@@ -589,10 +490,10 @@ public class HashesAPITest {
     return total;
   }
 
-  @Ignore
   @Test
   public void testSscanWithRegex() {
-    log.debug("Test Hashes HSCAN API call with regex pattern");
+    log.debug("Test Hashes HSCAN API call with regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -640,7 +541,7 @@ public class HashesAPITest {
     assertEquals(0, total);
   }
 
-  private int scan(
+  private static int scan(
       BigSortedMap map,
       String key,
       String lastSeenMember,
@@ -657,10 +558,10 @@ public class HashesAPITest {
     return total;
   }
 
-  @Ignore
   @Test
   public void testScannerRandomMembersEdgeCases() {
-    log.debug("Test Hashes HRANDFIELD API call (Edge cases)");
+    log.debug("Test Hashes HRANDFIELD API call (Edge cases) {}", getParameters());
+
     // Load N elements
     int N = 10000;
     String key = "key";
@@ -714,10 +615,10 @@ public class HashesAPITest {
     assertEquals(0, result.size());
   }
 
-  @Ignore
   @Test
   public void testScannerRandomMembers() {
-    log.debug("Test Hashes HRANDFIELD API call");
+    log.debug("Test Hashes HRANDFIELD API call {}", getParameters());
+
     // Load N elements
     int N = 100000;
     int numIter = 1000;
@@ -797,7 +698,7 @@ public class HashesAPITest {
    * @param list List of unique values
    * @return true/false
    */
-  private boolean unique(List<Pair<String>> list) {
+  private static boolean unique(List<Pair<String>> list) {
     if (list.size() <= 1) return true;
 
     for (int i = 1; i < list.size(); i++) {
@@ -808,11 +709,14 @@ public class HashesAPITest {
     return true;
   }
 
-  public void setUp() {
-    map = new BigSortedMap(100000000);
+  public static void setUp() {
+    map = new BigSortedMap(100000000L);
   }
 
-  public void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
     UnsafeAccess.mallocStats.printStats();

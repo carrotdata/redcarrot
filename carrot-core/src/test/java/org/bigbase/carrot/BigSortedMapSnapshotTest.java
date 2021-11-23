@@ -17,34 +17,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
-public class BigSortedMapSnapshotTest {
+public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapSnapshotTest.class);
 
-  BigSortedMap map;
-  long totalLoaded;
-  long MAX_ROWS = 1000000;
-  int EXT_VALUE_SIZE = 4096;
-  int EXT_KEY_SIZE = 4096;
-  int KEY_SIZE = 10;
-  long seed1 = System.currentTimeMillis();
-  long seed2 = System.currentTimeMillis() + 1;
+  static BigSortedMap map;
+  static long totalLoaded;
+  static long MAX_ROWS = 1000000;
+  static int EXT_VALUE_SIZE = 4096;
+  static int EXT_KEY_SIZE = 4096;
+  static int KEY_SIZE = 10;
+  static long seed1 = System.currentTimeMillis();
+  static long seed2 = System.currentTimeMillis() + 1;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public BigSortedMapSnapshotTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  long countRecords() throws IOException {
+  private static long countRecords() throws IOException {
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long counter = 0;
     while (scanner.hasNext()) {
@@ -56,7 +57,7 @@ public class BigSortedMapSnapshotTest {
   }
 
   /** Verify normal records with type = EMBEDDED */
-  void verifyRecords() {
+  private static void verifyRecords() {
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + i).getBytes();
@@ -77,7 +78,7 @@ public class BigSortedMapSnapshotTest {
    *
    * @param n number of records to verify
    */
-  void verifyExtValueRecords(int n) {
+  private static void verifyExtValueRecords(int n) {
     Random rnd = new Random(seed2);
     byte[] key = new byte[KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(KEY_SIZE);
@@ -100,7 +101,7 @@ public class BigSortedMapSnapshotTest {
    *
    * @param n number of records to verify
    */
-  void verifyExtKeyValueRecords(int n) {
+  private static void verifyExtKeyValueRecords(int n) {
     Random rnd = new Random(seed1);
     byte[] key = new byte[EXT_KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(EXT_KEY_SIZE);
@@ -124,7 +125,7 @@ public class BigSortedMapSnapshotTest {
    * @param totalLoaded
    * @return
    */
-  private boolean load(long totalLoaded) {
+  private static boolean load(long totalLoaded) {
     byte[] key = ("KEY" + (totalLoaded)).getBytes();
     byte[] value = ("VALUE" + (totalLoaded)).getBytes();
     long keyPtr = UnsafeAccess.malloc(key.length);
@@ -142,7 +143,7 @@ public class BigSortedMapSnapshotTest {
    *
    * @param num number of records to load
    */
-  void loadExtKeyValueRecords(int num) {
+  private static void loadExtKeyValueRecords(int num) {
     Random rnd = new Random(seed1);
     byte[] key = new byte[EXT_KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(EXT_KEY_SIZE);
@@ -166,7 +167,7 @@ public class BigSortedMapSnapshotTest {
    *
    * @param num number of records to load
    */
-  void loadExtValueRecords(int num) {
+  private static void loadExtValueRecords(int num) {
     Random rnd = new Random(seed2);
     byte[] key = new byte[10];
     long keyPtr = UnsafeAccess.malloc(key.length);
@@ -185,7 +186,7 @@ public class BigSortedMapSnapshotTest {
     UnsafeAccess.free(buf);
   }
 
-  private void setUp() throws IOException {
+  public static void setUp() throws IOException {
     BigSortedMap.setMaxBlockSize(4096);
     map = new BigSortedMap(10000000000L);
     totalLoaded = 0;
@@ -212,59 +213,20 @@ public class BigSortedMapSnapshotTest {
     assertEquals(totalLoaded, scanned);
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     map.dispose();
     log.debug("Memory stat after teardown:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats();
   }
 
-  private void allTests() throws IOException {
-    setUp();
-    testSnapshotNoExternalNoCustomAllocations();
-    tearDown();
-    setUp();
-    testSnapshotWithExternalNoCustomAllocations();
-    tearDown();
-  }
-
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = NONE\n", i);
-      allTests();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4\n", i);
-      allTests();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4HC\n", i);
-      allTests();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Ignore
   @Test
   public void testSnapshotNoExternalNoCustomAllocations() throws IOException {
-    log.debug("\nTestSnapshotNoExteranlNoCustomAllocations");
+    log.debug("\nTestSnapshotNoExteranlNoCustomAllocations {}", getParameters());
+
     long start = System.currentTimeMillis();
     map.snapshot();
     long end = System.currentTimeMillis();
@@ -308,10 +270,10 @@ public class BigSortedMapSnapshotTest {
     log.debug("Verified {} in {}ms", records, end - start);
   }
 
-  @Ignore
   @Test
   public void testSnapshotWithExternalNoCustomAllocations() throws IOException {
-    log.debug("\nTestSnapshotWithExternalNoCustomAllocations");
+    log.debug("\nTestSnapshotWithExternalNoCustomAllocations {}", getParameters());
+
     int extValueLoaded = Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows are with external value
     int extKeyValueLoaded =
         Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows with external key-value

@@ -103,7 +103,7 @@ public class SetsTest extends CarrotCoreBase {
     return key = new Key(ptr, valSize);
   }
 
-  public void setUp() {
+  public static void setUp() {
     map = new BigSortedMap(1000000000);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);

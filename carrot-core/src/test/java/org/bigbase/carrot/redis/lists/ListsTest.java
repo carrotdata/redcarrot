@@ -14,44 +14,47 @@
 package org.bigbase.carrot.redis.lists;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.DataBlock;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.redis.lists.Lists.Side;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ListsTest {
+public class ListsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(ListsTest.class);
 
-  BigSortedMap map;
-  Key key;
-  List<Value> values;
-  long buffer;
-  int bufferSize = 64;
-  int keySize = 16;
-  int valueSize = 8;
-  int n = 100000;
+  static BigSortedMap map;
+  static Key key;
+  static List<Value> values;
+  static long buffer;
+  static int bufferSize = 64;
+  static int keySize = 16;
+  static int valueSize = 8;
+  static int n = 100000;
 
-  static {
-    // UnsafeAccess.debug = true;
+  public ListsTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
-  private Key getKey() {
+  private static Key getKey() {
     long ptr = UnsafeAccess.malloc(keySize);
     byte[] buf = new byte[keySize];
     Random r = new Random();
@@ -63,7 +66,7 @@ public class ListsTest {
     return key = new Key(ptr, keySize);
   }
 
-  private Key getAnotherKey() {
+  private static Key getAnotherKey() {
     long ptr = UnsafeAccess.malloc(keySize);
     byte[] buf = new byte[keySize];
     Random r = new Random();
@@ -75,13 +78,13 @@ public class ListsTest {
     return new Key(ptr, keySize);
   }
 
-  private List<Value> getValues(int n) {
+  private static List<Value> getValues(int n) {
     byte[] buf = new byte[valueSize];
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("VALUES seed={}", seed);
-    values = new ArrayList<Value>();
+    values = new ArrayList<>();
     for (int i = 0; i < n; i++) {
       r.nextBytes(buf);
       long ptr = UnsafeAccess.allocAndCopy(buf, 0, valueSize);
@@ -90,13 +93,16 @@ public class ListsTest {
     return values;
   }
 
-  private void setUp() {
-    map = new BigSortedMap(100000000);
+  public static void setUp() {
+    map = new BigSortedMap(100000000L);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
-    values = getValues((int) n);
+    values = getValues(n);
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
 
@@ -105,67 +111,13 @@ public class ListsTest {
 
     UnsafeAccess.free(key.address);
     UnsafeAccess.free(buffer);
-    values.stream().forEach(x -> UnsafeAccess.free(x.address));
+    values.forEach(x -> UnsafeAccess.free(x.address));
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() {
-
-    setUp();
-    testListSerDeWithLargeElements();
-    tearDown();
-
-    setUp();
-    testListWithLargeElements();
-    tearDown();
-
-    setUp();
-    testListSerDe();
-    tearDown();
-
-    setUp();
-    testDeallocator();
-    tearDown();
+  // TODO enable others?
+  private void allTestsBack() {
 
     //    setUp();
     //    testLREM();
@@ -217,10 +169,10 @@ public class ListsTest {
     //    tearDown();
   }
 
-  @Ignore
   @Test
   public void testDeallocator() {
-    log.debug("Test Deallocator");
+    log.debug("Test Deallocator {}", getParameters());
+
     // Register LIST deallocator
     Lists.registerDeallocator();
 
@@ -240,10 +192,10 @@ public class ListsTest {
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testListWithLargeElements() {
-    log.debug("Test List with large elements");
+    log.debug("Test List with large elements {}", getParameters());
+
     Key key = getKey();
     int largeSize = 1023;
     long largePtr = UnsafeAccess.malloc(largeSize);
@@ -285,10 +237,10 @@ public class ListsTest {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testListSerDeWithLargeElements() {
-    log.debug("Test List SerDe with large elements");
+    log.debug("Test List SerDe with large elements {}", getParameters());
+
     // Register LIST deallocator
     Lists.registerDeallocator();
     Lists.registerSerDe();
@@ -350,10 +302,10 @@ public class ListsTest {
     UnsafeAccess.free(largePtr);
   }
 
-  @Ignore
   @Test
   public void testListSerDe() {
-    log.debug("Test List serializer");
+    log.debug("Test List serializer {}", getParameters());
+
     // Register LIST deallocator
     Lists.registerDeallocator();
     Lists.registerSerDe();
@@ -484,7 +436,7 @@ public class ListsTest {
 
     for (int i = 0; i < n; i++) {
       int sz = Lists.LPOP(map, key.address, key.length, buffer, bufferSize);
-      assertEquals(valueSize, (int) sz);
+      assertEquals(valueSize, sz);
       v = values.get(n - 1 - i);
       assertEquals(0, Utils.compareTo(v.address, v.length, buffer, sz));
       assertEquals(n - i - 1, (int) Lists.LLEN(map, key.address, key.length));
@@ -519,7 +471,7 @@ public class ListsTest {
 
     for (int i = 0; i < n; i++) {
       int sz = Lists.LPOP(map, key.address, key.length, buffer, bufferSize);
-      assertEquals(valueSize, (int) sz);
+      assertEquals(valueSize, sz);
       Value v = values.get(n - 1 - i);
       assertEquals(0, Utils.compareTo(v.address, v.length, buffer, sz));
       assertEquals(n - i - 1, (int) Lists.LLEN(map, key.address, key.length));
@@ -547,7 +499,7 @@ public class ListsTest {
 
     for (int i = 0; i < n; i++) {
       int sz = Lists.RPOP(map, key.address, key.length, buffer, bufferSize);
-      assertEquals(valueSize, (int) sz);
+      assertEquals(valueSize, sz);
       Value v = values.get(n - 1 - i);
       assertEquals(0, Utils.compareTo(v.address, v.length, buffer, sz));
       assertEquals(n - i - 1, (int) Lists.LLEN(map, key.address, key.length));
@@ -607,7 +559,7 @@ public class ListsTest {
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
 
     for (int i = 0; i < n; i++) {
-      long sz = 0;
+      long sz;
       if (r.nextBoolean()) {
         sz = Lists.RPOP(map, key.address, key.length, buffer, bufferSize);
       } else {
@@ -1247,8 +1199,9 @@ public class ListsTest {
     for (int i = 0; i < 1000; i++) {
       int i1 = r.nextInt(n);
       int i2 = r.nextInt(n);
-      int start = i1 < i2 ? i1 : i2;
-      int end = i1 < i2 ? i2 : i1;
+      int start = Math.min(i1, i2);
+      int end = Math.max(i1, i2);
+      // TODO validate sz?
       sz = Lists.LRANGE(map, key.address, key.length, start, end, buffer, bufferSize);
       end = Math.min(end, start + expNumber - 1);
       verifyRange(start, end, buffer, bufferSize);
@@ -1262,8 +1215,9 @@ public class ListsTest {
     for (int i = 0; i < 1000; i++) {
       int i1 = r.nextInt(n);
       int i2 = r.nextInt(n);
-      int start = i1 < i2 ? i1 : i2;
-      int end = i1 < i2 ? i2 : i1;
+      int start = Math.min(i1, i2);
+      int end = Math.max(i1, i2);
+      // TODO validate sz
       sz = Lists.LRANGE(map, key.address, key.length, start, end, largeBuffer, largeBufferSize);
       verifyRange(start, end, largeBuffer, largeBufferSize);
     }
@@ -1281,7 +1235,7 @@ public class ListsTest {
    * @param buffer buffer
    * @param bufferSize size
    */
-  private void verifyRange(int start, int stop, long buffer, int bufferSize) {
+  private static void verifyRange(int start, int stop, long buffer, int bufferSize) {
 
     int total = UnsafeAccess.toInt(buffer);
     assertEquals(stop - start + 1, total);
