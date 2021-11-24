@@ -7,3 +7,4 @@ target/
 lib/
 logs/
 snapshots/
+includesFile.txt*

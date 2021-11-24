@@ -105,11 +105,13 @@
                         <exclude>**/ZSetsMultithreadedTest.java</exclude>
                         <exclude>**/SparseBitmapTest.java</exclude>
                     </excludes>
-                    <systemPropertyVariables>
+                    <systemProperties>
                         <property>
                             <name>surefire</name>
                             <value>true</value>
                         </property>
+                    </systemProperties>
+                    <systemPropertyVariables>
                         <property>
                             <name>configurationFile</name>
                             <value>${project.build.directory}/conf/log4j2-console.xml</value>
