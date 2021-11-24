@@ -20,32 +20,26 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.Pair;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.AfterClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ZSetsAPITest {
+public class ZSetsAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(ZSetsAPITest.class);
 
-  BigSortedMap map;
-  long n = 1000;
+  static BigSortedMap map;
   static Random rnd = new Random();
+  static long dataSeed;
 
   static {
     long seed = rnd.nextLong();
@@ -53,17 +47,23 @@ public class ZSetsAPITest {
     log.debug("Global seed={}", seed);
   }
 
+  public ZSetsAPITest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
+  }
+
   /*
    * Loads data and sort it my field
    */
-  private List<Pair<String>> loadData(String key, int n) {
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
+  private static List<Pair<String>> loadData(String key, int n) {
+    List<Pair<String>> list = new ArrayList<>();
 
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
-      list.add(new Pair<String>(m, score));
+      list.add(new Pair<>(m, score));
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
@@ -74,17 +74,14 @@ public class ZSetsAPITest {
     return list;
   }
 
-  private long dataSeed;
-
   /*
    * Loads data and sort it my field
    */
-  private List<Pair<String>> loadDataSortByScore(String key, int n) {
+  private static List<Pair<String>> loadDataSortByScore(String key, int n) {
     List<Pair<String>> list = new ArrayList<Pair<String>>();
     Random rnd = new Random();
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    dataSeed = seed;
     // log.debug("Data seed="+ seed);
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
@@ -92,7 +89,7 @@ public class ZSetsAPITest {
       String score = Double.toString(sc);
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
       assertEquals(1, (int) res);
-      list.add(new Pair<String>(m, score));
+      list.add(new Pair<>(m, score));
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
@@ -112,21 +109,21 @@ public class ZSetsAPITest {
     return list;
   }
 
-  private List<Pair<String>> getData(int n) {
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
+  private static List<Pair<String>> getData(int n) {
+    List<Pair<String>> list = new ArrayList<>();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
-      list.add(new Pair<String>(m, score));
+      list.add(new Pair<>(m, score));
     }
     Collections.sort(list);
     return list;
   }
 
-  private Map<String, List<Pair<String>>> loadDataMap(int numKeys, int n) {
+  private static Map<String, List<Pair<String>>> loadDataMap(int numKeys, int n) {
 
-    Map<String, List<Pair<String>>> map = new HashMap<String, List<Pair<String>>>();
+    Map<String, List<Pair<String>>> map = new HashMap<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -138,7 +135,7 @@ public class ZSetsAPITest {
     return map;
   }
 
-  private List<Pair<String>> loadDataSameScore(String key, int n) {
+  private static List<Pair<String>> loadDataSameScore(String key, int n) {
     List<Pair<String>> list = new ArrayList<Pair<String>>();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
@@ -156,144 +153,7 @@ public class ZSetsAPITest {
     return list;
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() throws IOException {
-    long start = System.currentTimeMillis();
-    setUp();
-    testAddScoreMultiple();
-    tearDown();
-    setUp();
-    testAddScoreIncrementMultiple();
-    tearDown();
-    setUp();
-    testAddDelete();
-    tearDown();
-
-    setUp();
-    testAddRemove();
-    tearDown();
-
-    setUp();
-    testIncrement();
-    tearDown();
-
-    setUp();
-    testADDCorrectness();
-    tearDown();
-
-    setUp();
-    testZCOUNT();
-    tearDown();
-    setUp();
-    testZRANGEBYLEX();
-    tearDown();
-    setUp();
-    testZRANGEBYLEX_WOL();
-    tearDown();
-    setUp();
-    testZRANK();
-    tearDown();
-    setUp();
-    testZREVRANK();
-    tearDown();
-    setUp();
-    testZREVRANGEBYLEX();
-    tearDown();
-    setUp();
-    testZREVRANGEBYLEX_WOL();
-    tearDown();
-    setUp();
-    testZRANGEBYSCORE();
-    tearDown();
-    setUp();
-    testZRANGEBYSCORE_WOL();
-    tearDown();
-    setUp();
-    testZREVRANGEBYSCORE();
-    tearDown();
-    setUp();
-    testZREVRANGEBYSCORE_WOL();
-    tearDown();
-    setUp();
-    testZRANDMEMBER();
-    tearDown();
-    setUp();
-    testZSCANNoRegex();
-    tearDown();
-    setUp();
-    testZSCANWithRegex();
-    tearDown();
-    setUp();
-    testZREMRANGEBYSCORE();
-    tearDown();
-    setUp();
-    testZRANGE();
-    tearDown();
-    setUp();
-    testZREMRANGEBYRANK();
-    tearDown();
-    setUp();
-    testZREMRANGEBYLEX();
-    tearDown();
-
-    setUp();
-    testZLEXCOUNT();
-    tearDown();
-
-    setUp();
-    testZPOPMAX();
-    tearDown();
-
-    setUp();
-    testZPOPMIN();
-    tearDown();
-
-    setUp();
-    testZREVRANGE();
-    tearDown();
-    long end = System.currentTimeMillis();
-    log.debug("Run time={}ms", end - start);
-  }
-
-  private List<String> fieldList(List<Pair<String>> list) {
+  private static List<String> fieldList(List<Pair<String>> list) {
     List<String> ll = new ArrayList<String>();
     for (Pair<String> p : list) {
       ll.add(p.getFirst());
@@ -301,13 +161,11 @@ public class ZSetsAPITest {
     return ll;
   }
 
-  @Ignore
   @Test
   public void testZRANDMEMBER() {
+    log.debug("ZSets ZRANDMEMBER multiple keys test {}", getParameters());
 
     // TODO: check multiple \r\n in output
-
-    log.debug("ZSets ZRANDMEMBER multiple keys test");
     int numMembers = 1000;
     int numIterations = 100;
     String key = "key";
@@ -346,10 +204,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZSCANNoRegex() {
-    log.debug("Test ZSets ZSCAN API call w/o regex pattern");
+    log.debug("Test ZSets ZSCAN API call w/o regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -398,7 +256,7 @@ public class ZSetsAPITest {
     assertEquals(0, total);
   }
 
-  private int scan(
+  private static int scan(
       BigSortedMap map,
       String key,
       double lastScore,
@@ -418,7 +276,7 @@ public class ZSetsAPITest {
     return total;
   }
 
-  private int countMatches(List<Pair<String>> list, int startIndex, String regex) {
+  private static int countMatches(List<Pair<String>> list, int startIndex, String regex) {
     int total = 0;
     List<Pair<String>> subList = list.subList(startIndex, list.size());
     for (Pair<String> p : subList) {
@@ -430,10 +288,10 @@ public class ZSetsAPITest {
     return total;
   }
 
-  @Ignore
   @Test
   public void testZSCANWithRegex() {
-    log.debug("Test Sets ZSCAN API call with regex pattern");
+    log.debug("Test Sets ZSCAN API call with regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -487,10 +345,10 @@ public class ZSetsAPITest {
     assertEquals(0, total);
   }
 
-  @Ignore
   @Test
   public void testAddScoreMultiple() {
-    log.debug("ZSets ZADD/ZSCORE multiple keys test");
+    log.debug("ZSets ZADD/ZSCORE multiple keys test {}", getParameters());
+
     int numKeys = 1000;
     int numMembers = 100;
     Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
@@ -505,10 +363,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testAddScoreIncrementMultiple() {
-    log.debug("ZSets ZADD/ZSCORE increment multiple keys test");
+    log.debug("ZSets ZADD/ZSCORE increment multiple keys test {}", getParameters());
+
     int numKeys = 1000;
     int numMembers = 1000;
     Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
@@ -537,10 +395,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testAddDelete() {
-    log.debug("ZSets ZADD/DELETE multiple keys test");
+    log.debug("ZSets ZADD/DELETE multiple keys test {}", getParameters());
+
     int numKeys = 1000;
     int numMembers = 1000;
     Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
@@ -557,10 +415,10 @@ public class ZSetsAPITest {
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
-  @Ignore
   @Test
   public void testAddRemove() {
-    log.debug("ZSets ZADD/ZREM multiple keys test");
+    log.debug("ZSets ZADD/ZREM multiple keys test {}", getParameters());
+
     int numKeys = 1000;
     int numMembers = 1000;
     Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
@@ -585,10 +443,10 @@ public class ZSetsAPITest {
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
-  @Ignore
   @Test
   public void testIncrement() {
-    log.debug("ZSets ZINCRBY multiple keys test");
+    log.debug("ZSets ZINCRBY multiple keys test {}", getParameters());
+
     int numMembers = 10000;
     String key = "key";
     List<Pair<String>> data = getData(numMembers);
@@ -612,10 +470,10 @@ public class ZSetsAPITest {
     BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
-  @Ignore
   @Test
   public void testADDCorrectness() {
-    log.debug("Test ZADD/ZADDNX/ZADDXX API correctness");
+    log.debug("Test ZADD/ZADDNX/ZADDXX API correctness {}", getParameters());
+
     // ZADD adds new or replaces existing
     // ZADDNX adds only if not exists
     // ZADDXX replaces existing one
@@ -661,6 +519,7 @@ public class ZSetsAPITest {
     assertEquals(0L, map.countRecords());
 
     // load again with ZADDNX
+    //TODO count never used
     int count = 0;
     for (Pair<String> p : data) {
       // log.debug(count);
@@ -698,10 +557,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZCOUNT() {
-    log.debug("Test ZCOUNT API");
+    log.debug("Test ZCOUNT API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 1000;
     String key = "key";
@@ -897,10 +756,10 @@ public class ZSetsAPITest {
     assertEquals(expected, count);
   }
 
-  @Ignore
   @Test
   public void testZLEXCOUNT() {
-    log.debug("Test ZLEXCOUNT API");
+    log.debug("Test ZLEXCOUNT API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 1000;
     String key = "key";
@@ -1094,10 +953,10 @@ public class ZSetsAPITest {
     assertEquals(expected, count);
   }
 
-  @Ignore
   @Test
   public void testZPOPMAX() {
-    log.debug("Test ZPOPMAX API");
+    log.debug("Test ZPOPMAX API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 1000;
     int numIterations = 100;
@@ -1136,10 +995,10 @@ public class ZSetsAPITest {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZPOPMIN() {
-    log.debug("Test ZPOPMIN API");
+    log.debug("Test ZPOPMIN API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 1000;
     int numIterations = 100;
@@ -1177,10 +1036,10 @@ public class ZSetsAPITest {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZRANGE() {
-    log.debug("Test ZRANGE API");
+    log.debug("Test ZRANGE API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 10000;
     int numIterations = 1000;
@@ -1296,10 +1155,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGE() {
-    log.debug("Test ZREVRANGE API");
+    log.debug("Test ZREVRANGE API {}", getParameters());
+
     Random r = new Random();
     int numMembers = 1000;
     int numIterations = 100;
@@ -1494,10 +1353,9 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYLEX() {
-    log.debug("Test ZREVRANGEBYLEX API (no offset and limit)");
+    log.debug("Test ZREVRANGEBYLEX API (no offset and limit) {}", getParameters());
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -1613,10 +1471,10 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYLEX() {
-    log.debug("Test ZRANGEBYLEX API (no offset and limit)");
+    log.debug("Test ZRANGEBYLEX API (no offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -1655,7 +1513,7 @@ public class ZSetsAPITest {
     assertEquals(0L, map.countRecords());
   }
 
-  private boolean equals(List<Pair<String>> first, List<Pair<String>> second) {
+  private static boolean equals(List<Pair<String>> first, List<Pair<String>> second) {
     // we do not check nulls b/c there are no
     if (first.size() != second.size()) {
       return false;
@@ -1848,10 +1706,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYLEX_WOL() {
-    log.debug("Test ZREVRANGEBYLEX API (with offset and limit)");
+    log.debug("Test ZREVRANGEBYLEX API (with offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -2087,7 +1945,7 @@ public class ZSetsAPITest {
    * @param limit
    * @return start offset or -1
    */
-  private int getRangeStart(
+  private static int getRangeStart(
       int dataSize,
       int startIndex,
       boolean startInclusive,
@@ -2139,7 +1997,7 @@ public class ZSetsAPITest {
    * @param limit
    * @return stop offset or -1
    */
-  private int getRangeStop(
+  private static int getRangeStop(
       int dataSize,
       int startIndex,
       boolean startInclusive,
@@ -2186,10 +2044,10 @@ public class ZSetsAPITest {
     return stop;
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYLEX_WOL() {
-    log.debug("Test ZRANGEBYLEX API (with offset and limit)");
+    log.debug("Test ZRANGEBYLEX API (with offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -2239,10 +2097,10 @@ public class ZSetsAPITest {
     assertEquals(0L, map.countRecords());
   }
 
-  @Ignore
   @Test
   public void testZRANK() {
-    log.debug("Test ZRANK API ");
+    log.debug("Test ZRANK API {}", getParameters());
+
     String key = "key";
     int numMembers = 1000;
     Random r = new Random();
@@ -2264,10 +2122,10 @@ public class ZSetsAPITest {
     assertEquals(-1L, rank);
   }
 
-  @Ignore
   @Test
   public void testZREVRANK() {
-    log.debug("Test ZREVRANK API ");
+    log.debug("Test ZREVRANK API {}", getParameters());
+
     String key = "key";
     int numMembers = 1000;
     Random r = new Random();
@@ -2385,10 +2243,10 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYSCORE() {
-    log.debug("Test ZRANGEBYSCORE API (no offset and limit)");
+    log.debug("Test ZRANGEBYSCORE API (no offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -2619,10 +2477,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYSCORE_WOL() {
-    log.debug("Test ZRANGEBYSCORE API (with offset and limit)");
+    log.debug("Test ZRANGEBYSCORE API (with offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -2770,10 +2628,10 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYSCORE() {
-    log.debug("Test ZREVRANGEBYSCORE API (no offset and limit)");
+    log.debug("Test ZREVRANGEBYSCORE API (no offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -3004,10 +2862,10 @@ public class ZSetsAPITest {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYSCORE_WOL() {
-    log.debug("Test ZREVRANGEBYSCORE API (with offset and limit)");
+    log.debug("Test ZREVRANGEBYSCORE API (with offset and limit) {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -3176,10 +3034,10 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, (int) total);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYSCORE() {
-    log.debug("Test ZREMRANGEBYSCORE API");
+    log.debug("Test ZREMRANGEBYSCORE API {}", getParameters());
+
     String key = "key";
 
     int numMembers = 1000;
@@ -3293,10 +3151,10 @@ public class ZSetsAPITest {
     assertEquals(expectedNum, (int) total);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYRANK() {
-    log.debug("Test ZREMRANGEBYRANK API");
+    log.debug("Test ZREMRANGEBYRANK API {}", getParameters());
+
     String key = "key";
     int numMembers = 1000;
     testZREMRANGEBYRANK_core(key, numMembers);
@@ -3413,10 +3271,10 @@ public class ZSetsAPITest {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYLEX() {
-    log.debug("Test ZREMRANGEBYLEX API");
+    log.debug("Test ZREMRANGEBYLEX API {}", getParameters());
+
     String key = "key";
 
     // 1. CARDINALITY > compact size (512)
@@ -3449,11 +3307,14 @@ public class ZSetsAPITest {
     assertEquals(0L, map.countRecords());
   }
 
-  public void setUp() {
-    map = new BigSortedMap(100000000);
+  public static void setUp() {
+    map = new BigSortedMap(100000000L);
   }
 
-  public void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     // Dispose
     map.dispose();
     UnsafeAccess.mallocStats.printStats();

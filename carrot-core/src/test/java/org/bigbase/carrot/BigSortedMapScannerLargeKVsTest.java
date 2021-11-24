@@ -18,34 +18,29 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
-public class BigSortedMapScannerLargeKVsTest {
+public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapScannerLargeKVsTest.class);
 
-  static long buffer = UnsafeAccess.malloc(64 * 1024);
+  static BigSortedMap map;
+  static long totalLoaded;
+  static List<Key> keys;
 
-  BigSortedMap map;
-  long totalLoaded;
-  List<Key> keys;
-
-  static {
-    // UnsafeAccess.debug = true;
+  public BigSortedMapScannerLargeKVsTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
   }
 
   public void setUp() throws IOException {
@@ -80,7 +75,10 @@ public class BigSortedMapScannerLargeKVsTest {
     assertEquals(totalLoaded, scanned);
   }
 
-  private void tearDown() {
+  @AfterClass
+  public static void tearDown() {
+    if (Objects.isNull(map)) return;
+
     map.dispose();
     // Free keys
     deallocate(keys);
@@ -96,62 +94,25 @@ public class BigSortedMapScannerLargeKVsTest {
     }
   }
 
-  private void deallocate(List<Key> keys) {
+  private static void deallocate(List<Key> keys) {
     for (Key key : keys) {
       UnsafeAccess.free(key.address);
     }
     keys.clear();
   }
 
-  public void allTests() throws IOException {
-    testDirectMemoryAllRangesMapScanner();
-    testDirectMemoryAllRangesMapScannerReverse();
-    testDirectMemoryFullMapScanner();
-    testDirectMemoryFullMapScannerReverse();
-    testDirectMemoryFullMapScannerWithDeletes();
-    testDirectMemoryFullMapScannerWithDeletesReverse();
-  }
-
   @Test
-  public void runAllNoCompression() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = NONE\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
+  public void testCumulative() throws IOException {
+    directMemoryAllRangesMapScanner();
+    directMemoryAllRangesMapScannerReverse();
+    directMemoryFullMapScanner();
+    directMemoryFullMapScannerReverse();
+    directMemoryFullMapScannerWithDeletes();
+    directMemoryFullMapScannerWithDeletesReverse();
   }
 
-  @Test
-  public void runAllCompressionLZ4() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  @Test
-  public void runAllCompressionLZ4HC() throws IOException {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    for (int i = 0; i < 1; i++) {
-      log.debug("\n********* {} ********** Codec = LZ4HC\n", i);
-      setUp();
-      allTests();
-      tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats();
-    }
-  }
-
-  private long verifyScanner(BigSortedMapScanner scanner, List<Key> keys) throws IOException {
+  private static long verifyScanner(BigSortedMapScanner scanner, List<Key> keys)
+      throws IOException {
     int counter = 0;
     int delta = 0;
     while (scanner.hasNext()) {
@@ -177,7 +138,7 @@ public class BigSortedMapScannerLargeKVsTest {
   }
 
   protected ArrayList<Key> fillMap(BigSortedMap map) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -203,10 +164,9 @@ public class BigSortedMapScannerLargeKVsTest {
     return keys;
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryFullMapScanner() throws IOException {
-    log.debug("testDirectMemoryFullMapScanner ");
+  private void directMemoryFullMapScanner() throws IOException {
+    log.debug("testDirectMemoryFullMapScanner {}", getParameters());
+
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
     long count = 0;
@@ -233,10 +193,9 @@ public class BigSortedMapScannerLargeKVsTest {
     scanner.close();
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryFullMapScannerReverse() throws IOException {
-    log.debug("testDirectMemoryFullMapScanner ");
+  private void directMemoryFullMapScannerReverse() throws IOException {
+    log.debug("testDirectMemoryFullMapScanner {}", getParameters());
+
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
     long count = 0;
@@ -266,10 +225,9 @@ public class BigSortedMapScannerLargeKVsTest {
     scanner.close();
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryAllRangesMapScanner() throws IOException {
-    log.debug("testDirectMemoryAllRangesMapScanner ");
+  private void directMemoryAllRangesMapScanner() throws IOException {
+    log.debug("testDirectMemoryAllRangesMapScanner {}", getParameters());
+
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
     int stopIndex = r.nextInt((int) totalLoaded);
@@ -294,10 +252,9 @@ public class BigSortedMapScannerLargeKVsTest {
     assertEquals(totalLoaded, count1 + count2 + count3);
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryAllRangesMapScannerReverse() throws IOException {
-    log.debug("testDirectMemoryAllRangesMapScannerReverse ");
+  private void directMemoryAllRangesMapScannerReverse() throws IOException {
+    log.debug("testDirectMemoryAllRangesMapScannerReverse {}", getParameters());
+
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
     int stopIndex = r.nextInt((int) totalLoaded);
@@ -330,10 +287,8 @@ public class BigSortedMapScannerLargeKVsTest {
     assertEquals(totalLoaded, count1 + count2 + count3);
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryFullMapScannerWithDeletes() throws IOException {
-    log.debug("testDirectMemoryFullMapScannerWithDeletes ");
+  private void directMemoryFullMapScannerWithDeletes() throws IOException {
+    log.debug("testDirectMemoryFullMapScannerWithDeletes {}", getParameters());
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -370,10 +325,9 @@ public class BigSortedMapScannerLargeKVsTest {
     undelete(deletedKeys);
   }
 
-  @Ignore
-  @Test
-  public void testDirectMemoryFullMapScannerWithDeletesReverse() throws IOException {
-    log.debug("testDirectMemoryFullMapScannerWithDeletesReverse");
+  private void directMemoryFullMapScannerWithDeletesReverse() throws IOException {
+    log.debug("testDirectMemoryFullMapScannerWithDeletesReverse {}", getParameters());
+
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -414,7 +368,7 @@ public class BigSortedMapScannerLargeKVsTest {
     undelete(deletedKeys);
   }
 
-  private long countRows(BigSortedMapScanner scanner) throws IOException {
+  private static long countRows(BigSortedMapScanner scanner) throws IOException {
     long start = System.currentTimeMillis();
     long count = 0;
     long prev = 0;
@@ -441,7 +395,7 @@ public class BigSortedMapScannerLargeKVsTest {
     return count;
   }
 
-  private long countRowsReverse(BigSortedMapScanner scanner) throws IOException {
+  private static long countRowsReverse(BigSortedMapScanner scanner) throws IOException {
     long start = System.currentTimeMillis();
     long count = 0;
     long prev = 0;
@@ -471,14 +425,14 @@ public class BigSortedMapScannerLargeKVsTest {
     return count;
   }
 
-  private List<Key> delete(int num) {
+  private static List<Key> delete(int num) {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("Delete seed ={}", seed);
     int numDeleted = 0;
     long valPtr = UnsafeAccess.malloc(1);
-    List<Key> list = new ArrayList<Key>();
+    List<Key> list = new ArrayList<>();
     int collisions = 0;
     while (numDeleted < num) {
       int i = r.nextInt((int) totalLoaded);
@@ -505,7 +459,7 @@ public class BigSortedMapScannerLargeKVsTest {
    *
    * @param keys
    */
-  private void undelete(List<Key> keys) {
+  private static void undelete(List<Key> keys) {
     int count = 1;
     for (Key key : keys) {
       count++;
