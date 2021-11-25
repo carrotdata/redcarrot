@@ -21,62 +21,63 @@ import org.apache.logging.log4j.Logger;
 
 public class RangeTree {
 
-  private static final Logger log = LogManager.getLogger(RangeTree.class);
+    private static final Logger log = LogManager.getLogger(RangeTree.class);
 
-  public static class Range implements Comparable<Range> {
-    long start;
-    int size;
+    public static class Range implements Comparable<Range> {
+        long start;
+        int size;
 
-    Range() {}
+        Range() {
+        }
 
-    Range(long start, int size) {
-      this.start = start;
-      this.size = size;
+        Range(long start, int size) {
+            this.start = start;
+            this.size = size;
+        }
+
+        @Override
+        public int compareTo(Range o) {
+            return Long.compare(start, o.start);
+        }
     }
 
-    @Override
-    public int compareTo(Range o) {
-      if (start > o.start) return 1;
-      if (start < o.start) return -1;
-      return 0;
+    private final TreeMap<Range, Range> map = new TreeMap<>();
+
+    public RangeTree() {
     }
-  }
 
-  private TreeMap<Range, Range> map = new TreeMap<Range, Range>();
-
-  public RangeTree() {}
-
-  public synchronized Range add(Range r) {
-    return map.put(r, r);
-  }
-
-  public synchronized Range delete(long address) {
-    search.start = address;
-    search.size = 0;
-    return map.remove(search);
-  }
-
-  private Range search = new Range();
-
-  public synchronized boolean inside(long start, int size) {
-    search.start = start;
-    search.size = size;
-    Range r = map.floorKey(search);
-    boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
-    if (!result && r != null) {
-      log.debug(
-          "Check FAILED for range [{},{}] Found allocation [{},{}]", start, size, r.start, r.size);
-    } else if (!result) {
-      log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
+    public synchronized Range add(Range r) {
+        return map.put(r, r);
     }
-    return result;
-  }
 
-  public synchronized int size() {
-    return map.size();
-  }
+    public synchronized Range delete(long address) {
+        search.start = address;
+        search.size = 0;
+        return map.remove(search);
+    }
 
-  public synchronized Set<Map.Entry<Range, Range>> entrySet() {
-    return map.entrySet();
-  }
+    private final Range search = new Range();
+
+    public synchronized boolean inside(long start, int size) {
+        search.start = start;
+        search.size = size;
+        Range r = map.floorKey(search);
+        boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
+        log.debug("floorKey range: {} start {}, size: {}, search: {}, result: {}", r, start, size, search, result);
+        if (!result && r != null) {
+            log.debug(
+                    "Check FAILED for range [{},{}] Found allocation [{},{}]", start, size, r.start, r.size);
+        } else if (!result) {
+            log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
+        }
+        return result;
+    }
+
+    public synchronized int size() {
+        return map.size();
+    }
+
+    public synchronized Set<Map.Entry<Range, Range>> entrySet() {
+        return map.entrySet();
+    }
 }
