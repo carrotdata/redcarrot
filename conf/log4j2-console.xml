@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration status="info">
-   <appenders>
+    <appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
         </Console>
@@ -8,9 +8,9 @@
     </appenders>
 
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="STDOUT"/>
-        </Root>
+        <Logger level="INFO" name="org.bigbase">
+            <appender-ref ref="STDOUT"/>
+        </Logger>
     </Loggers>
 
 </configuration>
