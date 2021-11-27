@@ -127,7 +127,7 @@ public class BigSortedMap {
    * This tracks global data size in index blocks (data can be allocated outside
    * index blocks)
    */
-  private static AtomicLong globalDataInIndexBlocksSize = new AtomicLong(0);
+  //private static AtomicLong globalDataInIndexBlocksSize = new AtomicLong(0);
 
   /*
    * This tracks global index size (total index size >= total data in index blocks  size)
@@ -416,9 +416,9 @@ public class BigSortedMap {
    *
    * @return global index size
    */
-  public static long getGlobalDataInIndexBlocksSize() {
-    return globalDataInIndexBlocksSize.get();
-  }
+//  public static long getGlobalDataInIndexBlocksSize() {
+//    return globalDataInIndexBlocksSize.get();
+//  }
 
   /**
    * Increment global memory which index occupies in index blocks
@@ -426,10 +426,10 @@ public class BigSortedMap {
    * @param incr increment value
    * @return global index size after an increment
    */
-  public static long incrGlobalDataInIndexBlocksSize(long incr) {
-    // if (isStatsUpdatesDisabled()) return 0;
-    return globalDataInIndexBlocksSize.addAndGet(incr);
-  }
+//  public static long incrGlobalDataInIndexBlocksSize(long incr) {
+//    // if (isStatsUpdatesDisabled()) return 0;
+//    return globalDataInIndexBlocksSize.addAndGet(incr);
+//  }
 
   /** Prints global memory statistics */
   public static void printGlobalMemoryAllocationStats() {
@@ -440,7 +440,7 @@ public class BigSortedMap {
     log.debug(
         "Total data block usage     :{}", (double) getGlobalDataSize() / getGlobalBlockDataSize());
     log.debug("Total block index size     :{}", getGlobalBlockIndexSize());
-    log.debug("Total data index size      :{}", getGlobalDataInIndexBlocksSize());
+    //log.debug("Total data index size      :{}", getGlobalDataInIndexBlocksSize());
     log.debug("Total index size           :{}", getGlobalIndexSize());
     log.debug("Total compressed data size :{}", getGlobalCompressedDataSize());
     log.debug("Total external data size   :{}", getGlobalExternalDataSize());
@@ -470,7 +470,7 @@ public class BigSortedMap {
     globalBlockIndexSize.set(0);
     globalCompressedDataInDataBlocksSize.set(0);
     globalDataInDataBlocksSize.set(0);
-    globalDataInIndexBlocksSize.set(0);
+    //globalDataInIndexBlocksSize.set(0);
     globalExternalDataSize.set(0);
     globalIndexSize.set(0);
   }
@@ -536,7 +536,7 @@ public class BigSortedMap {
    * This tracks instance data size in index blocks (data can be allocated outside
    * index blocks)
    */
-  AtomicLong dataInIndexBlocksSize = new AtomicLong(0);
+  //AtomicLong dataInIndexBlocksSize = new AtomicLong(0);
 
   /*
    * This tracks instance index size (total index size >= total data in index blocks  size)
@@ -662,7 +662,7 @@ public class BigSortedMap {
         "Total data block usage     :{}",
         (double) getInstanceDataSize() / getInstanceBlockDataSize());
     log.debug("Total block index size     :{}", getInstanceBlockIndexSize());
-    log.debug("Total data index size      :{}", getInstanceDataInIndexBlocksSize());
+    //log.debug("Total data index size      :{}", getInstanceDataInIndexBlocksSize());
     log.debug("Total index size           :{}", getInstanceIndexSize());
     log.debug("Total compressed data size :{}", getInstanceCompressedDataSize());
     log.debug("Total external data size   :{}", getInstanceExternalDataSize());
@@ -842,9 +842,9 @@ public class BigSortedMap {
    *
    * @return real index size
    */
-  public long getInstanceDataInIndexBlocksSize() {
-    return dataInIndexBlocksSize.get();
-  }
+//  public long getInstanceDataInIndexBlocksSize() {
+//    return dataInIndexBlocksSize.get();
+//  }
 
   /**
    * Increment instance memory which index occupies in index blocks
@@ -852,13 +852,13 @@ public class BigSortedMap {
    * @param incr increment value
    * @return index size after an increment
    */
-  public long incrInstanceDataInIndexBlocksSize(long incr) {
-    // if (isStatsUpdatesDisabled()) return 0;
-    // Increment global
-    incrGlobalDataInIndexBlocksSize(incr);
-    // Increment instance
-    return dataInIndexBlocksSize.addAndGet(incr);
-  }
+//  public long incrInstanceDataInIndexBlocksSize(long incr) {
+//    // if (isStatsUpdatesDisabled()) return 0;
+//    // Increment global
+//    incrGlobalDataInIndexBlocksSize(incr);
+//    // Increment instance
+//    return dataInIndexBlocksSize.addAndGet(incr);
+//  }
 
   private void adjustCountersAfterLoad() {
     long loaded = blockIndexSize.get();

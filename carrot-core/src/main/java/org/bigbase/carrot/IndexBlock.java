@@ -557,10 +557,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     this.blockDataSize += required;
 
     if (map == null) {
-      BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
+      //BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
       BigSortedMap.incrGlobalIndexSize(required);
     } else {
-      map.incrInstanceDataInIndexBlocksSize(required);
+      //map.incrInstanceDataInIndexBlocksSize(required);
       map.incrInstanceIndexSize(required);
     }
 
@@ -592,10 +592,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     this.blockDataSize += required;
 
     if (map == null) {
-      BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
+      //BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
       BigSortedMap.incrGlobalIndexSize(required);
     } else {
-      map.incrInstanceDataInIndexBlocksSize(required);
+      //map.incrInstanceDataInIndexBlocksSize(required);
       map.incrInstanceIndexSize(required);
     }
 
@@ -763,11 +763,11 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     this.firstKey = null;
     this.blockDataSize += toMove;
     if (map == null) {
-      BigSortedMap.incrGlobalDataInIndexBlocksSize(toMove);
-      // BigSortedMap.incrGlobalIndexSize(toMove);
+      //BigSortedMap.incrGlobalDataInIndexBlocksSize(toMove);
+      BigSortedMap.incrGlobalIndexSize(toMove);
     } else {
-      map.incrInstanceDataInIndexBlocksSize(toMove);
-      // map.incrInstanceIndexSize(toMove);
+      //map.incrInstanceDataInIndexBlocksSize(toMove);
+      map.incrInstanceIndexSize(toMove);
     }
     return true;
   }
@@ -1226,10 +1226,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       int required = DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + keyLength;
       this.blockDataSize += required;
       if (map == null) {
-        BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
+        //BigSortedMap.incrGlobalDataInIndexBlocksSize(required);
         BigSortedMap.incrGlobalIndexSize(required);
       } else {
-        map.incrInstanceDataInIndexBlocksSize(required);
+        //map.incrInstanceDataInIndexBlocksSize(required);
         map.incrInstanceIndexSize(required);
       }
       return dataBlock.put(keyPtr, keyLength, valuePtr, valueLength, version, expire);
@@ -1903,10 +1903,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     UnsafeAccess.copy(indexPtr + toMove, indexPtr, blockDataSize - indexPtr + dataPtr - toMove);
     this.blockDataSize -= toMove;
     if (map == null) {
-      BigSortedMap.incrGlobalDataInIndexBlocksSize(-toMove);
+      //BigSortedMap.incrGlobalDataInIndexBlocksSize(-toMove);
       BigSortedMap.incrGlobalIndexSize(-toMove);
     } else {
-      map.incrInstanceDataInIndexBlocksSize(-toMove);
+      //map.incrInstanceDataInIndexBlocksSize(-toMove);
       map.incrInstanceIndexSize(-toMove);
     }
 
@@ -2392,12 +2392,12 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     deallocateLargeKeys();
     UnsafeAccess.free(dataPtr);
     if (map == null) {
-      BigSortedMap.incrGlobalDataInIndexBlocksSize(-blockDataSize);
+      //BigSortedMap.incrGlobalDataInIndexBlocksSize(-blockDataSize);
       BigSortedMap.incrGlobalIndexSize(-blockDataSize);
       BigSortedMap.incrGlobalBlockIndexSize(-blockSize);
       BigSortedMap.incrGlobalAllocatedMemory(-blockSize);
     } else {
-      map.incrInstanceDataInIndexBlocksSize(-blockDataSize);
+      //map.incrInstanceDataInIndexBlocksSize(-blockDataSize);
       map.incrInstanceIndexSize(-blockDataSize);
       map.incrInstanceBlockIndexSize(-blockSize);
       map.incrInstanceAllocatedMemory(-blockSize);

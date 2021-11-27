@@ -38,9 +38,17 @@ public class StringsTest extends CarrotCoreBase {
   static BigSortedMap map;
   static long buffer;
   static int bufferSize = 512;
-  static long nKeyValues = 100000L;
+  static long nKeyValues = 10000L;
   static List<KeyValue> keyValues;
 
+  static {
+    // Example: how to enable memory debug mode, set stack trace recording
+    // for all memory allocations with sizes 100000 or 2001
+    //UnsafeAccess.setMallocDebugEnabled(true);
+    //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
+    //UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
+  }
+  
   public StringsTest(Object c) throws IOException {
     super(c);
     tearDown();
@@ -637,15 +645,13 @@ public class StringsTest extends CarrotCoreBase {
       }
     }
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
-
     long end = System.currentTimeMillis();
     log.debug(
         "Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per key-value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
         nKeyValues,
         totalSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() - totalSize / nKeyValues,
+        ((double) BigSortedMap.getGlobalAllocatedMemory() - totalSize) / nKeyValues,
         end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < nKeyValues; i++) {
@@ -655,6 +661,7 @@ public class StringsTest extends CarrotCoreBase {
     }
     end = System.currentTimeMillis();
     log.debug("Time DELETE ={}ms", end - start);
+
     start = System.currentTimeMillis();
     for (int i = 0; i < nKeyValues; i++) {
       KeyValue kv = keyValues.get(i);
@@ -865,10 +872,10 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetGetBit() {
-    log.debug("testSetSetBit {}", getParameters());
+    log.debug("testSetGetBit {}", getParameters());
 
     testSetGetBitInternal(1000);
-    testSetGetBitInternal(100000);
+    testSetGetBitInternal(10000);
   }
 
   private void testSetGetBitInternal(int valueSize) {
@@ -882,7 +889,7 @@ public class StringsTest extends CarrotCoreBase {
     assertEquals(0, bit);
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 1000);
     assertEquals(0, bit);
-
+    
     // Set K-V
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, valuePtr, valueSize);
     assertEquals(valueSize, size);
@@ -905,32 +912,32 @@ public class StringsTest extends CarrotCoreBase {
     }
 
     // Some out of range ops
-    Strings.SETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE, 1);
+    Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     long len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
     assertEquals(2L * valueSize + 1, len);
-
-    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE);
+    
+    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
-    bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE, 0);
+    bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 0);
     assertEquals(1, bit);
 
-    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE);
+    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(0, bit);
 
     // Verify all 0s
     for (int i = 0; i < (2 * valueSize + 1) * Utils.BITS_PER_BYTE; i++) {
-      bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE);
+      bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
       assertEquals(0, bit);
     }
 
     boolean result = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(result);
 
-    bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE, 1);
+    bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     assertEquals(0, bit);
-
-    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, (long) 2 * valueSize * Utils.BITS_PER_BYTE);
+    
+    bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
     len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
@@ -940,8 +947,10 @@ public class StringsTest extends CarrotCoreBase {
       bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, i);
       assertEquals(0, bit);
     }
+    
     Strings.DELETE(map, kv.keyPtr, kv.keySize);
     UnsafeAccess.free(valuePtr);
+
   }
 
   @Test
@@ -1262,14 +1271,12 @@ public class StringsTest extends CarrotCoreBase {
   public static void tearDown() {
     // Dispose
     if (Objects.isNull(map)) return;
-
     map.dispose();
     for (KeyValue k : keyValues) {
       UnsafeAccess.free(k.keyPtr);
       UnsafeAccess.free(k.valuePtr);
     }
     UnsafeAccess.free(buffer);
-
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
   }
