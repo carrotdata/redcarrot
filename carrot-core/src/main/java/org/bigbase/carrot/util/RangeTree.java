@@ -14,8 +14,10 @@
 package org.bigbase.carrot.util;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,43 +43,48 @@ public class RangeTree {
         }
     }
 
-    private final TreeMap<Range, Range> map = new TreeMap<>();
+    private final TreeMap<Range, Range> treeMap = new TreeMap<>();
 
     public RangeTree() {
     }
 
     public synchronized Range add(Range r) {
-        return map.put(r, r);
+        return treeMap.put(r, r);
     }
 
     public synchronized Range delete(long address) {
         search.start = address;
         search.size = 0;
-        return map.remove(search);
+        return treeMap.remove(search);
     }
 
     private final Range search = new Range();
 
-    public synchronized boolean inside(long start, int size) {
-        search.start = start;
-        search.size = size;
-        Range r = map.floorKey(search);
-        boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
-        log.debug("floorKey range: {} start {}, size: {}, search: {}, result: {}", r, start, size, search, result);
-        if (!result && r != null) {
-            log.debug(
-                    "Check FAILED for range [{},{}] Found allocation [{},{}]", start, size, r.start, r.size);
-        } else if (!result) {
-            log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
+    public synchronized boolean inside(long startKey, int sizeKey) {
+        search.start = startKey;
+        search.size = sizeKey;
+        Range rangeValue = treeMap.floorKey(search);
+//        boolean result = !Objects.isNull(rangeValue) && startKey >= rangeValue.start && startKey + sizeKey <= rangeValue.start + rangeValue.size;
+        boolean result = !Objects.isNull(rangeValue) && rangeValue.start + rangeValue.size >= rangeValue.start + sizeKey;
+
+        log.debug("floorKey start key {}, size key: {}, treeMap.size: {}", startKey, sizeKey, treeMap.size());
+        if (!result) {
+            if (!Objects.isNull(rangeValue)) {
+                log.debug(
+                        "Check FAILED for key [{},{}] range value allocation [{},{}] diff [{}, {}]",
+                        startKey, sizeKey, rangeValue.start, rangeValue.size, startKey - rangeValue.start, sizeKey - rangeValue.size);
+            } else {
+                log.debug("Check FAILED for key [{},{}] No value allocation found.", startKey, sizeKey);
+            }
         }
         return result;
     }
 
     public synchronized int size() {
-        return map.size();
+        return treeMap.size();
     }
 
     public synchronized Set<Map.Entry<Range, Range>> entrySet() {
-        return map.entrySet();
+        return treeMap.entrySet();
     }
 }

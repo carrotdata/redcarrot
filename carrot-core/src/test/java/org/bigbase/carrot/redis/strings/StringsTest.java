@@ -26,7 +26,6 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -35,16 +34,42 @@ public class StringsTest extends CarrotCoreBase2 {
 
     private static final Logger log = LogManager.getLogger(StringsTest.class);
 
-    static BigSortedMap map;
     static long buffer;
     static int bufferSize = 512;
-    static long nKeyValues = 100000L;
     static List<KeyValue> keyValues;
 
-    public StringsTest(Object c, Object m) throws IOException {
+    public StringsTest(Object c, Object m) {
         super(c, m);
+        log.debug("StringsTest: {}", super.getParameters());
         tearDown();
         setUp();
+    }
+
+    protected static void setUp() {
+        CarrotCoreBase2.setUp();
+
+        buffer = UnsafeAccess.mallocZeroed(bufferSize);
+        keyValues = getKeyValues();
+        UnsafeAccess.setMallocDebugEnabled(memoryDebug);
+
+        log.debug("setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
+                Objects.isNull(BigSortedMap.getCompressionCodec()) ? "None" : BigSortedMap.getCompressionCodec(),
+                buffer, keyValues.size(), UnsafeAccess.debug);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (!CarrotCoreBase2.isDisposed()) return;
+
+        for (KeyValue k : keyValues) {
+            UnsafeAccess.free(k.keyPtr);
+            UnsafeAccess.free(k.valuePtr);
+        }
+        UnsafeAccess.free(buffer);
+
+        BigSortedMap.printGlobalMemoryAllocationStats();
+//        UnsafeAccess.mallocStats.printStats();
+        log.debug("Malloc allocated={}", UnsafeAccess.getAllocatedMemory());
     }
 
     private static List<KeyValue> getKeyValues() {
@@ -65,18 +90,6 @@ public class StringsTest extends CarrotCoreBase2 {
             keyValues.add(new KeyValue(keyPtr, keySize, valuePtr, valueSize));
         }
         return keyValues;
-    }
-
-    private static void setUp() {
-
-        map = new BigSortedMap(1000000000L);
-        buffer = UnsafeAccess.mallocZeroed(bufferSize);
-        keyValues = getKeyValues();
-        UnsafeAccess.setMallocDebugEnabled(memoryDebug);
-
-        log.debug("setUp with parameters: [map,codec: {}, buffer: {}, memory debug: {}]",
-                Objects.isNull(BigSortedMap.getCompressionCodec()) ? "None" : BigSortedMap.getCompressionCodec(),
-                buffer, UnsafeAccess.debug);
     }
 
     @Test
@@ -964,6 +977,8 @@ public class StringsTest extends CarrotCoreBase2 {
         Utils.fillRandom(valuePtr, valueSize);
 
         KeyValue kv = keyValues.get(0);
+        log.debug("Strings.APPEND, keyPtr: {}, keySize: {}, valuePtr: {}, valueSize: {}",
+                kv.keyPtr, kv.keySize, valuePtr, valueSize);
         Strings.APPEND(map, kv.keyPtr, kv.keySize, valuePtr, valueSize);
         long buf = UnsafeAccess.malloc(valueSize);
         int bufSize = valueSize;
@@ -1262,22 +1277,6 @@ public class StringsTest extends CarrotCoreBase2 {
             pos = size * Utils.BITS_PER_BYTE;
         }
         return pos;
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        // Dispose
-        if (Objects.isNull(map)) return;
-
-        map.dispose();
-        for (KeyValue k : keyValues) {
-            UnsafeAccess.free(k.keyPtr);
-            UnsafeAccess.free(k.valuePtr);
-        }
-        UnsafeAccess.free(buffer);
-
-        BigSortedMap.printGlobalMemoryAllocationStats();
-        UnsafeAccess.mallocStats.printStats();
     }
 }
 
