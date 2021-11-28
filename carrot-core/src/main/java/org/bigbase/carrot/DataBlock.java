@@ -1757,7 +1757,7 @@ public final class DataBlock {
    * @param valueLength value length
    * @param version version
    * @param expire expiration time
-   * @param reuseValue, reuse value allocation, if possible
+   * @param reuseValue, reuse value allocation, if possible (otherwise free it)
    * @return true, if success, false otherwise
    * @throws RetryOperationException
    */
@@ -1775,6 +1775,9 @@ public final class DataBlock {
 
     if (getNumberOfRecords() > 0 && isForbiddenKey(keyPtr, keyLength)) {
       // Return success silently TODO
+      if (reuseValue) {
+        UnsafeAccess.free(valuePtr);
+      }
       return true;
     }
 
@@ -1797,6 +1800,9 @@ public final class DataBlock {
         // we silently return true to avoid further splitting
         // This is how we handle multiple updates to the same key at the same time
         // All succeed but the winner has the highest sequenceId
+        if (reuseValue) {
+          UnsafeAccess.free(valuePtr);
+        }
         return true;
       }
       // TODO: verify what search returns if not found
@@ -1930,6 +1936,10 @@ public final class DataBlock {
         // when existing key is overwritten with a smaller value
         shrink();
       }
+      if (reuseValue) {
+        //Deallocate value, we can not reuse it, b/c allocation type is EMBEDDED
+        UnsafeAccess.free(valuePtr);
+      }
       return true;
     } finally {
       writeUnlock();
@@ -2059,6 +2069,16 @@ public final class DataBlock {
           UnsafeAccess.putShort(addr, (short) keyLength);
           // Set value to external
           UnsafeAccess.putShort(addr + KEY_SIZE_LENGTH, (short) EXTERNAL_VALUE);
+          if (reuseValue) {
+            BigSortedMap map = this.indexBlock.getMap();
+            if (map == null) {
+              BigSortedMap.incrGlobalAllocatedMemory(valueLength /*+ INT_SIZE*/);
+              BigSortedMap.incrGlobalExternalDataSize(valueLength /*+ INT_SIZE*/);
+            } else {
+              map.incrInstanceAllocatedMemory(valueLength /*+ INT_SIZE*/);
+              map.incrInstanceExternalDataSize(valueLength /*+ INT_SIZE*/);
+            }
+          }
         }
         // Set version, expire, op type and eviction (0)
         setRecordSeqId(addr, version);
@@ -2158,6 +2178,16 @@ public final class DataBlock {
           // Update key-value length
           UnsafeAccess.putShort(addr, (short) keyLength);
           UnsafeAccess.putShort(addr + KEY_SIZE_LENGTH, (short) EXTERNAL_VALUE);
+
+          // Update statistics
+          BigSortedMap map = this.indexBlock.getMap();
+          if (map == null) {
+            BigSortedMap.incrGlobalAllocatedMemory(valueLength /*+ INT_SIZE*/);
+            BigSortedMap.incrGlobalExternalDataSize(valueLength /*+ INT_SIZE*/);
+          } else {
+            map.incrInstanceAllocatedMemory(valueLength /*+ INT_SIZE*/);
+            map.incrInstanceExternalDataSize(valueLength /*+ INT_SIZE*/);
+          }
         }
         // Set version, expire, op type and eviction (0)
         setRecordSeqId(addr, version);
@@ -2197,6 +2227,23 @@ public final class DataBlock {
           freeValue = false;
           recAddress =
               reuseValue ? valuePtr : reallocateAndCopyExternalValue(addr, valuePtr, valueLength);
+          if (reuseValue) {
+            // deallocate old
+            long oldValuePtr = valueAddress(addr);
+            int oldValueSize = valueLength(addr);
+
+            UnsafeAccess.free(oldValuePtr);
+
+            BigSortedMap map = this.indexBlock.getMap();
+            if (map == null) {
+              BigSortedMap.incrGlobalAllocatedMemory(valueLength - oldValueSize /*+ INT_SIZE*/);
+              BigSortedMap.incrGlobalExternalDataSize(valueLength - oldValueSize /*+ INT_SIZE*/);
+            } else {
+              map.incrInstanceAllocatedMemory(valueLength - oldValueSize /*+ INT_SIZE*/);
+              map.incrInstanceExternalDataSize(valueLength - oldValueSize /*+ INT_SIZE*/);
+            }
+          }
+
           UnsafeAccess.putInt(addr + RECORD_TOTAL_OVERHEAD + keyLength, valueLength /*+ INT_SIZE*/);
           UnsafeAccess.putLong(addr + RECORD_TOTAL_OVERHEAD + keyLength + INT_SIZE, recAddress);
           // Update key-value length
@@ -2976,9 +3023,6 @@ public final class DataBlock {
             : valueLength(ptr);
     UnsafeAccess.free(getExternalRecordAddress(ptr));
     largeKVs.decrementAndGet();
-    //    BigSortedMap.globalExternalDataSize.addAndGet(-size);
-    //    BigSortedMap.incrGlobalAllocatedMemory(-size);
-
     BigSortedMap map = this.indexBlock.getMap();
     if (map == null) {
       BigSortedMap.incrGlobalAllocatedMemory(-size);

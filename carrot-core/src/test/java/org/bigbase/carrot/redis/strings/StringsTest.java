@@ -38,6 +38,14 @@ public class StringsTest extends CarrotCoreBase2 {
     static int bufferSize = 512;
     static List<KeyValue> keyValues;
 
+    static {
+        // Example: how to enable memory debug mode, set stack trace recording
+        // for all memory allocations with sizes 100000 or 2001
+        //UnsafeAccess.setMallocDebugEnabled(true);
+        //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
+        //UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
+    }
+
     public StringsTest(Object c, Object m) {
         super(c, m);
         log.debug("StringsTest: {}", super.getParameters());
@@ -51,6 +59,8 @@ public class StringsTest extends CarrotCoreBase2 {
         buffer = UnsafeAccess.mallocZeroed(bufferSize);
         keyValues = getKeyValues();
         UnsafeAccess.setMallocDebugEnabled(memoryDebug);
+        UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
+        UnsafeAccess.setStackTraceRecordingFilter(x -> x == 100000 || x == 2001);
 
         log.debug("setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
                 Objects.isNull(BigSortedMap.getCompressionCodec()) ? "None" : BigSortedMap.getCompressionCodec(),

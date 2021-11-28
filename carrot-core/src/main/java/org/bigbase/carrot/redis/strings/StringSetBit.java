@@ -53,6 +53,7 @@ public class StringSetBit extends Operation {
       if (offset >= ((long) valueSize) * Utils.BITS_PER_BYTE) {
         int newSize = (int) (offset / Utils.BITS_PER_BYTE) + 1;
         long oldValuePtr = valuePtr;
+        //FIXME: memory leak
         valuePtr = UnsafeAccess.mallocZeroed(newSize);
         UnsafeAccess.copy(oldValuePtr, valuePtr, valueSize);
         valueSize = newSize;
@@ -67,6 +68,7 @@ public class StringSetBit extends Operation {
     } else {
       // new K-V
       valueSize = (int) (offset / Utils.BITS_PER_BYTE) + 1;
+      //FIXME: memory leak;
       valuePtr = UnsafeAccess.mallocZeroed(valueSize);
       this.updatesCount = 1;
       this.keys[0] = keyAddress;

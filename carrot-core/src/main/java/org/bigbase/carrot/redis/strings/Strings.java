@@ -33,76 +33,181 @@ import org.bigbase.carrot.util.Utils;
 /** Supports String operations, found in Redis */
 public class Strings {
 
-  private static final ThreadLocal<Long> keyArena =
-      ThreadLocal.withInitial(() -> UnsafeAccess.malloc(512));
+  private static ThreadLocal<Long> keyArena =
+      new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(512);
+        }
+      };
 
-  private static final ThreadLocal<Integer> keyArenaSize = ThreadLocal.withInitial(() -> 512);
+  private static ThreadLocal<Integer> keyArenaSize =
+      new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+          return 512;
+        }
+      };
 
-  static ThreadLocal<Long> valueArena = ThreadLocal.withInitial(() -> UnsafeAccess.malloc(512));
+  static ThreadLocal<Long> valueArena =
+      new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(512);
+        }
+      };
 
-  static ThreadLocal<Integer> valueArenaSize = ThreadLocal.withInitial(() -> 512);
+  static ThreadLocal<Integer> valueArenaSize =
+      new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+          return 512;
+        }
+      };
 
   static final int INCR_ARENA_SIZE = 64;
 
   static ThreadLocal<Long> incrArena =
-      ThreadLocal.withInitial(() -> UnsafeAccess.malloc(INCR_ARENA_SIZE));
+      new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+          return UnsafeAccess.malloc(INCR_ARENA_SIZE);
+        }
+      };
 
-  static ThreadLocal<Key> key = ThreadLocal.withInitial(() -> new Key(0, 0));
+  static ThreadLocal<Key> key =
+      new ThreadLocal<Key>() {
+        @Override
+        protected Key initialValue() {
+          return new Key(0, 0);
+        }
+      };
 
   /** Thread local updates String Append */
-  private static final ThreadLocal<StringAppend> stringAppend =
-      ThreadLocal.withInitial(StringAppend::new);
+  private static ThreadLocal<StringAppend> stringAppend =
+      new ThreadLocal<StringAppend>() {
+        @Override
+        protected StringAppend initialValue() {
+          return new StringAppend();
+        }
+      };
 
   /** Thread local updates String Bitcount */
-  private static final ThreadLocal<StringBitCount> stringBitcount =
-      ThreadLocal.withInitial(StringBitCount::new);
+  private static ThreadLocal<StringBitCount> stringBitcount =
+      new ThreadLocal<StringBitCount>() {
+        @Override
+        protected StringBitCount initialValue() {
+          return new StringBitCount();
+        }
+      };
 
   /** Thread local updates String Getbit */
-  private static final ThreadLocal<StringGetBit> stringGetbit =
-      ThreadLocal.withInitial(StringGetBit::new);
+  private static ThreadLocal<StringGetBit> stringGetbit =
+      new ThreadLocal<StringGetBit>() {
+        @Override
+        protected StringGetBit initialValue() {
+          return new StringGetBit();
+        }
+      };
 
   /** Thread local updates String SetBit */
-  private static final ThreadLocal<StringSetBit> stringSetbit =
-      ThreadLocal.withInitial(StringSetBit::new);
+  private static ThreadLocal<StringSetBit> stringSetbit =
+      new ThreadLocal<StringSetBit>() {
+        @Override
+        protected StringSetBit initialValue() {
+          return new StringSetBit();
+        }
+      };
 
   /** Thread local updates String Length */
-  private static final ThreadLocal<StringLength> stringLength =
-      ThreadLocal.withInitial(StringLength::new);
+  private static ThreadLocal<StringLength> stringLength =
+      new ThreadLocal<StringLength>() {
+        @Override
+        protected StringLength initialValue() {
+          return new StringLength();
+        }
+      };
 
   /** Thread local updates String GetRange */
-  private static final ThreadLocal<StringGetRange> stringGetrange =
-      ThreadLocal.withInitial(StringGetRange::new);
+  private static ThreadLocal<StringGetRange> stringGetrange =
+      new ThreadLocal<StringGetRange>() {
+        @Override
+        protected StringGetRange initialValue() {
+          return new StringGetRange();
+        }
+      };
 
   /** Thread local updates String GetSet */
-  private static final ThreadLocal<StringGetSet> stringGetset =
-      ThreadLocal.withInitial(StringGetSet::new);
+  private static ThreadLocal<StringGetSet> stringGetset =
+      new ThreadLocal<StringGetSet>() {
+        @Override
+        protected StringGetSet initialValue() {
+          return new StringGetSet();
+        }
+      };
 
   /** Thread local updates String SetGet */
-  private static final ThreadLocal<StringSetGet> stringSetget =
-      ThreadLocal.withInitial(StringSetGet::new);
+  private static ThreadLocal<StringSetGet> stringSetget =
+      new ThreadLocal<StringSetGet>() {
+        @Override
+        protected StringSetGet initialValue() {
+          return new StringSetGet();
+        }
+      };
 
   /** Thread local updates String GetSet */
-  private static final ThreadLocal<StringGetDelete> stringGetdel =
-      ThreadLocal.withInitial(StringGetDelete::new);
+  private static ThreadLocal<StringGetDelete> stringGetdel =
+      new ThreadLocal<StringGetDelete>() {
+        @Override
+        protected StringGetDelete initialValue() {
+          return new StringGetDelete();
+        }
+      };
 
   /** Thread local updates String Set */
-  private static final ThreadLocal<StringSet> stringSet = ThreadLocal.withInitial(StringSet::new);
+  private static ThreadLocal<StringSet> stringSet =
+      new ThreadLocal<StringSet>() {
+        @Override
+        protected StringSet initialValue() {
+          return new StringSet();
+        }
+      };
 
   /** Thread local updates String SetRange */
-  private static final ThreadLocal<StringSetRange> stringSetrange =
-      ThreadLocal.withInitial(StringSetRange::new);
+  private static ThreadLocal<StringSetRange> stringSetrange =
+      new ThreadLocal<StringSetRange>() {
+        @Override
+        protected StringSetRange initialValue() {
+          return new StringSetRange();
+        }
+      };
 
   /** Thread local updates String BitPos */
-  private static final ThreadLocal<StringBitPos> stringBitpos =
-      ThreadLocal.withInitial(StringBitPos::new);
+  private static ThreadLocal<StringBitPos> stringBitpos =
+      new ThreadLocal<StringBitPos>() {
+        @Override
+        protected StringBitPos initialValue() {
+          return new StringBitPos();
+        }
+      };
 
   /** Thread local updates String GETEX */
-  private static final ThreadLocal<StringGetEx> stringGetex =
-      ThreadLocal.withInitial(StringGetEx::new);
+  private static ThreadLocal<StringGetEx> stringGetex =
+      new ThreadLocal<StringGetEx>() {
+        @Override
+        protected StringGetEx initialValue() {
+          return new StringGetEx();
+        }
+      };
 
   /** Thread local updates String GETEXPIRE */
-  private static final ThreadLocal<StringGetExpire> stringGetexpire =
-      ThreadLocal.withInitial(StringGetExpire::new);
+  private static ThreadLocal<StringGetExpire> stringGetexpire =
+      new ThreadLocal<StringGetExpire>() {
+        @Override
+        protected StringGetExpire initialValue() {
+          return new StringGetExpire();
+        }
+      };
 
   /**
    * Checks key arena size
@@ -138,6 +243,8 @@ public class Strings {
    *
    * @param keyPtr original key address
    * @param keySize original key size
+   * @param fieldPtr field address
+   * @param fieldSize field size
    * @return new key size
    */
   private static int buildKey(long keyPtr, int keySize) {
@@ -282,6 +389,7 @@ public class Strings {
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
+   * @param value increment value
    * @return value after increment
    * @throws OperationFailedException
    */
@@ -471,6 +579,8 @@ public class Strings {
    * @param map sorted map
    * @param keyPtrs array of key pointers
    * @param keySizes array of key sizes
+   * @param valueBuf value buffer
+   * @param valueBufLength value buffer size
    * @return total serialized size of the response. If size is greater than bufferSize, the call
    *     must be repeated with appropriately sized value buffer buffer output format: INT - total
    *     entries ENTRY+
@@ -684,7 +794,7 @@ public class Strings {
    *
    * @param map sorted map
    * @param keyPtr key
-   * @param keySize size of the key
+   * @param keySize
    * @return size of a value or -1 if does not exists
    */
   public static int STRLEN(BigSortedMap map, long keyPtr, int keySize) {
@@ -936,7 +1046,7 @@ public class Strings {
       MutationOptions opts,
       boolean keepTTL) {
 
-    if (expire == 0 && opts == MutationOptions.NONE && !keepTTL) {
+    if (expire == 0 && opts == MutationOptions.NONE && keepTTL == false) {
       return SET_DIRECT(map, keyPtr, keySize, valuePtr, valueSize);
     }
     Key kk = getKey(keyPtr, keySize);
@@ -951,7 +1061,8 @@ public class Strings {
       set.setKeepTTL(keepTTL);
       set.setMutationOptions(opts);
       set.setExpire(expire);
-      return map.execute(set);
+      boolean result = map.execute(set);
+      return result;
     } finally {
       KeysLocker.writeUnlock(kk);
     }
@@ -1184,7 +1295,8 @@ public class Strings {
 
     try {
       KeysLocker.writeLockAllKeyValues(kvs);
-      for (KeyValue kv : kvs) {
+      for (int i = 0; i < kvs.size(); i++) {
+        KeyValue kv = kvs.get(i);
         boolean result = SET_DIRECT(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
         if (!result) {
           // Out of memory possible
@@ -1215,12 +1327,14 @@ public class Strings {
 
     try {
       KeysLocker.writeLockAllKeyValues(kvs);
-      for (KeyValue kv : kvs) {
+      for (int i = 0; i < kvs.size(); i++) {
+        KeyValue kv = kvs.get(i);
         if (keyExists(map, kv.keyPtr, kv.keySize)) {
           return false;
         }
       }
-      for (KeyValue kv : kvs) {
+      for (int i = 0; i < kvs.size(); i++) {
+        KeyValue kv = kvs.get(i);
         SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
       }
     } finally {

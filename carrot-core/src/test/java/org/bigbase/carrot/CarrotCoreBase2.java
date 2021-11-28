@@ -26,8 +26,8 @@ public class CarrotCoreBase2 {
     /**
      * Alloc 1GB or 10x less for debug
      */
-    protected static final long MEM_ALLOCATE = 1073741824L;
-    protected static final long MEM_ALLOCATE_DEBUG = 1048576L;
+    protected static final long MEM_ALLOCATE = 1000000000L;
+    protected static final long MEM_ALLOCATE_DEBUG = 100000L;
 
     protected static final long KEY_VALUE_SIZE = 100000L;
     protected static final long KEY_VALUE_SIZE_DEBUG = 1000L;

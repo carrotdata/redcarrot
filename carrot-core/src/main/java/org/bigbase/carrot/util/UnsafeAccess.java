@@ -25,7 +25,6 @@ import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.logging.log4j.Logger;
@@ -41,10 +40,9 @@ public final class UnsafeAccess {
   public static class MallocStats {
     private static final Logger log = LogManager.getLogger(MallocStats.class);
 
-    public interface TraceFilter {
-      boolean recordAllocationStackTrace(int size);
+    public static interface TraceFilter {
+      public boolean recordAllocationStackTrace(int size);
     }
-
     /*
      * Number of memory allocations
      */
@@ -60,10 +58,10 @@ public final class UnsafeAccess {
     /** Total freed memory */
     public AtomicLong freed = new AtomicLong();
     /** Allocation map */
-    private final RangeTree allocMap = new RangeTree();
+    private RangeTree allocMap = new RangeTree();
 
     /** Is stack trace record enabled */
-    private boolean stackTraceRecordingEnabled = false;
+    private boolean stackTraceRecordingEndbled = false;
 
     /** Stack trace filter */
     private TraceFilter filter = null;
@@ -72,7 +70,8 @@ public final class UnsafeAccess {
     private int strLimit = Integer.MAX_VALUE; // default - no limit
 
     /** Stack traces map (allocation address -> stack trace) */
-    private final Map<Long, String> stackTraceMap = Collections.synchronizedMap(new HashMap<>());
+    private Map<Long, String> stackTraceMap =
+        Collections.synchronizedMap(new HashMap<Long, String>());
 
     /**
      * Is stack trace recording enabled
@@ -80,16 +79,16 @@ public final class UnsafeAccess {
      * @return true, false
      */
     public boolean isStackTraceRecordingEnabled() {
-      return this.stackTraceRecordingEnabled;
+      return this.stackTraceRecordingEndbled;
     }
 
     /**
      * Set STR enabled
      *
-     * @param b set true or false
+     * @param b
      */
     public void setStackTraceRecordingEnabled(boolean b) {
-      this.stackTraceRecordingEnabled = b;
+      this.stackTraceRecordingEndbled = b;
     }
 
     /**
@@ -154,7 +153,6 @@ public final class UnsafeAccess {
      */
     public void allocEvent(long address, long alloced) {
       if (!UnsafeAccess.debug) return;
-
       allocEvents.incrementAndGet();
       allocated.addAndGet(alloced);
       allocMap.delete(address);
@@ -179,7 +177,8 @@ public final class UnsafeAccess {
       System.setErr(ps);
       Thread.dumpStack();
       System.setErr(errStream);
-      return baos.toString();
+      String s = baos.toString();
+      return s;
     }
 
     @SuppressWarnings("unused")
@@ -198,13 +197,11 @@ public final class UnsafeAccess {
      */
     public void reallocEvent(long address, long alloced) {
       if (!UnsafeAccess.debug) return;
-
       Range r = allocMap.delete(address);
       allocMap.add(new Range(address, (int) alloced));
       allocated.addAndGet(alloced);
       freed.addAndGet(r.size);
     }
-
     /**
      * Records memory free event
      *
@@ -212,17 +209,14 @@ public final class UnsafeAccess {
      */
     public void freeEvent(long address) {
       if (!UnsafeAccess.debug) return;
-
-      // TODO Temp change for debug.
-      Range rangeValue = allocMap.delete(address);
-      if (Objects.isNull(rangeValue)) {
-        log.warn("WARN: not found address: {}, block could be deleted?", address);
-        //        Thread.dumpStack();
-        //        System.exit(-1);
-      } else {
-        freed.addAndGet(rangeValue.size);
+      Range mem = allocMap.delete(address);
+      if (mem == null) {
+        log.debug("FATAL: not found address {}", address);
+        Thread.dumpStack();
+        System.exit(-1);
       }
 
+      freed.addAndGet(mem.size);
       freeEvents.incrementAndGet();
       if (isStackTraceRecordingEnabled()) {
         stackTraceMap.remove(address);
@@ -260,26 +254,26 @@ public final class UnsafeAccess {
     public void printStats(boolean printOrphans) {
       if (!UnsafeAccess.debug) return;
 
-      log.info("\nMalloc stats:");
-      log.info("allocations          ={}", allocEvents.get());
-      log.info("allocated memory     ={}", allocated.get());
-      log.info("deallocations        ={}", freeEvents.get());
-      log.info("deallocated memory   ={}", freed.get());
-      log.info("leaked (current)     ={}", allocated.get() - freed.get());
-      log.info("Orphaned allocations ={}", allocMap.size());
+      log.debug("Malloc statistics:");
+      log.debug("allocations          ={}", allocEvents.get());
+      log.debug("allocated memory     ={}", allocated.get());
+      log.debug("deallocations        ={}", freeEvents.get());
+      log.debug("deallocated memory   ={}", freed.get());
+      log.debug("leaked (current)     ={}", allocated.get() - freed.get());
+      log.debug("Orphaned allocations ={}", allocMap.size());
       if (allocMap.size() > 0 && printOrphans) {
-        log.info("Orphaned allocation sizes:");
+        log.debug("Orphaned allocation sizes:");
         for (Map.Entry<Range, Range> entry : allocMap.entrySet()) {
-          log.info("{} = size{}", entry.getKey().start, entry.getValue().size);
+          log.debug("Address:{} size:{}", entry.getKey().start, entry.getValue().size);
           if (isStackTraceRecordingEnabled()) {
             String strace = stackTraceMap.get(entry.getKey().start);
             if (strace != null) {
-              log.info("{}", strace);
+              log.debug("{}", strace);
             }
           }
         }
       }
-      log.info("");
+      log.debug("");
     }
   }
 
@@ -312,17 +306,19 @@ public final class UnsafeAccess {
     theUnsafe =
         (Unsafe)
             AccessController.doPrivileged(
-                (PrivilegedAction<Object>)
-                    () -> {
-                      try {
-                        Field f = Unsafe.class.getDeclaredField("theUnsafe");
-                        f.setAccessible(true);
-                        return f.get(null);
-                      } catch (Throwable e) {
-                        log.warn("sun.misc.Unsafe is not accessible", e);
-                      }
-                      return null;
-                    });
+                new PrivilegedAction<Object>() {
+                  @Override
+                  public Object run() {
+                    try {
+                      Field f = Unsafe.class.getDeclaredField("theUnsafe");
+                      f.setAccessible(true);
+                      return f.get(null);
+                    } catch (Throwable e) {
+                      log.warn("sun.misc.Unsafe is not accessible", e);
+                    }
+                    return null;
+                  }
+                });
 
     if (theUnsafe != null) {
       BYTE_ARRAY_BASE_OFFSET = theUnsafe.arrayBaseOffset(byte[].class);
@@ -332,17 +328,17 @@ public final class UnsafeAccess {
   }
 
   /** Method handler for DirectByteBuffer::address method */
-  static volatile Method addressMethod;
+  static Method addressMethod;
 
   /** Private constructor */
   private UnsafeAccess() {}
 
-  /* Malloc stats methods */
+  /** Malloc stats methods */
 
   /**
    * Set debug mode enabled/disabled
    *
-   * @param b set debug on off
+   * @param b
    */
   public static void setMallocDebugEnabled(boolean b) {
     UnsafeAccess.debug = b;
@@ -396,7 +392,7 @@ public final class UnsafeAccess {
   /**
    * Set STR limit
    *
-   * @param limit set STR limit
+   * @param limit
    */
   public static void setStackTraceRecordingLimit(int limit) {
     mallocStats.setStackTraceRecordingLimit(limit);
@@ -442,7 +438,6 @@ public final class UnsafeAccess {
   }
 
   // APIs to read primitive data from a byte[] using Unsafe way
-
   /**
    * Converts a byte array to a short value considering it was written in big-endian format.
    *
@@ -473,7 +468,7 @@ public final class UnsafeAccess {
     }
   }
 
-  /* Bit manipulation routines */
+  /** Bit manipulation routines */
 
   /**
    * TODO: test Get offset of a first bit set in a long value (8 bytes)
@@ -629,7 +624,6 @@ public final class UnsafeAccess {
   }
 
   // APIs to write primitive data to a byte[] using Unsafe way
-
   /**
    * Put a short value out to the specified byte array position in big-endian format.
    *
@@ -715,7 +709,6 @@ public final class UnsafeAccess {
     }
     theUnsafe.putInt(addr, val);
   }
-
   /**
    * Put a long value out to the specified byte array position in big-endian format.
    *
@@ -751,8 +744,8 @@ public final class UnsafeAccess {
    * Reads a short value at the given Object's offset considering it was written in big-endian
    * format.
    *
-   * @param ref memory address
-   * @param offset offset for short value
+   * @param ref
+   * @param offset
    * @return short value at offset
    */
   public static short toShort(Object ref, long offset) {
@@ -765,8 +758,8 @@ public final class UnsafeAccess {
   /**
    * Reads a int value at the given Object's offset considering it was written in big-endian format.
    *
-   * @param ref memory address
-   * @param offset offset for integer value
+   * @param ref
+   * @param offset
    * @return int value at offset
    */
   public static int toInt(Object ref, long offset) {
@@ -796,8 +789,8 @@ public final class UnsafeAccess {
    * Reads a long value at the given Object's offset considering it was written in big-endian
    * format.
    *
-   * @param ref memory address
-   * @param offset offset for long value
+   * @param ref
+   * @param offset
    * @return long value at offset
    */
   public static long toLong(Object ref, long offset) {
@@ -831,7 +824,8 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
-   * @param dst memory destination
+   * @param srcOffset offset
+   * @param ptr memory destination
    * @param len number of bytes to copy
    */
   public static void copy(long src, ByteBuffer dst, int len) {
@@ -855,6 +849,7 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
+   * @param srcOffset offset
    * @param ptr memory destination
    * @param len number of bytes to copy
    */
@@ -873,7 +868,6 @@ public final class UnsafeAccess {
     }
     src.position(pos + len);
   }
-
   /**
    * Copies the bytes from given array's offset to length part into the given buffer.
    *
@@ -955,7 +949,7 @@ public final class UnsafeAccess {
     mallocStats.checkAllocation(dst, (int) len);
 
     while (len > 0) {
-      long size = Math.min(len, UNSAFE_COPY_THRESHOLD);
+      long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
       theUnsafe.copyMemory(src, dst, size);
       len -= size;
       src += size;
@@ -974,7 +968,7 @@ public final class UnsafeAccess {
     mallocStats.checkAllocation(dst, (int) len);
 
     while (len > 0) {
-      long size = Math.min(len, UNSAFE_COPY_THRESHOLD);
+      long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
       theUnsafe.copyMemory(src, dst, size);
       len -= size;
       src += size;
@@ -993,7 +987,7 @@ public final class UnsafeAccess {
     mallocStats.checkAllocation(src, (int) len);
 
     while (len > 0) {
-      long size = Math.min(len, UNSAFE_COPY_THRESHOLD);
+      long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
       theUnsafe.copyMemory(src, dst, size);
       len -= size;
       src += size;
@@ -1012,7 +1006,7 @@ public final class UnsafeAccess {
    */
   private static void unsafeCopy(Object src, long srcAddr, Object dst, long destAddr, long len) {
     while (len > 0) {
-      long size = Math.min(len, UNSAFE_COPY_THRESHOLD);
+      long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
       theUnsafe.copyMemory(src, srcAddr, dst, destAddr, size);
       len -= size;
       srcAddr += size;
@@ -1071,7 +1065,6 @@ public final class UnsafeAccess {
   /*
    *  APIs to add primitives to BBs
    */
-
   /**
    * Put a short value out to the specified BB position in big-endian format.
    *
@@ -1134,7 +1127,6 @@ public final class UnsafeAccess {
     }
     return offset + Bytes.SIZEOF_LONG;
   }
-
   /**
    * Put a byte value out to the specified BB position in big-endian format.
    *
@@ -1157,7 +1149,7 @@ public final class UnsafeAccess {
   /**
    * Returns the byte at the given offset of the object
    *
-   * @param addr memory address
+   * @param addr
    * @return the byte at the given offset
    */
   public static byte toByte(long addr) {
@@ -1236,7 +1228,6 @@ public final class UnsafeAccess {
   public static void setMemory(long ptr, long size, byte v) {
     theUnsafe.setMemory(ptr, size, v);
   }
-
   /**
    * Free memory
    *
