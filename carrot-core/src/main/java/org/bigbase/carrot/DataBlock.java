@@ -1937,7 +1937,7 @@ public final class DataBlock {
         shrink();
       }
       if (reuseValue) {
-        //Deallocate value, we can not reuse it, b/c allocation type is EMBEDDED
+        // Deallocate value, we can not reuse it, b/c allocation type is EMBEDDED
         UnsafeAccess.free(valuePtr);
       }
       return true;

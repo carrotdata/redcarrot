@@ -41,9 +41,9 @@ public class StringsTest extends CarrotCoreBase2 {
   static {
     // Example: how to enable memory debug mode, set stack trace recording
     // for all memory allocations with sizes 100000 or 2001
-    //UnsafeAccess.setMallocDebugEnabled(true);
-    //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-    //UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
+    // UnsafeAccess.setMallocDebugEnabled(true);
+    // UnsafeAccess.setMallocDebugStackTraceEnabled(true);
+    // UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
   }
 
   public StringsTest(Object c, Object m) {
@@ -73,19 +73,24 @@ public class StringsTest extends CarrotCoreBase2 {
     return keyValues;
   }
 
-    protected static void setUp() {
-        CarrotCoreBase2.setUp();
+  protected static void setUp() {
+    CarrotCoreBase2.setUp();
 
-        buffer = UnsafeAccess.mallocZeroed(bufferSize);
-        keyValues = getKeyValues();
-        UnsafeAccess.setMallocDebugEnabled(memoryDebug);
-        UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
-        UnsafeAccess.setStackTraceRecordingFilter(x -> x == 100000 || x == 2001);
+    buffer = UnsafeAccess.mallocZeroed(bufferSize);
+    keyValues = getKeyValues();
+    UnsafeAccess.setMallocDebugEnabled(memoryDebug);
+    UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
+    if (memoryDebug) UnsafeAccess.setStackTraceRecordingFilter(x -> x == 100000 || x == 2001);
 
-        log.debug("setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
-                Objects.isNull(BigSortedMap.getCompressionCodec()) ? "None" : BigSortedMap.getCompressionCodec(),
-                buffer, keyValues.size(), UnsafeAccess.debug);
-    }
+    log.debug(
+        "setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
+        Objects.isNull(BigSortedMap.getCompressionCodec())
+            ? "None"
+            : BigSortedMap.getCompressionCodec(),
+        buffer,
+        keyValues.size(),
+        UnsafeAccess.debug);
+  }
 
   @Test
   public void testGetExpire() {
@@ -956,7 +961,6 @@ public class StringsTest extends CarrotCoreBase2 {
 
     Strings.DELETE(map, kv.keyPtr, kv.keySize);
     UnsafeAccess.free(valuePtr);
-
   }
 
   @Test
