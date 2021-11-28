@@ -8,7 +8,7 @@
     </appenders>
 
     <Loggers>
-        <Logger level="INFO" name="org.bigbase">
+        <Logger level="DEBUG" name="org.bigbase">
             <appender-ref ref="STDOUT"/>
         </Logger>
     </Loggers>
