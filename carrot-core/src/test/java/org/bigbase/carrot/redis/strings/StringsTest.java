@@ -41,14 +41,15 @@ public class StringsTest extends CarrotCoreBase2 {
   static {
     // Example: how to enable memory debug mode, set stack trace recording
     // for all memory allocations with sizes 100000 or 2001
-    // UnsafeAccess.setMallocDebugEnabled(true);
-    // UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-    // UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
+
+    UnsafeAccess.setMallocDebugEnabled(memoryDebug);
+    UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
+    if (memoryDebug)
+      UnsafeAccess.setStackTraceRecordingFilter(x -> x == MEM_ALLOCATE_DEBUG || x == 2001);
   }
 
-  public StringsTest(Object c, Object m) {
-    super(c, m);
-    log.debug("StringsTest: {}", super.getParameters());
+  public StringsTest(Object c) {
+    super(c);
     tearDown();
     setUp();
   }
@@ -74,16 +75,15 @@ public class StringsTest extends CarrotCoreBase2 {
   }
 
   protected static void setUp() {
-    CarrotCoreBase2.setUp();
+
+    map = new BigSortedMap(memoryDebug ? MEM_ALLOCATE_DEBUG : MEM_ALLOCATE);
+    nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
 
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
-    UnsafeAccess.setMallocDebugEnabled(memoryDebug);
-    UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
-    if (memoryDebug) UnsafeAccess.setStackTraceRecordingFilter(x -> x == 100000 || x == 2001);
 
     log.debug(
-        "setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
+        "StringsTest.setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
         Objects.isNull(BigSortedMap.getCompressionCodec())
             ? "None"
             : BigSortedMap.getCompressionCodec(),
@@ -1279,7 +1279,8 @@ public class StringsTest extends CarrotCoreBase2 {
 
   @AfterClass
   public static void tearDown() {
-    if (!CarrotCoreBase2.isDisposed()) return;
+    if (Objects.isNull(map)) return;
+    map.dispose();
 
     for (KeyValue k : keyValues) {
       UnsafeAccess.free(k.keyPtr);
@@ -1288,7 +1289,7 @@ public class StringsTest extends CarrotCoreBase2 {
     UnsafeAccess.free(buffer);
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
-    log.debug("Malloc allocated={}", UnsafeAccess.getAllocatedMemory());
+    log.debug("StringsTest.tearDown");
   }
 }
 

@@ -1,0 +1,1170 @@
+2021-11-28 14:12:37,541 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:37,544 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetRange  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:37,559 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-164488747178468544
+2021-11-28 14:12:37,567 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-4919115753958485285
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:37,592 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:37,593 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:37,593 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:37,593 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:37,593 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:37,751 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:37,751 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetEx operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:37,764 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:37,764 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:37,764 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:37,764 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:37,764 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:37,765 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:37,765 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:37,765 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:37,765 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:37,765 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:37,848 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:37,849 DEBUG o.b.c.r.s.StringsTest [main] Test Strings SetEx operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:37,859 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:37,859 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:37,859 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:37,861 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:37,861 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:37,861 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:37,861 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:37,862 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:37,862 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:37,862 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:37,862 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:37,862 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:37,947 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:37,947 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MSet operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:38,300 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:38,300 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:38,300 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:38,300 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:38,301 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:38,301 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:38,301 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:38,301 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:38,301 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:38,301 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:38,393 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:38,393 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MGet operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:38,749 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:38,750 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:38,750 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:38,750 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:38,832 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:38,832 DEBUG o.b.c.r.s.StringsTest [main] Test SET with TTL options  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:38,841 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:38,841 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:38,841 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:38,844 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:38,844 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:38,920 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:38,921 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Double  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:38,932 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:38,932 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:38,933 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:38,933 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:39,016 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:39,016 DEBUG o.b.c.r.s.StringsTest [main] Test Strings StrLength operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:39,029 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:39,030 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:39,030 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:39,030 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:39,113 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:39,113 DEBUG o.b.c.r.s.StringsTest [main] Test SETGET with TTL options  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:39,125 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:39,125 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:39,126 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:39,126 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:39,126 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:39,208 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:39,208 DEBUG o.b.c.r.s.StringsTest [main] testSetGetBit  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:39,853 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:39,853 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:39,853 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:39,853 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:39,853 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:39,853 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:39,854 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:39,854 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:39,854 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:39,854 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:39,936 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:39,936 DEBUG o.b.c.r.s.StringsTest [main] Test SETNX with options  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:39,948 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:39,948 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:39,948 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:40,030 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:40,030 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetDelete operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:40,039 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:40,042 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:40,042 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:40,042 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:40,042 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:40,042 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:40,042 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:40,042 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:40,043 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:40,043 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:40,043 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:40,043 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:40,043 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:40,144 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:40,144 DEBUG o.b.c.r.s.StringsTest [main] Test Get expire  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:40,152 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:40,153 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:40,153 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:40,153 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:40,299 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:40,299 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Append  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:40,310 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:40,310 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:40,311 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:40,311 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:40,401 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:40,401 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Set/Remove  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:40,431 DEBUG o.b.c.r.s.StringsTest [main] 10000
+2021-11-28 14:12:40,460 DEBUG o.b.c.r.s.StringsTest [main] 20000
+2021-11-28 14:12:40,487 DEBUG o.b.c.r.s.StringsTest [main] 30000
+2021-11-28 14:12:40,513 DEBUG o.b.c.r.s.StringsTest [main] 40000
+2021-11-28 14:12:40,543 DEBUG o.b.c.r.s.StringsTest [main] 50000
+2021-11-28 14:12:40,568 DEBUG o.b.c.r.s.StringsTest [main] 60000
+2021-11-28 14:12:40,594 DEBUG o.b.c.r.s.StringsTest [main] 70000
+2021-11-28 14:12:40,618 DEBUG o.b.c.r.s.StringsTest [main] 80000
+2021-11-28 14:12:40,644 DEBUG o.b.c.r.s.StringsTest [main] 90000
+2021-11-28 14:12:40,671 DEBUG o.b.c.r.s.StringsTest [main] 100000
+2021-11-28 14:12:40,671 DEBUG o.b.c.r.s.StringsTest [main] Total allocated memory =29609984 for 100000 26077790  byte values. Overhead=35.32194 bytes per key-value. Time to load: 270ms
+2021-11-28 14:12:40,910 DEBUG o.b.c.r.s.StringsTest [main] Time DELETE =239ms
+2021-11-28 14:12:41,014 DEBUG o.b.c.r.s.StringsTest [main] Time to GET 100000 values=104ms
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,028 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,029 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,029 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,029 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,029 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,029 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:41,132 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:41,132 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Long  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:41,144 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,144 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,154 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,154 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,154 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,154 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,155 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,155 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,155 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,155 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,155 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,155 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:41,249 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:41,250 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetSet operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,261 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,261 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,261 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:41,350 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:41,350 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Double wrong format  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,362 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,362 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,363 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:41,448 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:41,448 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MSetNX operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,799 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,799 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,799 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,799 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,799 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,799 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,800 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,800 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,800 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,800 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:41,898 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:41,898 DEBUG o.b.c.r.s.StringsTest [main] Test Strings PSetEx operation  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:41,909 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:41,909 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:41,909 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,004 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,004 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Set/Get  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,027 DEBUG o.b.c.r.s.StringsTest [main] 10000
+2021-11-28 14:12:42,050 DEBUG o.b.c.r.s.StringsTest [main] 20000
+2021-11-28 14:12:42,073 DEBUG o.b.c.r.s.StringsTest [main] 30000
+2021-11-28 14:12:42,102 DEBUG o.b.c.r.s.StringsTest [main] 40000
+2021-11-28 14:12:42,127 DEBUG o.b.c.r.s.StringsTest [main] 50000
+2021-11-28 14:12:42,150 DEBUG o.b.c.r.s.StringsTest [main] 60000
+2021-11-28 14:12:42,173 DEBUG o.b.c.r.s.StringsTest [main] 70000
+2021-11-28 14:12:42,195 DEBUG o.b.c.r.s.StringsTest [main] 80000
+2021-11-28 14:12:42,218 DEBUG o.b.c.r.s.StringsTest [main] 90000
+2021-11-28 14:12:42,252 DEBUG o.b.c.r.s.StringsTest [main] 100000
+2021-11-28 14:12:42,252 DEBUG o.b.c.r.s.StringsTest [main] Total allocated memory =29609984 for 100000 26077790 byte values. Overhead=2.9609724E7 bytes per key-value. Time to load: 248ms
+2021-11-28 14:12:42,331 DEBUG o.b.c.r.s.StringsTest [main] Time GET =79ms
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total memory               :29609984
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :29061120
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total data size            :27877805
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :0.9592818514909267
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total block index size     :548864
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total index size           :268858
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,331 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.9415001710233953
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,356 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,357 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,357 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,357 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,357 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,357 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,357 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,437 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,438 DEBUG o.b.c.r.s.StringsTest [main] Test Strings BitPos  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,438 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-4985872873852371998
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,449 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,449 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,449 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,532 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,532 DEBUG o.b.c.r.s.StringsTest [main] Test Strings BitCount  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,532 DEBUG o.b.c.r.s.StringsTest [main] Test seed=8950981163535992544
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,544 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,545 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,545 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,545 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,621 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,621 DEBUG o.b.c.r.s.StringsTest [main] Test SETXX with options  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,632 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,633 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,633 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,633 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,633 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,728 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,728 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Long wrong format  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,743 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,743 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,743 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,743 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,743 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,744 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,744 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,744 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,744 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,744 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,826 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,827 DEBUG o.b.c.r.s.StringsTest [main] Test Strings SetRange  with parameters: ['codec': 'LZ4', memory debug: 'false']
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,879 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,879 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,880 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,880 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,880 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:42,962 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:42,962 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetRange  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:42,962 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-778457965779753259
+2021-11-28 14:12:42,963 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-8907563108458648251
+2021-11-28 14:12:42,974 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:42,974 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:42,974 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:42,974 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:42,974 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:42,975 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:42,975 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:42,975 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:42,975 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:42,975 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:42,975 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:42,975 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:43,057 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:43,058 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetEx operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:43,070 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:43,070 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:43,070 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:43,151 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:43,151 DEBUG o.b.c.r.s.StringsTest [main] Test Strings SetEx operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:43,162 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:43,162 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:43,162 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:43,241 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:43,241 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MSet operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:43,495 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:43,495 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:43,495 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:43,579 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:43,579 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MGet operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:43,879 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:43,879 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:43,879 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:43,960 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:43,960 DEBUG o.b.c.r.s.StringsTest [main] Test SET with TTL options  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:43,971 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:43,971 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:43,971 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:44,049 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:44,049 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Double  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:44,060 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:44,060 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:44,060 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:44,144 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:44,145 DEBUG o.b.c.r.s.StringsTest [main] Test Strings StrLength operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:44,157 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:44,157 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:44,157 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:44,239 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:44,239 DEBUG o.b.c.r.s.StringsTest [main] Test SETGET with TTL options  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:44,251 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:44,251 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:44,251 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:44,328 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:44,328 DEBUG o.b.c.r.s.StringsTest [main] testSetGetBit  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:44,964 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:44,964 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:44,964 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,047 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,047 DEBUG o.b.c.r.s.StringsTest [main] Test SETNX with options  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,060 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,060 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,060 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,142 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,142 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetDelete operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,154 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,154 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,154 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,235 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,235 DEBUG o.b.c.r.s.StringsTest [main] Test Get expire  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,249 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,249 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,249 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,326 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,326 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Append  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,339 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,340 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,340 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,340 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,421 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,421 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Set/Remove  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,442 DEBUG o.b.c.r.s.StringsTest [main] 10000
+2021-11-28 14:12:45,464 DEBUG o.b.c.r.s.StringsTest [main] 20000
+2021-11-28 14:12:45,487 DEBUG o.b.c.r.s.StringsTest [main] 30000
+2021-11-28 14:12:45,508 DEBUG o.b.c.r.s.StringsTest [main] 40000
+2021-11-28 14:12:45,531 DEBUG o.b.c.r.s.StringsTest [main] 50000
+2021-11-28 14:12:45,553 DEBUG o.b.c.r.s.StringsTest [main] 60000
+2021-11-28 14:12:45,575 DEBUG o.b.c.r.s.StringsTest [main] 70000
+2021-11-28 14:12:45,597 DEBUG o.b.c.r.s.StringsTest [main] 80000
+2021-11-28 14:12:45,620 DEBUG o.b.c.r.s.StringsTest [main] 90000
+2021-11-28 14:12:45,642 DEBUG o.b.c.r.s.StringsTest [main] 100000
+2021-11-28 14:12:45,642 DEBUG o.b.c.r.s.StringsTest [main] Total allocated memory =29609984 for 100000 26077790  byte values. Overhead=35.32194 bytes per key-value. Time to load: 221ms
+2021-11-28 14:12:45,818 DEBUG o.b.c.r.s.StringsTest [main] Time DELETE =176ms
+2021-11-28 14:12:45,896 DEBUG o.b.c.r.s.StringsTest [main] Time to GET 100000 values=78ms
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,908 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,908 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,908 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:45,989 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:45,989 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Long  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:45,997 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:45,997 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:45,997 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:45,997 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:45,997 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:45,998 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:45,998 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:45,998 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:45,998 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:45,998 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:46,076 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:46,076 DEBUG o.b.c.r.s.StringsTest [main] Test Strings GetSet operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:46,089 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:46,089 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:46,089 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:46,170 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:46,170 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Double wrong format  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:46,183 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:46,183 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:46,183 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:46,264 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:46,264 DEBUG o.b.c.r.s.StringsTest [main] Test Strings MSetNX operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:46,559 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:46,559 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:46,559 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:46,638 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:46,638 DEBUG o.b.c.r.s.StringsTest [main] Test Strings PSetEx operation  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:46,651 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:46,651 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:46,651 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:46,733 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:46,733 DEBUG o.b.c.r.s.StringsTest [main] Test Strings Set/Get  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:46,754 DEBUG o.b.c.r.s.StringsTest [main] 10000
+2021-11-28 14:12:46,775 DEBUG o.b.c.r.s.StringsTest [main] 20000
+2021-11-28 14:12:46,798 DEBUG o.b.c.r.s.StringsTest [main] 30000
+2021-11-28 14:12:46,820 DEBUG o.b.c.r.s.StringsTest [main] 40000
+2021-11-28 14:12:46,843 DEBUG o.b.c.r.s.StringsTest [main] 50000
+2021-11-28 14:12:46,865 DEBUG o.b.c.r.s.StringsTest [main] 60000
+2021-11-28 14:12:46,888 DEBUG o.b.c.r.s.StringsTest [main] 70000
+2021-11-28 14:12:46,910 DEBUG o.b.c.r.s.StringsTest [main] 80000
+2021-11-28 14:12:46,932 DEBUG o.b.c.r.s.StringsTest [main] 90000
+2021-11-28 14:12:46,954 DEBUG o.b.c.r.s.StringsTest [main] 100000
+2021-11-28 14:12:46,954 DEBUG o.b.c.r.s.StringsTest [main] Total allocated memory =29609984 for 100000 26077790 byte values. Overhead=2.9609724E7 bytes per key-value. Time to load: 221ms
+2021-11-28 14:12:47,010 DEBUG o.b.c.r.s.StringsTest [main] Time GET =56ms
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total memory               :29609984
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :29061120
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total data size            :27877805
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :0.9592818514909267
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total block index size     :548864
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total index size           :268858
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,010 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.9415001710233953
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,026 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,026 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,026 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:47,108 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:47,108 DEBUG o.b.c.r.s.StringsTest [main] Test Strings BitPos  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:47,109 DEBUG o.b.c.r.s.StringsTest [main] Test seed=-9153575068902523801
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,120 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,120 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,120 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:47,197 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:47,197 DEBUG o.b.c.r.s.StringsTest [main] Test Strings BitCount  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:47,197 DEBUG o.b.c.r.s.StringsTest [main] Test seed=5150369613104475765
+2021-11-28 14:12:47,210 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,211 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,211 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,211 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:47,291 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:47,291 DEBUG o.b.c.r.s.StringsTest [main] Test SETXX with options  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,304 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,304 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,304 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:47,385 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:47,385 DEBUG o.b.c.r.s.StringsTest [main] Test Increment Long wrong format  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,396 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,396 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,396 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown
+2021-11-28 14:12:47,475 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.setUp with parameters: [map,codec: None, buffer: 140261493268208, keyValues size: 100000 memory debug: false]
+2021-11-28 14:12:47,475 DEBUG o.b.c.r.s.StringsTest [main] Test Strings SetRange  with parameters: ['codec': 'none', memory debug: 'false']
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] GLOBAL Carrot memory allocation statistics:
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total memory               :4096
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total data blocks          :0
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total data size            :0
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total data block usage     :NaN
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total block index size     :4096
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total index size           :0
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total compressed data size :0
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Total external data size   :0
+2021-11-28 14:12:47,510 DEBUG o.b.c.BigSortedMap [main] Compression ratio         :0.0
+2021-11-28 14:12:47,510 DEBUG o.b.c.u.U.MallocStats [main] Malloc statistics:
+2021-11-28 14:12:47,510 DEBUG o.b.c.u.U.MallocStats [main] allocations          =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main] allocated memory     =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main] deallocations        =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main] deallocated memory   =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main] leaked (current)     =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main] Orphaned allocations =0
+2021-11-28 14:12:47,511 DEBUG o.b.c.u.U.MallocStats [main]
+2021-11-28 14:12:47,511 DEBUG o.b.c.r.s.StringsTest [main] StringsTest.tearDown

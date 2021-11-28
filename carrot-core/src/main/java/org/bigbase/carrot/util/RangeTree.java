@@ -47,7 +47,7 @@ public class RangeTree {
     }
   }
 
-  private TreeMap<Range, Range> map = new TreeMap<>();
+  private final TreeMap<Range, Range> map = new TreeMap<>();
 
   public RangeTree() {}
 
@@ -69,11 +69,11 @@ public class RangeTree {
     Range r = map.floorKey(search);
     boolean result = !Objects.isNull(r) && start >= r.start && start + size <= r.start + r.size;
 
-    log.debug(
-        "floorKey start key {}, size key: {}, range: {}",
-        start,
-        size,
-        Objects.isNull(r) ? "null" : r.toString());
+//    log.debug(
+//        "floorKey start key {}, size key: {}, range: {}",
+//        start,
+//        size,
+//        Objects.isNull(r) ? "null" : r.toString());
     if (!result) {
       if (!Objects.isNull(r)) {
         log.debug(
@@ -83,7 +83,7 @@ public class RangeTree {
             r.start,
             r.size,
             r.start - start,
-            +r.size - size);
+            r.size - size);
       } else {
         log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
       }

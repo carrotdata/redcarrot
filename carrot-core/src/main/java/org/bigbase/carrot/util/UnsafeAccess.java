@@ -252,7 +252,7 @@ public final class UnsafeAccess {
      * @param printOrphans if true - print all orphan allocations
      */
     public void printStats(boolean printOrphans) {
-      if (!UnsafeAccess.debug) return;
+//      if (!UnsafeAccess.debug) return;
 
       log.debug("Malloc statistics:");
       log.debug("allocations          ={}", allocEvents.get());
@@ -1167,7 +1167,7 @@ public final class UnsafeAccess {
   public static long malloc(long size) {
     long address = theUnsafe.allocateMemory(size);
     mallocStats.allocEvent(address, size);
-    log.debug("Allocate memory address: {}, size: {}", address, size);
+//    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1181,7 +1181,7 @@ public final class UnsafeAccess {
     long address = theUnsafe.allocateMemory(size);
     theUnsafe.setMemory(address, size, (byte) 0);
     mallocStats.allocEvent(address, size);
-    log.debug("Allocate memory address: {}, size: {}", address, size);
+//    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1205,7 +1205,7 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(pptr, newSize);
     }
-    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
+//    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
 
     return pptr;
   }
