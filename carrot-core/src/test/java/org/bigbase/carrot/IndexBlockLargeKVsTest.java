@@ -30,6 +30,10 @@ import org.junit.Test;
 
 public class IndexBlockLargeKVsTest extends IndexBlockTest {
 
+  public IndexBlockLargeKVsTest(Object c) throws IOException {
+    super(c);
+  }
+
   private static final Logger log = LogManager.getLogger(IndexBlockLargeKVsTest.class);
 
   @Ignore
@@ -42,7 +46,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    * 12 bytes and less will guarantee that there will be no overflow in a data block and new V will
    * be kept in a data block
    */
-  @Ignore
+
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
     log.debug("testOverwriteSmallerValueSize - LargeKVs");
@@ -84,7 +88,6 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    * increasing value size should keep them both external 3. K is in data block , V is external,
    * increasing V size is safe
    */
-  @Ignore
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
     log.debug("testOverwriteLargerValueSize- LargeKVs");

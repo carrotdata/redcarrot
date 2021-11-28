@@ -25,7 +25,6 @@ import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestUtils {
@@ -72,14 +71,6 @@ public class TestUtils {
     buf = new byte[arr.length - 1];
     System.arraycopy(arr, 0, buf, 0, arr.length - 1);
     return buf;
-  }
-
-  @Ignore
-  @Test
-  public void testAll() {
-    for (int i = 0; i < 100; i++) {
-      testDirectBufferAddress();
-    }
   }
 
   @Test
@@ -301,11 +292,10 @@ public class TestUtils {
     }
   }
 
-  @Ignore
   @Test
   public void testRandomDistinctArray() {
     long max = Long.MAX_VALUE / 2;
-    int count = 1000;
+    int count = 100;
     while (max > count) {
       long[] arr = Utils.randomDistinctArray(max, count);
       log.debug("max={} count={}", max, count);

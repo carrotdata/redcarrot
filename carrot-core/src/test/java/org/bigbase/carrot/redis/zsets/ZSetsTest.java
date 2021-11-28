@@ -13,6 +13,12 @@
 */
 package org.bigbase.carrot.redis.zsets;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,9 +26,8 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.DataBlock;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
@@ -31,28 +36,27 @@ import org.bigbase.carrot.util.ValueScore;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class ZSetsTest {
+public class ZSetsTest extends CarrotCoreBase{
 
   private static final Logger log = LogManager.getLogger(ZSetsTest.class);
 
-  BigSortedMap map;
-  Key key;
-  long buffer;
-  int bufferSize = 64;
-  int fieldSize = 16;
-  long n = 100000;
-  List<Value> fields;
-  List<Double> scores;
-  int maxScore = 100000;
+  static BigSortedMap map;
+  static Key key;
+  static long buffer;
+  static int bufferSize = 64;
+  static int fieldSize = 16;
+  static long n = 10000;
+  static List<Value> fields;
+  static List<Double> scores;
+  static int maxScore = 100000;
 
-  static {
-    // UnsafeAccess.setMallocDebugEnabled(true);
-    // UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-  }
-
-  private List<Value> getFields(long n) {
+  public ZSetsTest(Object c) throws IOException {
+    super(c);
+    tearDown();
+    setUp();
+  } 
+  
+  private static List<Value> getFields(long n) {
     List<Value> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
@@ -70,7 +74,7 @@ public class ZSetsTest {
     return keys;
   }
 
-  private List<Double> getScores(long n) {
+  private static List<Double> getScores(long n) {
     List<Double> scores = new ArrayList<>();
     Random r = new Random(1);
     for (int i = 0; i < n; i++) {
@@ -79,7 +83,7 @@ public class ZSetsTest {
     return scores;
   }
 
-  private Key getKey() {
+  private static Key getKey() {
     long ptr = UnsafeAccess.malloc(fieldSize);
     byte[] buf = new byte[fieldSize];
     Random r = new Random();
@@ -91,7 +95,7 @@ public class ZSetsTest {
     return key = new Key(ptr, fieldSize);
   }
 
-  private void setUp() {
+  private static void setUp() {
     map = new BigSortedMap(1000000000);
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     fields = getFields(n);
@@ -108,72 +112,17 @@ public class ZSetsTest {
     }
   }
 
-  // @Ignore
-  @Test
-  public void runAllNoCompression() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=NULL", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
 
-  // @Ignore
-  @Test
-  public void runAllCompressionLZ4() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    log.debug("");
-    for (int i = 0; i < 1; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  @Ignore
-  @Test
-  public void runAllCompressionLZ4HC() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    log.debug("");
-    for (int i = 0; i < 10; i++) {
-      log.debug("*************** RUN = {} Compression=LZ4HC", i + 1);
-      allTests();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
-    }
-  }
-
-  private void allTests() {
-    setUp();
-    testAddGetScore();
-    tearDown();
-    testAddGetScoreMulti();
-    setUp();
-    testAddRemove();
-    tearDown();
-    setUp();
-    testAddDeleteMulti();
-    tearDown();
-    // testAddGetScoreMultiOpt();
-  }
-
-  @Ignore
   @Test
   public void testAddGetScoreMulti() {
-    log.debug("Test ZSet Add Get Score Multi");
-    map = new BigSortedMap();
-    int total = 3000;
+    log.debug("Test ZSet Add Get Score Multi {}", getParameters());
     Key key = getKey();
-    long[] elemPtrs = new long[total];
-    int[] elemSizes = new int[total];
-    double[] scores = new double[total];
+    long[] elemPtrs = new long[(int) n];
+    int[] elemSizes = new int[(int) n];
+    double[] scores = new double[(int) n];
     int len = scores.length;
-    List<Value> fields = getFields(len);
-    List<Double> scl = getScores(len);
+    List<Value> fields = ZSetsTest.fields;
+    List<Double> scl = ZSetsTest.scores;
     for (int i = 0; i < len; i++) {
       elemPtrs[i] = fields.get(i).address;
       elemSizes[i] = fields.get(i).length;
@@ -184,28 +133,24 @@ public class ZSetsTest {
     long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
     long end = System.nanoTime();
     log.debug("call time={}micros", (end - start) / 1000);
-    assertEquals(total, (int) num);
-    assertEquals(total, (int) ZSets.ZCARD(map, key.address, key.length));
+    assertEquals((int) n, (int) num);
+    assertEquals((int) n, (int) ZSets.ZCARD(map, key.address, key.length));
 
-    for (int i = 0; i < total; i++) {
+    for (int i = 0; i < n; i++) {
       Double res = ZSets.ZSCORE(map, key.address, key.length, elemPtrs[i], elemSizes[i]);
       assertNotNull(res);
       assertEquals(scores[i], res, 0.0);
     }
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-    map.dispose();
-    UnsafeAccess.free(key.address);
-    fields.stream().forEach(x -> UnsafeAccess.free(x.address));
-    UnsafeAccess.mallocStats.printStats();
+
   }
 
   @Ignore
   @Test
   public void testAddGetScoreMultiOpt() {
-    log.debug("Test ZSet Add Get Score Multi (Optimized version)");
+    log.debug("Test ZSet Add Get Score Multi (Optimized version) {}", getParameters());
     map = new BigSortedMap();
     int total = 30000;
     Key key = getKey();
@@ -243,10 +188,9 @@ public class ZSetsTest {
     UnsafeAccess.mallocStats.printStats();
   }
 
-  @Ignore
   @Test
   public void testAddGetScore() {
-    log.debug("Test ZSet Add Get Score");
+    log.debug("Test ZSet Add Get Score {}", getParameters());
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
@@ -256,7 +200,7 @@ public class ZSetsTest {
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = this.scores.get(i);
+      scores[0] = ZSetsTest.scores.get(i);
       long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
@@ -280,7 +224,7 @@ public class ZSetsTest {
     for (int i = 0; i < n; i++) {
       Double res =
           ZSets.ZSCORE(map, key.address, key.length, fields.get(i).address, fields.get(i).length);
-      assertEquals(this.scores.get(i), res);
+      assertEquals(ZSetsTest.scores.get(i), res);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
       }
@@ -292,10 +236,9 @@ public class ZSetsTest {
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testAddRemove() {
-    log.debug("Test ZSet Add Remove");
+    log.debug("Test ZSet Add Remove {}", getParameters());
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
@@ -304,7 +247,7 @@ public class ZSetsTest {
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = this.scores.get(i);
+      scores[0] = ZSetsTest.scores.get(i);
       long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
@@ -343,10 +286,9 @@ public class ZSetsTest {
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testAddDeleteMulti() {
-    log.debug("Test ZSet Add Delete Multi");
+    log.debug("Test ZSet Add Delete Multi {}", getParameters());
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
     double[] scores = new double[1];
@@ -354,7 +296,7 @@ public class ZSetsTest {
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = this.scores.get(i);
+      scores[0] = ZSetsTest.scores.get(i);
       long num = ZSets.ZADD(map, elemPtrs[0], elemSizes[0], scores, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
@@ -395,7 +337,10 @@ public class ZSetsTest {
     assertEquals(0, (int) map.countRecords());
   }
 
-  private void tearDown() {
+  private static void tearDown() {
+    if (map == null) {
+      return;
+    }
     // Dispose
     map.dispose();
     if (key != null) {

@@ -26,7 +26,6 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -318,14 +317,6 @@ public class DataBlockTest extends DataBlockTestBase {
     assertEquals(expResult, result);
     // b.free();
 
-  }
-
-  @Ignore
-  @Test
-  public void loopNext() throws RetryOperationException, IOException {
-    for (int i = 1; i < 100000; i++) {
-      testOverwriteOnUpdateEnabled();
-    }
   }
 
   @Test

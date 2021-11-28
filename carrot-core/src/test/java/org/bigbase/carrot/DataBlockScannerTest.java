@@ -26,7 +26,6 @@ import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -34,7 +33,7 @@ import static org.junit.Assert.*;
 public class DataBlockScannerTest {
 
   private static final Logger log = LogManager.getLogger(DataBlockScannerTest.class);
-
+  
   protected DataBlock getDataBlock() {
     IndexBlock ib = new IndexBlock(null, 4096);
     ib.setFirstIndexBlock();
@@ -77,18 +76,6 @@ public class DataBlockScannerTest {
     scanner.close();
     dispose(keys);
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
-  @Test
-  public void testReverseAll() throws IOException {
-    for (int i = 0; i < 100000; i++) {
-      log.debug("\n i={}\n", i);
-      testFullScanReverse();
-      testOpenEndScanReverse();
-      testOpenStartScanReverse();
-      testSubScanReverse();
-    }
   }
 
   @Test

@@ -53,7 +53,6 @@ public class IndexBlockScannerLargeKVsTest extends IndexBlockScannerTest {
         b.getNumberOfDataBlock(),
         b.getDataInBlockSize(),
         keys.size());
-    // b.dumpIndexBlockExt();
     return keys;
   }
 }

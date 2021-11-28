@@ -17,12 +17,9 @@ public class CarrotCoreBase {
 
   protected static Codec codec;
 
-  // static {
-  //  UnsafeAccess.debug = true;
-  // }
-
   public CarrotCoreBase(Object c) throws IOException {
     codec = (Codec) c;
+    BigSortedMap.setCompressionCodec(codec);
   }
 
   @Parameterized.Parameters(name = "Run with codec={0}")

@@ -116,58 +116,6 @@ public class ListsTest extends CarrotCoreBase {
     UnsafeAccess.mallocStats.printStats();
   }
 
-  // TODO enable others?
-  private void allTestsBack() {
-
-    //    setUp();
-    //    testLREM();
-    //    tearDown();
-    //    setUp();
-    //    testLRANGE();
-    //    tearDown();
-    //    setUp();
-    //    testLINSERT();
-    //    tearDown();
-    //    setUp();
-    //    testLSET();
-    //    tearDown();
-    //    setUp();
-    //    testRPOPLPUSH();
-    //    tearDown();
-    //    setUp();
-    //    testLMOVE();
-    //    tearDown();
-    //    setUp();
-    //    testLPUSHX();
-    //    tearDown();
-    //    setUp();
-    //    testRPUSHX();
-    //    tearDown();
-    //    setUp();
-    //    testLindexEdgeCases();
-    //    tearDown();
-    //    setUp();
-    //    testLPUSHLINDEX();
-    //    tearDown();
-    //    setUp();
-    //    testLPUSHLPOP();
-    //    tearDown();
-    //    setUp();
-    //    testLPUSHRPOP();
-    //    tearDown();
-    //    setUp();
-    //    testLRMIX();
-    //    tearDown();
-    //    setUp();
-    //    testRPUSHLINDEX();
-    //    tearDown();
-    //    setUp();
-    //    testRPUSHLPOP();
-    //    tearDown();
-    //    setUp();
-    //    testRPUSHRPOP();
-    //    tearDown();
-  }
 
   @Test
   public void testDeallocator() {
@@ -185,10 +133,6 @@ public class ListsTest extends CarrotCoreBase {
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
-    log.debug("Before BSM.dispose:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
-    log.debug("After BSM.dispose:");
     assertEquals(n, (int) Lists.LLEN(map, key.address, key.length));
   }
 
@@ -217,10 +161,6 @@ public class ListsTest extends CarrotCoreBase {
       len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(2L * i + 2, len);
     }
-
-    log.debug("After loading large values:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
 
     for (int i = 0; i < n; i++) {
       int size = Lists.RPOP(map, key.address, key.length, bufPtr, largeSize);
@@ -352,10 +292,9 @@ public class ListsTest extends CarrotCoreBase {
     UnsafeAccess.free(buffer);
   }
 
-  @Ignore
   @Test
   public void testRPUSHX() {
-    log.debug("Test RPUSHX");
+    log.debug("Test RPUSHX {}", getParameters());
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -399,10 +338,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLPUSHX() {
-    log.debug("Test LPUSHX");
+    log.debug("Test LPUSHX {}", getParameters());
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -446,10 +384,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLPUSHLPOP() {
-    log.debug("Test LPUSHLPOP");
+    log.debug("Test LPUSHLPOP {}", getParameters());
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
@@ -481,10 +418,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testRPUSHRPOP() {
-    log.debug("\nTest RPUSHRPOP");
+    log.debug("Test RPUSHRPOP {}", getParameters());
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
@@ -509,10 +445,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLPUSHRPOP() {
-    log.debug("\nTest LPUSHRPOP");
+    log.debug("Test LPUSHRPOP {}", getParameters());
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -536,10 +471,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLRMIX() {
-    log.debug("\nTest LRMIX");
+    log.debug("Test LRMIX {}", getParameters());
     Key key = getKey();
     Random r = new Random();
     long seed = r.nextLong();
@@ -573,10 +507,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testRPUSHLPOP() {
-    log.debug("\nTest RPUSHLPOP");
+    log.debug("Test RPUSHLPOP {}", getParameters());
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -599,10 +532,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLPUSHLINDEX() {
-    log.debug("\nTest LPUSHLINDEX");
+    log.debug("Test LPUSHLINDEX {}", getParameters());
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -627,10 +559,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLindexEdgeCases() {
-    log.debug("\nTest LINDEX edge cases");
+    log.debug("Test LINDEX edge cases {}", getParameters());
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -663,10 +594,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testRPUSHLINDEX() {
-    log.debug("Test RPUSHLINDEX");
+    log.debug("Test RPUSHLINDEX {}", getParameters());
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -691,10 +621,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLMOVE() {
-    log.debug("\nTest LMOVE");
+    log.debug("Test LMOVE {}", getParameters());
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -1003,10 +932,9 @@ public class ListsTest extends CarrotCoreBase {
     UnsafeAccess.free(key2.address);
   }
 
-  @Ignore
   @Test
   public void testRPOPLPUSH() {
-    log.debug("\nTest RPOPLPUSH");
+    log.debug("Test RPOPLPUSH {}", getParameters());
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -1069,10 +997,9 @@ public class ListsTest extends CarrotCoreBase {
     testRPOPLPUSH();
   }
 
-  @Ignore
   @Test
   public void testLSET() {
-    log.debug("Test LSET operation");
+    log.debug("Test LSET operation {}", getParameters());
     Key key = getKey();
     // load half of values
     int toLoad = n / 2;
@@ -1104,10 +1031,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLINSERT() {
-    log.debug("Test LINSERT operation");
+    log.debug("Test LINSERT operation {}", getParameters());
     Key key = getKey();
     // load half of values
     for (int i = 0; i < n / 2; i++) {
@@ -1159,10 +1085,9 @@ public class ListsTest extends CarrotCoreBase {
     assertEquals(0, (int) Lists.LLEN(map, key.address, key.length));
   }
 
-  @Ignore
   @Test
   public void testLRANGE() {
-    log.debug("Test LRANGE operation");
+    log.debug("Test LRANGE operation {}", getParameters());
     Key key = getKey();
     // No exists yet
 
@@ -1251,10 +1176,9 @@ public class ListsTest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testLREM() {
-    log.debug("Test LREM operation");
+    log.debug("Test LREM operation {}", getParameters());
     Key key = getKey();
     // No exists yet
     long removed =

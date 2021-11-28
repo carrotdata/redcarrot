@@ -49,7 +49,7 @@ public class SetsTest extends CarrotCoreBase {
   static long buffer;
   static int bufferSize = 64;
   static int valSize = 16;
-  static long n = 1000000;
+  static long n = 100000;
   static List<Value> values;
 
   public SetsTest(Object c) throws IOException {
@@ -108,9 +108,8 @@ public class SetsTest extends CarrotCoreBase {
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
   }
-
-  @Ignore
-  public void testPerformance() {
+  
+  public void untestPerformance() {
     perfRun(1000000);
     perfRun(10000000);
     perfRun(100000000);
@@ -227,8 +226,6 @@ public class SetsTest extends CarrotCoreBase {
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
         +end - start);
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
-
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
     count = 0;
@@ -241,8 +238,7 @@ public class SetsTest extends CarrotCoreBase {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist={}ms", end - start);
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    log.debug("Time exist={} ms", end - start);
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
   }
@@ -295,7 +291,6 @@ public class SetsTest extends CarrotCoreBase {
     log.debug("Deleted {} in {}ms. Count={}", n, end - start, recc);
 
     assertEquals(0, (int) recc);
-    BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
   @Test
@@ -330,7 +325,6 @@ public class SetsTest extends CarrotCoreBase {
             + (end - start)
             + "ms");
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -340,15 +334,13 @@ public class SetsTest extends CarrotCoreBase {
       assertEquals(1, res);
     }
     end = System.currentTimeMillis();
-    log.debug("Time exist={}ms", end - start);
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    log.debug("Time exist= {}ms", end - start);
 
     assertEquals(0, (int) map.countRecords());
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     // TODO
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
   }
 
   @Ignore
@@ -455,5 +447,7 @@ public class SetsTest extends CarrotCoreBase {
       UnsafeAccess.free(buffer);
       buffer = 0;
     }
+    BigSortedMap.printGlobalMemoryAllocationStats();
+    UnsafeAccess.mallocStats.printStats();
   }
 }

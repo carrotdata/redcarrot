@@ -13,6 +13,10 @@
 */
 package org.bigbase.carrot;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,65 +24,42 @@ import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.After;
 import org.junit.Test;
-import org.junit.Ignore;
 
-import static org.junit.Assert.*;
-
-public class IndexBlockTest {
+public class IndexBlockTest extends CarrotCoreBase{
 
   private static final Logger log = LogManager.getLogger(IndexBlockTest.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
-  @Test
-  public void testAll() throws RetryOperationException, IOException {
+  
+  public IndexBlockTest(Object c) throws IOException {
+    super(c);
+    BigSortedMap.setCompressionCodec(codec);
+  }
+  
 
-    for (int i = 0; i < 10; i++) {
-      log.debug("\nRun {}} \n", (i + 1));
-      testPutGet();
-      testPutGetWithCompressionLZ4();
-      testPutGetWithCompressionLZ4HC();
-      testPutGetDeleteFull();
-      testPutGetDeleteFullWithCompressionLZ4();
-      testPutGetDeleteFullWithCompressionLZ4HC();
-      testPutGetDeletePartial();
-      testPutGetDeletePartialWithCompressionLZ4();
-      testPutGetDeletePartialWithCompressionLZ4HC();
-      testAutomaticDataBlockMerge();
-      testAutomaticDataBlockMergeWithCompressionLZ4();
-      testAutomaticDataBlockMergeWithCompressionLZ4HC();
-      testOverwriteSameValueSize();
-      testOverwriteSameValueSizeWithCompressionLZ4();
-      testOverwriteSameValueSizeWithCompressionLZ4HC();
-      testOverwriteSmallerValueSize();
-      testOverwriteSmallerValueSizeWithCompressionLZ4();
-      testOverwriteSmallerValueSizeWithCompressionLZ4HC();
-      testOverwriteLargerValueSize();
-      testOverwriteLargerValueSizeWithCompressionLZ4();
-      testOverwriteLargerValueSizeWithCompressionLZ4HC();
-    }
+  @After
+  public void tearDown() {
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats();
   }
-
+  
   protected void freeKeys(ArrayList<Key> keys) {
     for (Key key : keys) {
       UnsafeAccess.free(key.address);
     }
   }
 
-  @Ignore
   @Test
   public void testPutGet() {
-    log.debug("testPutGet");
+    log.debug("testPutGet {}", getParameters());
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     for (Key key : keys) {
@@ -93,28 +74,10 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testPutGetWithCompressionLZ4() {
-    log.debug("testPutGetWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testPutGet();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
 
-  @Ignore
-  @Test
-  public void testPutGetWithCompressionLZ4HC() {
-    log.debug("testPutGetWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testPutGet();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testAutomaticDataBlockMerge() {
-    log.debug("testAutomaticDataBlockMerge");
+    log.debug("testAutomaticDataBlockMerge {}", getParameters());
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     Utils.sortKeys(keys);
@@ -135,28 +98,10 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testAutomaticDataBlockMergeWithCompressionLZ4() {
-    log.debug("testAutomaticDataBlockMergeWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testAutomaticDataBlockMerge();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
 
-  @Ignore
-  @Test
-  public void testAutomaticDataBlockMergeWithCompressionLZ4HC() {
-    log.debug("testAutomaticDataBlockMergeWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testAutomaticDataBlockMerge();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testPutGetDeleteFull() {
-    log.debug("testPutGetDeleteFull");
+    log.debug("testPutGetDeleteFull {}", getParameters());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -200,28 +145,9 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testPutGetDeleteFullWithCompressionLZ4() {
-    log.debug("testPutGetDeleteFullWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testPutGetDeleteFull();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
-  @Test
-  public void testPutGetDeleteFullWithCompressionLZ4HC() {
-    log.debug("testPutGetDeleteFullWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testPutGetDeleteFull();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testPutGetDeletePartial() {
-    log.debug("testPutGetDeletePartial");
+    log.debug("testPutGetDeletePartial {}", getParameters());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -276,28 +202,9 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testPutGetDeletePartialWithCompressionLZ4() {
-    log.debug("testPutGetDeletePartialWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testPutGetDeletePartial();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
-  @Test
-  public void testPutGetDeletePartialWithCompressionLZ4HC() {
-    log.debug("testPutGetDeletePartiallWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testPutGetDeletePartial();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testOverwriteSameValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteSameValueSize");
+    log.debug("testOverwriteSameValueSize {}", getParameters());
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -319,30 +226,10 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testOverwriteSameValueSizeWithCompressionLZ4()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteSameValueSizeWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testOverwriteSameValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
 
-  @Ignore
-  @Test
-  public void testOverwriteSameValueSizeWithCompressionLZ4HC()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteSameValueSizeWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testOverwriteSameValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteSmallerValueSize");
+    log.debug("testOverwriteSmallerValueSize {}", getParameters());
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -364,30 +251,9 @@ public class IndexBlockTest {
     freeKeys(keys);
   }
 
-  @Ignore
-  @Test
-  public void testOverwriteSmallerValueSizeWithCompressionLZ4()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteSmallerValueSizeWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testOverwriteSmallerValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
-  @Test
-  public void testOverwriteSmallerValueSizeWithCompressionLZ4HC()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteSmallerValueSizeWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testOverwriteSmallerValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteLargerValueSize");
+    log.debug("testOverwriteLargerValueSize {}", getParameters());
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -415,26 +281,6 @@ public class IndexBlockTest {
     scanAndVerify(ib, keys);
     ib.free();
     freeKeys(keys);
-  }
-
-  @Ignore
-  @Test
-  public void testOverwriteLargerValueSizeWithCompressionLZ4()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteLargerValueSizeWithCompressionLZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    testOverwriteLargerValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-  }
-
-  @Ignore
-  @Test
-  public void testOverwriteLargerValueSizeWithCompressionLZ4HC()
-      throws RetryOperationException, IOException {
-    log.debug("testOverwriteLargerValueSizeWithCompressionLZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    testOverwriteLargerValueSize();
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
   protected void scanAndVerify(IndexBlock b, List<Key> keys)

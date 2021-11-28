@@ -14,7 +14,6 @@
 package org.bigbase.carrot;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,52 +28,20 @@ import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.Ignore;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 public class IndexBlockScannerTest {
 
   private static final Logger log = LogManager.getLogger(IndexBlockScannerTest.class);
 
-  static {
-    // UnsafeAccess.debug = true;
-  }
 
-  @Test
-  public void testAll() throws IOException {
-    for (int i = 0; i < 1; i++) {
-      log.debug("\nRUN {}\n", i);
-      testFullScan();
-      testFullScanWithCompressionLZ4();
-      testFullScanWithCompressionLZ4HC();
-      testFullScanReverse();
-      testFullScanReverseWithCompressionLZ4();
-      testFullScanReverseWithCompressionLZ4HC();
-      testOpenEndScan();
-      testOpenEndScanWithCompressionLZ4();
-      testOpenEndScanWithCompressionLZ4HC();
-      testOpenEndScanReverse();
-      testOpenEndScanReverseWithCompressionLZ4();
-      testOpenEndScanReverseWithCompressionLZ4HC();
-      testOpenStartScan();
-      testOpenStartScanWithCompressionLZ4();
-      testOpenStartScanWithCompressionLZ4HC();
-      testOpenStartScanReverse();
-      testOpenStartScanReverseWithCompressionLZ4();
-      testOpenStartScanReverseWithCompressionLZ4HC();
-      testSubScan();
-      testSubScanWithCompressionLZ4();
-      testSubScanWithCompressionLZ4HC();
-      testSubScanReverse();
-      testSubScanReverseWithCompressionLZ4();
-      testSubScanReverseWithCompressionLZ4HC();
-    }
-
+  @AfterClass
+  public static void tearDown() {
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats();
   }
-
-  @Ignore
+  
   @Test
   public void testFullScan() throws IOException {
     log.debug("testFullScan");
@@ -89,7 +56,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testFullScanWithCompressionLZ4() throws IOException {
     log.debug("testFullScanWithCompressionLZ4");
@@ -98,7 +64,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testFullScanWithCompressionLZ4HC() throws IOException {
     log.debug("testFullScanWithCompressionLZ4HC");
@@ -107,7 +72,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testFullScanReverse() throws IOException {
     log.debug("testFullScanReverse");
@@ -126,7 +90,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testFullScanReverseWithCompressionLZ4() throws IOException {
     log.debug("testFullScanReverseWithCompressionLZ4");
@@ -135,7 +98,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testFullScanReverseWithCompressionLZ4HC() throws IOException {
     log.debug("testFullScanReverseWithCompressionLZ4HC");
@@ -150,7 +112,6 @@ public class IndexBlockScannerTest {
     }
   }
 
-  @Ignore
   @Test
   public void testOpenStartScan() throws IOException {
     log.debug("testOpenStartScan");
@@ -174,7 +135,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testOpenStartScanWithCompressionLZ4() throws IOException {
     log.debug("testOpenStartScanWithCompressionLZ4");
@@ -183,7 +143,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenStartScanWithCompressionLZ4HC() throws IOException {
     log.debug("testOpenStartScanWithCompressionLZ4HC");
@@ -192,7 +151,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenStartScanReverse() throws IOException {
     log.debug("testOpenStartScanReverse");
@@ -219,7 +177,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testOpenStartScanReverseWithCompressionLZ4() throws IOException {
     log.debug("testOpenStartScanReverseWithCompressionLZ4");
@@ -228,7 +185,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenStartScanReverseWithCompressionLZ4HC() throws IOException {
     log.debug("testOpenStartScanReverseWithCompressionLZ4HC");
@@ -237,7 +193,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenEndScan() throws IOException {
     log.debug("testOpenEndScan");
@@ -258,7 +213,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testOpenEndScanWithCompressionLZ4() throws IOException {
     log.debug("testOpenEndScanWithCompressionLZ4");
@@ -267,7 +221,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenEndScanWithCompressionLZ4HC() throws IOException {
     log.debug("testOpenEndScanWithCompressionLZ4HC");
@@ -276,7 +229,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenEndScanReverse() throws IOException {
     log.debug("testOpenEndScanReverse");
@@ -304,7 +256,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testOpenEndScanReverseWithCompressionLZ4() throws IOException {
     log.debug("testOpenEndScanReverseWithCompressionLZ4");
@@ -313,7 +264,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testOpenEndScanReverseWithCompressionLZ4HC() throws IOException {
     log.debug("testOpenEndScanReverseWithCompressionLZ4HC");
@@ -322,7 +272,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testSubScan() throws IOException {
     log.debug("testSubScan");
@@ -351,7 +300,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testSubScanWithCompressionLZ4() throws IOException {
     log.debug("testSubScanWithCompressionLZ4");
@@ -360,7 +308,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testSubScanWithCompressionLZ4HC() throws IOException {
     log.debug("testSubScanWithCompressionLZ4HC");
@@ -369,7 +316,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testSubScanReverse() throws IOException {
     log.debug("testSubScanReverse");
@@ -413,7 +359,6 @@ public class IndexBlockScannerTest {
     ib.free();
   }
 
-  @Ignore
   @Test
   public void testSubScanReverseWithCompressionLZ4() throws IOException {
     log.debug("testSubScanReverseWithCompressionLZ4");
@@ -422,7 +367,6 @@ public class IndexBlockScannerTest {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
   }
 
-  @Ignore
   @Test
   public void testSubScanReverseWithCompressionLZ4HC() throws IOException {
     log.debug("testSubScanReverseWithCompressionLZ4HC");

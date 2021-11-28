@@ -26,11 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
-import org.bigbase.carrot.compression.CodecFactory;
-import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
-// import org.bigbase.carrot.redis.Commons;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
@@ -116,7 +113,7 @@ public class HashesTest extends CarrotCoreBase {
   @Ignore
   @Test
   public void testMultiSet() {
-    log.debug("\nTest Multi Set");
+    log.debug("Test Multi Set");
     map = new BigSortedMap(1000000000L);
     List<KeyValue> list = getKeyValues(1000);
     List<KeyValue> copy = new ArrayList<>(list.size());
@@ -148,7 +145,7 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testSetExists() {
-    log.debug("\nTest Set - Exists {}", getParameters());
+    log.debug("Test Set - Exists {}", getParameters());
 
     Key key = getKey();
     long elemPtr;
@@ -185,7 +182,7 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testNullValues() {
-    log.debug("\nTest Set - Null values {}", getParameters());
+    log.debug("Test Set - Null values {}", getParameters());
 
     Key key = getKey();
     long NULL = UnsafeAccess.malloc(1);
@@ -239,7 +236,7 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testSetGet() {
-    log.debug("\nTest Set - Get {}", getParameters());
+    log.debug("Test Set - Get {}", getParameters());
 
     Key key = getKey();
     long elemPtr;
@@ -382,5 +379,7 @@ public class HashesTest extends CarrotCoreBase {
       UnsafeAccess.free(v.address);
     }
     UnsafeAccess.free(buffer);
+    BigSortedMap.printGlobalMemoryAllocationStats();
+    UnsafeAccess.mallocStats.printStats();
   }
 }
