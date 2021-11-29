@@ -483,12 +483,12 @@ public class BigSortedMap {
     return statsUpdateDisabled;
   }
 
-  /*****************************************************************/
+  /****************************************************************/
 
   /**************** INSTANCE SECTION *******************************/
 
   /** Major store data structure */
-  private ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
+  private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
       new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
   /*
    * Read-Write Lock TODO: StampedLock (Java 8), decrease # of locks

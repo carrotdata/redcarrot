@@ -16,7 +16,8 @@ package org.bigbase.carrot.redis.strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
+import org.bigbase.carrot.MemoryStats;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.redis.util.MutationOptions;
@@ -26,36 +27,23 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class StringsTest extends CarrotCoreBase {
+public class StringsTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(StringsTest.class);
 
-  static BigSortedMap map;
-  static long buffer;
-  static int bufferSize = 512;
-  static long nKeyValues = 10000L;
-  static List<KeyValue> keyValues;
+  private long buffer;
+  private final int bufferSize = 512;
+  private List<KeyValue> keyValues;
 
-  static {
-    // Example: how to enable memory debug mode, set stack trace recording
-    // for all memory allocations with sizes 100000 or 2001
-    //UnsafeAccess.setMallocDebugEnabled(true);
-    //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-    //UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
-  }
-  
-  public StringsTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
+  public StringsTest(Object c, Object m) {
+    super(c, m);
   }
 
-  private static List<KeyValue> getKeyValues() {
+  private List<KeyValue> getKeyValues() {
     List<KeyValue> keyValues = new ArrayList<>();
     for (int i = 0; i < nKeyValues; i++) {
       // key
@@ -75,10 +63,19 @@ public class StringsTest extends CarrotCoreBase {
     return keyValues;
   }
 
-  private static void setUp() {
-    map = new BigSortedMap(1000000000);
+  public void setUp() {
+
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
+
+    log.debug(
+        "StringsTest.setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
+        Objects.isNull(BigSortedMap.getCompressionCodec())
+            ? "None"
+            : BigSortedMap.getCompressionCodec().getType().name(),
+        buffer,
+        keyValues.size(),
+        UnsafeAccess.debug);
   }
 
   @Test
@@ -889,7 +886,7 @@ public class StringsTest extends CarrotCoreBase {
     assertEquals(0, bit);
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 1000);
     assertEquals(0, bit);
-    
+
     // Set K-V
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, valuePtr, valueSize);
     assertEquals(valueSize, size);
@@ -915,7 +912,7 @@ public class StringsTest extends CarrotCoreBase {
     Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     long len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
     assertEquals(2L * valueSize + 1, len);
-    
+
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
@@ -936,7 +933,7 @@ public class StringsTest extends CarrotCoreBase {
 
     bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     assertEquals(0, bit);
-    
+
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
@@ -947,10 +944,9 @@ public class StringsTest extends CarrotCoreBase {
       bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, i);
       assertEquals(0, bit);
     }
-    
+
     Strings.DELETE(map, kv.keyPtr, kv.keySize);
     UnsafeAccess.free(valuePtr);
-
   }
 
   @Test
@@ -1267,18 +1263,34 @@ public class StringsTest extends CarrotCoreBase {
     return pos;
   }
 
-  @AfterClass
-  public static void tearDown() {
+  public void tearDown() {
     // Dispose
     if (Objects.isNull(map)) return;
+
+    memoryStatsList.add(
+        new MemoryStats(
+            codec,
+            testName.getMethodName(),
+            memoryDebug,
+            UnsafeAccess.mallocStats.getAllocMap().size()));
     map.dispose();
-    for (KeyValue k : keyValues) {
-      UnsafeAccess.free(k.keyPtr);
-      UnsafeAccess.free(k.valuePtr);
+
+    if (Objects.nonNull(keyValues)) {
+      for (KeyValue k : keyValues) {
+        UnsafeAccess.free(k.keyPtr);
+        UnsafeAccess.free(k.valuePtr);
+      }
     }
     UnsafeAccess.free(buffer);
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
+    log.debug("StringsTest.tearDown");
+  }
+
+  @AfterClass
+  public static void printTestStatistics() {
+    log.debug("StringsTest.finalTearDown");
+    memoryStatsList.forEach(ms -> log.debug("Memory stats: {}", ms.toString()));
   }
 }
 

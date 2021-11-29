@@ -58,7 +58,7 @@ public final class UnsafeAccess {
     /** Total freed memory */
     public AtomicLong freed = new AtomicLong();
     /** Allocation map */
-    private RangeTree allocMap = new RangeTree();
+    private final RangeTree allocMap = new RangeTree();
 
     /** Is stack trace record enabled */
     private boolean stackTraceRecordingEndbled = false;
@@ -239,11 +239,15 @@ public final class UnsafeAccess {
       }
     }
 
-    /*
+    /**
      * Prints memory allocation statistics
      */
     public void printStats() {
       printStats(true);
+    }
+
+    public RangeTree getAllocMap() {
+      return allocMap;
     }
 
     /**
@@ -1167,6 +1171,7 @@ public final class UnsafeAccess {
   public static long malloc(long size) {
     long address = theUnsafe.allocateMemory(size);
     mallocStats.allocEvent(address, size);
+//    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1180,6 +1185,7 @@ public final class UnsafeAccess {
     long address = theUnsafe.allocateMemory(size);
     theUnsafe.setMemory(address, size, (byte) 0);
     mallocStats.allocEvent(address, size);
+//    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1203,6 +1209,8 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(pptr, newSize);
     }
+//    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
+
     return pptr;
   }
 
@@ -1216,6 +1224,7 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(addr, newSize);
     }
+    log.debug("reallocZeroed memory address: {}, size: {}", addr, newSize);
 
     return addr;
   }
