@@ -33,7 +33,6 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
 import org.bigbase.carrot.util.ValueScore;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ZSetsTest extends CarrotCoreBase{
@@ -147,18 +146,15 @@ public class ZSetsTest extends CarrotCoreBase{
 
   }
 
-  @Ignore
   @Test
   public void testAddGetScoreMultiOpt() {
     log.debug("Test ZSet Add Get Score Multi (Optimized version) {}", getParameters());
-    map = new BigSortedMap();
-    int total = 30000;
     Key key = getKey();
 
-    List<Value> fields = getFields(total);
-    List<Double> scl = getScores(total);
+    List<Value> fields = ZSetsTest.fields;
+    List<Double> scl = ZSetsTest.scores;
     List<ValueScore> list = new ArrayList<>();
-    for (int i = 0; i < total; i++) {
+    for (int i = 0; i < n; i++) {
       Value v = fields.get(i);
       double score = scl.get(i);
       list.add(new ValueScore(v.address, v.length, score));
@@ -168,24 +164,16 @@ public class ZSetsTest extends CarrotCoreBase{
     long num = ZSets.ZADD_NEW(map, key.address, key.length, list);
     long end = System.nanoTime();
     log.debug("call time={}micros", (end - start) / 1000);
-    assertEquals(total, (int) num);
-    assertEquals(total, (int) ZSets.ZCARD(map, key.address, key.length));
+    assertEquals((int) n, (int) num);
+    assertEquals((int) n, (int) ZSets.ZCARD(map, key.address, key.length));
 
-    for (int i = 0; i < total; i++) {
-      /*DEBUG*/
-      log.debug(i);
+    for (int i = 0; i < n; i++) {
       Value v = fields.get(i);
       Double res = ZSets.ZSCORE(map, key.address, key.length, v.address, v.length);
       assertEquals(scl.get(i), res);
     }
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-    map.dispose();
-    UnsafeAccess.free(key.address);
-    fields.stream().forEach(x -> UnsafeAccess.free(x.address));
-    UnsafeAccess.mallocStats.printStats();
   }
 
   @Test
