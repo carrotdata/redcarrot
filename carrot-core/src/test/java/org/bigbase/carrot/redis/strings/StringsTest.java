@@ -1266,12 +1266,6 @@ public class StringsTest extends CarrotCoreBase2 {
     // Dispose
     if (Objects.isNull(map)) return;
 
-    orphanMemoryStatsList.add(
-        new OrphanMemoryStats(
-            codec,
-            testName.getMethodName(),
-            memoryDebug,
-            UnsafeAccess.mallocStats.getAllocMap().size()));
     map.dispose();
 
     if (Objects.nonNull(keyValues)) {
@@ -1283,6 +1277,14 @@ public class StringsTest extends CarrotCoreBase2 {
     UnsafeAccess.free(buffer);
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
+
+    orphanMemoryStatsList.add(
+            new OrphanMemoryStats(
+                    codec,
+                    testName.getMethodName(),
+                    memoryDebug,
+                    UnsafeAccess.mallocStats.getAllocMap().size()));
+
     log.debug("StringsTest.tearDown");
   }
 }
