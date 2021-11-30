@@ -8,6 +8,7 @@ import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -22,7 +23,8 @@ public abstract class CarrotCoreBase2 {
   private static final Logger log = LogManager.getLogger(CarrotCoreBase2.class);
 
   private static final long MEM_ALLOCATE = 1000000000L;
-  private static final long MEM_ALLOCATE_DEBUG = 100000L;
+  // This is not necessary 
+  //private static final long MEM_ALLOCATE_DEBUG = 100000L;
 
   private static final long KEY_VALUE_SIZE = 100000L;
   private static final long KEY_VALUE_SIZE_DEBUG = 1000L;
@@ -44,22 +46,34 @@ public abstract class CarrotCoreBase2 {
     memoryDebug = (boolean) m;
 
     UnsafeAccess.setMallocDebugEnabled(memoryDebug);
-    UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
-    if (memoryDebug)
-      UnsafeAccess.setStackTraceRecordingFilter(x -> x == MEM_ALLOCATE_DEBUG || x == 2001);
-
-    map = new BigSortedMap(memoryDebug ? MEM_ALLOCATE_DEBUG : MEM_ALLOCATE);
-    nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
-
-    setUp();
+    
+    // This should not be set by default
+    //UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
+    // This filter is memory leak specific, you can't set it in advance
+    //if (memoryDebug)
+    //  UnsafeAccess.setStackTraceRecordingFilter(x -> x == MEM_ALLOCATE_DEBUG || x == 2001);
   }
 
-  public abstract void setUp();
+  
+  /*
+   * Subclasses can override below setUp and tearDown, but MUST call super. first
+   */
+  @Before
+  public void setUp() {
+    map = new BigSortedMap(/*memoryDebug ? MEM_ALLOCATE_DEBUG :*/ MEM_ALLOCATE);
+    nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
+  }
 
   @After
-  public abstract void tearDown();
+  public void tearDown() {
+    if (Objects.isNull(map)) return;
+    // Dispose
+    map.dispose();
+    BigSortedMap.printGlobalMemoryAllocationStats();
+    UnsafeAccess.mallocStats.printStats();
+  }
 
-  @Parameterized.Parameters(name = "Run with codec={0}")
+  @Parameterized.Parameters(name = "Run with codec={0} memory debug={1}")
   public static Collection<Object[]> data() {
     return Arrays.asList(
         new Object[][] {
@@ -78,6 +92,11 @@ public abstract class CarrotCoreBase2 {
         Objects.nonNull(codec) ? codec.getType().name() : "none", memoryDebug);
   }
 
+  /**
+   * FIXME: Not sure how do you calculate mismatch?
+   * Can you just emit orphanCounts for every test in debug mode?
+   * 
+   */
   @AfterClass
   public static void printTestStatistics() {
     log.debug(

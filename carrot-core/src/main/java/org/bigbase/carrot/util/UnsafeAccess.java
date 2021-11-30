@@ -170,6 +170,10 @@ public final class UnsafeAccess {
       }
     }
 
+    /**
+     * FIXME: this method dumps stack trace into log
+     * @return
+     */
     private String stackTrace() {
       PrintStream errStream = System.err;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();

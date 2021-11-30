@@ -24,6 +24,8 @@ import org.bigbase.carrot.redis.util.MutationOptions;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -62,8 +64,10 @@ public class StringsTest extends CarrotCoreBase2 {
     return keyValues;
   }
 
+  @Before
+  @Override
   public void setUp() {
-
+    super.setUp();
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
 
@@ -1262,12 +1266,10 @@ public class StringsTest extends CarrotCoreBase2 {
     return pos;
   }
 
+  @After
+  @Override
   public void tearDown() {
-    // Dispose
-    if (Objects.isNull(map)) return;
-
-    map.dispose();
-
+   super.tearDown();
     if (Objects.nonNull(keyValues)) {
       for (KeyValue k : keyValues) {
         UnsafeAccess.free(k.keyPtr);
@@ -1275,9 +1277,6 @@ public class StringsTest extends CarrotCoreBase2 {
       }
     }
     UnsafeAccess.free(buffer);
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
-
     orphanMemoryStatsList.add(
             new OrphanMemoryStats(
                     codec,
