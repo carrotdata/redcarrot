@@ -1,19 +1,25 @@
 package org.bigbase.carrot;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
 public abstract class CarrotCoreBase2 {
+
+  private static final Logger log = LogManager.getLogger(CarrotCoreBase2.class);
 
   private static final long MEM_ALLOCATE = 1000000000L;
   private static final long MEM_ALLOCATE_DEBUG = 100000L;
@@ -29,7 +35,7 @@ public abstract class CarrotCoreBase2 {
 
   @Rule public TestName testName = new TestName();
 
-  protected static final List<MemoryStats> memoryStatsList = new ArrayList<>();
+  protected static final List<OrphanMemoryStats> orphanMemoryStatsList = new ArrayList<>();
 
   /** @param c - Codec, null - no codec, LZ4... - other mem allocation */
   public CarrotCoreBase2(Object c, Object m) {
@@ -70,5 +76,29 @@ public abstract class CarrotCoreBase2 {
     return String.format(
         " with parameters: ['codec': '%s', memory debug: '%s']",
         Objects.nonNull(codec) ? codec.getType().name() : "none", memoryDebug);
+  }
+
+  @AfterClass
+  public static void printTestStatistics() {
+    log.debug(
+        "CarrotCoreBase2.finalTearDown; Number of tests with objects leaks: {}",
+        orphanMemoryStatsList.stream()
+            .collect(
+                Collectors.groupingBy(
+                    CarrotCoreBase2::getGroupingByKey,
+                    Collectors.mapping((OrphanMemoryStats ms) -> ms, Collectors.toList())))
+            .entrySet()
+            .stream()
+            .filter(set -> isOrphNotEquals(set.getValue()))
+            .peek(ms -> log.debug("Orphan objects mismatch: {}", ms))
+            .count());
+  }
+
+  private static boolean isOrphNotEquals(List<OrphanMemoryStats> msList) {
+    return msList.stream().anyMatch(ms -> ms.getOrphCounter() != msList.get(0).getOrphCounter());
+  }
+
+  private static String getGroupingByKey(OrphanMemoryStats ms) {
+    return ms.getTestName() + "-" + ms.getDebug();
   }
 }

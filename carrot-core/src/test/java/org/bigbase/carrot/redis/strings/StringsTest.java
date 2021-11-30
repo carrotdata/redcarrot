@@ -17,14 +17,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase2;
-import org.bigbase.carrot.MemoryStats;
+import org.bigbase.carrot.OrphanMemoryStats;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.redis.util.MutationOptions;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.util.*;
@@ -1267,8 +1266,8 @@ public class StringsTest extends CarrotCoreBase2 {
     // Dispose
     if (Objects.isNull(map)) return;
 
-    memoryStatsList.add(
-        new MemoryStats(
+    orphanMemoryStatsList.add(
+        new OrphanMemoryStats(
             codec,
             testName.getMethodName(),
             memoryDebug,
@@ -1285,12 +1284,6 @@ public class StringsTest extends CarrotCoreBase2 {
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats();
     log.debug("StringsTest.tearDown");
-  }
-
-  @AfterClass
-  public static void printTestStatistics() {
-    log.debug("StringsTest.finalTearDown");
-    memoryStatsList.forEach(ms -> log.debug("Memory stats: {}", ms.toString()));
   }
 }
 
