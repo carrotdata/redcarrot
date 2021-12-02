@@ -23,8 +23,6 @@ public abstract class CarrotCoreBase2 {
   private static final Logger log = LogManager.getLogger(CarrotCoreBase2.class);
 
   private static final long MEM_ALLOCATE = 1000000000L;
-  // This is not necessary 
-  //private static final long MEM_ALLOCATE_DEBUG = 100000L;
 
   private static final long KEY_VALUE_SIZE = 100000L;
   private static final long KEY_VALUE_SIZE_DEBUG = 1000L;
@@ -46,22 +44,17 @@ public abstract class CarrotCoreBase2 {
     memoryDebug = (boolean) m;
 
     UnsafeAccess.setMallocDebugEnabled(memoryDebug);
-    
-    // This should not be set by default
-    //UnsafeAccess.setMallocDebugStackTraceEnabled(memoryDebug);
-    // This filter is memory leak specific, you can't set it in advance
-    //if (memoryDebug)
-    //  UnsafeAccess.setStackTraceRecordingFilter(x -> x == MEM_ALLOCATE_DEBUG || x == 2001);
   }
 
-  
   /*
    * Subclasses can override below setUp and tearDown, but MUST call super. first
    */
   @Before
   public void setUp() {
-    map = new BigSortedMap(/*memoryDebug ? MEM_ALLOCATE_DEBUG :*/ MEM_ALLOCATE);
+    map = new BigSortedMap(MEM_ALLOCATE);
     nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
+    //    UnsafeAccess.setMallocDebugStackTraceEnabled (true);
+    //    UnsafeAccess.setStackTraceRecordingFilter( x-> x == 4096);
   }
 
   @After
@@ -86,16 +79,29 @@ public abstract class CarrotCoreBase2 {
   }
 
   /** @return Tests parameters */
-  protected String getParameters() {
-    return String.format(
-        " with parameters: ['codec': '%s', memory debug: '%s']",
-        Objects.nonNull(codec) ? codec.getType().name() : "none", memoryDebug);
+  protected String getTestParameters() {
+    return String.format("Test: %s", testName.getMethodName());
   }
 
   /**
    * FIXME: Not sure how do you calculate mismatch?
-   * Can you just emit orphanCounts for every test in debug mode?
-   * 
+   *
+   * <p>1. On each teardown method test create on object in the orphanMemoryStatsList:
+   * OrphanMemoryStats .
+   *
+   * <p>2.On printTestStatistics method groupBy all results from the list by:
+   * ms.getTestName() and ms.getDebug() for each pair created list for other parameters. In our case
+   * codec. print each pair filter where OrphCounter not equal.
+   *
+   * <p>for example: MemoryStats{codecName='LZ4', testName='testSetGetBit', debug=true,
+   * orphCounter=8}, MemoryStats{codecName='none', testName='testSetGetBit', debug=true,
+   * orphCounter=9 for test: testSetGetBit, debug mode, codec: 'LZ4' has 8 orphan objects but codec:
+   * 'None' has 9
+   *
+   * <p>Can you just emit orphanCounts for every test in debug mode?
+   * This method will print objects if they different from one test to other.
+   * There is one line only will be printed if orphanCounts are equals
+   * which is: "CarrotCoreBase2.finalTearDown; Number of tests with objects leaks: 0"
    */
   @AfterClass
   public static void printTestStatistics() {
@@ -110,6 +116,15 @@ public abstract class CarrotCoreBase2 {
             .stream()
             .filter(set -> isOrphNotEquals(set.getValue()))
             .peek(ms -> log.debug("Orphan objects mismatch: {}", ms))
+            .flatMap(ms -> ms.getValue().stream())
+            .peek(oms -> log.debug("{}", oms))
+            .flatMap(oms -> oms.getAllocMap().entrySet().stream())
+            .peek(
+                entry ->
+                    log.debug(
+                        "Memory start:{} size: {}",
+                        entry.getKey().getStart(),
+                        entry.getKey().getSize()))
             .count());
   }
 

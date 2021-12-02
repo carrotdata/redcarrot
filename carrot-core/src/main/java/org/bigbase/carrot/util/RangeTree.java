@@ -29,11 +29,21 @@ public class RangeTree {
     long start;
     int size;
 
-    Range() {}
+    // I add public to make a copy outside this class
+    public Range() {}
 
-    Range(long start, int size) {
+    // I add public to make a copy outside this class
+    public Range(long start, int size) {
       this.start = start;
       this.size = size;
+    }
+
+    public long getStart() {
+      return start;
+    }
+
+    public int getSize() {
+      return size;
     }
 
     @Override
@@ -69,11 +79,11 @@ public class RangeTree {
     Range r = map.floorKey(search);
     boolean result = !Objects.isNull(r) && start >= r.start && start + size <= r.start + r.size;
 
-//    log.debug(
-//        "floorKey start key {}, size key: {}, range: {}",
-//        start,
-//        size,
-//        Objects.isNull(r) ? "null" : r.toString());
+    //    log.debug(
+    //        "floorKey start key {}, size key: {}, range: {}",
+    //        start,
+    //        size,
+    //        Objects.isNull(r) ? "null" : r.toString());
     if (!result) {
       if (!Objects.isNull(r)) {
         log.debug(

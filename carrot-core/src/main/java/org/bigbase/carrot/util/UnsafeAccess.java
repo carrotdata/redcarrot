@@ -272,7 +272,7 @@ public final class UnsafeAccess {
       if (allocMap.size() > 0 && printOrphans) {
         log.debug("Orphaned allocation sizes:");
         for (Map.Entry<Range, Range> entry : allocMap.entrySet()) {
-          log.debug("Address:{} size:{}", entry.getKey().start, entry.getValue().size);
+          log.debug("Address: {} size: {}", entry.getKey().start, entry.getValue().size);
           if (isStackTraceRecordingEnabled()) {
             String strace = stackTraceMap.get(entry.getKey().start);
             if (strace != null) {
