@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -35,11 +36,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ZSetsPOC extends CarrotCoreBase {
+public class ZSetsPOC extends CarrotCoreBase2 {
 
     private static final Logger log = LogManager.getLogger(ZSetsTest.class);
 
-    static BigSortedMap map;
     static Key key;
     static long buffer;
     static List<Value> fields;

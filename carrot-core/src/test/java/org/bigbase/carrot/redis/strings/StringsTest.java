@@ -26,8 +26,10 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -40,6 +42,11 @@ public class StringsTest extends CarrotCoreBase2 {
   private final int bufferSize = 512;
   private List<KeyValue> keyValues;
 
+  @BeforeClass
+  public static void beforeClass() {
+    orphanMemoryStatsList.clear();
+  }
+
   public StringsTest(Object c, Object m) {
     super(c, m);
   }
@@ -51,7 +58,7 @@ public class StringsTest extends CarrotCoreBase2 {
       byte[] key = ("user:" + i).getBytes();
       long keyPtr = UnsafeAccess.malloc(key.length);
       int keySize = key.length;
-//      log.debug("copy key: {}, keyPtr: {}, keySize: {}", new String(key), keyPtr, keySize);
+      //      log.debug("copy key: {}, keyPtr: {}, keySize: {}", new String(key), keyPtr, keySize);
       UnsafeAccess.copy(key, 0, keyPtr, keySize);
 
       // value
@@ -59,8 +66,9 @@ public class StringsTest extends CarrotCoreBase2 {
       byte[] value = session.toString().getBytes();
       int valueSize = value.length;
       long valuePtr = UnsafeAccess.malloc(valueSize);
-//      log.debug(
-//          "copy value: {}, valuePtr: {}, valueSize: {}", new String(value), valuePtr, valueSize);
+      //      log.debug(
+      //          "copy value: {}, valuePtr: {}, valueSize: {}", new String(value), valuePtr,
+      // valueSize);
       UnsafeAccess.copy(value, 0, valuePtr, valueSize);
       keyValues.add(new KeyValue(keyPtr, keySize, valuePtr, valueSize));
     }
@@ -68,20 +76,11 @@ public class StringsTest extends CarrotCoreBase2 {
   }
 
   @Before
-  @Override
-  public void setUp() {
+  public void setup() throws IOException {
     super.setUp();
+
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
-
-    log.debug(
-        "StringsTest.setUp with parameters: [map,codec: {}, buffer: {}, keyValues size: {} memory debug: {}]",
-        Objects.isNull(BigSortedMap.getCompressionCodec())
-            ? "None"
-            : BigSortedMap.getCompressionCodec().getType().name(),
-        buffer,
-        keyValues.size(),
-        UnsafeAccess.debug);
   }
 
   @Test
@@ -1269,10 +1268,8 @@ public class StringsTest extends CarrotCoreBase2 {
     return pos;
   }
 
-  @After
   @Override
-  public void tearDown() {
-    super.tearDown();
+  public void extTearDown() {
     if (Objects.nonNull(keyValues)) {
       for (KeyValue k : keyValues) {
         UnsafeAccess.free(k.keyPtr);
@@ -1280,10 +1277,6 @@ public class StringsTest extends CarrotCoreBase2 {
       }
     }
     UnsafeAccess.free(buffer);
-    orphanMemoryStatsList.add(
-        new OrphanMemoryStats(
-            codec, testName.getMethodName(), memoryDebug, UnsafeAccess.mallocStats.getAllocMap()));
-    log.debug("Teared down: {}", testName.getMethodName());
   }
 }
 

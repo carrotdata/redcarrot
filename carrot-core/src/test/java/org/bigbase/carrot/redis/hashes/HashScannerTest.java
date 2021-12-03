@@ -22,32 +22,31 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class HashScannerTest extends CarrotCoreBase {
+public class HashScannerTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(HashScannerTest.class);
 
-  static BigSortedMap map;
-  static int valSize = 8;
-  static int fieldSize = 8;
-  static long n = 100000L;
+  int valSize = 8;
+  int fieldSize = 8;
+  long n = 100000L;
 
-  public HashScannerTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
+  public HashScannerTest(Object c, Object m) {
+    super(c, m);
   }
 
-  private static List<KeyValue> getKeyValues(long n) {
+  @Override
+  public void extTearDown() {}
+
+  private List<KeyValue> getKeyValues(long n) {
     List<KeyValue> values = new ArrayList<>();
 
     Random r = new Random();
@@ -68,7 +67,7 @@ public class HashScannerTest extends CarrotCoreBase {
     return values;
   }
 
-  private static Key getKey() {
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -80,10 +79,6 @@ public class HashScannerTest extends CarrotCoreBase {
     return new Key(ptr, valSize);
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000L);
-  }
-
   private void loadData(Key key, List<KeyValue> values) {
     int expected = values.size();
     int loaded = Hashes.HSET(map, key, values);
@@ -92,7 +87,6 @@ public class HashScannerTest extends CarrotCoreBase {
 
   @Test
   public void testSingleFullScanner() throws IOException {
-    log.debug("Test single full scanner - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
@@ -156,7 +150,6 @@ public class HashScannerTest extends CarrotCoreBase {
 
   @Test
   public void testEdgeConditions() throws IOException {
-    log.debug("testEdgeConditions {}", getParameters());
 
     byte[] zero1 = new byte[] {0};
     byte[] zero2 = new byte[] {0, 0};
@@ -320,7 +313,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSingleFullScannerReverse() throws IOException {
 
-    log.debug("Test single full scanner reverse - one key {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -385,7 +377,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScanner() throws IOException {
 
-    log.debug("Test single partial scanner - one key {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -460,8 +451,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
 
-    log.debug(
-        "Test single partial scanner open start - one key {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -536,7 +525,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
 
-    log.debug("Test single partial scanner open end - one key {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -610,7 +598,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
 
-    log.debug("Test single partial scanner reverse - one key {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -684,10 +671,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
 
-    log.debug(
-        "Test single partial scanner reverse open start - one key {} elements {}",
-        n,
-        getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -761,10 +744,6 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
 
-    log.debug(
-        "Test single partial scanner reverse open end - one key {} elements {}",
-        n,
-        getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
@@ -838,8 +817,8 @@ public class HashScannerTest extends CarrotCoreBase {
 
   @Test
   public void testDirectScannerPerformance() throws IOException {
+
     int n = 5000; // 5M elements
-    log.debug("Test direct scanner performance {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -879,8 +858,8 @@ public class HashScannerTest extends CarrotCoreBase {
 
   @Test
   public void testReverseScannerPerformance() throws IOException {
+
     int n = 5000; // 5M elements
-    log.debug("Test reverse scanner performance {} elements {}", n, getParameters());
     Key key = getKey();
     List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
@@ -919,11 +898,11 @@ public class HashScannerTest extends CarrotCoreBase {
         });
   }
 
-  private static <T> List<T> copy(List<T> src) {
+  private <T> List<T> copy(List<T> src) {
     return new ArrayList<>(src);
   }
 
-  private static void deleteRandom(
+  private void deleteRandom(
       BigSortedMap map, long keyPtr, int keySize, List<KeyValue> copy, Random r) {
     int toDelete = copy.size() < 10 ? copy.size() : r.nextInt(copy.size() / 2);
     for (int i = 0; i < toDelete; i++) {
@@ -932,14 +911,5 @@ public class HashScannerTest extends CarrotCoreBase {
       int count = Hashes.HDEL(map, keyPtr, keySize, v.keyPtr, v.keySize);
       assertEquals(1, count);
     }
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    // Dispose
-    if (Objects.isNull(map)) return;
-
-    map.dispose();
-    UnsafeAccess.mallocStats.printStats();
   }
 }

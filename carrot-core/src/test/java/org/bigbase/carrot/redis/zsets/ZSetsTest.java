@@ -26,37 +26,66 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
 import org.bigbase.carrot.util.ValueScore;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ZSetsTest extends CarrotCoreBase{
+public class ZSetsTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(ZSetsTest.class);
 
-  static BigSortedMap map;
-  static Key key;
-  static long buffer;
-  static int bufferSize = 64;
-  static int fieldSize = 16;
-  static long n = 10000;
-  static List<Value> fields;
-  static List<Double> scores;
-  static int maxScore = 100000;
+  Key key;
+  long buffer;
+  int bufferSize = 64;
+  int fieldSize = 16;
+  long n = 10000;
+  List<Value> fields;
+  List<Double> scores;
+  int maxScore = 100000;
 
-  public ZSetsTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
-  } 
-  
-  private static List<Value> getFields(long n) {
+  public ZSetsTest(Object c, Object m) {
+    super(c, m);
+  }
+
+  @Before
+  public void setup() throws IOException {
+    super.setUp();
+
+    buffer = UnsafeAccess.mallocZeroed(bufferSize);
+    fields = getFields(n);
+    scores = getScores(n);
+    Utils.sortKeys(fields);
+    for (int i = 1; i < n; i++) {
+      Key prev = fields.get(i - 1);
+      Key cur = fields.get(i);
+      int res = Utils.compareTo(prev.address, prev.length, cur.address, cur.length);
+      if (res == 0) {
+        log.debug("Found duplicate");
+        fail();
+      }
+    }
+  }
+
+  @Override
+  public void extTearDown() {
+    if (key != null) {
+      UnsafeAccess.free(key.address);
+      key = null;
+    }
+    for (Key k : fields) {
+      UnsafeAccess.free(k.address);
+    }
+    UnsafeAccess.free(buffer);
+  }
+
+  private List<Value> getFields(long n) {
     List<Value> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
@@ -74,7 +103,7 @@ public class ZSetsTest extends CarrotCoreBase{
     return keys;
   }
 
-  private static List<Double> getScores(long n) {
+  private List<Double> getScores(long n) {
     List<Double> scores = new ArrayList<>();
     Random r = new Random(1);
     for (int i = 0; i < n; i++) {
@@ -83,7 +112,7 @@ public class ZSetsTest extends CarrotCoreBase{
     return scores;
   }
 
-  private static Key getKey() {
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(fieldSize);
     byte[] buf = new byte[fieldSize];
     Random r = new Random();
@@ -95,42 +124,22 @@ public class ZSetsTest extends CarrotCoreBase{
     return key = new Key(ptr, fieldSize);
   }
 
-  private static void setUp() {
-    map = new BigSortedMap(1000000000);
-    buffer = UnsafeAccess.mallocZeroed(bufferSize);
-    fields = getFields(n);
-    scores = getScores(n);
-    Utils.sortKeys(fields);
-    for (int i = 1; i < n; i++) {
-      Key prev = fields.get(i - 1);
-      Key cur = fields.get(i);
-      int res = Utils.compareTo(prev.address, prev.length, cur.address, cur.length);
-      if (res == 0) {
-        log.debug("Found duplicate");
-        fail();
-      }
-    }
-  }
-
-
   @Test
   public void testAddGetScoreMulti() {
-    log.debug("Test ZSet Add Get Score Multi {}", getParameters());
+
     Key key = getKey();
     long[] elemPtrs = new long[(int) n];
     int[] elemSizes = new int[(int) n];
-    double[] scores = new double[(int) n];
-    int len = scores.length;
-    List<Value> fields = ZSetsTest.fields;
-    List<Double> scl = ZSetsTest.scores;
+    double[] scl = new double[(int) n];
+    int len = scl.length;
     for (int i = 0; i < len; i++) {
       elemPtrs[i] = fields.get(i).address;
       elemSizes[i] = fields.get(i).length;
-      scores[i] = scl.get(i);
+      scl[i] = scores.get(i);
     }
 
     long start = System.nanoTime();
-    long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
+    long num = ZSets.ZADD(map, key.address, key.length, scl, elemPtrs, elemSizes, true);
     long end = System.nanoTime();
     log.debug("call time={}micros", (end - start) / 1000);
     assertEquals((int) n, (int) num);
@@ -139,18 +148,17 @@ public class ZSetsTest extends CarrotCoreBase{
     for (int i = 0; i < n; i++) {
       Double res = ZSets.ZSCORE(map, key.address, key.length, elemPtrs[i], elemSizes[i]);
       assertNotNull(res);
-      assertEquals(scores[i], res, 0.0);
+      assertEquals(scl[i], res, 0.0);
     }
 
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-
   }
 
   @Ignore
   @Test
   public void testAddGetScoreMultiOpt() {
-    log.debug("Test ZSet Add Get Score Multi (Optimized version) {}", getParameters());
+
     map = new BigSortedMap();
     int total = 30000;
     Key key = getKey();
@@ -184,24 +192,24 @@ public class ZSetsTest extends CarrotCoreBase{
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
     map.dispose();
     UnsafeAccess.free(key.address);
-    fields.stream().forEach(x -> UnsafeAccess.free(x.address));
+    fields.forEach(x -> UnsafeAccess.free(x.address));
     UnsafeAccess.mallocStats.printStats();
   }
 
   @Test
   public void testAddGetScore() {
-    log.debug("Test ZSet Add Get Score {}", getParameters());
+
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
-    double[] scores = new double[1];
+    double[] scl = new double[1];
     long start = System.currentTimeMillis();
 
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = ZSetsTest.scores.get(i);
-      long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
+      scl[0] = scores.get(i);
+      long num = ZSets.ZADD(map, key.address, key.length, scl, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
@@ -224,7 +232,7 @@ public class ZSetsTest extends CarrotCoreBase{
     for (int i = 0; i < n; i++) {
       Double res =
           ZSets.ZSCORE(map, key.address, key.length, fields.get(i).address, fields.get(i).length);
-      assertEquals(ZSetsTest.scores.get(i), res);
+      assertEquals(scores.get(i), res);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
       }
@@ -238,17 +246,17 @@ public class ZSetsTest extends CarrotCoreBase{
 
   @Test
   public void testAddRemove() {
-    log.debug("Test ZSet Add Remove {}", getParameters());
+
     Key key = getKey();
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
-    double[] scores = new double[1];
+    double[] scl = new double[1];
     long start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = ZSetsTest.scores.get(i);
-      long num = ZSets.ZADD(map, key.address, key.length, scores, elemPtrs, elemSizes, true);
+      scl[0] = scores.get(i);
+      long num = ZSets.ZADD(map, key.address, key.length, scl, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
@@ -288,16 +296,16 @@ public class ZSetsTest extends CarrotCoreBase{
 
   @Test
   public void testAddDeleteMulti() {
-    log.debug("Test ZSet Add Delete Multi {}", getParameters());
+
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
-    double[] scores = new double[1];
+    double[] scl = new double[1];
     long start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
       elemPtrs[0] = fields.get(i).address;
       elemSizes[0] = fields.get(i).length;
-      scores[0] = ZSetsTest.scores.get(i);
-      long num = ZSets.ZADD(map, elemPtrs[0], elemSizes[0], scores, elemPtrs, elemSizes, true);
+      scl[0] = scores.get(i);
+      long num = ZSets.ZADD(map, elemPtrs[0], elemSizes[0], scl, elemPtrs, elemSizes, true);
       assertEquals(1, (int) num);
       if ((i + 1) % 100000 == 0) {
         log.debug(i + 1);
@@ -335,23 +343,5 @@ public class ZSetsTest extends CarrotCoreBase{
     end = System.currentTimeMillis();
     log.debug("Time for {} DELETE={}ms", n, end - start);
     assertEquals(0, (int) map.countRecords());
-  }
-
-  private static void tearDown() {
-    if (map == null) {
-      return;
-    }
-    // Dispose
-    map.dispose();
-    if (key != null) {
-      UnsafeAccess.free(key.address);
-      key = null;
-    }
-    for (Key k : fields) {
-      UnsafeAccess.free(k.address);
-    }
-    UnsafeAccess.free(buffer);
-    UnsafeAccess.mallocStats.printStats();
-    BigSortedMap.printGlobalMemoryAllocationStats();
   }
 }

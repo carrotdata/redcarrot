@@ -16,60 +16,35 @@ package org.bigbase.carrot;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 // TODO: MEMORY LEAK
-public class BigSortedMapTest extends CarrotCoreBase {
+public class BigSortedMapTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapTest.class);
 
-  static BigSortedMap map;
-  static long totalLoaded;
-  static long MAX_ROWS = 1000000;
+  long totalLoaded;
+  long MAX_ROWS = 1000000;
 
-  public BigSortedMapTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
-  }
-
-  private static long countRecords() throws IOException {
-    BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
-    long counter = 0;
-    while (scanner.hasNext()) {
-      counter++;
-      scanner.next();
-    }
-    scanner.close();
-    return counter;
-  }
-
-  private static void load(long totalLoaded) {
-    byte[] key = ("KEY" + (totalLoaded)).getBytes();
-    byte[] value = ("VALUE" + (totalLoaded)).getBytes();
-    long keyPtr = UnsafeAccess.malloc(key.length);
-    UnsafeAccess.copy(key, 0, keyPtr, key.length);
-    long valPtr = UnsafeAccess.malloc(value.length);
-    UnsafeAccess.copy(value, 0, valPtr, value.length);
-    boolean result = map.put(keyPtr, key.length, valPtr, value.length, 0);
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(valPtr);
-    log.debug("loaded: {}", result);
-  }
-
-  public static void setUp() throws IOException {
+  public BigSortedMapTest(Object c, Object m) {
+    super(c, m);
     BigSortedMap.setMaxBlockSize(4096);
-    map = new BigSortedMap(100000000);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
     totalLoaded = 0;
     long start = System.currentTimeMillis();
     while (totalLoaded < MAX_ROWS) {
@@ -87,17 +62,38 @@ public class BigSortedMapTest extends CarrotCoreBase {
     log.debug("Total   data       ={}", BigSortedMap.getGlobalDataSize());
     log.debug("Compressed size    ={}", BigSortedMap.getGlobalCompressedDataSize());
     log.debug(
-        "Compression  ratio ={}",
-        ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
+            "Compression  ratio ={}",
+            ((float) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory());
     log.debug("");
     assertEquals(totalLoaded, scanned);
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
+  @Override
+  public void extTearDown() {
+  }
 
-    map.dispose();
+  private long countRecords() throws IOException {
+    BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
+    long counter = 0;
+    while (scanner.hasNext()) {
+      counter++;
+      scanner.next();
+    }
+    scanner.close();
+    return counter;
+  }
+
+  private void load(long totalLoaded) {
+    byte[] key = ("KEY" + (totalLoaded)).getBytes();
+    byte[] value = ("VALUE" + (totalLoaded)).getBytes();
+    long keyPtr = UnsafeAccess.malloc(key.length);
+    UnsafeAccess.copy(key, 0, keyPtr, key.length);
+    long valPtr = UnsafeAccess.malloc(value.length);
+    UnsafeAccess.copy(value, 0, valPtr, value.length);
+    boolean result = map.put(keyPtr, key.length, valPtr, value.length, 0);
+    UnsafeAccess.free(keyPtr);
+    UnsafeAccess.free(valPtr);
+    log.debug("loaded: {}", result);
   }
 
   @Test
@@ -111,7 +107,8 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void deleteUndeleted() throws IOException {
-    log.debug("testDeleteUndeleted {}", getParameters());
+    log.debug("{}", testName.getMethodName());
+
     List<byte[]> keys = delete(100);
     assertEquals(totalLoaded - 100, countRecords());
     undelete(keys);
@@ -119,7 +116,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void putGet() {
-    log.debug("testPutGet {}", getParameters());
+    log.debug("{}", testName.getMethodName());
 
     long start = System.currentTimeMillis();
     for (int i = 1; i <= totalLoaded; i++) {
@@ -143,7 +140,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void exists() {
-    log.debug("testExists {}", getParameters());
+    log.debug("{}", testName.getMethodName());
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + (i)).getBytes();
@@ -156,7 +153,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void flushAll() {
-    log.debug("testFlushAll {}", getParameters());
+    log.debug("{}", testName.getMethodName());
 
     map.flushAll();
 
@@ -171,7 +168,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
     }
   }
 
-  private static List<byte[]> delete(int num) {
+  private List<byte[]> delete(int num) {
     Random r = new Random();
     int numDeleted = 0;
     long valPtr = UnsafeAccess.malloc(1);
@@ -186,7 +183,6 @@ public class BigSortedMapTest extends CarrotCoreBase {
       if (len == DataBlock.NOT_FOUND) {
         collisions++;
         UnsafeAccess.free(keyPtr);
-        continue;
       } else {
         boolean res = map.delete(keyPtr, key.length);
         assertTrue(res);
@@ -200,7 +196,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
     return list;
   }
 
-  private static void undelete(List<byte[]> keys) {
+  private void undelete(List<byte[]> keys) {
     for (byte[] key : keys) {
       byte[] value = ("VALUE" + new String(key).substring(3)).getBytes();
       long keyPtr = UnsafeAccess.malloc(key.length);

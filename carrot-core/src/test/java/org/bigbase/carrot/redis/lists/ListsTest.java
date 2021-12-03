@@ -18,43 +18,58 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.redis.lists.Lists.Side;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ListsTest extends CarrotCoreBase {
+public class ListsTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(ListsTest.class);
 
-  static BigSortedMap map;
-  static Key key;
-  static List<Value> values;
-  static long buffer;
-  static int bufferSize = 64;
-  static int keySize = 16;
-  static int valueSize = 8;
-  static int n = 100000;
+  Key key;
+  List<Value> values;
+  long buffer;
+  int bufferSize = 64;
+  int keySize = 16;
+  int valueSize = 8;
+  int n = 100000;
 
-  public ListsTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
+  public ListsTest(Object c, Object m) {
+    super(c, m);
   }
 
-  private static Key getKey() {
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
+    buffer = UnsafeAccess.mallocZeroed(bufferSize);
+    values = getValues(n);
+  }
+
+  @Override
+  public void extTearDown() {
+    DataBlock.clearDeallocators();
+    DataBlock.clearSerDes();
+
+    UnsafeAccess.free(key.address);
+    UnsafeAccess.free(buffer);
+    values.forEach(x -> UnsafeAccess.free(x.address));
+  }
+
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(keySize);
     byte[] buf = new byte[keySize];
     Random r = new Random();
@@ -66,7 +81,7 @@ public class ListsTest extends CarrotCoreBase {
     return key = new Key(ptr, keySize);
   }
 
-  private static Key getAnotherKey() {
+  private Key getAnotherKey() {
     long ptr = UnsafeAccess.malloc(keySize);
     byte[] buf = new byte[keySize];
     Random r = new Random();
@@ -78,7 +93,7 @@ public class ListsTest extends CarrotCoreBase {
     return new Key(ptr, keySize);
   }
 
-  private static List<Value> getValues(int n) {
+  private List<Value> getValues(int n) {
     byte[] buf = new byte[valueSize];
     Random r = new Random();
     long seed = r.nextLong();
@@ -93,33 +108,9 @@ public class ListsTest extends CarrotCoreBase {
     return values;
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(100000000L);
-    buffer = UnsafeAccess.mallocZeroed(bufferSize);
-    values = getValues(n);
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    // Dispose
-    map.dispose();
-
-    DataBlock.clearDeallocators();
-    DataBlock.clearSerDes();
-
-    UnsafeAccess.free(key.address);
-    UnsafeAccess.free(buffer);
-    values.forEach(x -> UnsafeAccess.free(x.address));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
-  }
-
 
   @Test
   public void testDeallocator() {
-    log.debug("Test Deallocator {}", getParameters());
 
     // Register LIST deallocator
     Lists.registerDeallocator();
@@ -138,7 +129,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testListWithLargeElements() {
-    log.debug("Test List with large elements {}", getParameters());
 
     Key key = getKey();
     int largeSize = 1023;
@@ -179,7 +169,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testListSerDeWithLargeElements() {
-    log.debug("Test List SerDe with large elements {}", getParameters());
 
     // Register LIST deallocator
     Lists.registerDeallocator();
@@ -244,7 +233,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testListSerDe() {
-    log.debug("Test List serializer {}", getParameters());
 
     // Register LIST deallocator
     Lists.registerDeallocator();
@@ -294,7 +282,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testRPUSHX() {
-    log.debug("Test RPUSHX {}", getParameters());
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -340,7 +327,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLPUSHX() {
-    log.debug("Test LPUSHX {}", getParameters());
     Key key = getKey();
 
     // Try LPUSHX - no key yet
@@ -386,7 +372,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLPUSHLPOP() {
-    log.debug("Test LPUSHLPOP {}", getParameters());
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
@@ -420,7 +405,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testRPUSHRPOP() {
-    log.debug("Test RPUSHRPOP {}", getParameters());
     Key key = getKey();
 
     for (int i = 0; i < n; i++) {
@@ -447,7 +431,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLPUSHRPOP() {
-    log.debug("Test LPUSHRPOP {}", getParameters());
+
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -473,7 +457,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLRMIX() {
-    log.debug("Test LRMIX {}", getParameters());
+
     Key key = getKey();
     Random r = new Random();
     long seed = r.nextLong();
@@ -509,7 +493,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testRPUSHLPOP() {
-    log.debug("Test RPUSHLPOP {}", getParameters());
+
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -534,7 +518,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLPUSHLINDEX() {
-    log.debug("Test LPUSHLINDEX {}", getParameters());
+
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -561,7 +545,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLindexEdgeCases() {
-    log.debug("Test LINDEX edge cases {}", getParameters());
+
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -596,7 +580,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testRPUSHLINDEX() {
-    log.debug("Test RPUSHLINDEX {}", getParameters());
+
     Key key = getKey();
     for (int i = 0; i < n; i++) {
       Value v = values.get(i);
@@ -623,7 +607,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLMOVE() {
-    log.debug("Test LMOVE {}", getParameters());
+
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -934,7 +918,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testRPOPLPUSH() {
-    log.debug("Test RPOPLPUSH {}", getParameters());
+
     Key key = getKey();
     Key key2 = getAnotherKey();
 
@@ -999,7 +983,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLSET() {
-    log.debug("Test LSET operation {}", getParameters());
+
     Key key = getKey();
     // load half of values
     int toLoad = n / 2;
@@ -1033,7 +1017,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLINSERT() {
-    log.debug("Test LINSERT operation {}", getParameters());
+
     Key key = getKey();
     // load half of values
     for (int i = 0; i < n / 2; i++) {
@@ -1087,7 +1071,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLRANGE() {
-    log.debug("Test LRANGE operation {}", getParameters());
+
     Key key = getKey();
     // No exists yet
 
@@ -1160,7 +1144,7 @@ public class ListsTest extends CarrotCoreBase {
    * @param buffer buffer
    * @param bufferSize size
    */
-  private static void verifyRange(int start, int stop, long buffer, int bufferSize) {
+  private void verifyRange(int start, int stop, long buffer, int bufferSize) {
 
     int total = UnsafeAccess.toInt(buffer);
     assertEquals(stop - start + 1, total);
@@ -1178,7 +1162,7 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLREM() {
-    log.debug("Test LREM operation {}", getParameters());
+
     Key key = getKey();
     // No exists yet
     long removed =

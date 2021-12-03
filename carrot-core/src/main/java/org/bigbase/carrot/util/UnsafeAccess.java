@@ -40,8 +40,8 @@ public final class UnsafeAccess {
   public static class MallocStats {
     private static final Logger log = LogManager.getLogger(MallocStats.class);
 
-    public static interface TraceFilter {
-      public boolean recordAllocationStackTrace(int size);
+    public interface TraceFilter {
+      boolean recordAllocationStackTrace(int size);
     }
     /*
      * Number of memory allocations
@@ -70,8 +70,7 @@ public final class UnsafeAccess {
     private int strLimit = Integer.MAX_VALUE; // default - no limit
 
     /** Stack traces map (allocation address -> stack trace) */
-    private Map<Long, String> stackTraceMap =
-        Collections.synchronizedMap(new HashMap<Long, String>());
+    private final Map<Long, String> stackTraceMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Is stack trace recording enabled
@@ -146,6 +145,15 @@ public final class UnsafeAccess {
     }
 
     /**
+     * Returns stackTraceMap
+     *
+     * @return Map<Long, String>
+     */
+    public Map<Long, String> getStackTraceMap() {
+      return stackTraceMap;
+    }
+
+    /**
      * Records memory allocation event
      *
      * @param address memory address
@@ -172,6 +180,7 @@ public final class UnsafeAccess {
 
     /**
      * FIXME: this method dumps stack trace into log
+     *
      * @return
      */
     private String stackTrace() {
@@ -181,8 +190,7 @@ public final class UnsafeAccess {
       System.setErr(ps);
       Thread.dumpStack();
       System.setErr(errStream);
-      String s = baos.toString();
-      return s;
+      return baos.toString();
     }
 
     @SuppressWarnings("unused")
@@ -243,9 +251,7 @@ public final class UnsafeAccess {
       }
     }
 
-    /**
-     * Prints memory allocation statistics
-     */
+    /** Prints memory allocation statistics */
     public void printStats() {
       printStats(true);
     }
@@ -832,8 +838,6 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
-   * @param srcOffset offset
-   * @param ptr memory destination
    * @param len number of bytes to copy
    */
   public static void copy(long src, ByteBuffer dst, int len) {
@@ -857,7 +861,6 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
-   * @param srcOffset offset
    * @param ptr memory destination
    * @param len number of bytes to copy
    */
@@ -1175,7 +1178,7 @@ public final class UnsafeAccess {
   public static long malloc(long size) {
     long address = theUnsafe.allocateMemory(size);
     mallocStats.allocEvent(address, size);
-//    log.debug("Allocate memory address: {}, size: {}", address, size);
+    //    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1189,7 +1192,7 @@ public final class UnsafeAccess {
     long address = theUnsafe.allocateMemory(size);
     theUnsafe.setMemory(address, size, (byte) 0);
     mallocStats.allocEvent(address, size);
-//    log.debug("Allocate memory address: {}, size: {}", address, size);
+    //    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1213,7 +1216,7 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(pptr, newSize);
     }
-//    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
+    //    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
 
     return pptr;
   }

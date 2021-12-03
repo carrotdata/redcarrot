@@ -17,35 +17,64 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.UnsafeAccess;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
-public class BigSortedMapSnapshotTest extends CarrotCoreBase {
+public class BigSortedMapSnapshotTest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapSnapshotTest.class);
 
-  static BigSortedMap map;
-  static long totalLoaded;
-  static long MAX_ROWS = 1000000;
-  static int EXT_VALUE_SIZE = 4096;
-  static int EXT_KEY_SIZE = 4096;
-  static int KEY_SIZE = 10;
-  static long seed1 = System.currentTimeMillis();
-  static long seed2 = System.currentTimeMillis() + 1;
+  long totalLoaded;
+  long MAX_ROWS = 1000000;
+  int EXT_VALUE_SIZE = 4096;
+  int EXT_KEY_SIZE = 4096;
+  int KEY_SIZE = 10;
+  long seed1 = System.currentTimeMillis();
+  long seed2 = System.currentTimeMillis() + 1;
 
-  public BigSortedMapSnapshotTest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
+  public BigSortedMapSnapshotTest(Object c, Object m) {
+    super(c, m);
+    BigSortedMap.setMaxBlockSize(4096);
   }
 
-  private static long countRecords() throws IOException {
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
+    totalLoaded = 0;
+    long start = System.currentTimeMillis();
+    while (totalLoaded < MAX_ROWS) {
+      totalLoaded++;
+      load(totalLoaded);
+      if (totalLoaded % 1000000 == 0) {
+        log.debug("Loaded {}", totalLoaded);
+      }
+    }
+    long end = System.currentTimeMillis();
+    log.debug("Time to load= {} ={}ma", totalLoaded, end - start);
+    long scanned = countRecords();
+    start = System.currentTimeMillis();
+    log.debug("Scanned={} in {}ms", scanned, start - end);
+    log.debug("\nTotal memory       ={}", BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Total   data       ={}", BigSortedMap.getGlobalDataSize());
+    log.debug("Compressed size    ={}", BigSortedMap.getGlobalCompressedDataSize());
+    log.debug(
+            "Compression  ratio ={}",
+            (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("");
+    assertEquals(totalLoaded, scanned);
+  }
+
+  @Override
+  public void extTearDown() {}
+
+  private long countRecords() throws IOException {
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long counter = 0;
     while (scanner.hasNext()) {
@@ -57,7 +86,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
   }
 
   /** Verify normal records with type = EMBEDDED */
-  private static void verifyRecords() {
+  private void verifyRecords() {
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + i).getBytes();
@@ -78,7 +107,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
    *
    * @param n number of records to verify
    */
-  private static void verifyExtValueRecords(int n) {
+  private void verifyExtValueRecords(int n) {
     Random rnd = new Random(seed2);
     byte[] key = new byte[KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(KEY_SIZE);
@@ -101,7 +130,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
    *
    * @param n number of records to verify
    */
-  private static void verifyExtKeyValueRecords(int n) {
+  private void verifyExtKeyValueRecords(int n) {
     Random rnd = new Random(seed1);
     byte[] key = new byte[EXT_KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(EXT_KEY_SIZE);
@@ -125,7 +154,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
    * @param totalLoaded
    * @return
    */
-  private static boolean load(long totalLoaded) {
+  private boolean load(long totalLoaded) {
     byte[] key = ("KEY" + (totalLoaded)).getBytes();
     byte[] value = ("VALUE" + (totalLoaded)).getBytes();
     long keyPtr = UnsafeAccess.malloc(key.length);
@@ -143,7 +172,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
    *
    * @param num number of records to load
    */
-  private static void loadExtKeyValueRecords(int num) {
+  private void loadExtKeyValueRecords(int num) {
     Random rnd = new Random(seed1);
     byte[] key = new byte[EXT_KEY_SIZE];
     long keyPtr = UnsafeAccess.malloc(EXT_KEY_SIZE);
@@ -167,7 +196,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
    *
    * @param num number of records to load
    */
-  private static void loadExtValueRecords(int num) {
+  private void loadExtValueRecords(int num) {
     Random rnd = new Random(seed2);
     byte[] key = new byte[10];
     long keyPtr = UnsafeAccess.malloc(key.length);
@@ -186,46 +215,8 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
     UnsafeAccess.free(buf);
   }
 
-  public static void setUp() throws IOException {
-    BigSortedMap.setMaxBlockSize(4096);
-    map = new BigSortedMap(10000000000L);
-    totalLoaded = 0;
-    long start = System.currentTimeMillis();
-    while (totalLoaded < MAX_ROWS) {
-      totalLoaded++;
-      load(totalLoaded);
-      if (totalLoaded % 1000000 == 0) {
-        log.debug("Loaded {}", totalLoaded);
-      }
-    }
-    long end = System.currentTimeMillis();
-    log.debug("Time to load= {} ={}ma", totalLoaded, end - start);
-    long scanned = countRecords();
-    start = System.currentTimeMillis();
-    log.debug("Scanned={} in {}ms", scanned, start - end);
-    log.debug("\nTotal memory       ={}", BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("Total   data       ={}", BigSortedMap.getGlobalDataSize());
-    log.debug("Compressed size    ={}", BigSortedMap.getGlobalCompressedDataSize());
-    log.debug(
-        "Compression  ratio ={}",
-        (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
-    log.debug("");
-    assertEquals(totalLoaded, scanned);
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    map.dispose();
-    log.debug("Memory stat after teardown:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats();
-  }
-
   @Test
   public void testSnapshotNoExternalNoCustomAllocations() throws IOException {
-    log.debug("\nTestSnapshotNoExteranlNoCustomAllocations {}", getParameters());
 
     long start = System.currentTimeMillis();
     map.snapshot();
@@ -272,7 +263,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   @Test
   public void testSnapshotWithExternalNoCustomAllocations() throws IOException {
-    log.debug("\nTestSnapshotWithExternalNoCustomAllocations {}", getParameters());
 
     int extValueLoaded = Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows are with external value
     int extKeyValueLoaded =

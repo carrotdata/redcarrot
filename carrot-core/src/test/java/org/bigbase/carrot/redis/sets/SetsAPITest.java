@@ -19,27 +19,23 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.CarrotCoreBase2;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SetsAPITest extends CarrotCoreBase {
+public class SetsAPITest extends CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(SetsAPITest.class);
 
-  private static BigSortedMap map;
-
-  public SetsAPITest(Object c) throws IOException {
-    super(c);
-    tearDown();
-    setUp();
+  public SetsAPITest(Object c, Object m) {
+    super(c, m);
   }
 
-  private static List<String> loadData(String key, int n) {
+  private List<String> loadData(String key, int n) {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
@@ -59,7 +55,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSimpleCalls() {
-    log.debug("Test Sets ADD/ISMEMBER/MEMBERS API calls {}", getParameters());
+
     // Adding to set which does not exists
     int result = Sets.SADD(map, "key", "member1");
     assertEquals(1, result);
@@ -141,7 +137,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testMoveOperation() {
-    log.debug("Test Sets SMOVE API call {}", getParameters());
+
     // Add multiple members
     int result =
         Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
@@ -186,7 +182,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testMultipleMembersOperation() {
-    log.debug("Test Sets SMISMEMBER API call {}", getParameters());
 
     // Add multiple members
     int result =
@@ -231,7 +226,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSscanNoRegex() {
-    log.debug("Test Sets SSCAN API call w/o regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -280,7 +275,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testCardinalityPerformance() {
-    log.debug("Test Sets SCARD API call performance {}", getParameters());
+
     // Load X elements
     int X = 200000;
     String key = "key";
@@ -313,7 +308,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSscanWithRegex() {
-    log.debug("Test Sets SSCAN API call with regex pattern {}", getParameters());
+
     // Load X elements
     int X = 10000;
     String key = "key";
@@ -364,7 +359,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSetScannerSkipSmall() throws IOException {
-    log.debug("Test Sets skip API call (small) {}", getParameters());
 
     // Load X elements
     int X = 100;
@@ -411,7 +405,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSetScannerSkipLarge() throws IOException {
-    log.debug("Test Sets skip API call (large) {}", getParameters());
 
     // Load X elements
     int X = 100000;
@@ -468,7 +461,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerSkipRandom() throws IOException {
-    log.debug("Test Sets skip API call (Random) {}", getParameters());
+
     // Load N elements
     int N = 1000000;
     int numIter = 1000;
@@ -504,7 +497,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerSkipRandomSingleScanner() throws IOException {
-    log.debug("Test Sets skip API call (Random Single Scanner) {}", getParameters());
+
     // Load N elements
     int N = 1000000;
     int numIter = 10000;
@@ -549,7 +542,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersEdgeCases() {
-    log.debug("Test Sets SRANDMEMBER API call (Edge cases) {}", getParameters());
+
     // Load N elements
     int N = 10000;
     String key = "key";
@@ -582,7 +575,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembers() {
-    log.debug("Test Sets SRANDMEMBER API call {}", getParameters());
+
     // Load N elements
     int N = 100000;
     int numIter = 1000;
@@ -620,7 +613,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersDeleteEdgeCases() {
-    log.debug("Test Sets SPOP API call (Edge cases) {}", getParameters());
+
     // Load N elements
     int N = 10000;
     String key = "key";
@@ -652,7 +645,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersDelete() {
-    log.debug("Test Sets SPOP API call {}", getParameters());
 
     // Load N elements
     int N = 100000;
@@ -719,16 +711,11 @@ public class SetsAPITest extends CarrotCoreBase {
     return total;
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000);
+  @Before
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    // Dispose
-    map.dispose();
-    UnsafeAccess.mallocStats.printStats();
-  }
+  @Override
+  public void extTearDown() {}
 }

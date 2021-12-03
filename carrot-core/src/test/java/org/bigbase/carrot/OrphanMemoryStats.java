@@ -2,6 +2,7 @@ package org.bigbase.carrot;
 
 import org.bigbase.carrot.compression.Codec;
 import org.bigbase.carrot.util.RangeTree;
+import org.bigbase.carrot.util.UnsafeAccess;
 
 import java.util.Objects;
 
@@ -11,18 +12,27 @@ public class OrphanMemoryStats {
   private final String debug;
   private final RangeTree allocMap;
 
-  public OrphanMemoryStats(Codec codec, String testName, boolean debug, RangeTree allocMap) {
+  public OrphanMemoryStats(
+      Codec codec, String testName, boolean debug, UnsafeAccess.MallocStats mallocStats) {
     this.codecName = Objects.isNull(codec) ? "none" : codec.getType().name();
     this.testName = testName.substring(0, testName.indexOf("["));
     this.debug = String.valueOf(debug);
     this.allocMap = new RangeTree();
-    allocMap.entrySet().stream()
-        // exclude buffer 4096
-        .filter(entry -> entry.getKey().getSize() != 4096)
+    mallocStats.getAllocMap().entrySet().stream()
+        // filtered out buffers
+        .filter(
+            entry ->
+                mallocStats.isStackTraceRecordingEnabled()
+                    && notBuffer(entry.getKey().getStart(), mallocStats))
         .forEach(
             entry ->
                 this.allocMap.add(
                     new RangeTree.Range(entry.getKey().getStart(), entry.getKey().getSize())));
+  }
+
+  private boolean notBuffer(long start, UnsafeAccess.MallocStats mallocStats) {
+    return !(mallocStats.isStackTraceRecordingEnabled()
+        && Objects.nonNull(mallocStats.getStackTraceMap().get(start)));
   }
 
   public String getCodecName() {
