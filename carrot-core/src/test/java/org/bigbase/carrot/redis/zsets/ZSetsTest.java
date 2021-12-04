@@ -26,7 +26,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase2;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.DataBlock;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class ZSetsTest extends CarrotCoreBase2 {
+public class ZSetsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(ZSetsTest.class);
 

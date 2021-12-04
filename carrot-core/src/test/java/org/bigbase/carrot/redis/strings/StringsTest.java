@@ -16,7 +16,7 @@ package org.bigbase.carrot.redis.strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase2;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.redis.util.MutationOptions;
@@ -32,7 +32,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class StringsTest extends CarrotCoreBase2 {
+public class StringsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(StringsTest.class);
 

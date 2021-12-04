@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 // TODO: MEMORY LEAK
-public class BigSortedMapTest extends CarrotCoreBase2 {
+public class BigSortedMapTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapTest.class);
 

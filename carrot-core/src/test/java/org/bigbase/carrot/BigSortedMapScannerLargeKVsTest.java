@@ -29,7 +29,7 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase2 {
+public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapScannerLargeKVsTest.class);
 

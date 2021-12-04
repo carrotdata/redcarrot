@@ -22,7 +22,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase2;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class HashScannerTest extends CarrotCoreBase2 {
+public class HashScannerTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashScannerTest.class);
 

@@ -30,8 +30,8 @@ import org.junit.Test;
 
 public class IndexBlockLargeKVsTest extends IndexBlockTest {
 
-  public IndexBlockLargeKVsTest(Object c) throws IOException {
-    super(c);
+  public IndexBlockLargeKVsTest(Object c, Object m) {
+    super(c, m);
   }
 
   private static final Logger log = LogManager.getLogger(IndexBlockLargeKVsTest.class);
@@ -46,10 +46,10 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    * 12 bytes and less will guarantee that there will be no overflow in a data block and new V will
    * be kept in a data block
    */
-
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteSmallerValueSize - LargeKVs");
+    log.debug("LargeKVs {}", testName.getMethodName());
+
     for (int i = 0; i < 1; i++) {
       Random r = new Random();
       IndexBlock b = getIndexBlock(4096);
@@ -57,7 +57,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
       log.debug("KEYS ={}", keys.size());
       for (Key key : keys) {
         int keySize = key.length;
-        int valueSize = 0;
+        int valueSize;
         DataBlock.AllocType type = DataBlock.getAllocType(keySize, keySize);
         if (type == DataBlock.AllocType.EMBEDDED) {
           continue;
@@ -90,7 +90,8 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    */
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteLargerValueSize- LargeKVs");
+    log.debug("LargeKVs {}", testName.getMethodName());
+
     for (int i = 0; i < 1; i++) {
       Random r = new Random();
 
@@ -98,7 +99,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
       ArrayList<Key> keys = fillIndexBlock(b);
       for (Key key : keys) {
         int keySize = key.length;
-        int valueSize = 0;
+        int valueSize;
         DataBlock.AllocType type = DataBlock.getAllocType(keySize, keySize);
         if (type == DataBlock.AllocType.EMBEDDED) {
           if (keySize < 12) {

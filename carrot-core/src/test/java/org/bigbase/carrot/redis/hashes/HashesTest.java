@@ -24,7 +24,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
-import org.bigbase.carrot.CarrotCoreBase2;
+import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -32,7 +32,7 @@ import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
 import org.junit.*;
 
-public class HashesTest extends CarrotCoreBase2 {
+public class HashesTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesTest.class);
 

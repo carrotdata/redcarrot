@@ -31,7 +31,7 @@ public class OrphanMemoryStats {
   }
 
   private boolean notBuffer(long start, long size, UnsafeAccess.MallocStats mallocStats) {
-    return !CarrotCoreBase2.bufferSizes.contains((int) size)
+    return !CarrotCoreBase.bufferSizes.contains((int) size)
         && !(mallocStats.isStackTraceRecordingEnabled()
             && Objects.nonNull(mallocStats.getStackTraceMap().get(start)));
   }

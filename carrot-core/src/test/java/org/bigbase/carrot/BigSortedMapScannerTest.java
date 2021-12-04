@@ -28,7 +28,7 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BigSortedMapScannerTest extends CarrotCoreBase2 {
+public class BigSortedMapScannerTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapScannerTest.class);
 

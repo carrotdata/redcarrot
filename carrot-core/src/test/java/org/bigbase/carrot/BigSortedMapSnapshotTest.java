@@ -25,7 +25,7 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BigSortedMapSnapshotTest extends CarrotCoreBase2 {
+public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapSnapshotTest.class);
 
