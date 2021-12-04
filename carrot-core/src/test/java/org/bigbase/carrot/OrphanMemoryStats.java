@@ -23,16 +23,17 @@ public class OrphanMemoryStats {
         .filter(
             entry ->
                 mallocStats.isStackTraceRecordingEnabled()
-                    && notBuffer(entry.getKey().getStart(), mallocStats))
+                    && notBuffer(entry.getKey().getStart(), entry.getKey().getStart(), mallocStats))
         .forEach(
             entry ->
                 this.allocMap.add(
                     new RangeTree.Range(entry.getKey().getStart(), entry.getKey().getSize())));
   }
 
-  private boolean notBuffer(long start, UnsafeAccess.MallocStats mallocStats) {
-    return !(mallocStats.isStackTraceRecordingEnabled()
-        && Objects.nonNull(mallocStats.getStackTraceMap().get(start)));
+  private boolean notBuffer(long start, long size, UnsafeAccess.MallocStats mallocStats) {
+    return !CarrotCoreBase2.bufferSizes.contains((int) size)
+        && !(mallocStats.isStackTraceRecordingEnabled()
+            && Objects.nonNull(mallocStats.getStackTraceMap().get(start)));
   }
 
   public String getCodecName() {

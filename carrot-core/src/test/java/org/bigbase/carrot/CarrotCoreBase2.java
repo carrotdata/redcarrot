@@ -20,6 +20,8 @@ public abstract class CarrotCoreBase2 {
 
   private static final Logger log = LogManager.getLogger(CarrotCoreBase2.class);
 
+  public static final List<Integer> bufferSizes = Arrays.asList(4096, 64);
+
   private static final long MEM_ALLOCATE = 1000000000L;
 
   private static final long KEY_VALUE_SIZE = 100000L;
@@ -58,8 +60,10 @@ public abstract class CarrotCoreBase2 {
 
     map = new BigSortedMap(MEM_ALLOCATE);
     nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
-    //    UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-    //    UnsafeAccess.setStackTraceRecordingFilter(x -> x == 4096 || x == 64);
+    if (Boolean.parseBoolean(System.getProperty("memoryDebug"))) {
+      UnsafeAccess.setMallocDebugStackTraceEnabled(true);
+      UnsafeAccess.setStackTraceRecordingFilter(bufferSizes::contains);
+    }
   }
 
   @After
@@ -77,22 +81,27 @@ public abstract class CarrotCoreBase2 {
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     orphanMemoryStatsList.add(
-            new OrphanMemoryStats(
-                    codec, testName.getMethodName(), memoryDebug, UnsafeAccess.mallocStats));
+        new OrphanMemoryStats(
+            codec, testName.getMethodName(), memoryDebug, UnsafeAccess.mallocStats));
   }
 
   public abstract void extTearDown();
 
   @Parameterized.Parameters(name = "Run with codec={0} memory debug={1}")
   public static Collection<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {
-          {CodecFactory.getInstance().getCodec(CodecType.LZ4), true},
-          {CodecFactory.getInstance().getCodec(CodecType.LZ4), false},
-          {CodecFactory.getInstance().getCodec(CodecType.NONE), true},
-          {CodecFactory.getInstance().getCodec(CodecType.NONE), false}
-          //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
-        });
+    if (Boolean.parseBoolean(System.getProperty("memoryDebug"))) {
+      return Arrays.asList(
+          new Object[][] {
+            {CodecFactory.getInstance().getCodec(CodecType.LZ4), true},
+            {CodecFactory.getInstance().getCodec(CodecType.LZ4), false},
+            {CodecFactory.getInstance().getCodec(CodecType.NONE), true},
+            {CodecFactory.getInstance().getCodec(CodecType.NONE), false}
+            //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
+          });
+    } else {
+      return Arrays.asList(
+          new Object[][] {{CodecFactory.getInstance().getCodec(CodecType.NONE), false}});
+    }
   }
 
   /** @return Tests parameters */
