@@ -193,7 +193,7 @@ public class ZSetsTest extends CarrotCoreBase {
     map.dispose();
     UnsafeAccess.free(key.address);
     fields.forEach(x -> UnsafeAccess.free(x.address));
-    UnsafeAccess.mallocStats.printStats();
+    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
   }
 
   @Test

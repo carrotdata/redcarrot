@@ -252,8 +252,8 @@ public final class UnsafeAccess {
     }
 
     /** Prints memory allocation statistics */
-    public void printStats() {
-      printStats(true);
+    public void printStats(String testName) {
+      printStats(true, testName);
     }
 
     public RangeTree getAllocMap() {
@@ -265,24 +265,25 @@ public final class UnsafeAccess {
      *
      * @param printOrphans if true - print all orphan allocations
      */
-    public void printStats(boolean printOrphans) {
+    public void printStats(boolean printOrphans, String testName) {
       if (!UnsafeAccess.debug) return;
 
-      log.debug("Malloc statistics:");
-      log.debug("allocations          ={}", allocEvents.get());
-      log.debug("allocated memory     ={}", allocated.get());
-      log.debug("deallocations        ={}", freeEvents.get());
-      log.debug("deallocated memory   ={}", freed.get());
-      log.debug("leaked (current)     ={}", allocated.get() - freed.get());
-      log.debug("Orphaned allocations ={}", allocMap.size());
+      log.debug("Malloc statistics for: {}", testName);
+      log.debug("{} allocations          ={}", testName, allocEvents.get());
+      log.debug("{} allocated memory     ={}", testName, allocated.get());
+      log.debug("{} deallocations        ={}", testName, freeEvents.get());
+      log.debug("{} deallocated memory   ={}", testName, freed.get());
+      log.debug("{} leaked (current)     ={}", testName, allocated.get() - freed.get());
+      log.debug("{} Orphaned allocations ={}", testName, allocMap.size());
       if (allocMap.size() > 0 && printOrphans) {
-        log.debug("Orphaned allocation sizes:");
+        log.debug("Orphaned allocation sizes for: {}", testName);
         for (Map.Entry<Range, Range> entry : allocMap.entrySet()) {
-          log.debug("Address: {} size: {}", entry.getKey().start, entry.getValue().size);
+          log.debug(
+              "{} Address: {} size: {}", testName, entry.getKey().start, entry.getValue().size);
           if (isStackTraceRecordingEnabled()) {
             String strace = stackTraceMap.get(entry.getKey().start);
             if (strace != null) {
-              log.debug("{}", strace);
+              log.debug("{} {}", testName, strace);
             }
           }
         }
@@ -1198,7 +1199,7 @@ public final class UnsafeAccess {
 
   /** Print memory alloaction statistics */
   public static void mallocStats() {
-    mallocStats.printStats();
+    mallocStats.printStats("Unsafeaccess.mallocStats");
   }
 
   /**

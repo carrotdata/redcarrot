@@ -118,7 +118,7 @@ public class HashesAtomicCounters {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
     Utils.freeKeys(keys);
-    UnsafeAccess.mallocStats.printStats();
+    UnsafeAccess.mallocStats.printStats("HashesAtomicCounters.main");
   }
 
   private static void runTest() throws IOException, OperationFailedException {
@@ -152,7 +152,7 @@ public class HashesAtomicCounters {
         endTime - startTime);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(false);
+    UnsafeAccess.mallocStats.printStats(false, "HashesAtomicCounters.runTest");
 
     count = 0;
     startTime = System.currentTimeMillis();

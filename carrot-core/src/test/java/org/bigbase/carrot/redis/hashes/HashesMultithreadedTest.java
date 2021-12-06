@@ -84,13 +84,13 @@ public class HashesMultithreadedTest {
       runTest();
       tearDown();
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllNoCompression");
     }
   }
 
   @Ignore
   @Test
-  public void runAllCompressionLZ4() throws IOException {
+  public void runAllCompressionLZ4() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
     for (int i = 0; i < 100; i++) {
@@ -99,7 +99,7 @@ public class HashesMultithreadedTest {
       runTest();
       tearDown();
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllCompressionLZ4");
     }
   }
 

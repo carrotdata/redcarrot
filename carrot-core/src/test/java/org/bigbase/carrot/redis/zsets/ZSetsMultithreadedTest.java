@@ -103,7 +103,7 @@ public class ZSetsMultithreadedTest {
       tearDown();
 
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllNoCompression");
     }
   }
 
@@ -118,7 +118,7 @@ public class ZSetsMultithreadedTest {
       runTest();
       tearDown();
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllCompressionLZ4");
     }
   }
 
