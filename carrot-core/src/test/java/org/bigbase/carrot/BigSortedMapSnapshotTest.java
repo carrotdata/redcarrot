@@ -37,8 +37,8 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
   long seed1 = System.currentTimeMillis();
   long seed2 = System.currentTimeMillis() + 1;
 
-  public BigSortedMapSnapshotTest(Object c, Object m) {
-    super(c, m);
+  public BigSortedMapSnapshotTest(Object c) {
+    super(c);
     BigSortedMap.setMaxBlockSize(4096);
   }
 

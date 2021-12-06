@@ -35,8 +35,8 @@ public class BigSortedMapTest extends CarrotCoreBase {
   long totalLoaded;
   long MAX_ROWS = 1000000;
 
-  public BigSortedMapTest(Object c, Object m) {
-    super(c, m);
+  public BigSortedMapTest(Object c) {
+    super(c);
     BigSortedMap.setMaxBlockSize(4096);
   }
 

@@ -31,8 +31,8 @@ public class SetsAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetsAPITest.class);
 
-  public SetsAPITest(Object c, Object m) {
-    super(c, m);
+  public SetsAPITest(Object c) {
+    super(c);
   }
 
   private List<String> loadData(String key, int n) {
@@ -712,6 +712,7 @@ public class SetsAPITest extends CarrotCoreBase {
   }
 
   @Before
+  @Override
   public void setUp() throws IOException {
     super.setUp();
   }

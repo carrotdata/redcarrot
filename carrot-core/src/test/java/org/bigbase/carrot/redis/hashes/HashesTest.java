@@ -44,8 +44,8 @@ public class HashesTest extends CarrotCoreBase {
   long n = 2000000;
   List<Value> values;
 
-  public HashesTest(Object c, Object m) {
-    super(c, m);
+  public HashesTest(Object c) {
+    super(c);
   }
 
   @Before

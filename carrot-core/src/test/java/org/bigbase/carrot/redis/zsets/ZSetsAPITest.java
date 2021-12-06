@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.Pair;
 import org.bigbase.carrot.util.Utils;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -37,11 +39,17 @@ public class ZSetsAPITest extends CarrotCoreBase {
   Random rnd = new Random();
   long dataSeed;
 
-  public ZSetsAPITest(Object c, Object m) {
-    super(c, m);
+  public ZSetsAPITest(Object c) {
+    super(c);
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
     log.debug("Global seed={}", seed);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
   @Override

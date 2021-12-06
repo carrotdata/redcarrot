@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,14 +27,21 @@ import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.util.Pair;
 import org.bigbase.carrot.util.Utils;
+import org.junit.Before;
 import org.junit.Test;
 
 public class HashesAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesAPITest.class);
 
-  public HashesAPITest(Object c, Object m) {
-    super(c, m);
+  public HashesAPITest(Object c) {
+    super(c);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
   @Override

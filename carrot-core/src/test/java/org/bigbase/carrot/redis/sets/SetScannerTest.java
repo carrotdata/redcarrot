@@ -26,6 +26,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -37,8 +38,14 @@ public class SetScannerTest extends CarrotCoreBase {
   int valSize = 16;
   long n = 100000L;
 
-  public SetScannerTest(Object c, Object m) {
-    super(c, m);
+  public SetScannerTest(Object c) {
+    super(c);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
   @Override

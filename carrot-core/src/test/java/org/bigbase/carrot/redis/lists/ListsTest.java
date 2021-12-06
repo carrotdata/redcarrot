@@ -46,8 +46,8 @@ public class ListsTest extends CarrotCoreBase {
   int valueSize = 8;
   int n = 100000;
 
-  public ListsTest(Object c, Object m) {
-    super(c, m);
+  public ListsTest(Object c) {
+    super(c);
   }
 
   @Before

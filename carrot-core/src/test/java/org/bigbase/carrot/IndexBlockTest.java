@@ -27,14 +27,21 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.Before;
 import org.junit.Test;
 
 public class IndexBlockTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(IndexBlockTest.class);
 
-  public IndexBlockTest(Object c, Object m) {
-    super(c, m);
+  public IndexBlockTest(Object c) {
+    super(c);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
   @Override

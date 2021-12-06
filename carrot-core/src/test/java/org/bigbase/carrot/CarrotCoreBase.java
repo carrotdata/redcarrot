@@ -27,10 +27,8 @@ public abstract class CarrotCoreBase {
   private static final long KEY_VALUE_SIZE = 100000L;
   private static final long KEY_VALUE_SIZE_DEBUG = 1000L;
 
-  protected static boolean isMemoryDebugEnabled;
-
   protected Codec codec;
-  protected boolean memoryDebug;
+  protected static boolean memoryDebug;
 
   protected BigSortedMap map;
   protected long nKeyValues;
@@ -38,20 +36,17 @@ public abstract class CarrotCoreBase {
   @Rule public TestName testName = new TestName();
 
   @BeforeClass
-  public static void beforeClass() {
-  }
+  public static void beforeClass() {}
 
   static {
-    isMemoryDebugEnabled = Boolean.parseBoolean(System.getProperty("memoryDebug"));
+    memoryDebug = Boolean.parseBoolean(System.getProperty("memoryDebug"));
+    UnsafeAccess.setMallocDebugEnabled(memoryDebug);
   }
 
   /** @param c - Codec, null - no codec, LZ4... - other mem allocation */
-  public CarrotCoreBase(Object c, Object m) {
+  public CarrotCoreBase(Object c) {
     codec = (Codec) c;
     BigSortedMap.setCompressionCodec(codec);
-    memoryDebug = (boolean) m;
-
-    UnsafeAccess.setMallocDebugEnabled(memoryDebug);
   }
 
   /*
@@ -62,7 +57,7 @@ public abstract class CarrotCoreBase {
 
     map = new BigSortedMap(MEM_ALLOCATE);
     nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
-    if (isMemoryDebugEnabled) {
+    if (memoryDebug) {
       UnsafeAccess.setMallocDebugStackTraceEnabled(true);
       UnsafeAccess.setStackTraceRecordingFilter(bufferSizes::contains);
     }
@@ -79,7 +74,7 @@ public abstract class CarrotCoreBase {
     // implement to free test specific stuff(could be empty).
     extTearDown();
 
-    if (isMemoryDebugEnabled) {
+    if (memoryDebug) {
       UnsafeAccess.mallocStats.printStats(testName.getMethodName());
       BigSortedMap.printGlobalMemoryAllocationStats();
     }
@@ -87,21 +82,14 @@ public abstract class CarrotCoreBase {
 
   public abstract void extTearDown();
 
-  @Parameterized.Parameters(name = "Run with codec={0} memory debug={1}")
+  @Parameterized.Parameters(name = "Run with codec={0}")
   public static Collection<Object[]> data() {
-    if (isMemoryDebugEnabled) {
-      return Arrays.asList(
-          new Object[][] {
-            {CodecFactory.getInstance().getCodec(CodecType.LZ4), true},
-            {CodecFactory.getInstance().getCodec(CodecType.LZ4), false},
-            {CodecFactory.getInstance().getCodec(CodecType.NONE), true},
-            {CodecFactory.getInstance().getCodec(CodecType.NONE), false}
-            //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
-          });
-    } else {
-      return Arrays.asList(
-          new Object[][] {{CodecFactory.getInstance().getCodec(CodecType.NONE), false}});
-    }
+    return Arrays.asList(
+        new Object[][] {
+          {CodecFactory.getInstance().getCodec(CodecType.LZ4)},
+          {CodecFactory.getInstance().getCodec(CodecType.NONE)}
+          //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
+        });
   }
 
   /** @return Tests parameters */

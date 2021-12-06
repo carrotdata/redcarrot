@@ -24,7 +24,6 @@ import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,8 +39,8 @@ public class StringsTest extends CarrotCoreBase {
   private final int bufferSize = 512;
   private List<KeyValue> keyValues;
 
-  public StringsTest(Object c, Object m) {
-    super(c, m);
+  public StringsTest(Object c) {
+    super(c);
   }
 
   private List<KeyValue> getKeyValues() {
@@ -69,7 +68,8 @@ public class StringsTest extends CarrotCoreBase {
   }
 
   @Before
-  public void setup() throws IOException {
+  @Override
+  public void setUp() throws IOException {
     super.setUp();
 
     buffer = UnsafeAccess.mallocZeroed(bufferSize);

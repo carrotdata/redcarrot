@@ -30,8 +30,8 @@ import org.junit.Test;
 
 public class IndexBlockLargeKVsTest extends IndexBlockTest {
 
-  public IndexBlockLargeKVsTest(Object c, Object m) {
-    super(c, m);
+  public IndexBlockLargeKVsTest(Object c) {
+    super(c);
   }
 
   private static final Logger log = LogManager.getLogger(IndexBlockLargeKVsTest.class);

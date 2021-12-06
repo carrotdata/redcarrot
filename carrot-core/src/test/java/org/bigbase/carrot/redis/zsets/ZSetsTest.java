@@ -50,12 +50,13 @@ public class ZSetsTest extends CarrotCoreBase {
   List<Double> scores;
   int maxScore = 100000;
 
-  public ZSetsTest(Object c, Object m) {
-    super(c, m);
+  public ZSetsTest(Object c) {
+    super(c);
   }
 
   @Before
-  public void setup() throws IOException {
+  @Override
+  public void setUp() throws IOException {
     super.setUp();
 
     buffer = UnsafeAccess.mallocZeroed(bufferSize);

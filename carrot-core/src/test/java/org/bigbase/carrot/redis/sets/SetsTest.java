@@ -51,8 +51,8 @@ public class SetsTest extends CarrotCoreBase {
   long n = 100000;
   List<Value> values;
 
-  public SetsTest(Object c, Object m) {
-    super(c, m);
+  public SetsTest(Object c) {
+    super(c);
   }
 
   private List<Value> getValues(long n) {

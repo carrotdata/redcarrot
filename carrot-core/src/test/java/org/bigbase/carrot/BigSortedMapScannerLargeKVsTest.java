@@ -36,12 +36,13 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   long totalLoaded;
   List<Key> keys;
 
-  public BigSortedMapScannerLargeKVsTest(Object c, Object m) {
-    super(c, m);
+  public BigSortedMapScannerLargeKVsTest(Object c) {
+    super(c);
     BigSortedMap.setMaxBlockSize(4096);
   }
 
   @Before
+  @Override
   public void setUp() throws IOException {
     super.setUp();
 

@@ -27,6 +27,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -39,8 +40,14 @@ public class HashScannerTest extends CarrotCoreBase {
   int fieldSize = 8;
   long n = 100000L;
 
-  public HashScannerTest(Object c, Object m) {
-    super(c, m);
+  public HashScannerTest(Object c) {
+    super(c);
+  }
+
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
   @Override

@@ -41,8 +41,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
   int keySize = 8;
   int nBits;
 
-  public SparseBitmapsTest(Object c, Object m) {
-    super(c, m);
+  public SparseBitmapsTest(Object c) {
+    super(c);
   }
 
   private Key getKey() {
@@ -55,6 +55,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
   }
 
   @Before
+  @Override
   public void setUp() throws IOException {
     super.setUp();
 

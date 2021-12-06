@@ -35,8 +35,8 @@ public class BigSortedMapScannerTest extends CarrotCoreBase {
   long totalLoaded;
   long MAX_ROWS = 100000;
 
-  public BigSortedMapScannerTest(Object c, Object m) throws IOException {
-    super(c, m);
+  public BigSortedMapScannerTest(Object c) throws IOException {
+    super(c);
     BigSortedMap.setMaxBlockSize(4096);
   }
 
