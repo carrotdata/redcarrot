@@ -40,11 +40,6 @@ public class StringsTest extends CarrotCoreBase {
   private final int bufferSize = 512;
   private List<KeyValue> keyValues;
 
-  @BeforeClass
-  public static void beforeClass() {
-    orphanMemoryStatsList.clear();
-  }
-
   public StringsTest(Object c, Object m) {
     super(c, m);
   }
