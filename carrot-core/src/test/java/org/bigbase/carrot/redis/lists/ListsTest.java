@@ -197,7 +197,7 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("Before BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     log.debug("Taking snapshot");
     map.snapshot();
@@ -206,7 +206,7 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("After BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     // Loading store from snapshot
     BigSortedMap.setStatsUpdatesDisabled(true);
@@ -217,7 +217,7 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("Load snapshot");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
     // Verify data after load snapshot
     for (int i = 0; i < n; i++) {
       int size = Lists.RPOP(map, key.address, key.length, bufPtr, largeSize);
@@ -250,7 +250,7 @@ public class ListsTest extends CarrotCoreBase {
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     log.debug("Taking snapshot");
     map.snapshot();
@@ -258,7 +258,7 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("After BSM.dispose:");
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     BigSortedMap.setStatsUpdatesDisabled(true);
     map = BigSortedMap.loadStore(0);
@@ -269,7 +269,7 @@ public class ListsTest extends CarrotCoreBase {
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.printMemoryAllocationStats();
 
-    UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+    UnsafeAccess.mallocStats.printStats(getTestParameters());
     long buffer = UnsafeAccess.malloc(valueSize);
     for (int i = 0; i < n; i++) {
       int size = Lists.RPOP(map, key.address, key.length, buffer, valueSize);

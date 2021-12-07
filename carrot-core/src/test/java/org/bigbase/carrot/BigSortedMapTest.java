@@ -107,7 +107,6 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void deleteUndeleted() throws IOException {
-    log.debug("{}", testName.getMethodName());
 
     List<byte[]> keys = delete(100);
     assertEquals(totalLoaded - 100, countRecords());
@@ -116,7 +115,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void putGet() {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     long start = System.currentTimeMillis();
     for (int i = 1; i <= totalLoaded; i++) {
@@ -140,7 +139,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void exists() {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     for (int i = 1; i <= totalLoaded; i++) {
       byte[] key = ("KEY" + (i)).getBytes();
@@ -153,7 +152,7 @@ public class BigSortedMapTest extends CarrotCoreBase {
   }
 
   private void flushAll() {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     map.flushAll();
 

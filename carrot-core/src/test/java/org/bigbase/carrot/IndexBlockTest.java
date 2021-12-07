@@ -55,7 +55,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testPutGet() {
-    log.debug(testName.getMethodName());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -73,7 +72,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testAutomaticDataBlockMerge() {
-    log.debug(testName.getMethodName());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -97,7 +95,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testPutGetDeleteFull() {
-    log.debug(testName.getMethodName());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -143,7 +140,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testPutGetDeletePartial() {
-    log.debug(testName.getMethodName());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -200,7 +196,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testOverwriteSameValueSize() throws RetryOperationException, IOException {
-    log.debug(testName.getMethodName());
 
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
@@ -225,7 +220,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    log.debug(testName.getMethodName());
 
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
@@ -250,7 +244,6 @@ public class IndexBlockTest extends CarrotCoreBase {
 
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    log.debug(testName.getMethodName());
 
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);

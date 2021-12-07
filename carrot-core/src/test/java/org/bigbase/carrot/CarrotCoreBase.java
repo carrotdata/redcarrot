@@ -1,5 +1,6 @@
 package org.bigbase.carrot;
 
+import junit.framework.TestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
@@ -13,10 +14,9 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
-public abstract class CarrotCoreBase {
+public abstract class CarrotCoreBase extends TestCase {
 
   private static final Logger log = LogManager.getLogger(CarrotCoreBase.class);
 
@@ -36,7 +36,9 @@ public abstract class CarrotCoreBase {
   @Rule public TestName testName = new TestName();
 
   @BeforeClass
-  public static void beforeClass() {}
+  public static void beforeClass() {
+    //    org.junit.Assume.assumeTrue("BigSortedMapLargeKVsTest".equals());
+  }
 
   static {
     memoryDebug = Boolean.parseBoolean(System.getProperty("memoryDebug"));
@@ -65,7 +67,7 @@ public abstract class CarrotCoreBase {
 
   @After
   public void tearDown() {
-    log.debug("tearDown: {}", testName.getMethodName());
+    log.debug("tearDown: {}", getTestParameters()); // getTestParameters());
 
     if (Objects.isNull(map)) return;
     // Dispose
@@ -75,7 +77,7 @@ public abstract class CarrotCoreBase {
     extTearDown();
 
     if (memoryDebug) {
-      UnsafeAccess.mallocStats.printStats(testName.getMethodName());
+      UnsafeAccess.mallocStats.printStats(getTestParameters()); // getTestParameters());
       BigSortedMap.printGlobalMemoryAllocationStats();
     }
   }
@@ -94,6 +96,16 @@ public abstract class CarrotCoreBase {
 
   /** @return Tests parameters */
   protected String getTestParameters() {
-    return String.format("Test: %s", testName.getMethodName());
+    return String.format(
+        "%s.%s(codec=%s)",
+        getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
+        testName.getMethodName().substring(0, testName.getMethodName().indexOf("[")),
+        testName.getMethodName().contains("codec=null")
+            ? "null"
+            : testName
+                .getMethodName()
+                .substring(
+                    testName.getMethodName().lastIndexOf(".") + 1,
+                    testName.getMethodName().length() - 15));
   }
 }

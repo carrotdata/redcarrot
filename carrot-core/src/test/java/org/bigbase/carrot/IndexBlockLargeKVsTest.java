@@ -48,7 +48,6 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    */
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    log.debug("LargeKVs {}", testName.getMethodName());
 
     for (int i = 0; i < 1; i++) {
       Random r = new Random();
@@ -90,7 +89,6 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
    */
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    log.debug("LargeKVs {}", testName.getMethodName());
 
     for (int i = 0; i < 1; i++) {
       Random r = new Random();

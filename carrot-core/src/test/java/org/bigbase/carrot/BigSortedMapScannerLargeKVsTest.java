@@ -161,7 +161,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScanner() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
@@ -190,7 +190,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerReverse() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
@@ -222,7 +222,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryAllRangesMapScanner() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
@@ -249,7 +249,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryAllRangesMapScannerReverse() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
@@ -284,7 +284,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerWithDeletes() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     long seed = r.nextLong();
@@ -323,7 +323,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerWithDeletesReverse() throws IOException {
-    log.debug("{}", testName.getMethodName());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     long seed = r.nextLong();
