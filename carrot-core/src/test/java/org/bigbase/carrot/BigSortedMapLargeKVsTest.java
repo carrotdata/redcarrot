@@ -31,7 +31,7 @@ import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
-public abstract class BigSortedMapLargeKVsTest extends CarrotCoreBase {
+public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapLargeKVsTest.class);
 

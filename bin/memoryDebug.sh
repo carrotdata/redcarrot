@@ -9,14 +9,18 @@ rm -f $dir2/Orphaned_allocations.log
 
 # shellcheck disable=SC2044
 for ix in $(find $dir1 -name "*output.txt"); do
-  grep "Orphaned allocations" $ix >>$dir1/Orphaned_allocations.log
+  grep "Orphaned allocations" $ix | cut -c31-10000 >>$dir1/Orphaned_allocations.log
 done
 
 # shellcheck disable=SC2044
 for ix in $(find $dir2 -name "*output.txt"); do
-  grep "Orphaned allocations" $ix >>$dir2/Orphaned_allocations.log
+  grep "Orphaned allocations" $ix | cut -c31-10000 >>$dir2/Orphaned_allocations.log
 done
 
+# shellcheck disable=SC2046
+echo Report from $(date)
+echo
+echo Compare: $dir1/Orphaned_allocations.log $dir2/Orphaned_allocations.log
 diff $dir1/Orphaned_allocations.log $dir2/Orphaned_allocations.log >$dir1/Orphaned_allocations.diff
 if [ -z $junitRegExp ]; then
   more $dir1/Orphaned_allocations.diff

@@ -29,6 +29,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.*;
 
+import static org.junit.Assert.*;
+
 public class StringsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(StringsTest.class);

@@ -1,6 +1,5 @@
 package org.bigbase.carrot;
 
-import junit.framework.TestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.compression.Codec;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RunWith(Parameterized.class)
-public abstract class CarrotCoreBase extends TestCase {
+public abstract class CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(CarrotCoreBase.class);
 

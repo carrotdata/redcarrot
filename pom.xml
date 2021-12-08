@@ -95,11 +95,16 @@
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <excludes>
-                        <!--                        very slow with debug                -->
+                        <!-- very slow with debug -->
                         <exclude>**/BigSortedMapLargeKVsTest.java</exclude>
                         <exclude>**/BigSortedMapScannerLargeKVsTest.java</exclude>
                         <exclude>**/HashesTest.java</exclude>
                         <exclude>**/ListsTest.java</exclude>
+                        <exclude>**/SparseBitmapsTest.java</exclude>
+                        <!-- System Exit has timed out in the forked process 1-->
+                        <exclude>**/HashScannerTest.java</exclude>
+                        <exclude>**/TestUtils.java</exclude>
+                        <exclude>**/TestUnsafeAccess.java</exclude>
                         <!---->
 
                         <exclude>**/BigSortedMapPerfTestClusterMode.java</exclude>
