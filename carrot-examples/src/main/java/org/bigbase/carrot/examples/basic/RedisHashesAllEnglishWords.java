@@ -103,7 +103,7 @@ public class RedisHashesAllEnglishWords {
   }
 
   private static void usage() {
-    log.debug(
+    log.fatal(
         "usage: java org.bigbase.carrot.examples.RedisHashesAllEnglishWords domain_list_file");
     System.exit(-1);
   }

@@ -219,12 +219,12 @@ public class HashesTest extends CarrotCoreBase {
       int size = Hashes.HGET(map, key.address, key.length, fPtr, fSize, buffer, 8);
 
       if (size < 0) { // does not exists
-        log.error("field not found {}", f);
+        log.fatal("field not found {}", f);
         System.exit(-1);
       }
 
       if (vPtr == NULL && size != 0) {
-        log.error("Expected NULL for {}", f);
+        log.fatal("Expected NULL for {}", f);
         System.exit(-1);
       }
 
@@ -233,7 +233,7 @@ public class HashesTest extends CarrotCoreBase {
       }
 
       if (Utils.compareTo(vPtr, vSize, buffer, size) != 0) {
-        log.error("Failed for {}", f);
+        log.fatal("Failed for {}", f);
         System.exit(-1);
       }
     }

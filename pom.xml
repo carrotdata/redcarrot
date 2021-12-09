@@ -99,7 +99,7 @@
                         <exclude>**/BigSortedMapLargeKVsTest.java</exclude>
                         <exclude>**/BigSortedMapScannerLargeKVsTest.java</exclude>
                         <exclude>**/SparseBitmapsTest.java</exclude>
-                        <!-- System Exit has timed out in the forked process 1-->
+                        <!-- System Exit -1 "Not found address 0"-->
                         <exclude>**/HashScannerTest.java</exclude>
                         <exclude>**/ZSetsAPITest.java</exclude>
                         <exclude>**/HashesAPITest.java</exclude>

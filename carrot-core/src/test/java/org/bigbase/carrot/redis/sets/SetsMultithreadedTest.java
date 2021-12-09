@@ -132,7 +132,7 @@ public class SetsMultithreadedTest {
               int card = (int) Sets.SCARD(map, ptr, keySize);
               if (card != values.size()) {
                 card = (int) Sets.SCARD(map, ptr, keySize);
-                log.error("Second CARD={}", card);
+                log.fatal("Second CARD={}", card);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -186,6 +186,7 @@ public class SetsMultithreadedTest {
               UnsafeAccess.copy(buf, 0, ptr, keySize);
               long card = (int) Sets.SCARD(map, ptr, keySize);
               if (card != setSize) {
+                log.fatal("card:{} != setSize:{}", card, setSize);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -194,7 +195,7 @@ public class SetsMultithreadedTest {
               assertTrue(res);
               card = Sets.SCARD(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card={}", card);
+                log.fatal("delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);

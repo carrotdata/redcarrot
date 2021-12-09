@@ -132,11 +132,11 @@ public class HashesMultithreadedTest {
               }
               int card = (int) Hashes.HLEN(map, ptr, keySize);
               if (card != values.size()) {
-                log.error("First CARD={}", card);
+                log.fatal("First CARD={}", card);
                 // int total = Hashes.elsize.get();
                 // int[] prev = Arrays.copyOf(Hashes.elarr.get(), total);
                 card = (int) Hashes.HLEN(map, ptr, keySize);
-                log.error("Second CARD={}", card);
+                log.fatal("Second CARD={}", card);
 
                 // int total2 = Hashes.elsize.get();
                 // int[] prev2 = Arrays.copyOf(Hashes.elarr.get(), total2);
@@ -210,6 +210,7 @@ public class HashesMultithreadedTest {
               UnsafeAccess.copy(buf, 0, ptr, keySize);
               long card = (int) Hashes.HLEN(map, ptr, keySize);
               if (card != setSize) {
+                log.fatal("card:{} != setSize:{}", card, setSize);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -218,7 +219,7 @@ public class HashesMultithreadedTest {
               assertTrue(res);
               card = Hashes.HLEN(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card={}", card);
+                log.fatal("delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);

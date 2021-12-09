@@ -87,7 +87,7 @@ public class CarrotMain {
   }
 
   private static void usage() {
-    log("Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path [start|stop]");
+    log.fatal("Usage: java org.bigbase.carrot.redis.CarrotMain config_file_path [start|stop]");
     System.exit(-1);
   }
 

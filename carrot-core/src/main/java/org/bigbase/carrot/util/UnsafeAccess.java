@@ -221,9 +221,10 @@ public final class UnsafeAccess {
      */
     public void freeEvent(long address) {
       if (!UnsafeAccess.debug) return;
+
       Range mem = allocMap.delete(address);
       if (mem == null) {
-        log.debug("FATAL: not found address {}", address);
+        log.fatal("Not found address {}", address);
         Thread.dumpStack();
         System.exit(-1);
       }
@@ -245,7 +246,7 @@ public final class UnsafeAccess {
       if (!UnsafeAccess.debug) return;
 
       if (!allocMap.inside(address, size)) {
-        log.debug("Memory corruption: address={} size={}", address, size);
+        log.fatal("Memory corruption: address={} size={}", address, size);
         Thread.dumpStack();
         System.exit(-1);
       }

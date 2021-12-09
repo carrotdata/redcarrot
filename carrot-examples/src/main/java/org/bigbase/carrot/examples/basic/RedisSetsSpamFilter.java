@@ -124,7 +124,7 @@ public class RedisSetsSpamFilter {
   }
 
   private static void usage() {
-    log.debug("usage: java org.bigbase.carrot.examples.RedisSetsSpamFilter domain_list_file");
+    log.fatal("usage: java org.bigbase.carrot.examples.RedisSetsSpamFilter domain_list_file");
     System.exit(-1);
   }
 }

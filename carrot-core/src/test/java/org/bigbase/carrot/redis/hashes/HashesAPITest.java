@@ -22,7 +22,6 @@ import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.util.Pair;
@@ -34,6 +33,8 @@ public class HashesAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesAPITest.class);
 
+  private int nSize;
+
   public HashesAPITest(Object c) {
     super(c);
   }
@@ -42,6 +43,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Override
   public void setUp() throws IOException {
     super.setUp();
+    nSize = memoryDebug ? 1000 : 10000;
   }
 
   @Override
@@ -55,7 +57,7 @@ public class HashesAPITest extends CarrotCoreBase {
       list.add(m);
       int res = Hashes.HSET(map, key, m, m);
       assertEquals(1, res);
-      if (i % 100000 == 0) {
+      if (i % (nSize / 10) == 0) {
         log.debug("Loaded {}", i);
       }
     }
@@ -71,7 +73,7 @@ public class HashesAPITest extends CarrotCoreBase {
       list.add(m);
       int res = Hashes.HSET(map, key, m, m);
       assertEquals(1, res);
-      if (i % 100000 == 0) {
+      if (i % (nSize / 10) == 0) {
         log.debug("Loaded {}", i);
       }
     }
@@ -81,7 +83,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashExists() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
     Collections.sort(list);
@@ -93,7 +95,7 @@ public class HashesAPITest extends CarrotCoreBase {
       assertEquals(1, res);
     }
     // Check non-existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       String v = Utils.getRandomStr(r, 10);
       int res = Hashes.HEXISTS(map, key, v);
       assertEquals(0, res);
@@ -109,7 +111,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashGet() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
     Collections.sort(list);
@@ -121,7 +123,7 @@ public class HashesAPITest extends CarrotCoreBase {
       assertEquals(f, res);
     }
     // Check non-existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       String v = Utils.getRandomStr(r, 10);
       String res = Hashes.HGET(map, key, v, 200);
       assertNull(res);
@@ -143,7 +145,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashIncrementFloat() throws OperationFailedException {
 
-    int N = 10000;
+    int N = nSize;
     List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
@@ -171,7 +173,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashIncrement() throws OperationFailedException {
 
-    int N = 10000;
+    int N = nSize;
     List<String> keys = new ArrayList<>();
     String field = "field";
     Random r = new Random();
@@ -199,7 +201,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashDelete() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
     Collections.sort(list);
@@ -239,7 +241,7 @@ public class HashesAPITest extends CarrotCoreBase {
     assertEquals(X, (int) Hashes.HLEN(map, key));
 
     // Check non-existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       String v = Utils.getRandomStr(r, 10);
       String res = Hashes.HDEL(map, key, v, 200);
       assertNull(res);
@@ -262,7 +264,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashSetNonExistent() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
     Collections.sort(list);
@@ -271,14 +273,14 @@ public class HashesAPITest extends CarrotCoreBase {
     Random r = new Random();
 
     // Check existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       int index = r.nextInt(list.size());
       String v = list.get(index);
       int res = Hashes.HSETNX(map, key, v, v);
       assertEquals(0, res);
     }
     // Check non-existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       String v = Utils.getRandomStr(r, 10);
       int res = Hashes.HSETNX(map, key, v, v);
       assertEquals(1, res);
@@ -288,7 +290,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashValueLength() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadDataRandomSize(key, X);
     Collections.sort(list);
@@ -297,14 +299,14 @@ public class HashesAPITest extends CarrotCoreBase {
     Random r = new Random();
 
     // Check existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       int index = r.nextInt(list.size());
       String v = list.get(index);
       int size = Hashes.HSTRLEN(map, key, v);
       assertEquals(v.length(), size);
     }
     // Check non-existing fields
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       int index = r.nextInt(list.size());
       String v = list.get(index);
       v += "111111111111111";
@@ -316,7 +318,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Test
   public void testHashMultiGet() {
 
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadData(key, X);
     Collections.sort(list);
@@ -365,7 +367,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testHashGetAllAPI() {
 
     // Load X elements
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadData(key, X);
     Collections.sort(list);
@@ -388,7 +390,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testHashKeysAPI() {
 
     // Load X elements
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadData(key, X);
     Collections.sort(list);
@@ -407,7 +409,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testHashValuesAPI() {
 
     // Load X elements
-    int X = 1000;
+    int X = nSize;
     String key = "key";
     List<String> list = loadData(key, X);
     Collections.sort(list);
@@ -427,7 +429,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testSscanNoRegex() {
 
     // Load X elements
-    int X = 10000;
+    int X = nSize;
     String key = "key";
     Random r = new Random();
     List<String> list = loadData(key, X);
@@ -439,16 +441,17 @@ public class HashesAPITest extends CarrotCoreBase {
 
     // Check full scan
     int count = 11; // required buffer size 22 * 11 + 4 = 246
-    int total = scan(map, key, null, count, 250, null);
+    log.debug("scan: lastSeenMember = null");
+    int total = scan(key, null, count, 250, null);
     assertEquals(X, total);
 
     // Check correctness of partial scans
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < nSize; i++) {
       int index = r.nextInt(list.size());
       String lastSeen = list.get(index);
       int expected = list.size() - index - 1;
-      total = scan(map, key, lastSeen, count, 250, null);
+      total = scan(key, lastSeen, count, 250, null);
       assertEquals(expected, total);
     }
 
@@ -457,17 +460,17 @@ public class HashesAPITest extends CarrotCoreBase {
     String before = "A";
     String after = "zzzzzzzzzzzzzzzz";
 
-    total = scan(map, key, before, count, 250, null);
+    total = scan(key, before, count, 250, null);
     assertEquals(X, total);
-    total = scan(map, key, after, count, 250, null);
+    total = scan(key, after, count, 250, null);
     assertEquals(0, total);
 
     // Test buffer underflow - small buffer
     // buffer size is less than needed to keep 'count' members
 
-    total = scan(map, key, before, count, 100, null);
+    total = scan(key, before, count, 100, null);
     assertEquals(X, total);
-    total = scan(map, key, after, count, 100, null);
+    total = scan(key, after, count, 100, null);
     assertEquals(0, total);
   }
 
@@ -486,7 +489,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testSscanWithRegex() {
 
     // Load X elements
-    int X = 10000;
+    int X = nSize;
     String key = "key";
     String regex = "^A.*";
     Random r = new Random();
@@ -498,7 +501,7 @@ public class HashesAPITest extends CarrotCoreBase {
     // Check full scan
     int expected = countMatches(list, 0, regex);
     int count = 11;
-    int total = scan(map, key, null, count, 250, regex);
+    int total = scan(key, null, count, 250, regex);
     assertEquals(expected, total);
 
     // Check correctness of partial scans
@@ -508,7 +511,7 @@ public class HashesAPITest extends CarrotCoreBase {
       String lastSeen = list.get(index);
       String pattern = "^" + lastSeen.charAt(0) + ".*";
       expected = index == list.size() - 1 ? 0 : countMatches(list, index + 1, pattern);
-      total = scan(map, key, lastSeen, count, 250, pattern);
+      total = scan(key, lastSeen, count, 250, pattern);
       assertEquals(expected, total);
     }
 
@@ -518,22 +521,21 @@ public class HashesAPITest extends CarrotCoreBase {
     String after = "zzzzzzzzzzzzzzzz"; // larger than any values
     expected = countMatches(list, 0, regex);
 
-    total = scan(map, key, before, count, 250, regex);
+    total = scan(key, before, count, 250, regex);
     assertEquals(expected, total);
-    total = scan(map, key, after, count, 250, regex);
+    total = scan(key, after, count, 250, regex);
     assertEquals(0, total);
 
     // Test buffer underflow - small buffer
     // buffer size is less than needed to keep 'count' members
     expected = countMatches(list, 0, regex);
-    total = scan(map, key, before, count, 100, regex);
+    total = scan(key, before, count, 100, regex);
     assertEquals(expected, total);
-    total = scan(map, key, after, count, 100, regex);
+    total = scan(key, after, count, 100, regex);
     assertEquals(0, total);
   }
 
   private int scan(
-      BigSortedMap map,
       String key,
       String lastSeenMember,
       int count,
@@ -553,7 +555,7 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersEdgeCases() {
 
     // Load N elements
-    int N = 10000;
+    int N = nSize;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -609,8 +611,8 @@ public class HashesAPITest extends CarrotCoreBase {
   public void testScannerRandomMembers() {
 
     // Load N elements
-    int N = 100000;
-    int numIter = 1000;
+    int N = nSize;
+    int numIter = nSize;
     String key = "key";
     List<String> list = loadData(key, N);
 

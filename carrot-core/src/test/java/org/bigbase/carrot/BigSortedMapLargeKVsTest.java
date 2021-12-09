@@ -57,7 +57,7 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
     BigSortedMap.printGlobalMemoryAllocationStats();
     totalLoaded = 0;
     long start = System.currentTimeMillis();
-    keys = fillMap(map);
+    keys = fillMap();
     log.debug("Loaded");
     Utils.sortKeys(keys);
     totalLoaded = keys.size();
@@ -426,7 +426,7 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
     return counter;
   }
 
-  protected ArrayList<Key> fillMap(BigSortedMap map) throws RetryOperationException {
+  protected ArrayList<Key> fillMap() throws RetryOperationException {
     ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
