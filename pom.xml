@@ -98,13 +98,11 @@
                         <!-- very slow with debug -->
                         <exclude>**/BigSortedMapLargeKVsTest.java</exclude>
                         <exclude>**/BigSortedMapScannerLargeKVsTest.java</exclude>
-                        <exclude>**/HashesTest.java</exclude>
-                        <exclude>**/ListsTest.java</exclude>
                         <exclude>**/SparseBitmapsTest.java</exclude>
                         <!-- System Exit has timed out in the forked process 1-->
                         <exclude>**/HashScannerTest.java</exclude>
-                        <exclude>**/TestUtils.java</exclude>
-                        <exclude>**/TestUnsafeAccess.java</exclude>
+                        <exclude>**/ZSetsAPITest.java</exclude>
+                        <exclude>**/HashesAPITest.java</exclude>
                         <!---->
 
                         <exclude>**/BigSortedMapPerfTestClusterMode.java</exclude>

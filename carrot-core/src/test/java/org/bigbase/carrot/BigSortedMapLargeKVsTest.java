@@ -37,6 +37,7 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
 
   long totalLoaded;
   List<Key> keys;
+  int maxSize;
 
   static {
     BigSortedMap.setMaxBlockSize(4096);
@@ -51,6 +52,7 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
   public void setUp() throws IOException {
     super.setUp();
 
+    maxSize = memoryDebug ? 512 : 2048;
     map.printMemoryAllocationStats();
     BigSortedMap.printGlobalMemoryAllocationStats();
     totalLoaded = 0;
@@ -430,7 +432,6 @@ public class BigSortedMapLargeKVsTest extends CarrotCoreBase {
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("FILL SEED={}", seed);
-    int maxSize = 2048;
     boolean result = true;
     long total = 0;
     while (result) {

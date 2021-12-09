@@ -41,7 +41,7 @@ public class HashesTest extends CarrotCoreBase {
   int bufferSize = 64;
   int keySize = 8;
   int valSize = 8;
-  long n = 2000000;
+  long n;
   List<Value> values;
 
   public HashesTest(Object c) {
@@ -52,6 +52,8 @@ public class HashesTest extends CarrotCoreBase {
   @Override
   public void setUp() throws IOException {
     super.setUp();
+
+    long n = memoryDebug ? 1000000 : 2000000;
 
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);

@@ -35,6 +35,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
 
   long totalLoaded;
   List<Key> keys;
+  int maxSize;
 
   public BigSortedMapScannerLargeKVsTest(Object c) {
     super(c);
@@ -47,6 +48,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     super.setUp();
 
     totalLoaded = 0;
+    maxSize = memoryDebug ? 256 : 2048;
     long start = System.currentTimeMillis();
     keys = fillMap(map);
     log.debug("Loaded");
@@ -139,7 +141,6 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("FILL SEED={}", seed);
-    int maxSize = 2048;
     boolean result;
     while (true) {
       int len = r.nextInt(maxSize - 16) + 16;

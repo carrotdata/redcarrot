@@ -59,7 +59,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
   public void setUp() throws IOException {
     super.setUp();
 
-    nBits = 1000000; // memoryDebug ? 100000 : 1000000;
+    //FIXME test with debug failed with lower than 1M bit. However, run long time with 1M bit.
+    nBits = 1000000; //memoryDebug ? 50000 : 1000000;
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     key = getKey();
   }
