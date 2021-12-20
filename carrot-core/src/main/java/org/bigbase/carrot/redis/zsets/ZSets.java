@@ -5033,38 +5033,39 @@ public class ZSets {
     int lastSeenSize = lastSeenMember == null ? 0 : lastSeenMember.length() + Utils.SIZEOF_DOUBLE;
     long buffer = UnsafeAccess.malloc(bufferSize);
 
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-
-    // Clear first 4 bytes of a buffer
-    UnsafeAccess.putInt(buffer, 0);
-    long totalSize =
-        ZSCAN(map, keyPtr, keySize, lastSeenPtr, lastSeenSize, count, regex, buffer, bufferSize);
-    if (totalSize == 0) {
-      return null;
+    try {
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      // Clear first 4 bytes of a buffer
+      UnsafeAccess.putInt(buffer, 0);
+      long totalSize =
+          ZSCAN(map, keyPtr, keySize, lastSeenPtr, lastSeenSize, count, regex, buffer, bufferSize);
+      if (totalSize == 0) {
+        return null;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      if (total == 0) {
+        return null;
+      }
+      long ptr = buffer + Utils.SIZEOF_INT;
+      // the last is going to be last seen member (duplicate if regex == null)
+      for (int i = 0; i < total; i++) {
+        int size = Utils.readUVInt(ptr);
+        int sizeSize = Utils.sizeUVInt(size);
+        double score = Utils.lexToDouble(ptr + sizeSize);
+        String sscore = Double.toString(score);
+        String member =
+            Utils.toString(ptr + sizeSize + Utils.SIZEOF_DOUBLE, size - Utils.SIZEOF_DOUBLE);
+        list.add(new Pair<String>(member, sscore));
+        ptr += size + sizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      if (lastSeenPtr > 0) {
+        UnsafeAccess.free(lastSeenPtr);
+      }
+      UnsafeAccess.free(buffer);
     }
-    int total = UnsafeAccess.toInt(buffer);
-    if (total == 0) {
-      return null;
-    }
-    long ptr = buffer + Utils.SIZEOF_INT;
-    // the last is going to be last seen member (duplicate if regex == null)
-    for (int i = 0; i < total; i++) {
-      int size = Utils.readUVInt(ptr);
-      int sizeSize = Utils.sizeUVInt(size);
-      double score = Utils.lexToDouble(ptr + sizeSize);
-      String sscore = Double.toString(score);
-      String member =
-          Utils.toString(ptr + sizeSize + Utils.SIZEOF_DOUBLE, size - Utils.SIZEOF_DOUBLE);
-      list.add(new Pair<String>(member, sscore));
-      ptr += size + sizeSize;
-    }
-
-    UnsafeAccess.free(keyPtr);
-    if (lastSeenPtr > 0) {
-      UnsafeAccess.free(lastSeenPtr);
-    }
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * For testing only
@@ -5402,34 +5403,38 @@ public class ZSets {
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = ZRANDMEMBER(map, keyPtr, keySize, count, withScores, buffer, bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZRANDMEMBER(map, keyPtr, keySize, count, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
-    }
 
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+    }
   }
 
   /**

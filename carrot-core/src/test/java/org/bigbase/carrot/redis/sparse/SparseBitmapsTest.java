@@ -29,6 +29,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SparseBitmapsTest extends CarrotCoreBase {
@@ -60,7 +61,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     super.setUp();
 
     //FIXME test with debug failed with lower than 1M bit. However, run long time with 1M bit.
-    nBits = 1000000; //memoryDebug ? 50000 : 1000000;
+    nBits = memoryDebug ? 5000 : 100000;
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     key = getKey();
   }
@@ -695,6 +696,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     return -1;
   }
 
+  @Ignore
   @Test
   public void testBitGetRange() {
 
@@ -923,6 +925,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     log.debug("Time for {} SetBit/BitCount/StrLength ={}ms", nBits, end - start);
   }
 
+  @Ignore
   @Test
   public void testBitSetRange() {
 

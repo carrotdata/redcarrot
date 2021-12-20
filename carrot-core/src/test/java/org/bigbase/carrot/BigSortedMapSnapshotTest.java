@@ -30,7 +30,7 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
   private static final Logger log = LogManager.getLogger(BigSortedMapSnapshotTest.class);
 
   long totalLoaded;
-  long MAX_ROWS = 1000000;
+  long MAX_ROWS = 100000;
   int EXT_VALUE_SIZE = 4096;
   int EXT_KEY_SIZE = 4096;
   int KEY_SIZE = 10;

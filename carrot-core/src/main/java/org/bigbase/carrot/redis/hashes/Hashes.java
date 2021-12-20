@@ -26,6 +26,7 @@ import static org.bigbase.carrot.util.Utils.SIZEOF_BYTE;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -1425,22 +1426,29 @@ public class Hashes {
       fieldPtrs[i] = UnsafeAccess.allocAndCopy(fields[i], 0, fields[i].length());
       fieldSizes[i] = fields[i].length();
     }
-    long size = HMGET(map, keyPtr, keySize, fieldPtrs, fieldSizes, buffer, bufSize);
-    if (size > bufSize) {
-      return list; // empty list
-    }
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int len = UnsafeAccess.toInt(ptr);
-      if (len < 0) {
-        list.add(null);
-      } else {
-        list.add(Utils.toString(ptr + Utils.SIZEOF_INT, len));
+    try {
+      long size = HMGET(map, keyPtr, keySize, fieldPtrs, fieldSizes, buffer, bufSize);
+      if (size > bufSize) {
+        return list; // empty list
       }
-      ptr += Utils.SIZEOF_INT + (len > 0 ? len : 0);
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int len = UnsafeAccess.toInt(ptr);
+        if (len < 0) {
+          list.add(null);
+        } else {
+          list.add(Utils.toString(ptr + Utils.SIZEOF_INT, len));
+        }
+        ptr += Utils.SIZEOF_INT + (len > 0 ? len : 0);
+      }
+      return list;
+    } finally {
+      // Free memory
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+      Arrays.stream(fieldPtrs).forEach( x -> UnsafeAccess.free(x));
     }
-    return list;
   }
 
   /**
@@ -1740,37 +1748,41 @@ public class Hashes {
     long buffer = UnsafeAccess.malloc(bufferSize);
     // Clear first 4 bytes of a buffer
     UnsafeAccess.putInt(buffer, 0);
-    long totalSize =
-        HSCAN(map, keyPtr, keySize, lastSeenPtr, lastSeenSize, count, buffer, bufferSize, regex);
-    if (totalSize == 0) {
-      return null;
-    }
-    int total = UnsafeAccess.toInt(buffer);
-    if (total == 0) return null;
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    long ptr = buffer + Utils.SIZEOF_INT;
-    // the last is going to be last seen member (duplicate if regex == null)
-    for (int i = 0; i < (total - 1) / 2; i++) {
-      int fSize = Utils.readUVInt(ptr);
-      int fSizeSize = Utils.sizeUVInt(fSize);
-      String first = Utils.toString(ptr + fSizeSize, fSize);
+    try {
+      long totalSize =
+          HSCAN(map, keyPtr, keySize, lastSeenPtr, lastSeenSize, count, buffer, bufferSize, regex);
+      if (totalSize == 0) {
+        return null;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      if (total == 0) return null;
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      long ptr = buffer + Utils.SIZEOF_INT;
+      // the last is going to be last seen member (duplicate if regex == null)
+      for (int i = 0; i < (total - 1) / 2; i++) {
+        int fSize = Utils.readUVInt(ptr);
+        int fSizeSize = Utils.sizeUVInt(fSize);
+        String first = Utils.toString(ptr + fSizeSize, fSize);
 
-      int vSize = Utils.readUVInt(ptr + fSizeSize + fSize);
-      int vSizeSize = Utils.sizeUVInt(vSize);
-      String second = Utils.toString(ptr + fSize + fSizeSize + vSizeSize, vSize);
-      ptr += fSize + vSize + fSizeSize + vSizeSize;
-      list.add(new Pair<String>(first, second));
+        int vSize = Utils.readUVInt(ptr + fSizeSize + fSize);
+        int vSizeSize = Utils.sizeUVInt(vSize);
+        String second = Utils.toString(ptr + fSize + fSizeSize + vSizeSize, vSize);
+        ptr += fSize + vSize + fSizeSize + vSizeSize;
+        list.add(new Pair<String>(first, second));
+      }
+      // Read last seen
+      int size = Utils.readUVInt(ptr);
+      int sizeSize = Utils.sizeUVInt(size);
+      String first = Utils.toString(ptr + sizeSize, size);
+      list.add(new Pair<String>(first, first));
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      if (lastSeenPtr > 0) {
+        UnsafeAccess.free(lastSeenPtr);
+      }
+      UnsafeAccess.free(buffer);
     }
-    // Read last seen
-    int size = Utils.readUVInt(ptr);
-    int sizeSize = Utils.sizeUVInt(size);
-    String first = Utils.toString(ptr + sizeSize, size);
-    list.add(new Pair<String>(first, first));
-
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(lastSeenPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -1939,26 +1951,29 @@ public class Hashes {
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = HGETALL(map, keyPtr, keySize, buffer, bufSize);
-    if (result > bufSize) {
+    try {
+      long result = HGETALL(map, keyPtr, keySize, buffer, bufSize);
+      if (result > bufSize) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      total = total / 2;
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int fSize = Utils.readUVInt(ptr);
+        int fSizeSize = Utils.sizeUVInt(fSize);
+        String first = Utils.toString(ptr + fSizeSize, fSize);
+        int vSize = Utils.readUVInt(ptr + fSizeSize + fSize);
+        int vSizeSize = Utils.sizeUVInt(vSize);
+        String second = Utils.toString(ptr + fSize + fSizeSize + vSizeSize, vSize);
+        list.add(new Pair<String>(first, second));
+        ptr += +fSize + fSizeSize + vSize + vSizeSize;
+      }
       return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    int total = UnsafeAccess.toInt(buffer);
-    total = total / 2;
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int fSize = Utils.readUVInt(ptr);
-      int fSizeSize = Utils.sizeUVInt(fSize);
-      String first = Utils.toString(ptr + fSizeSize, fSize);
-      int vSize = Utils.readUVInt(ptr + fSizeSize + fSize);
-      int vSizeSize = Utils.sizeUVInt(vSize);
-      String second = Utils.toString(ptr + fSize + fSizeSize + vSizeSize, vSize);
-      list.add(new Pair<String>(first, second));
-      ptr += +fSize + fSizeSize + vSize + vSizeSize;
-    }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * Available since 2.0.0. Time complexity: O(N) where N is the size of the hash. Returns all
@@ -2068,6 +2083,12 @@ public class Hashes {
     } catch (IOException e) {
 
     } finally {
+      if (scanner != null) {
+        try {
+          scanner.close();
+        } catch (IOException e) {
+        }
+      }
       KeysLocker.readUnlock(key);
     }
     return 0;
@@ -2086,22 +2107,25 @@ public class Hashes {
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = HKEYS(map, keyPtr, keySize, buffer, bufSize);
-    if (result > bufSize) {
+    try {
+      long result = HKEYS(map, keyPtr, keySize, buffer, bufSize);
+      if (result > bufSize) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int size = Utils.readUVInt(ptr);
+        int sizeSize = Utils.sizeUVInt(size);
+        String s = Utils.toString(ptr + sizeSize, size);
+        list.add(s);
+        ptr += size + sizeSize;
+      }
       return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int size = Utils.readUVInt(ptr);
-      int sizeSize = Utils.sizeUVInt(size);
-      String s = Utils.toString(ptr + sizeSize, size);
-      list.add(s);
-      ptr += size + sizeSize;
-    }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * For testing only
@@ -2116,22 +2140,25 @@ public class Hashes {
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = HVALS(map, keyPtr, keySize, buffer, bufSize);
-    if (result > bufSize) {
+    try {
+      long result = HVALS(map, keyPtr, keySize, buffer, bufSize);
+      if (result > bufSize) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int size = Utils.readUVInt(ptr);
+        int sizeSize = Utils.sizeUVInt(size);
+        String s = Utils.toString(ptr + sizeSize, size);
+        list.add(s);
+        ptr += size + sizeSize;
+      }
       return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int size = Utils.readUVInt(ptr);
-      int sizeSize = Utils.sizeUVInt(size);
-      String s = Utils.toString(ptr + sizeSize, size);
-      list.add(s);
-      ptr += size + sizeSize;
-    }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -2180,6 +2207,12 @@ public class Hashes {
     } catch (IOException e) {
 
     } finally {
+      if (scanner != null) {
+        try {
+          scanner.close();
+        } catch (IOException e) {
+        }
+      }
       KeysLocker.readUnlock(key);
     }
     return 0;

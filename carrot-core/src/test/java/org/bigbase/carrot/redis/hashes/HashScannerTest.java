@@ -28,6 +28,7 @@ import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -39,19 +40,41 @@ public class HashScannerTest extends CarrotCoreBase {
   int valSize = 8;
   int fieldSize = 8;
   long n = 100000L;
+  Key key;
+  List<KeyValue> values ;
 
   public HashScannerTest(Object c) {
     super(c);
+    n = memoryDebug? 10000: 100000;
   }
 
   @Before
   @Override
   public void setUp() throws IOException {
     super.setUp();
+    key = getKey();
+    values = getKeyValues(n);
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+    if (key != null) {
+      UnsafeAccess.free(key.address);
+    }
+    
+    if (values != null) {
+      log.debug("extTearDown before:{} values.size={}", 
+        UnsafeAccess.mallocStats.getAllocMap().size(), values.size());
+      values.forEach(
+        x -> {
+          UnsafeAccess.free(x.keyPtr);
+          UnsafeAccess.free(x.valuePtr);
+        });
+      log.debug("extTearDown after:{} values.size={}", 
+        UnsafeAccess.mallocStats.getAllocMap().size(), values.size());
+
+    }
+  }
 
   private List<KeyValue> getKeyValues(long n) {
     List<KeyValue> values = new ArrayList<>();
@@ -95,13 +118,17 @@ public class HashScannerTest extends CarrotCoreBase {
   @Test
   public void testSingleFullScanner() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
-
-    loadData(key, values);
-
+    log.debug("BEFORE load data: {}", UnsafeAccess.mallocStats.getAllocEventNumber());
+    
+    loadData(key, copy);
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
+    log.debug("AFTER load data: {}", UnsafeAccess.mallocStats.getAllocEventNumber());
+    
     long end = System.currentTimeMillis();
     log.debug(
         "Total allocated memory ={} for {} {} byte field-values. Overhead={} bytes per value. Time to load:{} ",
@@ -110,8 +137,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -123,7 +148,7 @@ public class HashScannerTest extends CarrotCoreBase {
     long card;
     while ((card = Hashes.HLEN(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size={}", copy.size());
+      /*DEBUG*/ log.debug("Set size={} values size={}", copy.size(), values.size());
       deleteRandom(map, key.address, key.length, copy, r);
       HashScanner scanner =
           Hashes.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, false);
@@ -145,14 +170,6 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
   }
 
   @Test
@@ -194,11 +211,11 @@ public class HashScannerTest extends CarrotCoreBase {
     int mptrSize2 = max2.length;
 
     log.debug("Test edge conditions {} elements", n);
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
+
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
     loadData(key, copy);
+    
     long end = System.currentTimeMillis();
 
     Utils.sortKeyValues(values);
@@ -307,27 +324,22 @@ public class HashScannerTest extends CarrotCoreBase {
 
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
   @Test
   public void testSingleFullScannerReverse() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
 
-    loadData(key, values);
+    loadData(key, copy);
 
     long end = System.currentTimeMillis();
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte field-values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -336,7 +348,6 @@ public class HashScannerTest extends CarrotCoreBase {
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -371,28 +382,22 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
   @Test
   public void testSinglePartialScanner() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
 
     long start = System.currentTimeMillis();
     List<KeyValue> copy = copy(values);
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -400,8 +405,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -445,28 +448,22 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
     List<KeyValue> copy = copy(values);
 
     long start = System.currentTimeMillis();
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -475,7 +472,6 @@ public class HashScannerTest extends CarrotCoreBase {
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
 
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -519,27 +515,22 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
 
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -547,8 +538,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -592,27 +581,21 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -620,8 +603,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -665,27 +646,21 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+ 
   }
 
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} fot {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -693,8 +668,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -738,27 +711,22 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
-  @Test
+ @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
 
-    Key key = getKey();
-    List<KeyValue> values = getKeyValues(n);
     Utils.sortKeyValues(values);
     List<KeyValue> copy = copy(values);
     long start = System.currentTimeMillis();
-    loadData(key, values);
+    loadData(key, copy);
     long end = System.currentTimeMillis();
 
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -766,8 +734,6 @@ public class HashScannerTest extends CarrotCoreBase {
         fieldSize + valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - fieldSize - valSize,
         end - start);
-
-    BigSortedMap.printGlobalMemoryAllocationStats();
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
@@ -812,17 +778,10 @@ public class HashScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
     Hashes.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Hashes.HLEN(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+
   }
 
-  @Test
+ @Test
   public void testDirectScannerPerformance() throws IOException {
 
     int n = 5000; // 5M elements
@@ -832,7 +791,10 @@ public class HashScannerTest extends CarrotCoreBase {
     long start = System.currentTimeMillis();
     loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),
@@ -863,7 +825,7 @@ public class HashScannerTest extends CarrotCoreBase {
         });
   }
 
-  @Test
+ @Test
   public void testReverseScannerPerformance() throws IOException {
 
     int n = 5000; // 5M elements
@@ -874,7 +836,10 @@ public class HashScannerTest extends CarrotCoreBase {
     long start = System.currentTimeMillis();
     loadData(key, copy);
     long end = System.currentTimeMillis();
-
+    // copy.size = 0 now
+    // copy again
+    copy = copy(values);
+    
     log.debug(
         "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
         BigSortedMap.getGlobalAllocatedMemory(),

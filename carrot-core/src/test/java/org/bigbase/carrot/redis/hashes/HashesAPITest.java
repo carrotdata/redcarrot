@@ -43,7 +43,7 @@ public class HashesAPITest extends CarrotCoreBase {
   @Override
   public void setUp() throws IOException {
     super.setUp();
-    nSize = memoryDebug ? 1000 : 10000;
+    nSize = memoryDebug ? 100 : 1000;
   }
 
   @Override
@@ -374,7 +374,7 @@ public class HashesAPITest extends CarrotCoreBase {
     // Check cardinality
     assertEquals(X, (int) Hashes.HLEN(map, key));
     // Call with a large buffer
-    List<Pair<String>> fieldValues = Hashes.HGETALL(map, key, 22005);
+    List<Pair<String>> fieldValues = Hashes.HGETALL(map, key, 22 * nSize + 5);
     assertEquals(list.size(), fieldValues.size());
     for (int i = 0; i < list.size(); i++) {
       String s = list.get(i);
@@ -382,7 +382,7 @@ public class HashesAPITest extends CarrotCoreBase {
       assertEquals(s, ss);
     }
     // Call with a smaller buffer
-    fieldValues = Hashes.HGETALL(map, key, 22000);
+    fieldValues = Hashes.HGETALL(map, key, 22 * nSize);
     assertEquals(0, fieldValues.size());
   }
 
@@ -397,17 +397,16 @@ public class HashesAPITest extends CarrotCoreBase {
     // Check cardinality
     assertEquals(X, (int) Hashes.HLEN(map, key));
     // Call with a large buffer
-    List<String> keys = Hashes.HKEYS(map, key, 11005);
+    List<String> keys = Hashes.HKEYS(map, key, 11 * nSize + 5);
     assertEquals(list.size(), keys.size());
     assertTrue(list.containsAll(keys));
     // Call with a smaller buffer
-    keys = Hashes.HKEYS(map, key, 11000);
+    keys = Hashes.HKEYS(map, key, 11 * nSize);
     assertEquals(0, keys.size());
   }
 
   @Test
   public void testHashValuesAPI() {
-
     // Load X elements
     int X = nSize;
     String key = "key";
@@ -416,11 +415,11 @@ public class HashesAPITest extends CarrotCoreBase {
     // Check cardinality
     assertEquals(X, (int) Hashes.HLEN(map, key));
     // Call with a large buffer
-    List<String> values = Hashes.HVALS(map, key, 11005);
+    List<String> values = Hashes.HVALS(map, key, 11 * nSize + 5);
     assertEquals(list.size(), values.size());
     assertTrue(list.containsAll(values));
     // Call with a smaller buffer
-    values = Hashes.HVALS(map, key, 11000);
+    values = Hashes.HVALS(map, key, 11 * nSize);
     assertEquals(0, values.size());
     assertTrue(list.containsAll(values));
   }

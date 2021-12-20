@@ -40,6 +40,10 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   public BigSortedMapScannerLargeKVsTest(Object c) {
     super(c);
     BigSortedMap.setMaxBlockSize(4096);
+    if (memoryDebug) {
+      // Decrease BSM maximum memory size even more
+      MEM_ALLOCATE = 10000000; // 10M
+    }
   }
 
   @Before
@@ -48,7 +52,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     super.setUp();
 
     totalLoaded = 0;
-    maxSize = memoryDebug ? 256 : 2048;
+    maxSize = 2048;
     long start = System.currentTimeMillis();
     keys = fillMap(map);
     log.debug("Loaded");
