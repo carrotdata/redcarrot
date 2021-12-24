@@ -95,7 +95,6 @@
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <excludes>
-                        <exclude>**/ZSetsAPITest.java</exclude>
                         <exclude>**/BigSortedMapPerfTestClusterMode.java</exclude>
                         <exclude>**/BigSortedMapTestMT.java</exclude>
                         <exclude>**/AtomicAppendTestMT.java</exclude>

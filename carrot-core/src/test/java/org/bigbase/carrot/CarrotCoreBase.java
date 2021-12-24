@@ -19,7 +19,7 @@ public abstract class CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(CarrotCoreBase.class);
 
-  public static final List<Integer> bufferSizes = Arrays.asList(4096);
+  public static final List<Integer> bufferSizes = Arrays.asList(13);
 
   protected static long MEM_ALLOCATE = 100000000L;
 
@@ -36,7 +36,7 @@ public abstract class CarrotCoreBase {
 
 
   static {
-    memoryDebug = true;//Boolean.parseBoolean(System.getProperty("memoryDebug"));
+    memoryDebug = Boolean.parseBoolean(System.getProperty("memoryDebug"));
     UnsafeAccess.setMallocDebugEnabled(memoryDebug);
   }
 
@@ -55,11 +55,11 @@ public abstract class CarrotCoreBase {
     map = new BigSortedMap(MEM_ALLOCATE);
     nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
     
-   /* if (memoryDebug) {
+    /*if (memoryDebug) {
       UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-      UnsafeAccess.setStackTraceRecordingLimit(1000);
+      UnsafeAccess.setStackTraceRecordingLimit(10);
       UnsafeAccess.setStackTraceRecordingFilter(bufferSizes::contains);
-    } */ 
+    } */  
   }
 
   @After

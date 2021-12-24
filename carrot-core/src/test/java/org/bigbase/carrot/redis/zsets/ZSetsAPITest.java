@@ -163,7 +163,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     return ll;
   }
 
-  @Ignore
   @Test
   public void testZRANDMEMBER() {
 
@@ -207,13 +206,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZSCANNoRegex() {
 
     // Load X elements
     int X = memoryDebug? 1000: 10000;
-    int numIterations = memoryDebug? 10: 1000;
+    int numIterations = memoryDebug? 10: 100;
     String key = "key";
     Random r = new Random();
     List<Pair<String>> list = loadDataSortByScore(key, X);
@@ -292,7 +290,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     return total;
   }
 
-  @Ignore
   @Test
   public void testZSCANWithRegex() {
 
@@ -350,7 +347,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0, total);
   }
 
-  @Ignore
   @Test
   public void testAddScoreMultiple() {
     //TODO: This test just calls ZSCORE - no add
@@ -368,7 +364,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testAddScoreIncrementMultiple() {
 
@@ -400,7 +395,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testAddDelete() {
     //FIXME: IndexBlock splits are not being freed
@@ -419,7 +413,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0, (int) count);
   }
 
-  @Ignore
   @Test
   public void testAddRemove() {
     //FIXME: IndexBlock splits are not being freed
@@ -447,11 +440,10 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0, (int) c);
   }
 
-  @Ignore
   @Test
   public void testIncrement() {
 
-    int numMembers = memoryDebug? 100: 10000;
+    int numMembers = memoryDebug? 100: 1000;
     String key = "key";
     List<Pair<String>> data = getData(numMembers);
     int count = 0;
@@ -553,7 +545,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZCOUNT() {
 
@@ -756,6 +747,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
   @Test
   public void testZLEXCOUNT() {
     //FIXME: test failed in memory debug mode
+    // but no memory leaks
     Random r = new Random();
     int numMembers =  memoryDebug? 100: 1000;
     String key = "key";
@@ -949,7 +941,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expected, count);
   }
 
-  @Ignore
   @Test
   public void testZPOPMAX() {
 
@@ -991,7 +982,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZPOPMIN() {
 
@@ -1032,13 +1022,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZRANGE() {
 
     Random r = new Random();
     int numMembers = 10000;
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     String key = "key";
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
@@ -1151,7 +1140,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGE() {
 
@@ -1277,7 +1265,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -1350,7 +1338,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYLEX() {
     String key = "key";
@@ -1396,7 +1383,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -1468,7 +1455,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYLEX() {
 
@@ -1539,7 +1525,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     long seed = r.nextLong();
     r.setSeed(seed);
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
     for (int i = 0; i < numIterations; i++) {
       int i1 = r.nextInt(data.size());
@@ -1703,7 +1689,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYLEX_WOL() {
 
@@ -1767,7 +1752,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -2041,7 +2026,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     return stop;
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYLEX_WOL() {
 
@@ -2094,13 +2078,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  @Ignore
   @Test
   public void testZRANK() {
 
     String key = "key";
     int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     Random r = new Random();
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
@@ -2120,13 +2103,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(-1L, rank);
   }
 
-  @Ignore
   @Test
   public void testZREVRANK() {
 
     String key = "key";
     int numMembers = 1000;
-    int numIterations =  memoryDebug? 100: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     Random r = new Random();
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
@@ -2151,7 +2133,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2242,14 +2224,10 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYSCORE() {
-
     String key = "key";
-
     // 1. CARDINALITY > compact size (512)
-
     int numMembers = 1000;
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
@@ -2296,7 +2274,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -2476,7 +2454,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZRANGEBYSCORE_WOL() {
 
@@ -2535,7 +2512,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2627,7 +2604,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYSCORE() {
 
@@ -2681,7 +2657,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -2861,22 +2837,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  @Ignore
   @Test
   public void testZREVRANGEBYSCORE_WOL() {
-
     String key = "key";
-
     // 1. CARDINALITY > compact size (512)
-
     int numMembers = 1000;
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-
     int[] offsets = new int[] {-10, -100, 0, 20, 30, 50, 500, 999, 1000, 1001};
     int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
-
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
       testZRANGEBYSCORE_wol_core(data, key, false, false, offsets[i], limits[i]);
@@ -2887,7 +2857,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
       // Test with normal ranges startInclusive = false, endInclusive = true
       testZRANGEBYSCORE_wol_core(data, key, false, true, offsets[i], limits[i]);
     }
-
     // 2. CARDINALITY < compact size (512)
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
@@ -2924,7 +2893,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
     List<Pair<String>> data;
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
 
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {
@@ -3032,14 +3001,10 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, (int) total);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYSCORE() {
-
     String key = "key";
-
     int numMembers = 1000;
-
     // Test with normal ranges startInclusive = false, endInclusive = false
     testZREMRANGEBYSCORE_core(key, numMembers, false, false);
     // Test with normal ranges startInclusive = true, endInclusive = true
@@ -3075,7 +3040,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
     List<Pair<String>> data;
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
 
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {
@@ -3149,7 +3114,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, (int) total);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYRANK() {
 
@@ -3176,10 +3140,10 @@ public class ZSetsAPITest extends CarrotCoreBase {
         endInclusive);
 
     Random r = new Random();
-    long seed = 276634853598895472L; // r.nextLong();
+    long seed = /*276634853598895472L;*/ r.nextLong();
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
-    int numIterations =  memoryDebug? 10: 1000;
+    int numIterations =  memoryDebug? 10: 100;
     List<Pair<String>> data;
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {
@@ -3269,16 +3233,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertTrue(res);
   }
 
-  @Ignore
   @Test
   public void testZREMRANGEBYLEX() {
-
     String key = "key";
-
     // 1. CARDINALITY > compact size (512)
-
     int numMembers = 1000;
-
     // Test with normal ranges startInclusive = false, endInclusive = false
     testZREMRANGEBYLEX_core(key, numMembers, false, false);
     // Test with normal ranges startInclusive = true, endInclusive = true

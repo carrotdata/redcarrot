@@ -53,10 +53,11 @@ public class SetsTest extends CarrotCoreBase {
 
   public SetsTest(Object c) {
     super(c);
+    n = memoryDebug? 10000: 100000;
   }
 
   private List<Value> getValues(long n) {
-    List<Value> values = new ArrayList<>();
+    values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -73,7 +74,7 @@ public class SetsTest extends CarrotCoreBase {
   }
 
   private List<Value> getRandomValues(long n) {
-    List<Value> values = new ArrayList<>();
+    values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -107,6 +108,7 @@ public class SetsTest extends CarrotCoreBase {
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
   }
+  
 
   @Ignore
   @Test

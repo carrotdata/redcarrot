@@ -228,7 +228,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSscanNoRegex() {
 
     // Load X elements
-    int X = 10000;
+    int X = memoryDebug? 1000: 10000;
+    int numIterations = memoryDebug? 100: 1000;
     String key = "key";
     Random r = new Random();
     List<String> list = loadData(key, X);
@@ -246,7 +247,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Check correctness of partial scans
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIterations; i++) {
       int index = r.nextInt(list.size());
       String lastSeen = list.get(index);
       int expected = list.size() - index - 1;
@@ -277,7 +278,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testCardinalityPerformance() {
 
     // Load X elements
-    int X = 200000;
+    int X = memoryDebug? 2000: 200000;
+    int numIterations = memoryDebug? 100: 1000;
     String key = "key";
 
     List<String> list = loadData(key, X);
@@ -285,7 +287,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     long total = 0;
     long start = System.currentTimeMillis();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIterations; i++) {
       long card = Sets.SCARD(map, key);
       assertEquals(X, (int) card);
       total += card;
@@ -310,7 +312,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSscanWithRegex() {
 
     // Load X elements
-    int X = 10000;
+    int X = memoryDebug? 1000: 10000;
+    int numIterations = memoryDebug? 10: 100;
     String key = "key";
     String regex = "^A.*";
     Random r = new Random();
@@ -328,7 +331,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Check correctness of partial scans
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < numIterations; i++) {
       int index = r.nextInt(list.size());
       String lastSeen = list.get(index);
       String pattern = "^" + lastSeen.charAt(0) + ".*";
@@ -407,7 +410,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSetScannerSkipLarge() throws IOException {
 
     // Load X elements
-    int X = 100000;
+    int X = memoryDebug? 10000: 100000;
     String key = "key";
     List<String> list = loadData(key, X);
 
@@ -463,8 +466,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerSkipRandom() throws IOException {
 
     // Load N elements
-    int N = 1000000;
-    int numIter = 1000;
+    int N = memoryDebug? 10000 :100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -476,7 +479,7 @@ public class SetsAPITest extends CarrotCoreBase {
     Random r = new Random();
 
     long start = System.currentTimeMillis();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIter; i++) {
       try (SetScanner scanner = Sets.getScanner(map, ptr, size, false)) {
         int skipTo = r.nextInt(N);
         long pos = scanner.skipTo(skipTo);
@@ -499,8 +502,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerSkipRandomSingleScanner() throws IOException {
 
     // Load N elements
-    int N = 1000000;
-    int numIter = 10000;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -544,7 +547,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersEdgeCases() {
 
     // Load N elements
-    int N = 10000;
+    int N = memoryDebug? 1000: 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -577,8 +580,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembers() {
 
     // Load N elements
-    int N = 100000;
-    int numIter = 1000;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -615,7 +618,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersDeleteEdgeCases() {
 
     // Load N elements
-    int N = 10000;
+    int N = memoryDebug? 1000: 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -647,8 +650,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersDelete() {
 
     // Load N elements
-    int N = 100000;
-    int numIter = 100;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 10: 100;
     String key = "key";
     List<String> list = loadData(key, N);
 

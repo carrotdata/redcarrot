@@ -55,7 +55,7 @@ public class ListsTest extends CarrotCoreBase {
   public void setUp() throws IOException {
     super.setUp();
 
-    nValues = memoryDebug ? 25000 : 100000;
+    nValues = memoryDebug ? 2500 : 100000;
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(nValues);
   }
@@ -194,19 +194,10 @@ public class ListsTest extends CarrotCoreBase {
       assertEquals(2L * i + 2, len);
     }
 
-    log.debug("Before BSM.dispose:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     log.debug("Taking snapshot");
     map.snapshot();
     map.dispose();
-
-    log.debug("After BSM.dispose:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     // Loading store from snapshot
     BigSortedMap.setStatsUpdatesDisabled(true);
@@ -215,9 +206,6 @@ public class ListsTest extends CarrotCoreBase {
     map.syncStatsToGlobal();
     // Data is ready
     log.debug("Load snapshot");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
     // Verify data after load snapshot
     for (int i = 0; i < nValues; i++) {
       int size = Lists.RPOP(map, key.address, key.length, bufPtr, largeSize);
@@ -246,19 +234,10 @@ public class ListsTest extends CarrotCoreBase {
       assertEquals(i + 1, (int) len);
     }
 
-    log.debug("Before BSM.dispose:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     log.debug("Taking snapshot");
     map.snapshot();
     map.dispose();
-    log.debug("After BSM.dispose:");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
 
     BigSortedMap.setStatsUpdatesDisabled(true);
     map = BigSortedMap.loadStore(0);
@@ -266,10 +245,6 @@ public class ListsTest extends CarrotCoreBase {
     map.syncStatsToGlobal();
 
     log.debug("Load snapshot");
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    map.printMemoryAllocationStats();
-
-    UnsafeAccess.mallocStats.printStats(getTestParameters());
     long buffer = UnsafeAccess.malloc(valueSize);
     for (int i = 0; i < nValues; i++) {
       int size = Lists.RPOP(map, key.address, key.length, buffer, valueSize);
@@ -612,68 +587,30 @@ public class ListsTest extends CarrotCoreBase {
     Key key2 = getAnotherKey();
 
     // 1. Non-existent source LEFT-LEFT
-    int size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.LEFT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    int size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.LEFT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(-1, size);
 
     // 2. Non-existent source LEFT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.LEFT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.LEFT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(-1, size);
 
     // 3. Non-existent source RIGHT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.RIGHT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.RIGHT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(-1, size);
 
     // 4. Non-existent source RIGHT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.RIGHT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.RIGHT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(-1, size);
 
     // Push 4 values to the source
     for (int i = 0; i < 4; i++) {
       Value v = values.get(i);
-      int sz =
-          (int)
-              Lists.LPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int sz = (int) Lists.LPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, sz);
     }
     /*
@@ -683,17 +620,8 @@ public class ListsTest extends CarrotCoreBase {
     // Now repeat
 
     // 1. existent source LEFT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.LEFT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.LEFT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 3
     Value v = values.get(3);
@@ -701,17 +629,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 3
     // SRC = 2, 1, 0
     // 2. existent source LEFT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.LEFT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.LEFT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 2
     v = values.get(2);
@@ -719,17 +638,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 3, 2
     // SRC = 1, 0
     // 3. existent source RIGHT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.RIGHT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.RIGHT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 0
     v = values.get(0);
@@ -737,17 +647,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 0, 3, 2
     // SRC = 1
     // 4. existent source RIGHT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key2.address,
-            key2.length,
-            Side.RIGHT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key2.address, key2.length, Side.RIGHT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 1
     v = values.get(1);
@@ -761,17 +662,8 @@ public class ListsTest extends CarrotCoreBase {
     // Now repeat from dst -> src
 
     // 1. existent source LEFT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key2.address,
-            key2.length,
-            key.address,
-            key.length,
-            Side.LEFT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key2.address, key2.length, key.address, key.length, Side.LEFT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 0
     v = values.get(0);
@@ -779,17 +671,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 3, 2, 1
     // SRC = 0
     // 2. existent source LEFT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key2.address,
-            key2.length,
-            key.address,
-            key.length,
-            Side.LEFT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key2.address, key2.length, key.address, key.length, Side.LEFT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 3
     v = values.get(3);
@@ -797,17 +680,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 2, 1
     // SRC = 0, 3
     // 3. existent source RIGHT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key2.address,
-            key2.length,
-            key.address,
-            key.length,
-            Side.RIGHT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key2.address, key2.length, key.address, key.length, Side.RIGHT,
+      Side.LEFT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 1
     v = values.get(1);
@@ -815,17 +689,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = 2
     // SRC = 1, 0, 3
     // 4. existent source RIGHT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key2.address,
-            key2.length,
-            key.address,
-            key.length,
-            Side.RIGHT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key2.address, key2.length, key.address, key.length, Side.RIGHT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 2
     v = values.get(2);
@@ -838,17 +703,8 @@ public class ListsTest extends CarrotCoreBase {
     // Same key
 
     // 1. existent source - source LEFT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key.address,
-            key.length,
-            Side.LEFT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key.address, key.length, Side.LEFT, Side.LEFT,
+      buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 1
     v = values.get(1);
@@ -856,17 +712,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = empty
     // SRC = 1, 0, 3, 2
     // 2. existent source - source LEFT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key.address,
-            key.length,
-            Side.LEFT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key.address, key.length, Side.LEFT, Side.RIGHT,
+      buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 1
     v = values.get(1);
@@ -874,17 +721,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = empty
     // SRC = 0, 3, 2, 1
     // 3. existent source-source RIGHT-LEFT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key.address,
-            key.length,
-            Side.RIGHT,
-            Side.LEFT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key.address, key.length, Side.RIGHT, Side.LEFT,
+      buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 1
     v = values.get(1);
@@ -892,17 +730,8 @@ public class ListsTest extends CarrotCoreBase {
     // DST = empty
     // SRC = 1, 0, 3, 2
     // 4. existent source-source RIGHT-RIGHT
-    size =
-        Lists.LMOVE(
-            map,
-            key.address,
-            key.length,
-            key.address,
-            key.length,
-            Side.RIGHT,
-            Side.RIGHT,
-            buffer,
-            bufferSize);
+    size = Lists.LMOVE(map, key.address, key.length, key.address, key.length, Side.RIGHT,
+      Side.RIGHT, buffer, bufferSize);
     assertEquals(valueSize, size);
     // we moved element 2
     v = values.get(2);
@@ -1017,7 +846,6 @@ public class ListsTest extends CarrotCoreBase {
 
   @Test
   public void testLINSERT() {
-
     Key key = getKey();
     // load half of values
     for (int i = 0; i < nValues / 2; i++) {
@@ -1041,7 +869,7 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("Test seed={}", seed);
     // Insert and Verify
     int listSize = nValues / 2;
-    for (int i = nValues / 2; i < nValues / 2 + 10000; i++) {
+    for (int i = nValues / 2; i < nValues / 2 + 1000; i++) {
       int index = i;
       int insertPos = r.nextInt(listSize);
       boolean after = r.nextBoolean();

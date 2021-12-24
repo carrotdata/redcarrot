@@ -1511,26 +1511,29 @@ public class ZSets {
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
     List<Pair<String>> list = new ArrayList<Pair<String>>();
-    long result = ZPOPMAX(map, keyPtr, keySize, count, buffer, bufSize);
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
+    try {
+      long result = ZPOPMAX(map, keyPtr, keySize, count, buffer, bufSize);
+      if (result > bufSize || result <= 0) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
 
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      double score = Utils.lexToDouble(ptr + mSizeSize);
-      String sscore = Double.toString(score);
-      String member =
-          Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        double score = Utils.lexToDouble(ptr + mSizeSize);
+        String sscore = Double.toString(score);
+        String member =
+            Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -1661,26 +1664,29 @@ public class ZSets {
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
     List<Pair<String>> list = new ArrayList<Pair<String>>();
-    long result = ZPOPMIN(map, keyPtr, keySize, count, buffer, bufSize);
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
+    try {
+      long result = ZPOPMIN(map, keyPtr, keySize, count, buffer, bufSize);
+      if (result > bufSize || result <= 0) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
 
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      double score = Utils.lexToDouble(ptr + mSizeSize);
-      String sscore = Double.toString(score);
-      String member =
-          Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        double score = Utils.lexToDouble(ptr + mSizeSize);
+        String sscore = Double.toString(score);
+        String member =
+            Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * Available since 5.0.0. Time complexity: O(log(N)*M) with N being the number of elements in the
@@ -1812,40 +1818,42 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZRANGE(
-      BigSortedMap map, String key, long start, long end, boolean withScores, int bufSize) {
+  public static List<Pair<String>> ZRANGE(BigSortedMap map, String key, long start, long end,
+      boolean withScores, int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = ZRANGE(map, keyPtr, keySize, start, end, withScores, buffer, bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZRANGE(map, keyPtr, keySize, start, end, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -1974,15 +1982,8 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of members
    */
-  public static List<Pair<String>> ZRANGEBYLEX(
-      BigSortedMap map,
-      String key,
-      String start,
-      boolean startInclusive,
-      String end,
-      boolean endInclusive,
-      long offset,
-      long limit,
+  public static List<Pair<String>> ZRANGEBYLEX(BigSortedMap map, String key, String start,
+      boolean startInclusive, String end, boolean endInclusive, long offset, long limit,
       int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
@@ -1991,49 +1992,38 @@ public class ZSets {
     int startSize = start != null ? start.length() : 0;
     long endPtr = end != null ? UnsafeAccess.allocAndCopy(end, 0, end.length()) : 0;
     int endSize = end != null ? end.length() : 0;
-
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZRANGEBYLEX(
-            map,
-            keyPtr,
-            keySize,
-            startPtr,
-            startSize,
-            startInclusive,
-            endPtr,
-            endSize,
-            endInclusive,
-            offset,
-            limit,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
+    
+    try {
+      long result = ZRANGEBYLEX(map, keyPtr, keySize, startPtr, startSize, startInclusive, endPtr,
+        endSize, endInclusive, offset, limit, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
+      }
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        member = Utils.toString(ptr + mSizeSize, mSize);
+        sscore = member;
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
       return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+      if (startPtr > 0) {
+        UnsafeAccess.free(startPtr);
+      }
+      if (endPtr > 0) {
+        UnsafeAccess.free(endPtr);
+      }
     }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      member = Utils.toString(ptr + mSizeSize, mSize);
-      sscore = member;
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
-    }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    if (startPtr > 0) {
-      UnsafeAccess.free(startPtr);
-    }
-    if (endPtr > 0) {
-      UnsafeAccess.free(endPtr);
-    }
-    return list;
   }
 
   /**
@@ -2096,62 +2086,52 @@ public class ZSets {
    * @return total serialized size of a response, if it is greater than bufferSize - repeat call
    *     with appropriately sized buffer
    */
-  public static long ZRANGEBYLEX(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long startPtr,
-      int startSize,
-      boolean startInclusive,
-      long endPtr,
-      int endSize,
-      boolean endInclusive,
-      long offset,
-      long limit,
-      long buffer,
-      int bufferSize) {
+  public static long ZRANGEBYLEX(BigSortedMap map, long keyPtr, int keySize, long startPtr,
+      int startSize, boolean startInclusive, long endPtr, int endSize, boolean endInclusive,
+      long offset, long limit, long buffer, int bufferSize) {
 
     // TODO: Use HashScanner if available
     // See: ZCOUNTBYLEX as an example
-
     boolean freeStart = false;
     boolean freeEnd = false;
-    if (endInclusive && endPtr > 0) {
-      endPtr = Utils.prefixKeyEndCorrect(endPtr, endSize);
-      endSize += 1;
-      freeEnd = true;
-    }
-    if (!startInclusive && startPtr > 0) {
-      startPtr = Utils.prefixKeyEndCorrect(startPtr, startSize);
-      startSize += 1;
-      freeStart = true;
-    }
-
-    Key key = getKey(keyPtr, keySize);
-
-    // Clean first 4 bytes
-    UnsafeAccess.putInt(buffer, 0);
-
     SetScanner setScanner = null;
+    Key key = null;
     long ptr = 0;
-    int counter = 0;
-    long cardinality = ZCARD(map, keyPtr, keySize);
-    if (cardinality == 0) {
-      return 0;
-    }
-    if (offset >= cardinality) {
-      return 0;
-    } else if (offset < 0) {
-      offset += cardinality;
-      if (offset < 0) {
-        offset = 0;
-      }
-    }
-    if (limit < 0) {
-      limit = Long.MAX_VALUE / 2; // VERY LARGE
-    }
+
     try {
+
+      if (endInclusive && endPtr > 0) {
+        endPtr = Utils.prefixKeyEndCorrect(endPtr, endSize);
+        endSize += 1;
+        freeEnd = true;
+      }
+      if (!startInclusive && startPtr > 0) {
+        startPtr = Utils.prefixKeyEndCorrect(startPtr, startSize);
+        startSize += 1;
+        freeStart = true;
+      }
+      key = getKey(keyPtr, keySize);
+      // Clean first 4 bytes
+      UnsafeAccess.putInt(buffer, 0);
+      int counter = 0;
+      long cardinality = ZCARD(map, keyPtr, keySize);
+      if (cardinality == 0) {
+        return 0;
+      }
+      if (offset >= cardinality) {
+        return 0;
+      } else if (offset < 0) {
+        offset += cardinality;
+        if (offset < 0) {
+          offset = 0;
+        }
+      }
+      if (limit < 0) {
+        limit = Long.MAX_VALUE / 2; // VERY LARGE
+      }
+
       KeysLocker.readLock(key);
+
       ptr = buffer + Utils.SIZEOF_INT;
       // make sure first 4 bytes does not contain garbage
       UnsafeAccess.putInt(buffer, 0);
@@ -2192,6 +2172,7 @@ public class ZSets {
         }
         setScanner.next();
       }
+
     } catch (IOException e) {
     } finally {
       if (setScanner != null) {
@@ -2206,7 +2187,6 @@ public class ZSets {
       if (freeEnd) {
         UnsafeAccess.free(endPtr);
       }
-
       KeysLocker.readUnlock(key);
     }
     return ptr - buffer;
@@ -2428,62 +2408,45 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZRANGEBYSCORE(
-      BigSortedMap map,
-      String key,
-      double minScore,
-      boolean minInclusive,
-      double maxScore,
-      boolean maxInclusive,
-      long offset,
-      long limit,
-      boolean withScores,
-      int bufSize) {
+  public static List<Pair<String>> ZRANGEBYSCORE(BigSortedMap map, String key, double minScore,
+      boolean minInclusive, double maxScore, boolean maxInclusive, long offset, long limit,
+      boolean withScores, int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
 
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZRANGEBYSCORE(
-            map,
-            keyPtr,
-            keySize,
-            minScore,
-            minInclusive,
-            maxScore,
-            maxInclusive,
-            offset,
-            limit,
-            withScores,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZRANGEBYSCORE(map, keyPtr, keySize, minScore, minInclusive, maxScore,
+        maxInclusive, offset, limit, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -2628,58 +2591,45 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZRANGEBYSCORE(
-      BigSortedMap map,
-      String key,
-      double minScore,
-      boolean minInclusive,
-      double maxScore,
-      boolean maxInclusive,
-      boolean withScores,
+  public static List<Pair<String>> ZRANGEBYSCORE(BigSortedMap map, String key, double minScore,
+      boolean minInclusive, double maxScore, boolean maxInclusive, boolean withScores,
       int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
-
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZRANGEBYSCORE(
-            map,
-            keyPtr,
-            keySize,
-            minScore,
-            minInclusive,
-            maxScore,
-            maxInclusive,
-            withScores,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZRANGEBYSCORE(map, keyPtr, keySize, minScore, minInclusive, maxScore,
+        maxInclusive, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * ZRANGEBYSCORE without offset and limit
@@ -3234,6 +3184,9 @@ public class ZSets {
       hashScanner =
           Hashes.getScanner(map, keyPtr, keySize, startPtr, startSize, endPtr, endSize, false);
 
+      if (hashScanner == null) {
+        
+      }
       if (hashScanner != null) {
         normalMode = true;
         while (hashScanner.hasNext()) {
@@ -3291,7 +3244,7 @@ public class ZSets {
           if (hashScanner != null) {
             hashScanner.next();
           } else {
-            if (recycleStartPtr) {
+            if (freeStart || recycleStartPtr) {
               UnsafeAccess.free(startPtr);
             }
             recycleStartPtr = true;
@@ -3303,6 +3256,7 @@ public class ZSets {
                 Utils.prefixKeyEndCorrect(
                     buf + sizeSize + Utils.SIZEOF_DOUBLE, size - Utils.SIZEOF_DOUBLE);
             startSize = startPtr == 0 ? 0 : size - Utils.SIZEOF_DOUBLE + 1;
+            freeStart = true;
             hashScanner =
                 Hashes.getScanner(
                     map, keyPtr, keySize, startPtr, startSize, endPtr, endSize, false);
@@ -3416,7 +3370,7 @@ public class ZSets {
         if (setScanner != null) {
           setScanner.close();
         }
-        if (recycleStartPtr) {
+        if (recycleStartPtr && sPtr > 0) {
           UnsafeAccess.free(sPtr);
         }
       } catch (IOException e) {
@@ -3809,40 +3763,44 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZREVRANGE(
-      BigSortedMap map, String key, long start, long end, boolean withScores, int bufSize) {
+  public static List<Pair<String>> ZREVRANGE(BigSortedMap map, String key, long start, long end,
+      boolean withScores, int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result = ZREVRANGE(map, keyPtr, keySize, start, end, withScores, buffer, bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZREVRANGE(map, keyPtr, keySize, start, end, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
-    }
 
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+    }
   }
 
   /**
@@ -3954,15 +3912,8 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of members
    */
-  public static List<Pair<String>> ZREVRANGEBYLEX(
-      BigSortedMap map,
-      String key,
-      String start,
-      boolean startInclusive,
-      String end,
-      boolean endInclusive,
-      long offset,
-      long limit,
+  public static List<Pair<String>> ZREVRANGEBYLEX(BigSortedMap map, String key, String start,
+      boolean startInclusive, String end, boolean endInclusive, long offset, long limit,
       int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
@@ -3973,41 +3924,34 @@ public class ZSets {
     int endSize = end != null ? end.length() : 0;
 
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZREVRANGEBYLEX(
-            map,
-            keyPtr,
-            keySize,
-            startPtr,
-            startSize,
-            startInclusive,
-            endPtr,
-            endSize,
-            endInclusive,
-            offset,
-            limit,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
+    try {
+      long result = ZREVRANGEBYLEX(map, keyPtr, keySize, startPtr, startSize, startInclusive,
+        endPtr, endSize, endInclusive, offset, limit, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
+      }
 
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      member = Utils.toString(ptr + mSizeSize, mSize);
-      sscore = member;
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        member = Utils.toString(ptr + mSizeSize, mSize);
+        sscore = member;
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+      if (startPtr > 0) UnsafeAccess.free(startPtr);
+      if (endPtr > 0) UnsafeAccess.free(endPtr);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * Available since 2.8.9. Time complexity: O(log(N)+M) with N being the number of elements in the
@@ -4146,14 +4090,8 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of members
    */
-  public static List<Pair<String>> ZREVRANGEBYLEX(
-      BigSortedMap map,
-      String key,
-      String start,
-      boolean startInclusive,
-      String end,
-      boolean endInclusive,
-      int bufSize) {
+  public static List<Pair<String>> ZREVRANGEBYLEX(BigSortedMap map, String key, String start,
+      boolean startInclusive, String end, boolean endInclusive, int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
@@ -4163,39 +4101,35 @@ public class ZSets {
     int endSize = end != null ? end.length() : 0;
 
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZREVRANGEBYLEX(
-            map,
-            keyPtr,
-            keySize,
-            startPtr,
-            startSize,
-            startInclusive,
-            endPtr,
-            endSize,
-            endInclusive,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
+    try {
+      long result = ZREVRANGEBYLEX(map, keyPtr, keySize, startPtr, startSize, startInclusive,
+        endPtr, endSize, endInclusive, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
+      }
 
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      member = Utils.toString(ptr + mSizeSize, mSize);
-      sscore = member;
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        member = Utils.toString(ptr + mSizeSize, mSize);
+        sscore = member;
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
+      if (startPtr > 0) UnsafeAccess.free(startPtr);
+      if (endPtr > 0) UnsafeAccess.free(endPtr);
+
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * ZREVRANGEBYLEX without offset and count
@@ -4342,62 +4276,45 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZREVRANGEBYSCORE(
-      BigSortedMap map,
-      String key,
-      double minScore,
-      boolean minInclusive,
-      double maxScore,
-      boolean maxInclusive,
-      long offset,
-      long limit,
-      boolean withScores,
-      int bufSize) {
+  public static List<Pair<String>> ZREVRANGEBYSCORE(BigSortedMap map, String key, double minScore,
+      boolean minInclusive, double maxScore, boolean maxInclusive, long offset, long limit,
+      boolean withScores, int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
 
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZREVRANGEBYSCORE(
-            map,
-            keyPtr,
-            keySize,
-            minScore,
-            minInclusive,
-            maxScore,
-            maxInclusive,
-            offset,
-            limit,
-            withScores,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZREVRANGEBYSCORE(map, keyPtr, keySize, minScore, minInclusive, maxScore,
+        maxInclusive, offset, limit, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
 
   /**
@@ -4522,58 +4439,46 @@ public class ZSets {
    * @param bufSize buffer size
    * @return list of pairs {member, member} or {member, score}
    */
-  public static List<Pair<String>> ZREVRANGEBYSCORE(
-      BigSortedMap map,
-      String key,
-      double minScore,
-      boolean minInclusive,
-      double maxScore,
-      boolean maxInclusive,
-      boolean withScores,
+  public static List<Pair<String>> ZREVRANGEBYSCORE(BigSortedMap map, String key, double minScore,
+      boolean minInclusive, double maxScore, boolean maxInclusive, boolean withScores,
       int bufSize) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
 
     long buffer = UnsafeAccess.malloc(bufSize);
-    long result =
-        ZREVRANGEBYSCORE(
-            map,
-            keyPtr,
-            keySize,
-            minScore,
-            minInclusive,
-            maxScore,
-            maxInclusive,
-            withScores,
-            buffer,
-            bufSize);
-    List<Pair<String>> list = new ArrayList<Pair<String>>();
-    if (result > bufSize || result <= 0) {
-      return list;
-    }
-
-    int total = UnsafeAccess.toInt(buffer);
-    long ptr = buffer + Utils.SIZEOF_INT;
-    for (int i = 0; i < total; i++) {
-      int mSize = Utils.readUVInt(ptr);
-      int mSizeSize = Utils.sizeUVInt(mSize);
-      String member = null;
-      String sscore = null;
-      if (withScores) {
-        double score = Utils.lexToDouble(ptr + mSizeSize);
-        sscore = Double.toString(score);
-        member = Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
-      } else {
-        member = Utils.toString(ptr + mSizeSize, mSize);
-        sscore = member;
+    try {
+      long result = ZREVRANGEBYSCORE(map, keyPtr, keySize, minScore, minInclusive, maxScore,
+        maxInclusive, withScores, buffer, bufSize);
+      List<Pair<String>> list = new ArrayList<Pair<String>>();
+      if (result > bufSize || result <= 0) {
+        return list;
       }
-      list.add(new Pair<String>(member, sscore));
-      ptr += mSize + mSizeSize;
+
+      int total = UnsafeAccess.toInt(buffer);
+      long ptr = buffer + Utils.SIZEOF_INT;
+      for (int i = 0; i < total; i++) {
+        int mSize = Utils.readUVInt(ptr);
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        String member = null;
+        String sscore = null;
+        if (withScores) {
+          double score = Utils.lexToDouble(ptr + mSizeSize);
+          sscore = Double.toString(score);
+          member =
+              Utils.toString(ptr + mSizeSize + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE);
+        } else {
+          member = Utils.toString(ptr + mSizeSize, mSize);
+          sscore = member;
+        }
+        list.add(new Pair<String>(member, sscore));
+        ptr += mSize + mSizeSize;
+      }
+      return list;
+    } finally {
+      UnsafeAccess.free(keyPtr);
+      UnsafeAccess.free(buffer);
     }
-    UnsafeAccess.free(keyPtr);
-    UnsafeAccess.free(buffer);
-    return list;
   }
   /**
    * Available since 2.2.0. Time complexity: O(log(N)+M) with N being the number of elements in the
