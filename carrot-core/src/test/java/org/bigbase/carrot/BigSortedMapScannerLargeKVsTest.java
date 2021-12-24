@@ -26,27 +26,33 @@ import org.bigbase.carrot.util.Bytes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapScannerLargeKVsTest.class);
 
-  static BigSortedMap map;
-  static long totalLoaded;
-  static List<Key> keys;
+  long totalLoaded;
+  List<Key> keys;
+  int maxSize;
 
-  public BigSortedMapScannerLargeKVsTest(Object c) throws IOException {
+  public BigSortedMapScannerLargeKVsTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
+    BigSortedMap.setMaxBlockSize(4096);
+    if (memoryDebug) {
+      // Decrease BSM maximum memory size even more
+      MEM_ALLOCATE = 10000000; // 10M
+    }
   }
 
+  @Before
+  @Override
   public void setUp() throws IOException {
-    BigSortedMap.setMaxBlockSize(4096);
-    map = new BigSortedMap(100000000);
+    super.setUp();
+
     totalLoaded = 0;
+    maxSize = 2048;
     long start = System.currentTimeMillis();
     keys = fillMap(map);
     log.debug("Loaded");
@@ -75,12 +81,8 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     assertEquals(totalLoaded, scanned);
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    map.dispose();
-    // Free keys
+  @Override
+  public void extTearDown() {
     deallocate(keys);
   }
 
@@ -143,8 +145,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("FILL SEED={}", seed);
-    int maxSize = 2048;
-    boolean result = true;
+    boolean result;
     while (true) {
       int len = r.nextInt(maxSize - 16) + 16;
       byte[] key = new byte[len];
@@ -165,7 +166,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScanner() throws IOException {
-    log.debug("testDirectMemoryFullMapScanner {}", getParameters());
+    log.debug("{}", getTestParameters());
 
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
     long start = System.currentTimeMillis();
@@ -194,7 +195,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerReverse() throws IOException {
-    log.debug("testDirectMemoryFullMapScanner {}", getParameters());
+    log.debug("{}", getTestParameters());
 
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0, true);
     long start = System.currentTimeMillis();
@@ -226,7 +227,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryAllRangesMapScanner() throws IOException {
-    log.debug("testDirectMemoryAllRangesMapScanner {}", getParameters());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
@@ -253,7 +254,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryAllRangesMapScannerReverse() throws IOException {
-    log.debug("testDirectMemoryAllRangesMapScannerReverse {}", getParameters());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     int startIndex = r.nextInt((int) totalLoaded);
@@ -288,7 +289,8 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerWithDeletes() throws IOException {
-    log.debug("testDirectMemoryFullMapScannerWithDeletes {}", getParameters());
+    log.debug("{}", getTestParameters());
+
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -326,7 +328,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
   }
 
   private void directMemoryFullMapScannerWithDeletesReverse() throws IOException {
-    log.debug("testDirectMemoryFullMapScannerWithDeletesReverse {}", getParameters());
+    log.debug("{}", getTestParameters());
 
     Random r = new Random();
     long seed = r.nextLong();
@@ -425,7 +427,7 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
     return count;
   }
 
-  private static List<Key> delete(int num) {
+  private List<Key> delete(int num) {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -440,7 +442,6 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
       long len = map.get(key.address, key.length, valPtr, 0, Long.MAX_VALUE);
       if (len == DataBlock.NOT_FOUND) {
         collisions++;
-        continue;
       } else {
         boolean res = map.delete(key.address, key.length);
         assertTrue(res);
@@ -457,9 +458,9 @@ public class BigSortedMapScannerLargeKVsTest extends CarrotCoreBase {
    * Delete X - Undelete X not always work, b/c our map is FULL before deletion and there is no
    * guarantee that insertion X deleted rows back will succeed
    *
-   * @param keys
+   * @param keys List of keys
    */
-  private static void undelete(List<Key> keys) {
+  private void undelete(List<Key> keys) {
     int count = 1;
     for (Key key : keys) {
       count++;

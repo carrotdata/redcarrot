@@ -167,6 +167,21 @@ To run unit tests from command line:
 $ mvn surefire:test
 ```
 
+To run CLI unit tests with memory debug:
+
+```
+$ mvn surefire:test -DmemoryDebug=true
+```
+
+To run CLI unit tests for specific test with memory debug:
+includesFile.txt doesn't include into source code:
+content of the file could be:
+%regex[.*BigSortedMapScannerTest.*|.*StringsTest.*]
+
+```
+$ mvn surefire:test -Dsurefire.includesFile=includesFile.txt -DmemoryDebug=true
+```
+
 ## Usage and Redis client compatibility
 
 CarrotDB was tested with Java Jedis client, it should work with other Redis clients as well. The client **cluster

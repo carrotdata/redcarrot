@@ -122,7 +122,7 @@ public class StringsUserSessions {
           Strings.SET(
               map, keyBuf, bkey.length, valBuf, bvalue.length, 0, MutationOptions.NONE, true);
       if (!result) {
-        log.error("ERROR in SET");
+        log.fatal("ERROR in SET");
         System.exit(-1);
       }
 

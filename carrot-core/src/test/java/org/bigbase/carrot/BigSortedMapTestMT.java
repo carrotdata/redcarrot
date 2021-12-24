@@ -84,7 +84,7 @@ public class BigSortedMapTestMT {
         comboPs.addAndGet((double) (totalOps * 1000) / (end - start));
         totalOps = 0;
       } catch (RuntimeException | IOException e) {
-        log.error("StackTrace: ", e);
+        log.fatal("StackTrace: ", e);
         System.exit(-1);
       } // TODO Auto-generated catch block
     }
@@ -102,6 +102,7 @@ public class BigSortedMapTestMT {
           if (d < 0.30) {
             result = put();
             if (!result) {
+              log.fatal("BigSortedMap allocation < 0.30");
               Thread.dumpStack();
               System.exit(-1);
             }
@@ -113,6 +114,7 @@ public class BigSortedMapTestMT {
           } else if (d < 0.8) {
             result = delete();
             if (!result) {
+              log.fatal("BigSortedMap allocation < 0.8");
               Thread.dumpStack();
               System.exit(-1);
             }
@@ -147,6 +149,7 @@ public class BigSortedMapTestMT {
           if (d < 0.5) {
             result = delete();
             if (!result) {
+              log.fatal("BigSortedMap allocation < 0.5");
               Thread.dumpStack();
               System.exit(-1);
             }

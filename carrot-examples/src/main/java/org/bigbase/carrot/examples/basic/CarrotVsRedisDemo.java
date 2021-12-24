@@ -634,7 +634,7 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.sismember(key, member);
         if (!":1\r\n".equals(result)) {
-          log.error("sismember failed result={}", result);
+          log.fatal("sismember failed result={}", result);
           System.exit(-1);
         }
       }
@@ -731,7 +731,7 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.hexists(key, member);
         if (!":1\r\n".equals(result)) {
-          log.error("hexists failed result={}", result);
+          log.fatal("hexists failed result={}", result);
           System.exit(-1);
         }
       }
@@ -839,12 +839,12 @@ public class CarrotVsRedisDemo {
         String member = setMembers[i];
         String result = client.zscore(key, member);
         if ("$-1\r\n".equals(result)) {
-          log.error("zscore failed result={}", result);
+          log.fatal("zscore failed result={}", result);
           System.exit(-1);
         }
         String exp = Double.toString(scores[i]);
         if (!result.contains(exp)) {
-          log.error("zscore failed result={}", result);
+          log.fatal("zscore failed result={}", result);
           System.exit(-1);
         }
       }

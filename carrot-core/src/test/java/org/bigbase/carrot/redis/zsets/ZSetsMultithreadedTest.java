@@ -103,7 +103,7 @@ public class ZSetsMultithreadedTest {
       tearDown();
 
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllNoCompression");
     }
   }
 
@@ -118,7 +118,7 @@ public class ZSetsMultithreadedTest {
       runTest();
       tearDown();
       BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats();
+      UnsafeAccess.mallocStats.printStats("runAllCompressionLZ4");
     }
   }
 
@@ -163,7 +163,7 @@ public class ZSetsMultithreadedTest {
               int card = (int) ZSets.ZCARD(map, ptr, keySize);
               if (card != values.size()) {
                 card = (int) ZSets.ZCARD(map, ptr, keySize);
-                log.error("Second CARD={}", card);
+                log.fatal("Second CARD={}", card);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -222,6 +222,7 @@ public class ZSetsMultithreadedTest {
               UnsafeAccess.copy(buf, 0, ptr, keySize);
               long card = (int) ZSets.ZCARD(map, ptr, keySize);
               if (card != setSize) {
+                log.fatal("card:{} != setSize:{}", card, setSize);
                 Thread.dumpStack();
                 System.exit(-1);
               }
@@ -230,7 +231,7 @@ public class ZSetsMultithreadedTest {
               assertTrue(res);
               card = ZSets.ZCARD(map, ptr, keySize);
               if (card != 0) {
-                log.error("FAILED delete, card={}", card);
+                log.fatal("delete, card={}", card);
                 System.exit(-1);
               }
               assertEquals(0L, card);

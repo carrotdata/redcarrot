@@ -23,7 +23,7 @@ import org.bigbase.carrot.redis.util.MutationOptions;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,33 +35,22 @@ public class StringsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(StringsTest.class);
 
-  static BigSortedMap map;
-  static long buffer;
-  static int bufferSize = 512;
-  static long nKeyValues = 10000L;
-  static List<KeyValue> keyValues;
+  private long buffer;
+  private final int bufferSize = 512;
+  private List<KeyValue> keyValues;
 
-  static {
-    // Example: how to enable memory debug mode, set stack trace recording
-    // for all memory allocations with sizes 100000 or 2001
-    //UnsafeAccess.setMallocDebugEnabled(true);
-    //UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-    //UnsafeAccess.setStackTraceRecordingFilter(x -> (x == 100000 || x == 2001)? true: false);
-  }
-  
-  public StringsTest(Object c) throws IOException {
+  public StringsTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
   }
 
-  private static List<KeyValue> getKeyValues() {
+  private List<KeyValue> getKeyValues() {
     List<KeyValue> keyValues = new ArrayList<>();
     for (int i = 0; i < nKeyValues; i++) {
       // key
       byte[] key = ("user:" + i).getBytes();
       long keyPtr = UnsafeAccess.malloc(key.length);
       int keySize = key.length;
+      //      log.debug("copy key: {}, keyPtr: {}, keySize: {}", new String(key), keyPtr, keySize);
       UnsafeAccess.copy(key, 0, keyPtr, keySize);
 
       // value
@@ -69,21 +58,26 @@ public class StringsTest extends CarrotCoreBase {
       byte[] value = session.toString().getBytes();
       int valueSize = value.length;
       long valuePtr = UnsafeAccess.malloc(valueSize);
+      //      log.debug(
+      //          "copy value: {}, valuePtr: {}, valueSize: {}", new String(value), valuePtr,
+      // valueSize);
       UnsafeAccess.copy(value, 0, valuePtr, valueSize);
       keyValues.add(new KeyValue(keyPtr, keySize, valuePtr, valueSize));
     }
     return keyValues;
   }
 
-  private static void setUp() {
-    map = new BigSortedMap(1000000000);
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     keyValues = getKeyValues();
   }
 
   @Test
   public void testGetExpire() {
-    log.debug("Test Get expire {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     Random r = new Random();
@@ -171,7 +165,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetIfNotExists() {
-    log.debug("Test SETNX with options {}", getParameters());
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -187,7 +180,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetIfExists() {
-    log.debug("Test SETXX with options {}", getParameters());
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -207,7 +199,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetWithTTL() {
-    log.debug("Test SET with TTL options {}", getParameters());
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
@@ -309,7 +300,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetGetWithTTL() {
-    log.debug("Test SETGET with TTL options {}", getParameters());
     KeyValue kv = keyValues.get(0);
     KeyValue kv1 = keyValues.get(1);
     KeyValue kv2 = keyValues.get(2);
@@ -465,7 +455,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testIncrementLongWrongFormat() {
-    log.debug("Test Increment Long wrong format {}", getParameters());
     KeyValue kv = keyValues.get(0);
     Strings.SET(
         map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
@@ -479,7 +468,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testIncrementDoubleWrongFormat() {
-    log.debug("Test Increment Double wrong format {}", getParameters());
     KeyValue kv = keyValues.get(0);
     Strings.SET(
         map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
@@ -493,8 +481,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testIncrementLong() throws OperationFailedException {
-    log.debug("Test Increment Long {}", getParameters());
-
     KeyValue kv = keyValues.get(0);
 
     Strings.INCRBY(map, kv.keyPtr, kv.keySize, 0);
@@ -543,8 +529,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testIncrementDouble() throws OperationFailedException {
-    log.debug("Test Increment Double {}", getParameters());
-
     KeyValue kv = keyValues.get(0);
 
     Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, 10d);
@@ -592,8 +576,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetGet() {
-    log.debug("Test Strings Set/Get {}", getParameters());
-
     long start = System.currentTimeMillis();
     long totalSize = 0;
     for (int i = 0; i < nKeyValues; i++) {
@@ -629,8 +611,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetRemove() {
-    log.debug("Test Strings Set/Remove {}", getParameters());
-
     long start = System.currentTimeMillis();
     long totalSize = 0;
     for (int i = 0; i < nKeyValues; i++) {
@@ -674,7 +654,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testAppend() {
-    log.debug("Test Strings Append {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -693,7 +672,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testGetDelete() {
-    log.debug("Test Strings GetDelete operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -711,7 +689,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testGetEx() {
-    log.debug("Test Strings GetEx operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize);
@@ -727,7 +704,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testGetSet() {
-    log.debug("Test Strings GetSet operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
     KeyValue kv1 = keyValues.get(1);
 
@@ -748,7 +724,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testStrLength() {
-    log.debug("Test Strings StrLength operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
     long size = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
     assertEquals(0L, size);
@@ -760,7 +735,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetEx() {
-    log.debug("Test Strings SetEx operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     boolean res = Strings.SETEX(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 100);
@@ -777,7 +751,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testPSetEx() {
-    log.debug("Test Strings PSetEx operation {}", getParameters());
     KeyValue kv = keyValues.get(0);
 
     boolean res = Strings.PSETEX(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 100);
@@ -794,7 +767,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testMget() {
-    log.debug("Test Strings MGet operation {}", getParameters());
     for (KeyValue kv : keyValues) {
       // we use key as a value b/c its small
       Strings.APPEND(map, kv.keyPtr, kv.keySize, kv.keyPtr, kv.keySize);
@@ -851,7 +823,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testMSet() {
-    log.debug("Test Strings MSet operation {}", getParameters());
     Strings.MSET(map, keyValues);
     for (KeyValue kv : keyValues) {
       assertTrue(Strings.keyExists(map, kv.keyPtr, kv.keySize));
@@ -860,7 +831,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testMSetNX() {
-    log.debug("Test Strings MSetNX operation {}", getParameters());
     boolean res = Strings.MSETNX(map, keyValues);
     assertTrue(res);
     for (KeyValue kv : keyValues) {
@@ -872,8 +842,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetGetBit() {
-    log.debug("testSetGetBit {}", getParameters());
-
     testSetGetBitInternal(1000);
     testSetGetBitInternal(10000);
   }
@@ -889,7 +857,7 @@ public class StringsTest extends CarrotCoreBase {
     assertEquals(0, bit);
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 1000);
     assertEquals(0, bit);
-    
+
     // Set K-V
     int size = Strings.APPEND(map, kv.keyPtr, kv.keySize, valuePtr, valueSize);
     assertEquals(valueSize, size);
@@ -915,7 +883,7 @@ public class StringsTest extends CarrotCoreBase {
     Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     long len = Strings.STRLEN(map, kv.keyPtr, kv.keySize);
     assertEquals(2L * valueSize + 1, len);
-    
+
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
@@ -936,7 +904,7 @@ public class StringsTest extends CarrotCoreBase {
 
     bit = Strings.SETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE, 1);
     assertEquals(0, bit);
-    
+
     bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, 2L * valueSize * Utils.BITS_PER_BYTE);
     assertEquals(1, bit);
 
@@ -947,16 +915,13 @@ public class StringsTest extends CarrotCoreBase {
       bit = Strings.GETBIT(map, kv.keyPtr, kv.keySize, i);
       assertEquals(0, bit);
     }
-    
+
     Strings.DELETE(map, kv.keyPtr, kv.keySize);
     UnsafeAccess.free(valuePtr);
-
   }
 
   @Test
   public void testGetRange() {
-    log.debug("Test Strings GetRange {}", getParameters());
-
     testGetRangeInternal(1000);
     testGetRangeInternal(10000);
   }
@@ -1058,8 +1023,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testSetRange() {
-    log.debug("Test Strings SetRange {}", getParameters());
-
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1095,8 +1058,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testBitCount() {
-    log.debug("Test Strings BitCount {}", getParameters());
-
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1169,8 +1130,6 @@ public class StringsTest extends CarrotCoreBase {
 
   @Test
   public void testBitPosition() {
-    log.debug("Test Strings BitPos {}", getParameters());
-
     int valueSize = 1000;
     long valuePtr = UnsafeAccess.mallocZeroed(valueSize);
     Utils.fillRandom(valuePtr, valueSize);
@@ -1267,18 +1226,15 @@ public class StringsTest extends CarrotCoreBase {
     return pos;
   }
 
-  @AfterClass
-  public static void tearDown() {
-    // Dispose
-    if (Objects.isNull(map)) return;
-    map.dispose();
-    for (KeyValue k : keyValues) {
-      UnsafeAccess.free(k.keyPtr);
-      UnsafeAccess.free(k.valuePtr);
+  @Override
+  public void extTearDown() {
+    if (Objects.nonNull(keyValues)) {
+      for (KeyValue k : keyValues) {
+        UnsafeAccess.free(k.keyPtr);
+        UnsafeAccess.free(k.valuePtr);
+      }
     }
     UnsafeAccess.free(buffer);
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
   }
 }
 

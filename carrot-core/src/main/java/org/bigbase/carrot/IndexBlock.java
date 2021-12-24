@@ -787,7 +787,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
+      log.fatal("(ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 
@@ -818,7 +818,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr - dataSize)={}", ptr - dataPtr - blockDataSize);
+      log.fatal("(ptr - dataPtr - dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 
@@ -838,7 +838,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
       ptr += DATA_BLOCK_STATIC_OVERHEAD + KEY_SIZE_LENGTH + blockKeyLength(ptr);
     }
     if (ptr - dataPtr != blockDataSize) {
-      log.debug("FATAL: (ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
+      log.fatal("(ptr - dataPtr -dataSize)={}", ptr - dataPtr - blockDataSize);
     }
   }
 

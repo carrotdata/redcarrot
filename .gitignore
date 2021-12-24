@@ -8,3 +8,4 @@ lib/
 logs/
 snapshots/
 includesFile.txt*
+carrot-core-surefire-reports/

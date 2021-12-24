@@ -28,7 +28,7 @@ import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -36,20 +36,17 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SparseBitmapsTest.class);
 
-  static BigSortedMap map;
-  static Key key, key2;
-  static long buffer;
-  static int bufferSize = 64;
-  static int keySize = 8;
-  static int N = 100000;
+  Key key, key2;
+  long buffer;
+  int bufferSize = 64;
+  int keySize = 8;
+  int nBits;
 
-  public SparseBitmapsTest(Object c) throws IOException {
+  public SparseBitmapsTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
   }
 
-  private static Key getKey() {
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(keySize);
     byte[] buf = new byte[keySize];
     Random r = new Random();
@@ -58,17 +55,19 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     return new Key(ptr, keySize);
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000L);
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
+    //FIXME test with debug failed with lower than 1M bit. However, run long time with 1M bit.
+    nBits = memoryDebug ? 5000 : 100000;
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     key = getKey();
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    map.dispose();
+  @Override
+  public void extTearDown() {
 
     UnsafeAccess.free(key.address);
     if (key2 != null) {
@@ -76,13 +75,10 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       key2 = null;
     }
     UnsafeAccess.free(buffer);
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
   }
 
   @Test
   public void testSetBitGetBitLoop() {
-    log.debug("Test SetBitGetBitLoop {}", getParameters());
 
     long offset;
     Random r = new Random();
@@ -93,7 +89,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     int totalCount = 0;
 
     long start = System.currentTimeMillis();
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(r.nextLong() / 2);
       int oldbit = SparseBitmaps.SGETBIT(map, key.address, key.length, offset);
       if (oldbit == 1) {
@@ -119,20 +115,20 @@ public class SparseBitmapsTest extends CarrotCoreBase {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(totalCount, (int) count);
 
-    /*DEBUG*/ log.debug("totalCount={} N={}", totalCount, N);
+    /*DEBUG*/ log.debug("totalCount={} N={}", totalCount, nBits);
     /*DEBUG*/ log.debug("Total RAM={}", UnsafeAccess.getAllocatedMemory());
 
     //BigSortedMap.printGlobalMemoryAllocationStats();
 
     long end = System.currentTimeMillis();
 
-    log.debug("Time for {} new SetBit/GetBit/CountBits ={}", N, end - start);
+    log.debug("Time for {} new SetBit/GetBit/CountBits ={}", nBits, end - start);
 
     Random rr = new Random();
     rr.setSeed(seed);
 
     start = System.currentTimeMillis();
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(rr.nextLong() / 2);
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 0);
       assertEquals(1, bit);
@@ -146,12 +142,11 @@ public class SparseBitmapsTest extends CarrotCoreBase {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(0, (int) count);
     end = System.currentTimeMillis();
-    log.debug("Time for {} existing SetBit/GetBit/CountBits ={}ms", N, end - start);
+    log.debug("Time for {} existing SetBit/GetBit/CountBits ={}ms", nBits, end - start);
   }
 
   @Test
   public void testPerformance() {
-    log.debug("Test Performance basic operations {}", getParameters());
 
     long offset;
     long max = Long.MIN_VALUE;
@@ -160,8 +155,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     r.setSeed(seed);
     log.debug("");
     long start = System.currentTimeMillis();
-    long expected = N;
-    for (int i = 0; i < N; i++) {
+    long expected = nBits;
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(r.nextLong() / 2);
 
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -184,13 +179,13 @@ public class SparseBitmapsTest extends CarrotCoreBase {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(expected, count);
 
-    log.debug("Time for {} new SetBit={}ms", N, end - start);
+    log.debug("Time for {} new SetBit={}ms", nBits, end - start);
     log.debug("Compression ratio={}", (double) max / (8 * memory));
     BigSortedMap.printGlobalMemoryAllocationStats();
 
     r.setSeed(seed);
     start = System.currentTimeMillis();
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(r.nextLong() / 2);
       int bit = SparseBitmaps.SGETBIT(map, key.address, key.length, offset);
       assertEquals(1, bit);
@@ -199,12 +194,12 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for {} GetBit={}ms", N, end - start);
+    log.debug("Time for {} GetBit={}ms", nBits, end - start);
 
     r.setSeed(seed);
 
     start = System.currentTimeMillis();
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(r.nextLong() / 2);
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 0);
       assertEquals(1, bit);
@@ -213,21 +208,20 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     end = System.currentTimeMillis();
-    log.debug("Time for {} SetBit erase={}ms", N, end - start);
+    log.debug("Time for {} SetBit erase={}ms", nBits, end - start);
     assertEquals(0, (int) map.countRecords());
   }
 
   @Test
   public void testDeleteExists() {
-    log.debug("Test Delete/Exists basic operations {}", getParameters());
 
     long offset;
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("");
-    long expected = N / 10;
-    for (int i = 0; i < N / 10; i++) {
+    long expected = nBits / 10;
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextLong() / 2);
 
       int bit = SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -254,7 +248,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   @Test
   public void testBitCounts() {
-    log.debug("Test Bit counts operations {}", getParameters());
 
     long offset;
     Random r = new Random();
@@ -262,7 +255,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<>();
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt());
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -326,7 +319,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     }
     log.debug("Random tests");
     r.setSeed(seed);
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       int x1 = r.nextInt(2 * strlen);
       x1 -= strlen;
       int x2 = r.nextInt(2 * strlen);
@@ -354,15 +347,14 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   @Test
   public void testBitPositions() {
-    log.debug("Test Bit position operations {}", getParameters());
 
     long offset;
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
-    TreeSet<Integer> bits = new TreeSet<Integer>();
-    for (int i = 0; i < N / 10; i++) {
+    TreeSet<Integer> bits = new TreeSet<>();
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt());
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -375,9 +367,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     log.debug("Total RAM    ={}", memory);
     /*DEBUG*/
     log.debug("Total loaded ={}", bits.size());
-    // TODO validate size?
-    @SuppressWarnings("unused")
-    int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
 
@@ -478,7 +467,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
     log.debug("Random tests");
     r.setSeed(seed);
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       int x1 = r.nextInt(2 * strlen);
       x1 -= strlen;
       int x2 = r.nextInt(2 * strlen);
@@ -509,14 +498,13 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   @Test
   public void testBitcountPerformance() {
-    log.debug("Test Bit counts performance {}", getParameters());
 
     long offset;
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
     log.debug("");
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt());
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
       if (i % 100000 == 0) {
@@ -713,7 +701,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
   @Test
   public void testBitGetRange() {
 
-    log.debug("Test Bit Get Range operations {}", getParameters());
     long offset = 0;
     Random r = new Random();
     long seed = -1081710646965816284L;//r.nextLong();
@@ -721,7 +708,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<>();
 
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt() / 10);
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -902,7 +889,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   @Test
   public void testSparseLength() {
-    log.debug("Test testSparseLength {}", getParameters());
 
     long offset;
     Random r = new Random();
@@ -913,7 +899,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     long max = -Long.MAX_VALUE;
     long start = System.currentTimeMillis();
     long totalCount = 0;
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < nBits; i++) {
       offset = Math.abs(r.nextLong() / 2);
       int old = SparseBitmaps.SGETBIT(map, key.address, key.length, offset);
       if (old == 1) {
@@ -941,12 +927,12 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(totalCount, count);
-    log.debug("Time for {} SetBit/BitCount/StrLength ={}ms", N, end - start);
+    log.debug("Time for {} SetBit/BitCount/StrLength ={}ms", nBits, end - start);
   }
 
+  @Ignore
   @Test
   public void testBitSetRange() {
-    log.debug("Test Bit Set Range operations {}", getParameters());
 
     long offset;
     Random r = new Random();
@@ -955,7 +941,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<>();
     log.debug("Loading first sparse ");
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt() / 10);
       bits.add((int) offset);
       SparseBitmaps.SSETBIT(map, key.address, key.length, offset, 1);
@@ -970,7 +956,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     log.debug("Loading second sparse ");
     TreeSet<Integer> bits2 = new TreeSet<>();
 
-    for (int i = 0; i < N / 10; i++) {
+    for (int i = 0; i < nBits / 10; i++) {
       offset = Math.abs(r.nextInt() / 10);
       bits2.add((int) offset);
       SparseBitmaps.SSETBIT(map, key2.address, key2.length, offset, 1);

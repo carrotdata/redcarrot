@@ -1937,7 +1937,7 @@ public final class DataBlock {
         shrink();
       }
       if (reuseValue) {
-        //Deallocate value, we can not reuse it, b/c allocation type is EMBEDDED
+        // Deallocate value, we can not reuse it, b/c allocation type is EMBEDDED
         UnsafeAccess.free(valuePtr);
       }
       return true;
@@ -2178,7 +2178,7 @@ public final class DataBlock {
           // Update key-value length
           UnsafeAccess.putShort(addr, (short) keyLength);
           UnsafeAccess.putShort(addr + KEY_SIZE_LENGTH, (short) EXTERNAL_VALUE);
-          
+
           // Update statistics
           BigSortedMap map = this.indexBlock.getMap();
           if (map == null) {
@@ -2231,9 +2231,9 @@ public final class DataBlock {
             // deallocate old
             long oldValuePtr = valueAddress(addr);
             int oldValueSize = valueLength(addr);
-            
+
             UnsafeAccess.free(oldValuePtr);
-            
+
             BigSortedMap map = this.indexBlock.getMap();
             if (map == null) {
               BigSortedMap.incrGlobalAllocatedMemory(valueLength - oldValueSize /*+ INT_SIZE*/);
@@ -2243,7 +2243,7 @@ public final class DataBlock {
               map.incrInstanceExternalDataSize(valueLength - oldValueSize /*+ INT_SIZE*/);
             }
           }
-          
+
           UnsafeAccess.putInt(addr + RECORD_TOTAL_OVERHEAD + keyLength, valueLength /*+ INT_SIZE*/);
           UnsafeAccess.putLong(addr + RECORD_TOTAL_OVERHEAD + keyLength + INT_SIZE, recAddress);
           // Update key-value length

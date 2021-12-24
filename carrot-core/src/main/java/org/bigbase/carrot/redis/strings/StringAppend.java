@@ -39,29 +39,15 @@ public class StringAppend extends Operation {
 
   /*
    * Thread local buffer
+   * Optimized syntax for java 8
    */
-  static ThreadLocal<Long> buffer =
-      new ThreadLocal<Long>() {
-
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(4096);
-          return ptr;
-        }
-      };
+  static ThreadLocal<Long> buffer = ThreadLocal.withInitial(() -> UnsafeAccess.malloc(4096));
 
   /*
    * Thread local buffer size
-   *
+   * Optimized syntax for java 8
    */
-  static ThreadLocal<Integer> bufferSize =
-      new ThreadLocal<Integer>() {
-
-        @Override
-        protected Integer initialValue() {
-          return 4096;
-        }
-      };
+  static ThreadLocal<Integer> bufferSize = ThreadLocal.withInitial(() -> 4096);
 
   public StringAppend() {
     // WTF is it for?

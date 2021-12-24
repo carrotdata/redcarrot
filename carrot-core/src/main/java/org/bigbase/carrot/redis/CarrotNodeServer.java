@@ -241,6 +241,7 @@ public class CarrotNodeServer implements Runnable {
   }
 
   private void shutdownNode() {
+    log.info("CarrotDB Node gracefully shutdown");
     System.exit(0);
   }
 

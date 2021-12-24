@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.Assert;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.IndexBlock;
@@ -153,7 +154,7 @@ public class TestCarrotTwitter {
     count = (int) countRecords(map);
 
     if (count != numUsers) {
-      log.error("count={} expected={}", count, numUsers);
+      log.fatal("count={} expected={}", count, numUsers);
       System.exit(-1);
     }
     count = 0;
@@ -161,6 +162,7 @@ public class TestCarrotTwitter {
 
     for (User u : users) {
       if (!u.verify(map)) {
+        log.fatal("Can't verify map");
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
@@ -229,6 +231,7 @@ public class TestCarrotTwitter {
     count = 0;
     for (UserStatus u : statuses) {
       if (!u.verify(map)) {
+        log.debug("Can't verify map");
         System.exit(-1);
       }
       if (++count % 10000 == 0) {
