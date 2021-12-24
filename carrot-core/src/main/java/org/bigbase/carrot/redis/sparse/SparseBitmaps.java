@@ -1067,9 +1067,9 @@ public class SparseBitmaps {
       int toCopy = Math.min((int) valueSize, BYTES_PER_CHUNK - prefixSize);
       UnsafeAccess.copy(valuePtr, ptr + HEADER_SIZE + prefixSize, toCopy);
 
-      long regionStartOffset = offset * Utils.BITS_PER_BYTE / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
+      long regionStartOffset = offset /** Utils.BITS_PER_BYTE */ / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
       long regiontEndOffset =
-          (offset + valueSize) * Utils.BITS_PER_BYTE / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
+          (offset + valueSize) /** Utils.BITS_PER_BYTE*/ / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
 
       if (regionStartOffset == regiontEndOffset) {
         // Inside a single chunk - clear end of a first chunk

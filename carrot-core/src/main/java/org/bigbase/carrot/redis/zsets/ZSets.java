@@ -18,6 +18,8 @@ import static org.bigbase.carrot.redis.util.Commons.KEY_SIZE;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -583,6 +585,7 @@ public class ZSets {
     }
   }
 
+  //TODO: FIXME - does not look like a correct and optimal
   private static long ZADD_NEW(
       BigSortedMap map,
       long keyPtr,
@@ -597,7 +600,7 @@ public class ZSets {
     int added = Sets.SADD_NEW(map, keyPtr, keySize, Utils.copyValues(lv));
     // TODO: memory leak
     Utils.freeKeys(lv);
-    if (added > maxCompactSize) {
+    if (added >= maxCompactSize) {
       List<KeyValue> kvs = forHash(scores, memberPtrs, memberSizes);
       Hashes.HSET_NEW(map, keyPtr, keySize, Utils.copyKeyValues(kvs));
       Utils.freeKeyValues(kvs);
@@ -610,16 +613,29 @@ public class ZSets {
     // TODO: fix temp garbage waterfall
     RedisConf conf = RedisConf.getInstance();
     int maxCompactSize = conf.getMaxZSetCompactSize();
-    Utils.sortValueScores(members);
+    // Sort by member field
+    Collections.sort(members, new Comparator<ValueScore>() {
+      @Override
+      public int compare(ValueScore o1, ValueScore o2) {
+        //TODO check nulls
+        return Utils.compareTo(o1.address, o1.length, o2.address, o2.length);
+      }
+      
+    });
+    // De-duplicate
     Utils.dedup(members);
-
     List<ValueScore> copy = Utils.copyValueScores(members);
 
-    int added = Sets.SADD_NEW_ZADD(map, keyPtr, keySize, members);
-    // TODO: memory leak
-    if (added > maxCompactSize) {
+    if (members.size() >= maxCompactSize) {
       Hashes.HSET_NEW_ZADD(map, keyPtr, keySize, copy);
     }
+    
+    // We sort by score ONLY!!!
+    // Sort by score, field
+    Collections.sort(members);
+    copy = Utils.copyValueScores(members);
+    int added = Sets.SADD_NEW_ZADD(map, keyPtr, keySize, copy);
+  
     return added;
   }
 
