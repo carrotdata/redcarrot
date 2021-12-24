@@ -8,3 +8,7 @@ export DISTRIBUTION=${RELEASE}.tar.gz
 export APPS_PARAMS="conf/carrot-redis.conf"
 export INSTANCE_NAME=DEV_$(pwd)
 export APP_OPTS="-Dlocation=${INSTANCE_NAME} -Dlog4j.configurationFile=conf/log4j2.xml"
+# Ubuntu jemalloc path
+# export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so
+# MAc jemalloc path
+# export LD_PRELOAD=
