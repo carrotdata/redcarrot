@@ -4,7 +4,7 @@ usage() {
   echo
   echo Usage:
   # shellcheck disable=SC2046
-  echo $(basename "$0") bn=\<backup name\> mn=\<module name\>
+  echo $(basename "$0") bn=\<backup name\> mn=\<module name\> cp=\<compare phrase\>
   echo
   exit 1
 }
@@ -16,6 +16,7 @@ for arg in "$@"; do
   case "$key" in
       bn) bn=${val} ;;
       mn) mn=${val} ;;
+      cp) cp=${val} ;;
       help) help=ture ;;
       *) ;;
   esac
@@ -33,6 +34,10 @@ if [ -z "$mn" ]; then
   mn=carrot-core
 fi
 
+if [ -z "$cp" ]; then
+  cp="Orphaned allocations"
+fi
+
 reports_home=$mn/target/surefire-reports
 backup_home=carrot-core-surefire-reports/$mn/$bn
 
@@ -41,12 +46,12 @@ rm -f "$backup_home"/Orphaned_allocations.log
 
 # shellcheck disable=SC2044
 for ix in $(find $reports_home -name "*output.txt"); do
-  grep "Orphaned allocations" "$ix" | cut -c31-10000 >>$reports_home/Orphaned_allocations.log
+  grep "$cp" "$ix" | cut -c31-10000 >>$reports_home/Orphaned_allocations.log
 done
 
 # shellcheck disable=SC2044
 for ix in $(find "$backup_home" -name "*output.txt"); do
-  grep "Orphaned allocations" "$ix" | cut -c31-10000 >> "$backup_home"/Orphaned_allocations.log
+  grep "$cp" "$ix" | cut -c31-10000 >> "$backup_home"/Orphaned_allocations.log
 done
 
 # shellcheck disable=SC2046

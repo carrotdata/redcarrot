@@ -10,5 +10,7 @@ export INSTANCE_NAME=DEV_$(pwd)
 export APP_OPTS="-Dlocation=${INSTANCE_NAME} -Dlog4j.configurationFile=conf/log4j2.xml"
 # Ubuntu jemalloc path
 # export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so
+# export MALLOC_CONF=prof:true,lg_prof_interval:30,lg_prof_sample:17
+# jeprof --show_bytes --gif /path/to/jvm/bin/java jeprof*.heap > /tmp/app-profiling.gif
 # MAc jemalloc path
 # export LD_PRELOAD=

@@ -57,7 +57,7 @@ public class BigSortedMapPerfTestClusterMode {
       }
       long end = System.currentTimeMillis();
       log.debug(
-          "Time to load={} ={}ms RPS={}",
+          "Load performance: Records={}, MS={}, RPS={}",
           totalLoaded,
           end - start,
           totalLoaded * 1000 / (end - start));
@@ -79,7 +79,7 @@ public class BigSortedMapPerfTestClusterMode {
       }
       long end = System.currentTimeMillis();
 
-      log.debug("{}: {} RPS", Thread.currentThread().getId(), totalScanned * 1000 / (end - start));
+      log.debug("Scan performance: {}: {} RPS", Thread.currentThread().getId(), totalScanned * 1000 / (end - start));
       assertEquals(n * totalLoaded, totalScanned);
     }
 
