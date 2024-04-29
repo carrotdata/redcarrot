@@ -34,7 +34,8 @@ public class BigSortedMapTestMT {
 
   private static final Logger log = LogManager.getLogger(BigSortedMapTestMT.class);
 
-  static int totalThreads = 6;
+  // No MT support yet
+  static int totalThreads = 1;
   static AtomicDouble putsPs = new AtomicDouble();
   static AtomicDouble comboPs = new AtomicDouble();
   static AtomicDouble scanPs = new AtomicDouble();

@@ -21,6 +21,7 @@ import java.nio.channels.FileChannel;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -488,8 +489,10 @@ public class BigSortedMap {
   /**************** INSTANCE SECTION *******************************/
 
   /** Major store data structure */
-  private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
-      new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
+//  private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
+//      new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
+  private final TreeMap<IndexBlock, IndexBlock> map =
+      new TreeMap<IndexBlock, IndexBlock>();
   /*
    * Read-Write Lock TODO: StampedLock (Java 8), decrease # of locks
    * too high
@@ -967,17 +970,17 @@ public class BigSortedMap {
    * @param b index block
    */
   public void readLock(IndexBlock b) {
-    int index = (b.hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.readLock().lock();
+//    int index = (b.hashCode() % locks.length);
+//    ReentrantReadWriteLock lock = locks[index];
+//    lock.readLock().lock();
   }
 
   /** Read unlock */
   public void readUnlock(IndexBlock b) {
 
-    int index = (b.hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.readLock().unlock();
+//    int index = (b.hashCode() % locks.length);
+//    ReentrantReadWriteLock lock = locks[index];
+//    lock.readLock().unlock();
   }
 
   /**
@@ -987,16 +990,16 @@ public class BigSortedMap {
    * @throws InterruptedException
    */
   public void writeLock(IndexBlock b) {
-    int index = (b.hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.writeLock().lock();
+//    int index = (b.hashCode() % locks.length);
+//    ReentrantReadWriteLock lock = locks[index];
+//    lock.writeLock().lock();
   }
 
   /** Write unlock */
   public void writeUnlock(IndexBlock b) {
-    int index = (b.hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.writeLock().unlock();
+//    int index = (b.hashCode() % locks.length);
+//    ReentrantReadWriteLock lock = locks[index];
+//    lock.writeLock().unlock();
   }
 
   private final IndexBlock getThreadLocalBlock() {
@@ -1014,7 +1017,7 @@ public class BigSortedMap {
    *
    * @return map
    */
-  public ConcurrentSkipListMap<IndexBlock, IndexBlock> getMap() {
+  public TreeMap<IndexBlock, IndexBlock> getMap() {
     return map;
   }
 

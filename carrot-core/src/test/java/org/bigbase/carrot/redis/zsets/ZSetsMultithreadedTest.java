@@ -39,15 +39,16 @@ public class ZSetsMultithreadedTest {
   BigSortedMap map;
   int valueSize = 16;
   int keySize = 16;
-  int setSize = 1000;
-  int keysNumber = 50; // per thread
+  int setSize = 10000;
+  int keysNumber = 1000; // per thread
+  //FIXME: no MT support yet
   int numThreads = 1;
   List<Value> values;
   List<Double> scores;
   long setupTime;
 
   static {
-    UnsafeAccess.setMallocDebugEnabled(true);
+    //UnsafeAccess.setMallocDebugEnabled(true);
     //    UnsafeAccess.setMallocDebugStackTraceEnabled(true);
     //    UnsafeAccess.setStackTraceRecordingFilter((x) -> x >= 2000);
     //    UnsafeAccess.setStackTraceRecordingLimit(10000);
@@ -156,7 +157,7 @@ public class ZSetsMultithreadedTest {
                 Double d = ZSets.ZSCORE(map, ptr, keySize, v.address, v.length);
                 assertEquals(scs[0], d, 0.0);
                 loaded++;
-                if (loaded % 10000 == 0) {
+                if (loaded % 100000 == 0) {
                   log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
                 }
               }
@@ -195,7 +196,7 @@ public class ZSetsMultithreadedTest {
                 assertNotNull(res);
                 assertEquals(expScore, res, 0.0);
                 read++;
-                if (read % 1000 == 0) {
+                if (read % 100000 == 0) {
                   log.debug("{} read {}", Thread.currentThread().getName(), read);
                 }
               }

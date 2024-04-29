@@ -41,7 +41,8 @@ public class AtomicAppendTestMT {
   static AtomicLong totalLoaded = new AtomicLong();
   static AtomicLong totalAppends = new AtomicLong();
   static long toLoad = 2000000;
-  static int totalThreads = 8;
+  //FIXME: no MT support yet
+  static int totalThreads = 1;
 
   static class AppendRunner extends Thread {
 

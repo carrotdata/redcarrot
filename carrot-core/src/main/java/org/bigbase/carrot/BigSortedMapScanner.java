@@ -14,6 +14,7 @@
 package org.bigbase.carrot;
 
 import java.io.IOException;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -135,7 +136,7 @@ public class BigSortedMapScanner extends Scanner {
 
   private void init() throws IOException {
 
-    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
     IndexBlock key = null;
     long ptr = 0;
     int length = 0;
@@ -324,7 +325,7 @@ public class BigSortedMapScanner extends Scanner {
 
     int version = current.getSeqNumberSplitOrMerge();
 
-    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
     if (this.indexScanner != null) {
       this.indexScanner.close();
       this.indexScanner = null;
@@ -428,7 +429,7 @@ public class BigSortedMapScanner extends Scanner {
     if (this.blockScanner != null) {
       return true;
     }
-    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
     if (this.indexScanner != null) {
       this.indexScanner.close();
       this.indexScanner = null;

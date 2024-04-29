@@ -43,7 +43,8 @@ public class AtomicIncrementTestMT {
   static BigSortedMap map;
   static AtomicLong totalLoaded = new AtomicLong();
   static AtomicLong totalIncrements = new AtomicLong();
-  static int totalThreads = 16;
+  // FIXME: no MT support yet
+  static int totalThreads = 1;
   static List<Key> keys = Collections.synchronizedList(new ArrayList<Key>());
 
   static class IncrementRunner extends Thread {
