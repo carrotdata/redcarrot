@@ -19,7 +19,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,30 +30,48 @@ import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.AfterClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 public class HashesTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(HashesTest.class);
 
-  static BigSortedMap map;
-  static Key key;
-  static long buffer;
-  static int bufferSize = 64;
-  static int keySize = 8;
-  static int valSize = 8;
-  static long n = 2000000;
-  static List<Value> values;
+  Key key;
+  long buffer;
+  int bufferSize = 64;
+  int keySize = 8;
+  int valSize = 8;
+  long n;
+  List<Value> values;
 
-  public HashesTest(Object c) throws IOException {
+  public HashesTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
   }
 
-  private static List<Value> getValues(long n) {
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+
+    long n = memoryDebug ? 1000000 : 2000000;
+
+    buffer = UnsafeAccess.mallocZeroed(bufferSize);
+    values = getValues(n);
+  }
+
+  @Override
+  public void extTearDown() {
+    if (key != null) {
+      UnsafeAccess.free(key.address);
+      key = null;
+    }
+    for (Value v : values) {
+      UnsafeAccess.free(v.address);
+    }
+    UnsafeAccess.free(buffer);
+  }
+
+  private List<Value> getValues(long n) {
     List<Value> values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
@@ -100,21 +117,14 @@ public class HashesTest extends CarrotCoreBase {
     return key = new Key(ptr, keySize);
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000L);
-    buffer = UnsafeAccess.mallocZeroed(bufferSize);
-    values = getValues(n);
-  }
-
-  static long countRecords(BigSortedMap map) {
+  long countRecords(BigSortedMap map) {
     return map.countRecords();
   }
 
   @Ignore
   @Test
   public void testMultiSet() {
-    log.debug("Test Multi Set");
-    map = new BigSortedMap(1000000000L);
+
     List<KeyValue> list = getKeyValues(1000);
     List<KeyValue> copy = new ArrayList<>(list.size());
     copy.addAll(list);
@@ -145,7 +155,6 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testSetExists() {
-    log.debug("Test Set - Exists {}", getParameters());
 
     Key key = getKey();
     long elemPtr;
@@ -182,7 +191,6 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testNullValues() {
-    log.debug("Test Set - Null values {}", getParameters());
 
     Key key = getKey();
     long NULL = UnsafeAccess.malloc(1);
@@ -211,12 +219,12 @@ public class HashesTest extends CarrotCoreBase {
       int size = Hashes.HGET(map, key.address, key.length, fPtr, fSize, buffer, 8);
 
       if (size < 0) { // does not exists
-        log.error("field not found {}", f);
+        log.fatal("field not found {}", f);
         System.exit(-1);
       }
 
       if (vPtr == NULL && size != 0) {
-        log.error("Expected NULL for {}", f);
+        log.fatal("Expected NULL for {}", f);
         System.exit(-1);
       }
 
@@ -225,7 +233,7 @@ public class HashesTest extends CarrotCoreBase {
       }
 
       if (Utils.compareTo(vPtr, vSize, buffer, size) != 0) {
-        log.error("Failed for {}", f);
+        log.fatal("Failed for {}", f);
         System.exit(-1);
       }
     }
@@ -236,7 +244,6 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testSetGet() {
-    log.debug("Test Set - Get {}", getParameters());
 
     Key key = getKey();
     long elemPtr;
@@ -289,7 +296,6 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testAddRemove() {
-    log.debug("Test Add - Remove {}", getParameters());
 
     Key key = getKey();
     long elemPtr;
@@ -329,7 +335,6 @@ public class HashesTest extends CarrotCoreBase {
 
   @Test
   public void testAddRemoveMulti() {
-    log.debug("Test Add - Remove Multi keys {}", getParameters());
 
     long elemPtr;
     int elemSize;
@@ -363,23 +368,5 @@ public class HashesTest extends CarrotCoreBase {
     long recc = countRecords(map);
     log.debug("Map.size ={}", recc);
     assertEquals(0, (int) recc);
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    // Dispose
-    map.dispose();
-    if (key != null) {
-      UnsafeAccess.free(key.address);
-      key = null;
-    }
-    for (Value v : values) {
-      UnsafeAccess.free(v.address);
-    }
-    UnsafeAccess.free(buffer);
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
   }
 }

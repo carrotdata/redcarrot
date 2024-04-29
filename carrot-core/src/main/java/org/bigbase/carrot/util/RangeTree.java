@@ -14,8 +14,10 @@
 package org.bigbase.carrot.util;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,22 +29,35 @@ public class RangeTree {
     long start;
     int size;
 
-    Range() {}
+    // I add public to make a copy outside this class
+    public Range() {}
 
-    Range(long start, int size) {
+    // I add public to make a copy outside this class
+    public Range(long start, int size) {
       this.start = start;
       this.size = size;
     }
 
+    public long getStart() {
+      return start;
+    }
+
+    public int getSize() {
+      return size;
+    }
+
     @Override
     public int compareTo(Range o) {
-      if (start > o.start) return 1;
-      if (start < o.start) return -1;
-      return 0;
+      return Long.compare(start, o.start);
+    }
+
+    @Override
+    public String toString() {
+      return "Range{" + "start=" + start + ", size=" + size + '}';
     }
   }
 
-  private TreeMap<Range, Range> map = new TreeMap<Range, Range>();
+  private final TreeMap<Range, Range> map = new TreeMap<>();
 
   public RangeTree() {}
 
@@ -56,18 +71,32 @@ public class RangeTree {
     return map.remove(search);
   }
 
-  private Range search = new Range();
+  private final Range search = new Range();
 
   public synchronized boolean inside(long start, int size) {
     search.start = start;
     search.size = size;
     Range r = map.floorKey(search);
-    boolean result = r != null && start >= r.start && (start + size) <= r.start + r.size;
-    if (!result && r != null) {
-      log.debug(
-          "Check FAILED for range [{},{}] Found allocation [{},{}]", start, size, r.start, r.size);
-    } else if (!result) {
-      log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
+    boolean result = !Objects.isNull(r) && start >= r.start && start + size <= r.start + r.size;
+
+    //    log.debug(
+    //        "floorKey start key {}, size key: {}, range: {}",
+    //        start,
+    //        size,
+    //        Objects.isNull(r) ? "null" : r.toString());
+    if (!result) {
+      if (!Objects.isNull(r)) {
+        log.debug(
+            "Check FAILED for range [{},{}] range allocation [{},{}] shift disposition [address: {}, size: {}]",
+            start,
+            size,
+            r.start,
+            r.size,
+            r.start - start,
+            r.size - size);
+      } else {
+        log.debug("Check FAILED for range [{},{}] No allocation found.", start, size);
+      }
     }
     return result;
   }

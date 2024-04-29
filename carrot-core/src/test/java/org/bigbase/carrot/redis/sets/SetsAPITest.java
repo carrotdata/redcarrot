@@ -22,7 +22,7 @@ import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -31,15 +31,11 @@ public class SetsAPITest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetsAPITest.class);
 
-  private static BigSortedMap map;
-
-  public SetsAPITest(Object c) throws IOException {
+  public SetsAPITest(Object c) {
     super(c);
-    tearDown();
-    setUp();
   }
 
-  private static List<String> loadData(String key, int n) {
+  private List<String> loadData(String key, int n) {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
@@ -59,7 +55,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSimpleCalls() {
-    log.debug("Test Sets ADD/ISMEMBER/MEMBERS API calls {}", getParameters());
+
     // Adding to set which does not exists
     int result = Sets.SADD(map, "key", "member1");
     assertEquals(1, result);
@@ -141,7 +137,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testMoveOperation() {
-    log.debug("Test Sets SMOVE API call {}", getParameters());
+
     // Add multiple members
     int result =
         Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
@@ -186,7 +182,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testMultipleMembersOperation() {
-    log.debug("Test Sets SMISMEMBER API call {}", getParameters());
 
     // Add multiple members
     int result =
@@ -231,9 +226,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSscanNoRegex() {
-    log.debug("Test Sets SSCAN API call w/o regex pattern {}", getParameters());
+
     // Load X elements
-    int X = 10000;
+    int X = memoryDebug? 1000: 10000;
+    int numIterations = memoryDebug? 100: 1000;
     String key = "key";
     Random r = new Random();
     List<String> list = loadData(key, X);
@@ -251,7 +247,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Check correctness of partial scans
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIterations; i++) {
       int index = r.nextInt(list.size());
       String lastSeen = list.get(index);
       int expected = list.size() - index - 1;
@@ -280,9 +276,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testCardinalityPerformance() {
-    log.debug("Test Sets SCARD API call performance {}", getParameters());
+
     // Load X elements
-    int X = 200000;
+    int X = memoryDebug? 2000: 200000;
+    int numIterations = memoryDebug? 100: 1000;
     String key = "key";
 
     List<String> list = loadData(key, X);
@@ -290,7 +287,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     long total = 0;
     long start = System.currentTimeMillis();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIterations; i++) {
       long card = Sets.SCARD(map, key);
       assertEquals(X, (int) card);
       total += card;
@@ -313,9 +310,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSscanWithRegex() {
-    log.debug("Test Sets SSCAN API call with regex pattern {}", getParameters());
+
     // Load X elements
-    int X = 10000;
+    int X = memoryDebug? 1000: 10000;
+    int numIterations = memoryDebug? 10: 100;
     String key = "key";
     String regex = "^A.*";
     Random r = new Random();
@@ -333,7 +331,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Check correctness of partial scans
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < numIterations; i++) {
       int index = r.nextInt(list.size());
       String lastSeen = list.get(index);
       String pattern = "^" + lastSeen.charAt(0) + ".*";
@@ -364,7 +362,6 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSetScannerSkipSmall() throws IOException {
-    log.debug("Test Sets skip API call (small) {}", getParameters());
 
     // Load X elements
     int X = 100;
@@ -411,10 +408,9 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testSetScannerSkipLarge() throws IOException {
-    log.debug("Test Sets skip API call (large) {}", getParameters());
 
     // Load X elements
-    int X = 100000;
+    int X = memoryDebug? 10000: 100000;
     String key = "key";
     List<String> list = loadData(key, X);
 
@@ -468,10 +464,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerSkipRandom() throws IOException {
-    log.debug("Test Sets skip API call (Random) {}", getParameters());
+
     // Load N elements
-    int N = 1000000;
-    int numIter = 1000;
+    int N = memoryDebug? 10000 :100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -483,7 +479,7 @@ public class SetsAPITest extends CarrotCoreBase {
     Random r = new Random();
 
     long start = System.currentTimeMillis();
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numIter; i++) {
       try (SetScanner scanner = Sets.getScanner(map, ptr, size, false)) {
         int skipTo = r.nextInt(N);
         long pos = scanner.skipTo(skipTo);
@@ -504,10 +500,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerSkipRandomSingleScanner() throws IOException {
-    log.debug("Test Sets skip API call (Random Single Scanner) {}", getParameters());
+
     // Load N elements
-    int N = 1000000;
-    int numIter = 10000;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -549,9 +545,9 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersEdgeCases() {
-    log.debug("Test Sets SRANDMEMBER API call (Edge cases) {}", getParameters());
+
     // Load N elements
-    int N = 10000;
+    int N = memoryDebug? 1000: 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -582,10 +578,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembers() {
-    log.debug("Test Sets SRANDMEMBER API call {}", getParameters());
+
     // Load N elements
-    int N = 100000;
-    int numIter = 1000;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 100: 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -620,9 +616,9 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersDeleteEdgeCases() {
-    log.debug("Test Sets SPOP API call (Edge cases) {}", getParameters());
+
     // Load N elements
-    int N = 10000;
+    int N = memoryDebug? 1000: 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -652,11 +648,10 @@ public class SetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testScannerRandomMembersDelete() {
-    log.debug("Test Sets SPOP API call {}", getParameters());
 
     // Load N elements
-    int N = 100000;
-    int numIter = 100;
+    int N = memoryDebug? 10000: 100000;
+    int numIter = memoryDebug? 10: 100;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -719,16 +714,12 @@ public class SetsAPITest extends CarrotCoreBase {
     return total;
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000);
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    // Dispose
-    map.dispose();
-    UnsafeAccess.mallocStats.printStats();
-  }
+  @Override
+  public void extTearDown() {}
 }

@@ -40,8 +40,8 @@ public final class UnsafeAccess {
   public static class MallocStats {
     private static final Logger log = LogManager.getLogger(MallocStats.class);
 
-    public static interface TraceFilter {
-      public boolean recordAllocationStackTrace(int size);
+    public interface TraceFilter {
+      boolean recordAllocationStackTrace(int size);
     }
     /*
      * Number of memory allocations
@@ -58,7 +58,7 @@ public final class UnsafeAccess {
     /** Total freed memory */
     public AtomicLong freed = new AtomicLong();
     /** Allocation map */
-    private RangeTree allocMap = new RangeTree();
+    private final RangeTree allocMap = new RangeTree();
 
     /** Is stack trace record enabled */
     private boolean stackTraceRecordingEndbled = false;
@@ -70,8 +70,7 @@ public final class UnsafeAccess {
     private int strLimit = Integer.MAX_VALUE; // default - no limit
 
     /** Stack traces map (allocation address -> stack trace) */
-    private Map<Long, String> stackTraceMap =
-        Collections.synchronizedMap(new HashMap<Long, String>());
+    private final Map<Long, String> stackTraceMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Is stack trace recording enabled
@@ -146,6 +145,15 @@ public final class UnsafeAccess {
     }
 
     /**
+     * Returns stackTraceMap
+     *
+     * @return Map<Long, String>
+     */
+    public Map<Long, String> getStackTraceMap() {
+      return stackTraceMap;
+    }
+
+    /**
      * Records memory allocation event
      *
      * @param address memory address
@@ -170,6 +178,11 @@ public final class UnsafeAccess {
       }
     }
 
+    /**
+     * FIXME: this method dumps stack trace into log
+     *
+     * @return
+     */
     private String stackTrace() {
       PrintStream errStream = System.err;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -177,8 +190,7 @@ public final class UnsafeAccess {
       System.setErr(ps);
       Thread.dumpStack();
       System.setErr(errStream);
-      String s = baos.toString();
-      return s;
+      return baos.toString();
     }
 
     @SuppressWarnings("unused")
@@ -209,9 +221,10 @@ public final class UnsafeAccess {
      */
     public void freeEvent(long address) {
       if (!UnsafeAccess.debug) return;
+
       Range mem = allocMap.delete(address);
       if (mem == null) {
-        log.debug("FATAL: not found address {}", address);
+        log.fatal("Not found address {}", address);
         Thread.dumpStack();
         System.exit(-1);
       }
@@ -233,17 +246,19 @@ public final class UnsafeAccess {
       if (!UnsafeAccess.debug) return;
 
       if (!allocMap.inside(address, size)) {
-        log.debug("Memory corruption: address={} size={}", address, size);
+        log.fatal("Memory corruption: address={} size={}", address, size);
         Thread.dumpStack();
         System.exit(-1);
       }
     }
 
-    /*
-     * Prints memory allocation statistics
-     */
-    public void printStats() {
-      printStats(true);
+    /** Prints memory allocation statistics */
+    public void printStats(String testName) {
+      printStats(true, testName);
+    }
+
+    public RangeTree getAllocMap() {
+      return allocMap;
     }
 
     /**
@@ -251,24 +266,25 @@ public final class UnsafeAccess {
      *
      * @param printOrphans if true - print all orphan allocations
      */
-    public void printStats(boolean printOrphans) {
+    public void printStats(boolean printOrphans, String testName) {
       if (!UnsafeAccess.debug) return;
 
-      log.debug("Malloc statistics:");
-      log.debug("allocations          ={}", allocEvents.get());
-      log.debug("allocated memory     ={}", allocated.get());
-      log.debug("deallocations        ={}", freeEvents.get());
-      log.debug("deallocated memory   ={}", freed.get());
-      log.debug("leaked (current)     ={}", allocated.get() - freed.get());
-      log.debug("Orphaned allocations ={}", allocMap.size());
+      log.debug("Malloc statistics for: {}", testName);
+      log.debug("{} allocations          ={}", testName, allocEvents.get());
+      log.debug("{} allocated memory     ={}", testName, allocated.get());
+      log.debug("{} deallocations        ={}", testName, freeEvents.get());
+      log.debug("{} deallocated memory   ={}", testName, freed.get());
+      log.debug("{} leaked (current)     ={}", testName, allocated.get() - freed.get());
+      log.debug("{} Orphaned allocations ={}", testName, allocMap.size());
       if (allocMap.size() > 0 && printOrphans) {
-        log.debug("Orphaned allocation sizes:");
+        log.debug("Orphaned allocation sizes for: {}", testName);
         for (Map.Entry<Range, Range> entry : allocMap.entrySet()) {
-          log.debug("Address:{} size:{}", entry.getKey().start, entry.getValue().size);
+          log.debug(
+              "{} Address: {} size: {}", testName, entry.getKey().start, entry.getValue().size);
           if (isStackTraceRecordingEnabled()) {
             String strace = stackTraceMap.get(entry.getKey().start);
             if (strace != null) {
-              log.debug("{}", strace);
+              log.debug("{} {}", testName, strace);
             }
           }
         }
@@ -824,8 +840,6 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
-   * @param srcOffset offset
-   * @param ptr memory destination
    * @param len number of bytes to copy
    */
   public static void copy(long src, ByteBuffer dst, int len) {
@@ -849,7 +863,6 @@ public final class UnsafeAccess {
    * Copy from a byte buffer to a direct memory
    *
    * @param src byte buffer
-   * @param srcOffset offset
    * @param ptr memory destination
    * @param len number of bytes to copy
    */
@@ -1167,6 +1180,7 @@ public final class UnsafeAccess {
   public static long malloc(long size) {
     long address = theUnsafe.allocateMemory(size);
     mallocStats.allocEvent(address, size);
+    //    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
@@ -1180,12 +1194,13 @@ public final class UnsafeAccess {
     long address = theUnsafe.allocateMemory(size);
     theUnsafe.setMemory(address, size, (byte) 0);
     mallocStats.allocEvent(address, size);
+    //    log.debug("Allocate memory address: {}, size: {}", address, size);
     return address;
   }
 
   /** Print memory alloaction statistics */
   public static void mallocStats() {
-    mallocStats.printStats();
+    mallocStats.printStats("Unsafeaccess.mallocStats");
   }
 
   /**
@@ -1203,6 +1218,8 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(pptr, newSize);
     }
+    //    log.debug("Reallocate memory address: {}, size: {}", pptr, newSize);
+
     return pptr;
   }
 
@@ -1216,6 +1233,7 @@ public final class UnsafeAccess {
     } else {
       mallocStats.reallocEvent(addr, newSize);
     }
+    log.debug("reallocZeroed memory address: {}, size: {}", addr, newSize);
 
     return addr;
   }

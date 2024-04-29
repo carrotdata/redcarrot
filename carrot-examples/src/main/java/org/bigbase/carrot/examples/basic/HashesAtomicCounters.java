@@ -118,7 +118,7 @@ public class HashesAtomicCounters {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
     Utils.freeKeys(keys);
-    UnsafeAccess.mallocStats.printStats();
+    UnsafeAccess.mallocStats.printStats("HashesAtomicCounters.main");
   }
 
   private static void runTest() throws IOException, OperationFailedException {
@@ -152,7 +152,7 @@ public class HashesAtomicCounters {
         endTime - startTime);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats(false);
+    UnsafeAccess.mallocStats.printStats(false, "HashesAtomicCounters.runTest");
 
     count = 0;
     startTime = System.currentTimeMillis();
@@ -201,12 +201,12 @@ public class HashesAtomicCounters {
           Hashes.HGET(
               map, key.address, keySize, key.address + keySize, key.length - keySize, buf, bufSize);
       if (size < 0) {
-        log.error("FAILED count={} keySize={} keyLength={}", count, keySize, key.length);
+        log.fatal("FAILED count={} keySize={} keyLength={}", count, keySize, key.length);
         System.exit(-1);
       }
       String s = Utils.toString(buf, size);
       if (Integer.parseInt(s) != val) {
-        log.error("Failed with s={}", s);
+        log.fatal("Failed with s={}", s);
         System.exit(-1);
       }
       if (count % 100000 == 0) {

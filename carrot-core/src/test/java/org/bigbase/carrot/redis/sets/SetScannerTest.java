@@ -16,7 +16,6 @@ package org.bigbase.carrot.redis.sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +26,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -36,18 +35,34 @@ public class SetScannerTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetScannerTest.class);
 
-  static BigSortedMap map;
-  static int valSize = 16;
-  static long n = 100000L;
-
-  public SetScannerTest(Object c) throws IOException {
+  int valSize = 16;
+  long n = 100000L;
+  Key key;
+  List<Value> values;
+  
+  public SetScannerTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
+    n = memoryDebug? 10000: 100000;
   }
 
-  private static List<Value> getValues(long n) {
-    List<Value> values = new ArrayList<>();
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
+  }
+
+  @Override
+  public void extTearDown() {
+    if (key != null) {
+      UnsafeAccess.free(key.address);
+    }
+    if (values != null) {
+      values.forEach( x -> UnsafeAccess.free(x.address));
+    }
+  }
+
+  private List<Value> getValues(long n) {
+    values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -63,7 +78,7 @@ public class SetScannerTest extends CarrotCoreBase {
     return values;
   }
 
-  private static Key getKey() {
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -72,14 +87,10 @@ public class SetScannerTest extends CarrotCoreBase {
     log.debug("KEY SEED={}", seed);
     r.nextBytes(buf);
     UnsafeAccess.copy(buf, 0, ptr, valSize);
-    return new Key(ptr, valSize);
+    return key = new Key(ptr, valSize);
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000L);
-  }
-
-  private static void loadData(Key key, List<Value> values) {
+  private void loadData(Key key, List<Value> values) {
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
     long count = 0;
@@ -96,7 +107,6 @@ public class SetScannerTest extends CarrotCoreBase {
 
   @Test
   public void testSingleFullScanner() throws IOException {
-    log.debug("Test single full scanner - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -148,15 +158,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testEdgeConditions() throws IOException {
-    log.debug("testEdgeConditions {}", getParameters());
 
     byte[] zero1 = new byte[] {0};
     byte[] zero2 = new byte[] {0, 0};
@@ -248,12 +257,6 @@ public class SetScannerTest extends CarrotCoreBase {
     int expected = index;
     Value v = values.get(index);
 
-    // log.debug("Expected:");
-
-    //    for(int i=0; i < index; i++) {
-    //      Value vv = values.get(i);
-    //      log.debug(Bytes.toHex(vv.address, vv.length));
-    //    }
     // Direct
     scanner =
         Sets.getScanner(
@@ -267,8 +270,6 @@ public class SetScannerTest extends CarrotCoreBase {
     }
     assertNotNull(scanner);
     scanner.close();
-
-    // log.debug("Result:");
 
     // Reverse
     scanner =
@@ -317,15 +318,14 @@ public class SetScannerTest extends CarrotCoreBase {
 
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSingleFullScannerReverse() throws IOException {
-    log.debug("Test single full scanner reverse - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -378,15 +378,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScanner() throws IOException {
-    log.debug("Test single partial scanner - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -449,16 +448,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScannerOpenStart() throws IOException {
-    log.debug(
-        "Test single partial scanner open start - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -494,8 +491,8 @@ public class SetScannerTest extends CarrotCoreBase {
       int startIndex = 0; // r.nextInt(copy.size());
       int endIndex = r.nextInt(copy.size() - startIndex) + startIndex;
 
-      long startPtr = 0; // copy.get(startIndex).address;
-      int startSize = 0; // copy.get(startIndex).length;
+      long startPtr = 0; 
+      int startSize = 0; 
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
@@ -521,15 +518,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScannerOpenEnd() throws IOException {
-    log.debug("Test single partial scanner open end - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -597,15 +593,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScannerReverse() throws IOException {
-    log.debug("Test single partial scanner reverse - one key {} elements {}", n, getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -673,18 +668,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScannerReverseOpenStart() throws IOException {
-    log.debug(
-        "Test single partial scanner reverse open start - one key {} elements {}",
-        n,
-        getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -752,18 +743,14 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testSinglePartialScannerReverseOpenEnd() throws IOException {
-    log.debug(
-        "Test single partial scanner reverse open end - one key {} elements {}",
-        n,
-        getParameters());
 
     Key key = getKey();
     List<Value> values = getValues(n);
@@ -802,13 +789,12 @@ public class SetScannerTest extends CarrotCoreBase {
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
-      int endIndex = copy.size(); // .nextInt(copy.size() - startIndex) + startIndex;
+      int endIndex = copy.size(); 
 
       long startPtr = copy.get(startIndex).address;
       int startSize = copy.get(startIndex).length;
-      long endPtr = 0; // copy.get(endIndex).address;
-      int endSize = 0; // copy.get(endIndex).length;
-
+      long endPtr = 0; 
+      int endSize = 0; 
       int expected = endIndex - startIndex;
 
       SetScanner scanner =
@@ -831,17 +817,16 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    BigSortedMap.printGlobalMemoryAllocationStats();
+    //BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testDirectScannerPerformance() throws IOException {
-    // int n = 5000000; // 5M elements
-    log.debug("Test direct scanner performance {} elements {}", n, getParameters());
 
+    // int n = 5000000; // 5M elements
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -875,15 +860,14 @@ public class SetScannerTest extends CarrotCoreBase {
     end = System.currentTimeMillis();
     log.debug("Scanned {} elements in {}ms", n, end - start);
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testReverseScannerPerformance() throws IOException {
-    // int n = 5000000; // 5M elements
-    log.debug("Test reverse scanner performance {} elements {}", n, getParameters());
 
+    // int n = 5000000; // 5M elements
     Key key = getKey();
     List<Value> values = getValues(n);
     long start = System.currentTimeMillis();
@@ -917,15 +901,15 @@ public class SetScannerTest extends CarrotCoreBase {
     end = System.currentTimeMillis();
     log.debug("Scanned (reversed) {} elements in {}ms", n, end - start);
     // Free memory
-    UnsafeAccess.free(key.address);
-    values.forEach(x -> UnsafeAccess.free(x.address));
+    //UnsafeAccess.free(key.address);
+    //values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  private static <T> List<T> copy(List<T> src) {
+  private <T> List<T> copy(List<T> src) {
     return new ArrayList<>(src);
   }
 
-  private static void deleteRandom(
+  private void deleteRandom(
       BigSortedMap map, long keyPtr, int keySize, List<Value> copy, Random r) {
     int toDelete = copy.size() < 10 ? copy.size() : r.nextInt(copy.size() / 2);
     for (int i = 0; i < toDelete; i++) {
@@ -934,14 +918,5 @@ public class SetScannerTest extends CarrotCoreBase {
       int count = Sets.SREM(map, keyPtr, keySize, v.address, v.length);
       assertEquals(1, count);
     }
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
-
-    // Dispose
-    map.dispose();
-    UnsafeAccess.mallocStats.printStats();
   }
 }

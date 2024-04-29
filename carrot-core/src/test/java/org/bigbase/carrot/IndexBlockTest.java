@@ -27,30 +27,26 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-public class IndexBlockTest extends CarrotCoreBase{
+public class IndexBlockTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(IndexBlockTest.class);
 
-  static {
-    //UnsafeAccess.debug = true;
-  }
-
-  
-  public IndexBlockTest(Object c) throws IOException {
+  public IndexBlockTest(Object c) {
     super(c);
-    BigSortedMap.setCompressionCodec(codec);
   }
-  
 
-  @After
-  public void tearDown() {
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats();
+  @Before
+  @Override
+  public void setUp() throws IOException {
+    super.setUp();
   }
-  
+
+  @Override
+  public void extTearDown() {}
+
   protected void freeKeys(ArrayList<Key> keys) {
     for (Key key : keys) {
       UnsafeAccess.free(key.address);
@@ -59,7 +55,7 @@ public class IndexBlockTest extends CarrotCoreBase{
 
   @Test
   public void testPutGet() {
-    log.debug("testPutGet {}", getParameters());
+
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     for (Key key : keys) {
@@ -74,10 +70,9 @@ public class IndexBlockTest extends CarrotCoreBase{
     freeKeys(keys);
   }
 
-
   @Test
   public void testAutomaticDataBlockMerge() {
-    log.debug("testAutomaticDataBlockMerge {}", getParameters());
+
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
     Utils.sortKeys(keys);
@@ -98,10 +93,8 @@ public class IndexBlockTest extends CarrotCoreBase{
     freeKeys(keys);
   }
 
-
   @Test
   public void testPutGetDeleteFull() {
-    log.debug("testPutGetDeleteFull {}", getParameters());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -117,7 +110,7 @@ public class IndexBlockTest extends CarrotCoreBase{
     }
 
     // now delete all
-    List<Key> splitRequires = new ArrayList<Key>();
+    List<Key> splitRequires = new ArrayList<>();
     for (Key key : keys) {
       OpResult result = ib.delete(key.address, key.length, Long.MAX_VALUE);
       if (result == OpResult.SPLIT_REQUIRED) {
@@ -147,7 +140,6 @@ public class IndexBlockTest extends CarrotCoreBase{
 
   @Test
   public void testPutGetDeletePartial() {
-    log.debug("testPutGetDeletePartial {}", getParameters());
 
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -163,7 +155,7 @@ public class IndexBlockTest extends CarrotCoreBase{
 
     // now delete some
     List<Key> toDelete = keys.subList(0, keys.size() / 2);
-    List<Key> splitRequires = new ArrayList<Key>();
+    List<Key> splitRequires = new ArrayList<>();
 
     for (Key key : toDelete) {
 
@@ -204,7 +196,7 @@ public class IndexBlockTest extends CarrotCoreBase{
 
   @Test
   public void testOverwriteSameValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteSameValueSize {}", getParameters());
+
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -226,10 +218,9 @@ public class IndexBlockTest extends CarrotCoreBase{
     freeKeys(keys);
   }
 
-
   @Test
   public void testOverwriteSmallerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteSmallerValueSize {}", getParameters());
+
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -253,7 +244,7 @@ public class IndexBlockTest extends CarrotCoreBase{
 
   @Test
   public void testOverwriteLargerValueSize() throws RetryOperationException, IOException {
-    log.debug("testOverwriteLargerValueSize {}", getParameters());
+
     Random r = new Random();
     IndexBlock ib = getIndexBlock(4096);
     ArrayList<Key> keys = fillIndexBlock(ib);
@@ -285,11 +276,11 @@ public class IndexBlockTest extends CarrotCoreBase{
 
   protected void scanAndVerify(IndexBlock b, List<Key> keys)
       throws RetryOperationException, IOException {
-    long buffer = 0;
-    long tmp = 0;
+    long buffer;
+    long tmp = 0L;
     int prevLength = 0;
     IndexBlockScanner is = IndexBlockScanner.getScanner(b, 0, 0, 0, 0, Long.MAX_VALUE);
-    DataBlockScanner bs = null;
+    DataBlockScanner bs;
     int count = 0;
     while ((bs = is.nextBlockScanner()) != null) {
       while (bs.hasNext()) {
@@ -333,7 +324,7 @@ public class IndexBlockTest extends CarrotCoreBase{
   }
 
   protected ArrayList<Key> fillIndexBlock(IndexBlock b) throws RetryOperationException {
-    ArrayList<Key> keys = new ArrayList<Key>();
+    ArrayList<Key> keys = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);

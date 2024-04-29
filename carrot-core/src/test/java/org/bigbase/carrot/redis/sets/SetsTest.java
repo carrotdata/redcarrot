@@ -34,7 +34,7 @@ import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -44,22 +44,20 @@ public class SetsTest extends CarrotCoreBase {
 
   private static final Logger log = LogManager.getLogger(SetsTest.class);
 
-  static BigSortedMap map;
-  static Key key;
-  static long buffer;
-  static int bufferSize = 64;
-  static int valSize = 16;
-  static long n = 100000;
-  static List<Value> values;
+  Key key;
+  long buffer;
+  int bufferSize = 64;
+  int valSize = 16;
+  long n = 100000;
+  List<Value> values;
 
-  public SetsTest(Object c) throws IOException {
+  public SetsTest(Object c) {
     super(c);
-    tearDown();
-    setUp();
+    n = memoryDebug? 10000: 100000;
   }
 
-  private static List<Value> getValues(long n) {
-    List<Value> values = new ArrayList<Value>();
+  private List<Value> getValues(long n) {
+    values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -75,8 +73,8 @@ public class SetsTest extends CarrotCoreBase {
     return values;
   }
 
-  private static List<Value> getRandomValues(long n) {
-    List<Value> values = new ArrayList<Value>();
+  private List<Value> getRandomValues(long n) {
+    values = new ArrayList<>();
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
@@ -91,7 +89,7 @@ public class SetsTest extends CarrotCoreBase {
     return values;
   }
 
-  private static Key getKey() {
+  private Key getKey() {
     long ptr = UnsafeAccess.malloc(valSize);
     byte[] buf = new byte[valSize];
     Random r = new Random();
@@ -103,24 +101,36 @@ public class SetsTest extends CarrotCoreBase {
     return key = new Key(ptr, valSize);
   }
 
-  public static void setUp() {
-    map = new BigSortedMap(1000000000);
+  @Before
+  public void setUp() throws IOException {
+    super.setUp();
+
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
   }
   
-  public void untestPerformance() {
+
+  @Ignore
+  @Test
+  public void untestPerformance1M() {
     perfRun(1000000);
-    perfRun(10000000);
+  }
+
+  @Ignore
+  @Test
+  public void untestPerformance10M() {
+    perfRun(1000000);
+  }
+
+  @Ignore
+  @Test
+  public void untestPerformance100M() {
     perfRun(100000000);
   }
 
-  private static void perfRun(int n) {
-    log.debug("Performance test run with {}", n);
-    map = new BigSortedMap(10000000000L);
-
+  private void perfRun(int n) {
     int toQuery = 1000000;
-    int nn = n > 10000000 ? 10000000 : n;
+    int nn = Math.min(n, 10000000);
 
     values = getRandomValues(nn);
     Key key = getKey();
@@ -154,15 +164,13 @@ public class SetsTest extends CarrotCoreBase {
     assertEquals(n, (int) Sets.SCARD(map, key.address, key.length));
 
     Runnable run =
-        new Runnable() {
-          public void run() {
-            Random r = new Random();
-            for (int i = 0; i < toQuery; i++) {
-              int index = r.nextInt(values.size());
-              Value v = values.get(index);
-              int res = Sets.SISMEMBER(map, key.address, key.length, v.address, v.length);
-              assertEquals(1, res);
-            }
+        () -> {
+          Random r1 = new Random();
+          for (int i = 0; i < toQuery; i++) {
+            int index = r1.nextInt(values.size());
+            Value v = values.get(index);
+            int res = Sets.SISMEMBER(map, key.address, key.length, v.address, v.length);
+            assertEquals(1, res);
           }
         };
     // runRead(1, run, toQuery);
@@ -172,10 +180,9 @@ public class SetsTest extends CarrotCoreBase {
     runRead(16, run, toQuery);
 
     log.debug("Skip List Map Size={}", map.getMap().size());
-    tearDown();
   }
 
-  private static void runRead(int numThreads, Runnable run, int toQuery) {
+  private void runRead(int numThreads, Runnable run, int toQuery) {
 
     long start = System.currentTimeMillis();
     Thread[] pool = new Thread[numThreads];
@@ -196,12 +203,11 @@ public class SetsTest extends CarrotCoreBase {
     log.debug(
         "{} threads READ perf={} RPS",
         numThreads,
-        +(double) numThreads * toQuery * 1000 / (end - start));
+        (double) numThreads * toQuery * 1000 / (end - start));
   }
 
   @Test
   public void testSADDSISMEMBER() {
-    log.debug("Test SADDSISMEMBER {}", getParameters());
 
     Key key = getKey();
     long[] elemPtrs = new long[1];
@@ -224,7 +230,7 @@ public class SetsTest extends CarrotCoreBase {
         n,
         valSize,
         (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
-        +end - start);
+        end - start);
 
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -245,7 +251,6 @@ public class SetsTest extends CarrotCoreBase {
 
   @Test
   public void testAddMultiDelete() throws IOException {
-    log.debug("Test Add Multi Delete {}", getParameters());
 
     long[] elemPtrs = new long[1];
     int[] elemSizes = new int[1];
@@ -262,17 +267,12 @@ public class SetsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+        "Total allocated memory = {} for {} {}  byte values. Overhead={} bytes per value. Time to load: {}ms",
+        BigSortedMap.getGlobalAllocatedMemory(),
+        n,
+        valSize,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
+        end - start);
 
     log.debug("Deleting keys ...");
     count = 0;
@@ -295,7 +295,6 @@ public class SetsTest extends CarrotCoreBase {
 
   @Test
   public void testAddRemove() {
-    log.debug("Test Add Remove {}", getParameters());
 
     Key key = getKey();
     long[] elemPtrs = new long[1];
@@ -325,7 +324,6 @@ public class SetsTest extends CarrotCoreBase {
             + (end - start)
             + "ms");
 
-
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
     for (int i = 0; i < n; i++) {
@@ -345,8 +343,9 @@ public class SetsTest extends CarrotCoreBase {
 
   @Ignore
   @Test
-  public void testMemoryUsageForInts() throws IOException {
+  public void testMemoryUsageForInts() {
     log.debug("Test memory usage for ints");
+
     int n = 1000000;
     map = new BigSortedMap(100000000);
     long buffer = UnsafeAccess.malloc(Utils.SIZEOF_INT);
@@ -362,17 +361,14 @@ public class SetsTest extends CarrotCoreBase {
       if (res == 0) {
         duplicates++;
         i--;
-        continue;
       }
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Loaded in "
-            + (end - start)
-            + "ms. Mem usage for 1 int="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory()) / n
-            + " dups="
-            + duplicates);
+        "Loaded in {}ms. Mem usage for 1 int={} dups={}",
+        end - start,
+        (double) BigSortedMap.getGlobalAllocatedMemory() / n,
+        duplicates);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.dumpStats();
@@ -386,8 +382,9 @@ public class SetsTest extends CarrotCoreBase {
   @Test
   public void testCompressionSortedIntSet() throws IOException {
     log.debug("Test compression sorted int set");
+
     int n = 1000000;
-    List<Integer> list = new ArrayList<Integer>();
+    List<Integer> list = new ArrayList<>();
     Random r = new Random();
     while (list.size() < n) {
       int v = Math.abs(r.nextInt());
@@ -409,7 +406,7 @@ public class SetsTest extends CarrotCoreBase {
     byte[] arr = new byte[bufferSize];
     UnsafeAccess.copy(buffer, arr, 0, bufferSize);
     // Compress arr using LZ4 codec
-    long cBuffer = UnsafeAccess.malloc(2 * bufferSize);
+    long cBuffer = UnsafeAccess.malloc(2L * bufferSize);
     Codec codec = CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
     int size = codec.compress(buffer, bufferSize, cBuffer, 2 * bufferSize);
     log.debug("Source size ={}", bufferSize);
@@ -430,12 +427,9 @@ public class SetsTest extends CarrotCoreBase {
     fos.close();
   }
 
-  @AfterClass
-  public static void tearDown() {
-    if (Objects.isNull(map)) return;
+  @Override
+  public void extTearDown() {
 
-    // Dispose
-    map.dispose();
     if (key != null) {
       UnsafeAccess.free(key.address);
       key = null;
@@ -447,7 +441,5 @@ public class SetsTest extends CarrotCoreBase {
       UnsafeAccess.free(buffer);
       buffer = 0;
     }
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    UnsafeAccess.mallocStats.printStats();
   }
 }

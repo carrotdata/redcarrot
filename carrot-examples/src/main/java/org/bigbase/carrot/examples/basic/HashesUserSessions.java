@@ -126,7 +126,7 @@ public class HashesUserSessions {
 
       int num = Hashes.HSET(map, keyBuf, keySize, list);
       if (num != list.size()) {
-        log.error("ERROR in HSET");
+        log.fatal("ERROR in HSET");
         System.exit(-1);
       }
 

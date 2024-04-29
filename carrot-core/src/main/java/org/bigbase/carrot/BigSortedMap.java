@@ -483,12 +483,12 @@ public class BigSortedMap {
     return statsUpdateDisabled;
   }
 
-  /*****************************************************************/
+  /****************************************************************/
 
   /**************** INSTANCE SECTION *******************************/
 
   /** Major store data structure */
-  private ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
+  private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
       new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
   /*
    * Read-Write Lock TODO: StampedLock (Java 8), decrease # of locks
@@ -1147,7 +1147,7 @@ public class BigSortedMap {
             // MUST ALWAYS BE true
             assert (r);
           } else if (res != OpResult.OK) {
-            log.error("PANIC! Unexpected result of delete operation: {}", res);
+            log.fatal("Unexpected result of delete operation: {}", res);
             Thread.dumpStack();
             System.exit(-1);
           }
