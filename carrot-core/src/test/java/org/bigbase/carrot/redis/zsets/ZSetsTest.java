@@ -163,8 +163,8 @@ public class ZSetsTest extends CarrotCoreBase {
     int total = 30000;
     Key key = getKey();
 
-    List<Value> fields = ZSetsTest.fields;
-    List<Double> scl = ZSetsTest.scores;
+    List<Value> fields = this.fields;
+    List<Double> scl = this.scores;
     List<ValueScore> list = new ArrayList<>();
     for (int i = 0; i < n; i++) {
       Value v = fields.get(i);
