@@ -31,7 +31,8 @@ public class IncrementLong extends Operation {
   long value;
 
   public IncrementLong() {
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   /**
@@ -64,7 +65,8 @@ public class IncrementLong extends Operation {
   public void reset() {
     super.reset();
     value = 0;
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   @Override
@@ -82,9 +84,9 @@ public class IncrementLong extends Operation {
       this.updatesCount = 0;
       return true;
     }
-    this.value += v;
+    setUpdateInPlace(false);
     UnsafeAccess.putLong(buffer.get(), value);
-    // set updateCounts to 0 - we update in place
+    // set updateCounts to 1 - we insert new k-v
     this.updatesCount = 1;
     this.keys[0] = keyAddress;
     this.keySizes[0] = keySize;

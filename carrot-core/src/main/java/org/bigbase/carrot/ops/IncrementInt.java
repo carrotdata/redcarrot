@@ -30,7 +30,8 @@ public class IncrementInt extends Operation {
   int value;
 
   public IncrementInt() {
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   /**
@@ -64,7 +65,8 @@ public class IncrementInt extends Operation {
   public void reset() {
     super.reset();
     value = 0;
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   @Override
@@ -82,7 +84,7 @@ public class IncrementInt extends Operation {
       this.updatesCount = 0;
       return true;
     }
-    value += v;
+    setUpdateInPlace(false);
     UnsafeAccess.putInt(buffer.get(), value);
 
     this.updatesCount = 1;

@@ -35,7 +35,8 @@ public class IncrementFloat extends Operation {
   float value;
 
   public IncrementFloat() {
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   /**
@@ -68,7 +69,8 @@ public class IncrementFloat extends Operation {
   public void reset() {
     super.reset();
     value = 0;
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   @Override
@@ -87,7 +89,7 @@ public class IncrementFloat extends Operation {
       this.updatesCount = 0;
       return true;
     }
-    this.value += fv;
+    setUpdateInPlace(false);
     UnsafeAccess.putInt(buffer.get(), Float.floatToIntBits(value));
     this.updatesCount = 1;
     this.keys[0] = keyAddress;

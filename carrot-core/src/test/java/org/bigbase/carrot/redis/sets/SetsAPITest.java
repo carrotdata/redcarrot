@@ -279,7 +279,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Load X elements
     int X = memoryDebug? 2000: 200000;
-    int numIterations = memoryDebug? 100: 1000;
+    int numIterations = memoryDebug? 100: 100000;
     String key = "key";
 
     List<String> list = loadData(key, X);
@@ -294,7 +294,7 @@ public class SetsAPITest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
 
-    log.debug("total={} time for {}={}ms", total, 1000 * X, end - start);
+    log.debug("total={} time for {}={}ms", total, numIterations, end - start);
   }
 
   private int countMatches(List<String> list, int startIndex, String regex) {

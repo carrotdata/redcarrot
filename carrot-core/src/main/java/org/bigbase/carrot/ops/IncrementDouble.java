@@ -31,7 +31,8 @@ public class IncrementDouble extends Operation {
   double value;
 
   public IncrementDouble() {
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   public void setIncrement(double v) {
@@ -50,7 +51,8 @@ public class IncrementDouble extends Operation {
   public void reset() {
     super.reset();
     value = 0;
-    setReadOnly(true);
+    setReadOnly(false);
+    setUpdateInPlace(true);
   }
 
   @Override
@@ -69,6 +71,7 @@ public class IncrementDouble extends Operation {
       this.updatesCount = 0;
       return true;
     }
+    setUpdateInPlace(false);
     value += dv;
     UnsafeAccess.putLong(buffer.get(), Double.doubleToLongBits(value));
     this.updatesCount = 1;

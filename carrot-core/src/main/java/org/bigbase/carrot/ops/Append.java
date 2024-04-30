@@ -39,12 +39,19 @@ public class Append extends Operation {
           return 4096;
         }
       };
+  
+  public Append() {
+    updateInPlace = false;
+    readOnly = false;
+  }
 
   @Override
   public void reset() {
     super.reset();
     appendValuePtr = 0;
     appendValueSize = 0;
+    updateInPlace = false;
+    readOnly = false;
   }
 
   public void setAppendValue(long ptr, int size) {

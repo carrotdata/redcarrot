@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.DataBlock;
+import org.bigbase.carrot.ops.OperationFailedException;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.redis.util.DataType;
 import org.bigbase.carrot.util.Key;
@@ -57,6 +58,9 @@ import org.bigbase.carrot.util.ValueScore;
  */
 public class Sets {
 
+  static final long CARD_KEY = UnsafeAccess.allocAndCopy(new byte[] {(byte)0}, 0, 1);
+  static final int CARD_KEY_SIZE = 1;
+  
   private static final Logger log = LogManager.getLogger(Sets.class);
 
   private static ThreadLocal<Long> keyArena =
@@ -207,6 +211,9 @@ public class Sets {
           count++;
         }
       }
+      if(count > 0) {
+        SINCRCARD(map, keyPtr, keySize, count);
+      }
       return count;
     } finally {
       KeysLocker.writeUnlock(k);
@@ -233,6 +240,9 @@ public class Sets {
         if (map.execute(add)) {
           count++;
         }
+      }
+      if (count > 0) {
+        SINCRCARD(map, keyPtr, keySize, count);
       }
       return count;
     } finally {
@@ -280,6 +290,9 @@ public class Sets {
         }
         count += num;
         prev = value;
+      }
+      if(count > 0) {
+        SINCRCARD(map, keyPtr, keySize, count);
       }
       return count;
     } finally {
@@ -385,6 +398,9 @@ public class Sets {
         }
         count += num;
         prev = value;
+      }
+      if(count > 0) {
+        SINCRCARD(map, keyPtr, keySize, count);
       }
       return count;
     } finally {
@@ -492,6 +508,9 @@ public class Sets {
       // version?
       if (map.execute(add)) {
         count++;
+      }
+      if(count > 0) {
+        SINCRCARD(map, keyPtr, keySize, count);
       }
       return count;
     } finally {
@@ -681,44 +700,77 @@ public class Sets {
    * @return number of elements
    * @throws IOException
    */
-  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
+//  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
+//
+//    Key k = getKey(keyPtr, keySize);
+//    long total = 0;
+//    long startKeyPtr = 0, endKeyPtr = 0;
+//    try {
+//      KeysLocker.readLock(k);
+//      startKeyPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
+//      int kSize = buildKey(keyPtr, keySize, Commons.ZERO, 1, startKeyPtr);
+//      int endKeySize = kSize - 1;
+//      endKeyPtr = Utils.prefixKeyEnd(startKeyPtr, endKeySize);
+//      if (endKeyPtr == 0) {
+//        endKeySize = 0;
+//      }
+//      BigSortedMapScanner scanner = map.getScanner(startKeyPtr, kSize, endKeyPtr, endKeySize);
+//      if (scanner == null) {
+//        return 0; // empty or does not exists
+//      }
+//      while (scanner.hasNext()) {
+//        long valuePtr = scanner.valueAddress();
+//        total += numElementsInValue(valuePtr);
+//        scanner.next();
+//      }
+//      scanner.close();
+//    } catch (IOException e) {
+//      // should never be thrown
+//    } finally {
+//      if (startKeyPtr > 0) {
+//        UnsafeAccess.free(startKeyPtr);
+//      }
+//      if (endKeyPtr > 0) {
+//        UnsafeAccess.free(endKeyPtr);
+//      }
+//      KeysLocker.readUnlock(k);
+//    }
+//    return total;
+//  }
 
-    Key k = getKey(keyPtr, keySize);
-    long total = 0;
-    long startKeyPtr = 0, endKeyPtr = 0;
-    try {
-      KeysLocker.readLock(k);
-      startKeyPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
-      int kSize = buildKey(keyPtr, keySize, Commons.ZERO, 1, startKeyPtr);
-      int endKeySize = kSize - 1;
-      endKeyPtr = Utils.prefixKeyEnd(startKeyPtr, endKeySize);
-      if (endKeyPtr == 0) {
-        endKeySize = 0;
-      }
-      BigSortedMapScanner scanner = map.getScanner(startKeyPtr, kSize, endKeyPtr, endKeySize);
-      if (scanner == null) {
-        return 0; // empty or does not exists
-      }
-      while (scanner.hasNext()) {
-        long valuePtr = scanner.valueAddress();
-        total += numElementsInValue(valuePtr);
-        scanner.next();
-      }
-      scanner.close();
-    } catch (IOException e) {
-      // should never be thrown
-    } finally {
-      if (startKeyPtr > 0) {
-        UnsafeAccess.free(startKeyPtr);
-      }
-      if (endKeyPtr > 0) {
-        UnsafeAccess.free(endKeyPtr);
-      }
-      KeysLocker.readUnlock(k);
+  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
+    // This key contains sets cardinality
+    keySize = buildKey(keyPtr, keySize, 0, 0);
+    keyPtr = keyArena.get();
+    checkValueArena(Utils.SIZEOF_LONG);
+    long buffer = valueArena.get();
+    long size = map.get(keyPtr, keySize, buffer, Utils.SIZEOF_LONG, 0);
+    if (size == Utils.SIZEOF_LONG) {
+      return UnsafeAccess.toLong(buffer);
+    } else if (size < 0) {
+      return 0; // for compatibility
     }
-    return total;
+    //TODO
+    throw new RuntimeException();
   }
 
+  public static long SINCRCARD(BigSortedMap map, long keyPtr, int keySize, long incr) {
+    // This key contains sets cardinality
+    keySize = buildKey(keyPtr, keySize, 0, 0);
+    keyPtr = keyArena.get();
+    try {
+      return map.incrementLongOp(keyPtr, keySize, incr);
+    } catch (OperationFailedException e) {
+      throw new RuntimeException(e);
+
+    }
+  }
+  
+  private static boolean deleteCardKey(BigSortedMap map, long keyPtr, int keySize) {
+    keySize = buildKey(keyPtr, keySize, 0, 0);
+    keyPtr = keyArena.get();
+    return map.delete(keyPtr, keySize);
+  }
   /**
    * Checks if the set is empty
    *
@@ -899,6 +951,9 @@ public class Sets {
           removed++;
         }
       }
+      if (removed > 0) {
+        SINCRCARD(map, keyPtr, keySize, -removed);
+      }
       if (setDelete.get().checkForEmpty() && isEmpty(map, keyPtr, keySize)) {
         DELETE(map, keyPtr, keySize);
       }
@@ -952,7 +1007,11 @@ public class Sets {
         removed++;
         if (remove.checkForEmpty && isEmpty(map, keyPtr, keySize)) {
           DELETE(map, keyPtr, keySize, lock);
+          return removed;
         }
+      }
+      if (removed > 0) {
+        SINCRCARD(map, keyPtr, keySize, -removed);
       }
       return removed;
     } finally {
@@ -1096,7 +1155,7 @@ public class Sets {
    * set, it is only removed from the source set. An error is returned if source or destination does
    * not hold a set value. Return value Integer reply, specifically: 1 if the element is moved. 0 if
    * the element is not a member of source and no operation was performed.
-   *
+   * TODO: Move operation can be optimized. We  need to POP from src and append to dst
    * @param map sorted map storage
    * @param srcKeyPtr source key address
    * @param srcKeySize source key size
@@ -1212,7 +1271,7 @@ public class Sets {
       if (index == null) {
         // Return all elements
         long result = SMEMBERS(map, keyPtr, keySize, bufferPtr, bufferSize);
-        if (result >= 0) {
+        if (result >= 0 && result <= bufferSize) {
           DELETE(map, keyPtr, keySize);
         }
         return result;
@@ -1228,7 +1287,7 @@ public class Sets {
           // Should not be here
         }
       }
-      // Now delete all
+      // Now delete all in the buffer
       bulkDelete(map, keyPtr, keySize, bufferPtr);
       return serLength;
     } finally {
@@ -1274,6 +1333,9 @@ public class Sets {
       }
       ptr += eSize + eSizeSize;
     }
+    if(deleted > 0) {
+      SINCRCARD(map, keyPtr, keySize, -deleted);
+    }
     return deleted;
   }
 
@@ -1315,6 +1377,7 @@ public class Sets {
       long deleted = map.deleteRange(startKeyPtr, newKeySize, endKeyPtr, endKeySize);
       return deleted > 0;
     } finally {
+      deleteCardKey(map, keyPtr, keySize);
       if (startKeyPtr > 0) {
         UnsafeAccess.free(startKeyPtr);
       }

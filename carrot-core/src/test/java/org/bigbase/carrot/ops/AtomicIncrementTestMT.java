@@ -26,6 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.BigSortedMapScanner;
+import org.bigbase.carrot.compression.CodecFactory;
+import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
@@ -60,15 +62,19 @@ public class AtomicIncrementTestMT {
       long LONG_ZERO = UnsafeAccess.mallocZeroed(Utils.SIZEOF_LONG);
       Random r = new Random();
 
-      while (true) {
-
+      long incrTime = 0;
+      long putTime = 0;
+      while (true) {  
         double d = r.nextDouble();
         if (d < 0.5 && totalLoaded.get() > 1000) {
           // Run increment
           int n = r.nextInt((int) keys.size());
           Key k = keys.get(n);
           try {
+            long t1 = System.nanoTime();
             map.incrementLongOp(k.address, k.length, 1);
+            long t2 = System.nanoTime();
+            incrTime += t2 - t1;
           } catch (OperationFailedException e) {
             log.error("Increment failed.", e);
             break;
@@ -79,19 +85,23 @@ public class AtomicIncrementTestMT {
           // Run put
           totalLoaded.incrementAndGet();
           Key k = nextKey(r, key);
+          long t1 = System.nanoTime();
           boolean result = map.put(k.address, k.length, LONG_ZERO, Utils.SIZEOF_LONG, 0);
+          long t2 = System.nanoTime();
+          putTime += t2 - t1;
           if (result == false) {
             totalLoaded.decrementAndGet();
             break;
           } else {
             keys.add(k);
           }
-          if (totalLoaded.get() % 1000000 == 0) {
+          if ((totalLoaded.get() + 1) % 1000000 == 0) {
             log.debug(
-                "{} loaded = {} increments={} mem={} max={}",
+                "{} loaded = {} PPS={} IPS={} mem={} max={}",
                 getName(),
                 totalLoaded,
-                totalIncrements,
+                totalLoaded.get() * 1_000_000_000/ putTime,
+                totalIncrements.get() * 1_000_000_000/ incrTime,
                 BigSortedMap.getGlobalAllocatedMemory(),
                 BigSortedMap.getGlobalMemoryLimit());
           }
@@ -109,11 +119,12 @@ public class AtomicIncrementTestMT {
 
   @Test
   public void testIncrement() throws IOException {
+    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int k = 1; k <= 1; k++) {
       log.debug("Increment test run #{}", k);
 
       BigSortedMap.setMaxBlockSize(4096);
-      map = new BigSortedMap(10000000000L);
+      map = new BigSortedMap(1000000000L);
       totalLoaded.set(0);
       totalIncrements.set(0);
       try {
@@ -148,7 +159,7 @@ public class AtomicIncrementTestMT {
         // CHECK THIS
         assertEquals(keys.size(), (int) count);
         log.debug(
-            "Time to load= {} and to increment ={}={}ms",
+            "Time to load= {} and to increment ={} is {}ms",
             totalLoaded,
             totalIncrements,
             end - start);

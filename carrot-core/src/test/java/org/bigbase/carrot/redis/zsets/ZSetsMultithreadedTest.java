@@ -92,7 +92,7 @@ public class ZSetsMultithreadedTest {
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  // @Ignore
+  //@Ignore
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -108,12 +108,12 @@ public class ZSetsMultithreadedTest {
     }
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
       log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       setUp();
       runTest();

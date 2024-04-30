@@ -43,7 +43,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     super(c);
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    log.debug("Global seed={}", seed);
+    //log.debug("Global seed={}", seed);
   }
 
   @Before
@@ -61,18 +61,24 @@ public class ZSetsAPITest extends CarrotCoreBase {
   private List<Pair<String>> loadData(String key, int n) {
     List<Pair<String>> list = new ArrayList<>();
 
+    long totalTime = 0;
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
       list.add(new Pair<>(m, score));
+      long t1 = System.nanoTime();
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
+    //log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
+
     return list;
   }
 
@@ -84,12 +90,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random rnd = new Random();
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    log.debug("Data seed="+ seed);
+    //log.debug("Data seed="+ seed);
+    long totalTime= System.nanoTime();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
+      long t1 = System.nanoTime();
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
       assertEquals(1, (int) res);
       list.add(new Pair<>(m, score));
       if ((i + 1) % 100000 == 0) {
@@ -108,6 +118,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
             return 0;
           }
         });
+   // log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
+
     return list;
   }
 
@@ -129,7 +141,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Data map seed={}", seed);
+    //log.debug("Data map seed={}", seed);
     for (int i = 0; i < numKeys; i++) {
       String key = Utils.getRandomStr(r, 12);
       map.put(key, loadData(key, n));
@@ -139,19 +151,25 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   private List<Pair<String>> loadDataSameScore(String key, int n) {
     List<Pair<String>> list = new ArrayList<>();
+    long totalTime = System.nanoTime();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
 
       double sc = 1.08E8D; // some score
       String score = Double.toString(sc);
       list.add(new Pair<String>(m, score));
+      long t1 = System.nanoTime();
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
+   // log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
+
     return list;
   }
 
@@ -174,9 +192,13 @@ public class ZSetsAPITest extends CarrotCoreBase {
     List<Pair<String>> data = loadData(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-
+    
+    long totalTime  = 0;
     for (int i = 0; i < numIterations; i++) {
+      long t1 = System.nanoTime();
       List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
+      long t2 = System.nanoTime();
+      totalTime += (t2 - t1);
       assertEquals(10, result.size());
       assertTrue(Utils.unique(result));
       assertTrue(data.containsAll(result));
@@ -184,14 +206,21 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     // Check negatives
     for (int i = 0; i < numIterations; i++) {
+      long t1 = System.nanoTime();
       List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
       assertEquals(10, result.size());
       assertTrue(data.containsAll(result));
     }
 
     List<String> allfields = fieldList(data);
     for (int i = 0; i < numIterations; i++) {
+      long t1 = System.nanoTime();
       List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
+
       assertEquals(10, result.size());
       assertTrue(Utils.unique(result));
       assertTrue(allfields.containsAll(fieldList(result)));
@@ -199,10 +228,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     // Check negatives
     for (int i = 0; i < numIterations; i++) {
+      long t1 = System.nanoTime();
       List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
+      long t2 = System.nanoTime();
+      totalTime += t2 - t1;
       assertEquals(10, result.size());
       assertTrue(allfields.containsAll(fieldList(result)));
     }
+    log.debug("Time n={} ZRANDMEMBER x10 from {} size is {}ms", 4 * numIterations, numMembers, totalTime / 1_000_000);
   }
 
   @Test
@@ -231,7 +264,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int expected = list.size() - index - 1;
       total = scan(map, key, score, lastSeenField, count, 200, null);
       assertEquals(expected, total);
-      if (i % 100 == 0) {
+      if (i > 0 && i % 100 == 0) {
         log.debug(i);
       }
     }
@@ -319,7 +352,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       expected = index == list.size() - 1 ? 0 : countMatches(list, index + 1, pattern);
       total = scan(map, key, score, lastSeen, count, 200, pattern);
       assertEquals(expected, total);
-      if (i % 100 == 0) {
+      if (i > 0 && i % 100 == 0) {
         log.debug(i);
       }
     }
@@ -372,7 +405,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     int count = 0;
     for (String key : data.keySet()) {
       count++;
@@ -403,7 +436,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     for (String key : data.keySet()) {
       boolean res = ZSets.DELETE(map, key);
       assertTrue(res);
@@ -421,7 +454,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     int count = 0;
     for (String key : data.keySet()) {
       count++;
@@ -447,6 +480,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     int count = 0;
     for (Pair<String> p : data) {
       count++;
+      //System.out.println(count);
       double score = Double.parseDouble(p.getSecond());
       double value = ZSets.ZINCRBY(map, key, score, p.getFirst());
       assertEquals(score, value, 0.0);
@@ -472,7 +506,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     int numMembers = memoryDebug? 1000: 10000;
     String key = "key";
     List<Pair<String>> data = loadData(key, numMembers);
@@ -2885,7 +2919,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations =  memoryDebug? 10: 100;
 
@@ -2959,7 +2993,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       }
       // Delete set
       ZSets.DELETE(map, key);
-      if (i % 100 == 0) {
+      if (i > 0 && i % 100 == 0) {
         /*DEBUG*/ log.debug(i);
       }
     }
@@ -3031,7 +3065,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations =  memoryDebug? 10: 100;
 
@@ -3070,7 +3104,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       }
       // Delete set
       ZSets.DELETE(map, key);
-      if (i % 100 == 0) {
+      if (i > 0 && i % 100 == 0) {
         /*DEBUG*/ log.debug(i);
       }
     }
@@ -3134,7 +3168,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = /*276634853598895472L;*/ r.nextLong();
     r.setSeed(seed);
-    log.debug("Test seed={}", seed);
+    //log.debug("Test seed={}", seed);
     int numIterations =  memoryDebug? 10: 100;
     List<Pair<String>> data;
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -3186,7 +3220,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       } else {
         assertFalse(res);
       }
-      if (i % 100 == 0) {
+      if (i > 0 && i % 100 == 0) {
         log.debug(i);
       }
     }
