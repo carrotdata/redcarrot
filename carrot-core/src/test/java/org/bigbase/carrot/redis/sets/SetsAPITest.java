@@ -23,6 +23,7 @@ import org.bigbase.carrot.CarrotCoreBase;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -53,6 +54,37 @@ public class SetsAPITest extends CarrotCoreBase {
     return list;
   }
 
+  private void loadDataVoid(String key, int n) {
+    Random r = new Random();
+    for (int i = 0; i < n; i++) {
+      String m = Utils.getRandomStr(r, 16);
+      int res = Sets.SADD(map, key, m);
+      if (res == 0) {
+        log.debug("Can not add {} it exists={}", m, Sets.SISMEMBER(map, key, m));
+      }
+      assertEquals(1, res);
+      if (i % 100000 == 0) {
+        log.debug("Loaded {}", i);
+      }
+    }
+  }
+  
+  @Ignore
+  @Test
+  public void testSCARDSCAN() {
+    String key = "key";
+    for (int i = 0; i < 1; i++) {
+      log.debug("Run = "+ (i + 1));
+      int n = 1_000_000;
+      loadDataVoid(key, n);
+      long t1 = System.nanoTime();
+      long card = Sets.SCARDSCAN(map, key);
+      long t2 = System.nanoTime();
+      assertEquals(n, card);
+      log.debug("Time to count {} element = {} ms", n, (t2 - t1)/1_000_000);
+      Sets.DELETE(map, key);
+    }
+  }
   @Test
   public void testSimpleCalls() {
 
@@ -278,7 +310,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testCardinalityPerformance() {
 
     // Load X elements
-    int X = memoryDebug? 2000: 200000;
+    int X = memoryDebug? 2000: 1000000;
     int numIterations = memoryDebug? 100: 100000;
     String key = "key";
 

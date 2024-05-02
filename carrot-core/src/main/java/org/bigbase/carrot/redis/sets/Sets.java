@@ -495,6 +495,23 @@ public class Sets {
    */
   public static int SADD(
       BigSortedMap map, long keyPtr, int keySize, long elemPtr, int elemSize, boolean lock) {
+    return SADD(map, keyPtr, keySize, elemPtr, elemSize, lock, true);
+  }
+
+  /**
+   * SADD for single member (zero memory allocation)
+   *
+   * @param map sorted map storage
+   * @param keyPtr set key address
+   * @param keySize set key size
+   * @param elemPtr member value address
+   * @param elemSize member value size
+   * @param lock lock if true
+   * @param updateCardinality update cardinality
+   * @return 1 or 0
+   */
+  public static int SADD(
+      BigSortedMap map, long keyPtr, int keySize, long elemPtr, int elemSize, boolean lock, boolean updateCardinality) {
     Key k = getKey(keyPtr, keySize);
     try {
       if (lock) KeysLocker.writeLock(k);
@@ -509,7 +526,7 @@ public class Sets {
       if (map.execute(add)) {
         count++;
       }
-      if(count > 0) {
+      if(count > 0 && updateCardinality) {
         SINCRCARD(map, keyPtr, keySize, count);
       }
       return count;
@@ -517,7 +534,7 @@ public class Sets {
       if (lock) KeysLocker.writeUnlock(k);
     }
   }
-
+  
   /**
    * For testing only
    *
@@ -691,52 +708,67 @@ public class Sets {
   }
 
   /**
+   * For testing only
+   *
+   * @param map sorted map storage
+   * @param key set's key
+   * @return set's cardinality
+   */
+  public static long SCARDSCAN(BigSortedMap map, String key) {
+    long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
+    int keySize = key.length();
+    long result = SCARDSCAN(map, keyPtr, keySize);
+    UnsafeAccess.free(keyPtr);
+    return result;
+  }
+  
+  /**
    * Returns the set cardinality (number of elements) of the set stored at key. Return value Integer
    * reply: the cardinality (number of elements) of the set, or 0 if key does not exist.
-   *
+   * Uses fast scan. Complexity O(N). For small and medium size sets can be OK.
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
    * @return number of elements
    * @throws IOException
    */
-//  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
-//
-//    Key k = getKey(keyPtr, keySize);
-//    long total = 0;
-//    long startKeyPtr = 0, endKeyPtr = 0;
-//    try {
-//      KeysLocker.readLock(k);
-//      startKeyPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
-//      int kSize = buildKey(keyPtr, keySize, Commons.ZERO, 1, startKeyPtr);
-//      int endKeySize = kSize - 1;
-//      endKeyPtr = Utils.prefixKeyEnd(startKeyPtr, endKeySize);
-//      if (endKeyPtr == 0) {
-//        endKeySize = 0;
-//      }
-//      BigSortedMapScanner scanner = map.getScanner(startKeyPtr, kSize, endKeyPtr, endKeySize);
-//      if (scanner == null) {
-//        return 0; // empty or does not exists
-//      }
-//      while (scanner.hasNext()) {
-//        long valuePtr = scanner.valueAddress();
-//        total += numElementsInValue(valuePtr);
-//        scanner.next();
-//      }
-//      scanner.close();
-//    } catch (IOException e) {
-//      // should never be thrown
-//    } finally {
-//      if (startKeyPtr > 0) {
-//        UnsafeAccess.free(startKeyPtr);
-//      }
-//      if (endKeyPtr > 0) {
-//        UnsafeAccess.free(endKeyPtr);
-//      }
-//      KeysLocker.readUnlock(k);
-//    }
-//    return total;
-//  }
+  public static long SCARDSCAN(BigSortedMap map, long keyPtr, int keySize) {
+
+    Key k = getKey(keyPtr, keySize);
+    long total = 0;
+    long startKeyPtr = 0, endKeyPtr = 0;
+    try {
+      KeysLocker.readLock(k);
+      startKeyPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
+      int kSize = buildKey(keyPtr, keySize, Commons.ZERO, 1, startKeyPtr);
+      int endKeySize = kSize - 1;
+      endKeyPtr = Utils.prefixKeyEnd(startKeyPtr, endKeySize);
+      if (endKeyPtr == 0) {
+        endKeySize = 0;
+      }
+      BigSortedMapScanner scanner = map.getScanner(startKeyPtr, kSize, endKeyPtr, endKeySize);
+      if (scanner == null) {
+        return 0; // empty or does not exists
+      }
+      while (scanner.hasNext()) {
+        long valuePtr = scanner.valueAddress();
+        total += numElementsInValue(valuePtr);
+        scanner.next();
+      }
+      scanner.close();
+    } catch (IOException e) {
+      // should never be thrown
+    } finally {
+      if (startKeyPtr > 0) {
+        UnsafeAccess.free(startKeyPtr);
+      }
+      if (endKeyPtr > 0) {
+        UnsafeAccess.free(endKeyPtr);
+      }
+      KeysLocker.readUnlock(k);
+    }
+    return total;
+  }
 
   public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
     // This key contains sets cardinality
@@ -762,7 +794,6 @@ public class Sets {
       return map.incrementLongOp(keyPtr, keySize, incr);
     } catch (OperationFailedException e) {
       throw new RuntimeException(e);
-
     }
   }
   
@@ -990,6 +1021,23 @@ public class Sets {
    */
   public static int SREM(
       BigSortedMap map, long keyPtr, int keySize, long elemPtr, int elemSize, boolean lock) {
+    return SREM(map, keyPtr, keySize, elemPtr, elemSize, lock, true);
+  }
+
+  /**
+   * SREM for single member (zero object allocation)
+   *
+   * @param map sorted set storage
+   * @param keyPtr set key address
+   * @param keySize set key size
+   * @param elemPtr member address
+   * @param elemSize member size
+   * @param lock lock if true
+   * @param updateCardinality update cardinality
+   * @return 1 or 0
+   */
+  public static int SREM(
+      BigSortedMap map, long keyPtr, int keySize, long elemPtr, int elemSize, boolean lock, boolean updateCardinality) {
     Key k = getKey(keyPtr, keySize);
     try {
       if (lock) {
@@ -1006,11 +1054,11 @@ public class Sets {
       if (map.execute(remove)) {
         removed++;
         if (remove.checkForEmpty && isEmpty(map, keyPtr, keySize)) {
-          DELETE(map, keyPtr, keySize, lock);
+          DELETE(map, keyPtr, keySize, lock, updateCardinality);
           return removed;
         }
       }
-      if (removed > 0) {
+      if (removed > 0 && updateCardinality) {
         SINCRCARD(map, keyPtr, keySize, -removed);
       }
       return removed;
@@ -1020,7 +1068,6 @@ public class Sets {
       }
     }
   }
-
   /**
    * For TESTING only
    *
@@ -1340,6 +1387,20 @@ public class Sets {
   }
 
   /**
+   * For testing only
+   *
+   * @param map sorted map storage
+   * @param key set's key
+   * @return set's cardinality
+   */
+  public static boolean DELETE(BigSortedMap map, String key) {
+    long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
+    int keySize = key.length();
+    boolean result = DELETE(map, keyPtr, keySize);
+    UnsafeAccess.free(keyPtr);
+    return result;
+  }
+  /**
    * Delete set by Key
    *
    * @param map sorted map
@@ -1348,7 +1409,7 @@ public class Sets {
    * @return true or false
    */
   public static boolean DELETE(BigSortedMap map, long keyPtr, int keySize) {
-    return DELETE(map, keyPtr, keySize, true);
+    return DELETE(map, keyPtr, keySize, true, true);
   }
 
   /**
@@ -1358,9 +1419,10 @@ public class Sets {
    * @param keyPtr key address
    * @param keySize key size
    * @param lock lock if true
+   * @param deleteCard delete cardinality
    * @return true or false
    */
-  public static boolean DELETE(BigSortedMap map, long keyPtr, int keySize, boolean lock) {
+  public static boolean DELETE(BigSortedMap map, long keyPtr, int keySize, boolean lock, boolean deleteCard) {
     Key k = getKey(keyPtr, keySize);
     long startKeyPtr = 0, endKeyPtr = 0;
     try {
@@ -1377,7 +1439,9 @@ public class Sets {
       long deleted = map.deleteRange(startKeyPtr, newKeySize, endKeyPtr, endKeySize);
       return deleted > 0;
     } finally {
-      deleteCardKey(map, keyPtr, keySize);
+      if (deleteCard) {
+        deleteCardKey(map, keyPtr, keySize);
+      }
       if (startKeyPtr > 0) {
         UnsafeAccess.free(startKeyPtr);
       }

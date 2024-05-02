@@ -24,7 +24,7 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /** Scanner to iterate through hash field- values */
-public class HashScanner extends Scanner {
+public final class HashScanner extends Scanner {
 
   /*
    * This is used to speed up reverse scanner.

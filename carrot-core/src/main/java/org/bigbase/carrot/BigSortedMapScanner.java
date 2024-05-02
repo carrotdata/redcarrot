@@ -15,7 +15,6 @@ package org.bigbase.carrot;
 
 import java.io.IOException;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +27,9 @@ import org.bigbase.carrot.util.Utils;
  * TODO Scanner w/o thread locals <br>
  * WARNING: we can not create multiple scanners in a single thread <br>
  */
-public class BigSortedMapScanner extends Scanner {
+public final class BigSortedMapScanner extends Scanner {
 
+  @SuppressWarnings("unused")
   private static final Logger log = LogManager.getLogger(BigSortedMapScanner.class);
 
   private BigSortedMap map;
@@ -347,30 +347,7 @@ public class BigSortedMapScanner extends Scanner {
             version = tmp.getSeqNumberSplitOrMerge();
             continue;
           }
-          //          if (tmp.hasRecentUnsafeModification()) {
-          //            IndexBlock temp = cmap.higherKey(currentIndexBlock);
-          //            if (temp != tmp) {
-          //              continue;
-          //            }
-          //          }
-          // We need this lock to get current first key,
-          // because previous one could have been deleted
-          //          byte[] firstKey = tmp.getFirstKey();
-          //          int res = Utils.compareTo(firstKey, 0, firstKey.length,
-          //            nextBlockFirstKey, nextBlockFirstKeySize);
-          //          if ( res > 0) {
-          //            // set new next block first key
-          //            //UnsafeAccess.free(nextBlockFirstKey);
-          //            //nextBlockFirstKey = UnsafeAccess.allocAndCopy(firstKey, 0,
-          // firstKey.length);
-          //            //nextBlockFirstKeySize = firstKey.length;
-          //          } else if (res < 0) {
-          //            /*DEBUG*/ log.error("index block split on-the-fly");
-          //            this.currentIndexBlock  = tmp;
-          //            continue;
-          //          }
-          // set startRow to null, because it is out of range of a IndexBlockScanner
-          if (!isMultiSafe) {
+           if (!isMultiSafe) {
             this.indexScanner =
                 IndexBlockScanner.getScanner(
                     tmp,

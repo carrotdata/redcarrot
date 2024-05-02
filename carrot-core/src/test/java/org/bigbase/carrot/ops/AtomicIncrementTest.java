@@ -38,9 +38,9 @@ import org.junit.Test;
  * end it scans all the keys and calculated total value of all keys, compares it with expected
  * number of increments.
  */
-public class AtomicIncrementTestMT {
+public class AtomicIncrementTest {
 
-  private static final Logger log = LogManager.getLogger(AtomicIncrementTestMT.class);
+  private static final Logger log = LogManager.getLogger(AtomicIncrementTest.class);
 
   static BigSortedMap map;
   static AtomicLong totalLoaded = new AtomicLong();

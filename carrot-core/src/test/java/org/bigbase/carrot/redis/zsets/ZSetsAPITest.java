@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.CarrotCoreBase;
+import org.bigbase.carrot.redis.sets.Sets;
 import org.bigbase.carrot.util.Pair;
 import org.bigbase.carrot.util.Utils;
 import org.junit.Before;
@@ -43,7 +44,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     super(c);
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    //log.debug("Global seed={}", seed);
   }
 
   @Before
@@ -61,24 +61,18 @@ public class ZSetsAPITest extends CarrotCoreBase {
   private List<Pair<String>> loadData(String key, int n) {
     List<Pair<String>> list = new ArrayList<>();
 
-    long totalTime = 0;
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
       list.add(new Pair<>(m, score));
-      long t1 = System.nanoTime();
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
-    //log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
-
     return list;
   }
 
@@ -90,36 +84,27 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random rnd = new Random();
     long seed = rnd.nextLong();
     rnd.setSeed(seed);
-    //log.debug("Data seed="+ seed);
-    long totalTime= System.nanoTime();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
-      long t1 = System.nanoTime();
-      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
+      long res = ZSets.ZADD(map, key, new String[] { m }, new double[] { sc }, false);
       assertEquals(1, (int) res);
       list.add(new Pair<>(m, score));
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
     }
-    Collections.sort(
-        list,
-        new Comparator<Pair<String>>() {
-          @Override
-          public int compare(Pair<String> o1, Pair<String> o2) {
-            double d1 = Double.parseDouble(o1.getSecond());
-            double d2 = Double.parseDouble(o2.getSecond());
-            if (d1 < d2) return -1;
-            if (d1 > d2) return 1;
-            return 0;
-          }
-        });
-   // log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
-
+    Collections.sort(list, new Comparator<Pair<String>>() {
+      @Override
+      public int compare(Pair<String> o1, Pair<String> o2) {
+        double d1 = Double.parseDouble(o1.getSecond());
+        double d2 = Double.parseDouble(o2.getSecond());
+        if (d1 < d2) return -1;
+        if (d1 > d2) return 1;
+        return 0;
+      }
+    });
     return list;
   }
 
@@ -141,7 +126,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    //log.debug("Data map seed={}", seed);
     for (int i = 0; i < numKeys; i++) {
       String key = Utils.getRandomStr(r, 12);
       map.put(key, loadData(key, n));
@@ -151,25 +135,19 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   private List<Pair<String>> loadDataSameScore(String key, int n) {
     List<Pair<String>> list = new ArrayList<>();
-    long totalTime = System.nanoTime();
     for (int i = 0; i < n; i++) {
       String m = Utils.getRandomStr(rnd, 12);
 
       double sc = 1.08E8D; // some score
       String score = Double.toString(sc);
       list.add(new Pair<String>(m, score));
-      long t1 = System.nanoTime();
       long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
       }
     }
     Collections.sort(list);
-   // log.debug("Load time n={} ZADD is {}ms", n, totalTime / 1_000_000);
-
     return list;
   }
 
@@ -183,111 +161,116 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testZRANDMEMBER() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      // TODO: check multiple \r\n in output
+      int numMembers = capacity[j];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
+      List<Pair<String>> data = loadData(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    // TODO: check multiple \r\n in output
-    int numMembers = 1000;
-    int numIterations = memoryDebug? 10: 100;
-    String key = "key";
-    int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
-    List<Pair<String>> data = loadData(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-    
-    long totalTime  = 0;
-    for (int i = 0; i < numIterations; i++) {
-      long t1 = System.nanoTime();
-      List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
-      long t2 = System.nanoTime();
-      totalTime += (t2 - t1);
-      assertEquals(10, result.size());
-      assertTrue(Utils.unique(result));
-      assertTrue(data.containsAll(result));
+      long totalTime = 0;
+      for (int i = 0; i < numIterations; i++) {
+        long t1 = System.nanoTime();
+        List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
+        long t2 = System.nanoTime();
+        totalTime += (t2 - t1);
+        assertEquals(10, result.size());
+        assertTrue(Utils.unique(result));
+        assertTrue(data.containsAll(result));
+      }
+
+      // Check negatives
+      for (int i = 0; i < numIterations; i++) {
+        long t1 = System.nanoTime();
+        List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
+        long t2 = System.nanoTime();
+        totalTime += t2 - t1;
+        assertEquals(10, result.size());
+        assertTrue(data.containsAll(result));
+      }
+
+      List<String> allfields = fieldList(data);
+      for (int i = 0; i < numIterations; i++) {
+        long t1 = System.nanoTime();
+        List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
+        long t2 = System.nanoTime();
+        totalTime += t2 - t1;
+
+        assertEquals(10, result.size());
+        assertTrue(Utils.unique(result));
+        assertTrue(allfields.containsAll(fieldList(result)));
+      }
+
+      // Check negatives
+      for (int i = 0; i < numIterations; i++) {
+        long t1 = System.nanoTime();
+        List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
+        long t2 = System.nanoTime();
+        totalTime += t2 - t1;
+        assertEquals(10, result.size());
+        assertTrue(allfields.containsAll(fieldList(result)));
+      }
+      log.debug("Time n={} ZRANDMEMBER x10 from {} size is {}ms", 4 * numIterations, numMembers,
+        totalTime / 1_000_000);
+      Sets.DELETE(map, key);
     }
-
-    // Check negatives
-    for (int i = 0; i < numIterations; i++) {
-      long t1 = System.nanoTime();
-      List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
-      assertEquals(10, result.size());
-      assertTrue(data.containsAll(result));
-    }
-
-    List<String> allfields = fieldList(data);
-    for (int i = 0; i < numIterations; i++) {
-      long t1 = System.nanoTime();
-      List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, 10, true, bufSize);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
-
-      assertEquals(10, result.size());
-      assertTrue(Utils.unique(result));
-      assertTrue(allfields.containsAll(fieldList(result)));
-    }
-
-    // Check negatives
-    for (int i = 0; i < numIterations; i++) {
-      long t1 = System.nanoTime();
-      List<Pair<String>> result = ZSets.ZRANDMEMBER(map, key, -10, true, bufSize);
-      long t2 = System.nanoTime();
-      totalTime += t2 - t1;
-      assertEquals(10, result.size());
-      assertTrue(allfields.containsAll(fieldList(result)));
-    }
-    log.debug("Time n={} ZRANDMEMBER x10 from {} size is {}ms", 4 * numIterations, numMembers, totalTime / 1_000_000);
   }
 
   @Test
   public void testZSCANNoRegex() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      // Load X elements
+      int X = memoryDebug ? 1000 : 10000;
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      Random r = new Random();
+      List<Pair<String>> list = loadDataSortByScore(key, X);
+      // Check cardinality
+      assertEquals(X, (int) ZSets.ZCARD(map, key));
 
-    // Load X elements
-    int X = memoryDebug? 1000: 10000;
-    int numIterations = memoryDebug? 10: 100;
-    String key = "key";
-    Random r = new Random();
-    List<Pair<String>> list = loadDataSortByScore(key, X);
-    // Check cardinality
-    assertEquals(X, (int) ZSets.ZCARD(map, key));
+      // Check full scan
+      String lastSeenMember = null;
+      int count = 11;
+      int total = scan(map, key, 0, lastSeenMember, count, 200, null);
+      assertEquals(X, total);
+      // Check correctness of partial scans
 
-    // Check full scan
-    String lastSeenMember = null;
-    int count = 11;
-    int total = scan(map, key, 0, lastSeenMember, count, 200, null);
-    assertEquals(X, total);
-    // Check correctness of partial scans
-
-    for (int i = 0; i < numIterations; i++) {
-      int index = r.nextInt(list.size());
-      String lastSeenField = list.get(index).getFirst();
-      double score = Double.parseDouble(list.get(index).getSecond());
-      int expected = list.size() - index - 1;
-      total = scan(map, key, score, lastSeenField, count, 200, null);
-      assertEquals(expected, total);
-      if (i > 0 && i % 100 == 0) {
-        log.debug(i);
+      for (int i = 0; i < numIterations; i++) {
+        int index = r.nextInt(list.size());
+        String lastSeenField = list.get(index).getFirst();
+        double score = Double.parseDouble(list.get(index).getSecond());
+        int expected = list.size() - index - 1;
+        total = scan(map, key, score, lastSeenField, count, 200, null);
+        assertEquals(expected, total);
+        if (i > 0 && i % 100 == 0) {
+          log.debug(i);
+        }
       }
+      // Check edge cases
+      String before = "A";
+      String after = "zzzzzzzzzzzzzzzz";
+      double min = -Double.MAX_VALUE;
+      double max = Double.MAX_VALUE;
+
+      total = scan(map, key, min, before, count, 200, null);
+      assertEquals(X, total);
+      total = scan(map, key, max, after, count, 200, null);
+      assertEquals(0, total);
+
+      // Test buffer underflow - small buffer
+      // buffer size is less than needed to keep 'count' members
+
+      total = scan(map, key, min, before, count, 100, null);
+      assertEquals(X, total);
+      total = scan(map, key, max, after, count, 100, null);
+      assertEquals(0, total);
+      Sets.DELETE(map, key);
     }
-
-    // Check edge cases
-
-    String before = "A";
-    String after = "zzzzzzzzzzzzzzzz";
-    double min = -Double.MAX_VALUE;
-    double max = Double.MAX_VALUE;
-
-    total = scan(map, key, min, before, count, 200, null);
-    assertEquals(X, total);
-    total = scan(map, key, max, after, count, 200, null);
-    assertEquals(0, total);
-
-    // Test buffer underflow - small buffer
-    // buffer size is less than needed to keep 'count' members
-
-    total = scan(map, key, min, before, count, 100, null);
-    assertEquals(X, total);
-    total = scan(map, key, max, after, count, 100, null);
-    assertEquals(0, total);
   }
 
   private int scan(
@@ -324,177 +307,197 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testZSCANWithRegex() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      // Load X elements
+      int X = memoryDebug ? 1000 : capacity[j];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      String regex = "^A.*";
+      Random r = new Random();
+      List<Pair<String>> list = loadDataSortByScore(key, X);
+      // Check cardinality
+      assertEquals(X, (int) ZSets.ZCARD(map, key)); // Check cardinality
 
-    // Load X elements
-    int X = memoryDebug? 1000: 10000;
-    int numIterations = memoryDebug? 10: 100;
-    String key = "key";
-    String regex = "^A.*";
-    Random r = new Random();
-    List<Pair<String>> list = loadDataSortByScore(key, X);
-    // Check cardinality
-    assertEquals(X, (int) ZSets.ZCARD(map, key)); // Check cardinality
-
-    // Check full scan
-    int expected = countMatches(list, 0, regex);
-    String lastSeenMember = null;
-    int count = 11;
-    int total = scan(map, key, 0, lastSeenMember, count, 200, regex);
-    assertEquals(expected, total);
-
-    // Check correctness of partial scans
-
-    for (int i = 0; i < numIterations; i++) {
-      int index = r.nextInt(list.size());
-      String lastSeen = list.get(index).getFirst();
-      double score = Double.parseDouble(list.get(index).getSecond());
-      String pattern = "^" + lastSeen.charAt(0) + ".*";
-      expected = index == list.size() - 1 ? 0 : countMatches(list, index + 1, pattern);
-      total = scan(map, key, score, lastSeen, count, 200, pattern);
+      // Check full scan
+      int expected = countMatches(list, 0, regex);
+      String lastSeenMember = null;
+      int count = 11;
+      int total = scan(map, key, 0, lastSeenMember, count, 200, regex);
       assertEquals(expected, total);
-      if (i > 0 && i % 100 == 0) {
-        log.debug(i);
+
+      // Check correctness of partial scans
+
+      for (int i = 0; i < numIterations; i++) {
+        int index = r.nextInt(list.size());
+        String lastSeen = list.get(index).getFirst();
+        double score = Double.parseDouble(list.get(index).getSecond());
+        String pattern = "^" + lastSeen.charAt(0) + ".*";
+        expected = index == list.size() - 1 ? 0 : countMatches(list, index + 1, pattern);
+        total = scan(map, key, score, lastSeen, count, 200, pattern);
+        assertEquals(expected, total);
+        if (i > 0 && i % 100 == 0) {
+          log.debug(i);
+        }
       }
+
+      // Check edge cases
+
+      String before = "A"; // less than any values
+      String after = "zzzzzzzzzzzzzzzz"; // larger than any values
+      double min = -Double.MAX_VALUE;
+      double max = Double.MAX_VALUE;
+      expected = countMatches(list, 0, regex);
+
+      total = scan(map, key, min, before, count, 200, regex);
+      assertEquals(expected, total);
+      total = scan(map, key, max, after, count, 200, regex);
+      assertEquals(0, total);
+
+      // Test buffer underflow - small buffer
+      // buffer size is less than needed to keep 'count' members
+      expected = countMatches(list, 0, regex);
+      total = scan(map, key, min, before, count, 100, regex);
+      assertEquals(expected, total);
+      total = scan(map, key, max, after, count, 100, regex);
+      assertEquals(0, total);
+      
+      Sets.DELETE(map, key);
     }
-
-    // Check edge cases
-
-    String before = "A"; // less than any values
-    String after = "zzzzzzzzzzzzzzzz"; // larger than any values
-    double min = -Double.MAX_VALUE;
-    double max = Double.MAX_VALUE;
-    expected = countMatches(list, 0, regex);
-
-    total = scan(map, key, min, before, count, 200, regex);
-    assertEquals(expected, total);
-    total = scan(map, key, max, after, count, 200, regex);
-    assertEquals(0, total);
-
-    // Test buffer underflow - small buffer
-    // buffer size is less than needed to keep 'count' members
-    expected = countMatches(list, 0, regex);
-    total = scan(map, key, min, before, count, 100, regex);
-    assertEquals(expected, total);
-    total = scan(map, key, max, after, count, 100, regex);
-    assertEquals(0, total);
   }
 
   @Test
   public void testAddScoreMultiple() {
-    //TODO: This test just calls ZSCORE - no add
-    int numKeys = memoryDebug? 100: 1000;
-    int numMembers = 100;
-    Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
+    // TODO: This test just calls ZSCORE - no add
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      int numKeys = memoryDebug ? 100 : 100;
+      int numMembers = 100;
+      Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
 
-    for (String key : data.keySet()) {
-      List<Pair<String>> list = data.get(key);
-      for (Pair<String> p : list) {
-        String member = p.getFirst();
-        double score = ZSets.ZSCORE(map, key, member);
-        assertEquals(score, Double.parseDouble(p.getSecond()), 0.0);
+      for (String key : data.keySet()) {
+        List<Pair<String>> list = data.get(key);
+        for (Pair<String> p : list) {
+          String member = p.getFirst();
+          double score = ZSets.ZSCORE(map, key, member);
+          assertEquals(score, Double.parseDouble(p.getSecond()), 0.0);
+        }
       }
+      data.keySet().stream().forEach(x -> Sets.DELETE(map, x));
     }
   }
 
   @Test
   public void testAddScoreIncrementMultiple() {
-
-    int numKeys = memoryDebug? 10: 1000;
-    int numMembers = memoryDebug? 550: 1000;
-    Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
-    Random r = new Random();
-    long seed = r.nextLong();
-    r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
-    int count = 0;
-    for (String key : data.keySet()) {
-      count++;
-      List<Pair<String>> list = data.get(key);
-      for (Pair<String> p : list) {
-        String member = p.getFirst();
-        double expected = Double.parseDouble(p.getSecond());
-        double score = ZSets.ZSCORE(map, key, member);
-        assertEquals(score, expected, 0.0);
-        double incr = r.nextDouble() * r.nextInt();
-        double newValue = ZSets.ZINCRBY(map, key, incr, member);
-        assertEquals(expected + incr, newValue, 0.0);
-        score = ZSets.ZSCORE(map, key, member);
-        assertEquals(expected + incr, score, 0.0);
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      int numKeys = memoryDebug ? 10 : 100;
+      int numMembers = memoryDebug ? 550 : capacity[j];
+      Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
+      Random r = new Random();
+      long seed = r.nextLong();
+      r.setSeed(seed);
+      int count = 0;
+      for (String key : data.keySet()) {
+        count++;
+        List<Pair<String>> list = data.get(key);
+        for (Pair<String> p : list) {
+          String member = p.getFirst();
+          double expected = Double.parseDouble(p.getSecond());
+          double score = ZSets.ZSCORE(map, key, member);
+          assertEquals(score, expected, 0.0);
+          double incr = r.nextDouble() * r.nextInt();
+          double newValue = ZSets.ZINCRBY(map, key, incr, member);
+          assertEquals(expected + incr, newValue, 0.0);
+          score = ZSets.ZSCORE(map, key, member);
+          assertEquals(expected + incr, score, 0.0);
+        }
+        if (count % 100 == 0) {
+          log.debug(count);
+        }
       }
-      if (count % 100 == 0) {
-        log.debug(count);
-      }
+      data.keySet().stream().forEach(x -> Sets.DELETE(map, x));
     }
   }
 
   @Test
   public void testAddDelete() {
-    //FIXME: IndexBlock splits are not being freed
-    int numKeys = memoryDebug? 10: 1000;
-    int numMembers = 1000;
-    Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
-    Random r = new Random();
-    long seed = r.nextLong();
-    r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
-    for (String key : data.keySet()) {
-      boolean res = ZSets.DELETE(map, key);
-      assertTrue(res);
+    // FIXME: IndexBlock splits are not being freed
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      int numKeys = memoryDebug ? 10 : 100;
+      int numMembers = capacity[j];
+      Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
+      Random r = new Random();
+      long seed = r.nextLong();
+      r.setSeed(seed);
+      // log.debug("Test seed={}", seed);
+      for (String key : data.keySet()) {
+        boolean res = ZSets.DELETE(map, key);
+        assertTrue(res);
+      }
+      long count = map.countRecords();
+      assertEquals(0, (int) count);
+      data.keySet().stream().forEach(x -> Sets.DELETE(map, x));
     }
-    long count = map.countRecords();
-    assertEquals(0, (int) count);
   }
 
   @Test
   public void testAddRemove() {
-    //FIXME: IndexBlock splits are not being freed
-    int numKeys = memoryDebug? 10: 1000;
-    int numMembers = memoryDebug? 600: 1000;
-    Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
-    Random r = new Random();
-    long seed = r.nextLong();
-    r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
-    int count = 0;
-    for (String key : data.keySet()) {
-      count++;
-      List<Pair<String>> list = data.get(key);
-      for (Pair<String> p : list) {
-        long res = ZSets.ZREM(map, key, p.getFirst());
-        assertEquals(1, (int) res);
+    // FIXME: IndexBlock splits are not being freed
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      int numKeys = memoryDebug ? 10 : 1000;
+      int numMembers = memoryDebug ? 600 : capacity[j];
+      Map<String, List<Pair<String>>> data = loadDataMap(numKeys, numMembers);
+      Random r = new Random();
+      long seed = r.nextLong();
+      r.setSeed(seed);
+      // log.debug("Test seed={}", seed);
+      int count = 0;
+      for (String key : data.keySet()) {
+        count++;
+        List<Pair<String>> list = data.get(key);
+        for (Pair<String> p : list) {
+          long res = ZSets.ZREM(map, key, p.getFirst());
+          assertEquals(1, (int) res);
+        }
+        if (count % 100 == 0) {
+          log.debug(count);
+        }
       }
-      if (count % 100 == 0) {
-        log.debug(count);
-      }
+      long c = map.countRecords();
+      assertEquals(0, (int) c);
+      data.keySet().stream().forEach(x -> Sets.DELETE(map, x));
     }
-    long c = map.countRecords();
-    assertEquals(0, (int) c);
   }
 
   @Test
   public void testIncrement() {
-
-    int numMembers = memoryDebug? 100: 1000;
-    String key = "key";
-    List<Pair<String>> data = getData(numMembers);
-    int count = 0;
-    for (Pair<String> p : data) {
-      count++;
-      //System.out.println(count);
-      double score = Double.parseDouble(p.getSecond());
-      double value = ZSets.ZINCRBY(map, key, score, p.getFirst());
-      assertEquals(score, value, 0.0);
-      long card = ZSets.ZCARD(map, key);
-      assertEquals(count, (int) card);
-      value = ZSets.ZINCRBY(map, key, score, p.getFirst());
-      assertEquals(score + score, value, 0.0);
-      card = ZSets.ZCARD(map, key);
-      assertEquals(count, (int) card);
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      int numMembers = memoryDebug ? 100 : capacity[j];
+      String key = "key";
+      List<Pair<String>> data = getData(numMembers);
+      int count = 0;
+      for (Pair<String> p : data) {
+        count++;
+        double score = Double.parseDouble(p.getSecond());
+        double value = ZSets.ZINCRBY(map, key, score, p.getFirst());
+        assertEquals(score, value, 0.0);
+        long card = ZSets.ZCARD(map, key);
+        assertEquals(count, (int) card);
+        value = ZSets.ZINCRBY(map, key, score, p.getFirst());
+        assertEquals(score + score, value, 0.0);
+        card = ZSets.ZCARD(map, key);
+        assertEquals(count, (int) card);
+      }
+      boolean res = ZSets.DELETE(map, key);
+      assertTrue(res);
+      long c = map.countRecords();
+      assertEquals(0, (int) c);
+      Sets.DELETE(map, key);
     }
-    boolean res = ZSets.DELETE(map, key);
-    assertTrue(res);
-    long c = map.countRecords();
-    assertEquals(0, (int) c);
   }
 
   @Test
@@ -503,606 +506,644 @@ public class ZSetsAPITest extends CarrotCoreBase {
     // ZADD adds new or replaces existing
     // ZADDNX adds only if not exists
     // ZADDXX replaces existing one
-    Random r = new Random();
-    long seed = r.nextLong();
-    r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
-    int numMembers = memoryDebug? 1000: 10000;
-    String key = "key";
-    List<Pair<String>> data = loadData(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
+    int[] capacity = new int[] { 100, 10000 };
+    for (int j = 0; j < capacity.length; j++) {
+      Random r = new Random();
+      long seed = r.nextLong();
+      r.setSeed(seed);
+      // log.debug("Test seed={}", seed);
+      int numMembers = memoryDebug ? 1000 : capacity[j];
+      String key = "key";
+      List<Pair<String>> data = loadData(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    // load again with new scores
+      // load again with new scores
 
-    for (Pair<String> p : data) {
-      Double score = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNotNull(score);
-      score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADD(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
-      assertEquals(0, (int) res);
-      Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNotNull(newScore);
-      assertEquals(score, newScore);
-    }
+      for (Pair<String> p : data) {
+        Double score = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNotNull(score);
+        score = r.nextDouble() * r.nextInt();
+        long res =
+            ZSets.ZADD(map, key, new String[] { p.getFirst() }, new double[] { score }, false);
+        assertEquals(0, (int) res);
+        Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNotNull(newScore);
+        assertEquals(score, newScore);
+      }
 
-    card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-    // ZADDNX
+      card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
+      // ZADDNX
 
-    for (Pair<String> p : data) {
-      Double score = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNotNull(score);
-      score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADDNX(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
-      assertEquals(0, (int) res);
-    }
-    card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-    // Delete set
-    boolean result = ZSets.DELETE(map, key);
-    assertTrue(result);
-    assertEquals(0L, map.countRecords());
+      for (Pair<String> p : data) {
+        Double score = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNotNull(score);
+        score = r.nextDouble() * r.nextInt();
+        long res =
+            ZSets.ZADDNX(map, key, new String[] { p.getFirst() }, new double[] { score }, false);
+        assertEquals(0, (int) res);
+      }
+      card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
+      // Delete set
+      boolean result = ZSets.DELETE(map, key);
+      assertTrue(result);
+      assertEquals(0L, map.countRecords());
 
-    for (Pair<String> p : data) {
-      // log.debug(count);
-      double score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADDNX(map, key, new String[] {p.getFirst()}, new double[] {score}, false);
-      assertEquals(1, (int) res);
-      Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNotNull(newScore);
-      assertEquals(score, newScore, 0.0);
-    }
+      for (Pair<String> p : data) {
+        // log.debug(count);
+        double score = r.nextDouble() * r.nextInt();
+        long res =
+            ZSets.ZADDNX(map, key, new String[] { p.getFirst() }, new double[] { score }, false);
+        assertEquals(1, (int) res);
+        Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNotNull(newScore);
+        assertEquals(score, newScore, 0.0);
+      }
 
-    // ZADDXX
-    for (Pair<String> p : data) {
-      Double score = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNotNull(score);
-      score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADDXX(map, key, new String[] {p.getFirst()}, new double[] {score}, true);
-      assertEquals(1, (int) res);
-    }
+      // ZADDXX
+      for (Pair<String> p : data) {
+        Double score = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNotNull(score);
+        score = r.nextDouble() * r.nextInt();
+        long res =
+            ZSets.ZADDXX(map, key, new String[] { p.getFirst() }, new double[] { score }, true);
+        assertEquals(1, (int) res);
+      }
 
-    // Delete set
-    result = ZSets.DELETE(map, key);
-    assertTrue(result);
+      // Delete set
+      result = ZSets.DELETE(map, key);
+      assertTrue(result);
 
-    // Try loading again with ZADDXX
-    for (Pair<String> p : data) {
-      double score = r.nextDouble() * r.nextInt();
-      long res = ZSets.ZADDXX(map, key, new String[] {p.getFirst()}, new double[] {score}, true);
-      assertEquals(0, (int) res);
-      Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
-      assertNull(newScore);
+      // Try loading again with ZADDXX
+      for (Pair<String> p : data) {
+        double score = r.nextDouble() * r.nextInt();
+        long res =
+            ZSets.ZADDXX(map, key, new String[] { p.getFirst() }, new double[] { score }, true);
+        assertEquals(0, (int) res);
+        Double newScore = ZSets.ZSCORE(map, key, p.getFirst());
+        assertNull(newScore);
+      }
+      ZSets.DELETE(map, key);
     }
   }
 
   @Test
   public void testZCOUNT() {
+    // We test both compact and normal mode
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
 
-    Random r = new Random();
-    int numMembers =  memoryDebug? 100: 1000;
-    String key = "key";
-    List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
+      Random r = new Random();
+      int numMembers = memoryDebug ? 100 : 1000;
+      String key = "key";
+      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    // 1. test both inclusive: start and end
-    for (int i = 0; i < 100; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
+      // 1. test both inclusive: start and end
+      for (int i = 0; i < 100; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        double min = Double.parseDouble(data.get(start).getSecond());
+        double max = Double.parseDouble(data.get(stop).getSecond());
+
+        int expected = stop - start + 1; // both are inclusive
+        long count = ZSets.ZCOUNT(map, key, min, true, max, true);
+        assertEquals(expected, (int) count);
       }
-      double min = Double.parseDouble(data.get(start).getSecond());
-      double max = Double.parseDouble(data.get(stop).getSecond());
+      // 2. test both non-inclusive
+      for (int i = 0; i < 100; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        double min = Double.parseDouble(data.get(start).getSecond());
+        double max = Double.parseDouble(data.get(stop).getSecond());
 
-      int expected = stop - start + 1; // both are inclusive
-      long count = ZSets.ZCOUNT(map, key, min, true, max, true);
-      assertEquals(expected, (int) count);
+        int expected = stop - start - 1; // both are exclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZCOUNT(map, key, min, false, max, false);
+        assertEquals(expected, (int) count);
+      }
+
+      // 3. test start inclusive end non-inclusive
+      for (int i = 0; i < 100; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        double min = Double.parseDouble(data.get(start).getSecond());
+        double max = Double.parseDouble(data.get(stop).getSecond());
+
+        int expected = stop - start; // both are inclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZCOUNT(map, key, min, true, max, false);
+        assertEquals(expected, (int) count);
+      }
+
+      // 4. test start non-inclusive, end - inclusive
+      for (int i = 0; i < 100; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        double min = Double.parseDouble(data.get(start).getSecond());
+        double max = Double.parseDouble(data.get(stop).getSecond());
+
+        int expected = stop - start; // both are inclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZCOUNT(map, key, min, false, max, true);
+        assertEquals(expected, (int) count);
+      }
+      // Test Edges
+
+      // Both start and stop are out of range () less than minimum - all 4 inclusive
+      // combos
+      double MIN = Double.parseDouble(data.get(0).getSecond());
+      double MAX = Double.parseDouble(data.get(data.size() - 1).getSecond());
+      long expected = 0;
+      long count = ZSets.ZCOUNT(map, key, MIN - 2, false, MIN - 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 2, true, MIN - 1, true);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 2, true, MIN - 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 2, false, MIN - 1, true);
+      assertEquals(expected, count);
+      // Both start and stop are greater than maximum score
+      count = ZSets.ZCOUNT(map, key, MAX + 1, false, MAX + 2, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MAX + 1, true, MAX + 2, true);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MAX + 1, true, MAX + 2, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MAX + 1, false, MAX + 2, true);
+      assertEquals(expected, count);
+      // Start is less than minimum, stop is greater than max
+      expected = data.size();
+      count = ZSets.ZCOUNT(map, key, MIN - 1, false, MAX + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 1, true, MAX + 1, true);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 1, true, MAX + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, MIN - 1, false, MAX + 1, true);
+      assertEquals(expected, count);
+
+      // Start is less than minimum score and stop is in the range
+      double min = MIN - 1;
+      int index = r.nextInt(data.size());
+      double max = Double.parseDouble(data.get(index).getSecond());
+      expected = index;
+      count = ZSets.ZCOUNT(map, key, min, false, max, false);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = Double.parseDouble(data.get(index).getSecond());
+      expected = index + 1;
+      count = ZSets.ZCOUNT(map, key, min, true, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = Double.parseDouble(data.get(index).getSecond());
+      expected = index + 1;
+      count = ZSets.ZCOUNT(map, key, min, false, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = Double.parseDouble(data.get(index).getSecond());
+      expected = index;
+      count = ZSets.ZCOUNT(map, key, min, true, max, false);
+      assertEquals(expected, count);
+
+      // Start is in the range and stop is greater than maximum score
+      max = MAX + 1;
+      index = r.nextInt(data.size());
+      min = Double.parseDouble(data.get(index).getSecond());
+      expected = data.size() - index - 1;
+      count = ZSets.ZCOUNT(map, key, min, false, max, false);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = Double.parseDouble(data.get(index).getSecond());
+      expected = data.size() - index;
+      count = ZSets.ZCOUNT(map, key, min, true, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = Double.parseDouble(data.get(index).getSecond());
+      expected = data.size() - index - 1;
+      count = ZSets.ZCOUNT(map, key, min, false, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = Double.parseDouble(data.get(index).getSecond());
+      expected = data.size() - index;
+      count = ZSets.ZCOUNT(map, key, min, true, max, false);
+      assertEquals(expected, count);
+      // Last one: check -inf, +inf
+      min = -Double.MAX_VALUE;
+      max = Double.MAX_VALUE;
+      expected = data.size();
+
+      count = ZSets.ZCOUNT(map, key, min, false, max, false);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, min, true, max, true);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, min, false, max, true);
+      assertEquals(expected, count);
+      count = ZSets.ZCOUNT(map, key, min, true, max, false);
+      assertEquals(expected, count);
+      
+      ZSets.DELETE(map, key);
     }
-    // 2. test both non-inclusive
-    for (int i = 0; i < 100; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      double min = Double.parseDouble(data.get(start).getSecond());
-      double max = Double.parseDouble(data.get(stop).getSecond());
-
-      int expected = stop - start - 1; // both are exclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZCOUNT(map, key, min, false, max, false);
-      assertEquals(expected, (int) count);
-    }
-
-    // 3. test start inclusive end non-inclusive
-    for (int i = 0; i < 100; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      double min = Double.parseDouble(data.get(start).getSecond());
-      double max = Double.parseDouble(data.get(stop).getSecond());
-
-      int expected = stop - start; // both are inclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZCOUNT(map, key, min, true, max, false);
-      assertEquals(expected, (int) count);
-    }
-
-    // 4. test start non-inclusive, end - inclusive
-    for (int i = 0; i < 100; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      double min = Double.parseDouble(data.get(start).getSecond());
-      double max = Double.parseDouble(data.get(stop).getSecond());
-
-      int expected = stop - start; // both are inclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZCOUNT(map, key, min, false, max, true);
-      assertEquals(expected, (int) count);
-    }
-    // Test Edges
-
-    // Both start and stop are out of range () less than minimum - all 4 inclusive
-    // combos
-    double MIN = Double.parseDouble(data.get(0).getSecond());
-    double MAX = Double.parseDouble(data.get(data.size() - 1).getSecond());
-    long expected = 0;
-    long count = ZSets.ZCOUNT(map, key, MIN - 2, false, MIN - 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 2, true, MIN - 1, true);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 2, true, MIN - 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 2, false, MIN - 1, true);
-    assertEquals(expected, count);
-    // Both start and stop are greater than maximum score
-    count = ZSets.ZCOUNT(map, key, MAX + 1, false, MAX + 2, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MAX + 1, true, MAX + 2, true);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MAX + 1, true, MAX + 2, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MAX + 1, false, MAX + 2, true);
-    assertEquals(expected, count);
-    // Start is less than minimum, stop is greater than max
-    expected = data.size();
-    count = ZSets.ZCOUNT(map, key, MIN - 1, false, MAX + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 1, true, MAX + 1, true);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 1, true, MAX + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, MIN - 1, false, MAX + 1, true);
-    assertEquals(expected, count);
-
-    // Start is less than minimum score and stop is in the range
-    double min = MIN - 1;
-    int index = r.nextInt(data.size());
-    double max = Double.parseDouble(data.get(index).getSecond());
-    expected = index;
-    count = ZSets.ZCOUNT(map, key, min, false, max, false);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = Double.parseDouble(data.get(index).getSecond());
-    expected = index + 1;
-    count = ZSets.ZCOUNT(map, key, min, true, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = Double.parseDouble(data.get(index).getSecond());
-    expected = index + 1;
-    count = ZSets.ZCOUNT(map, key, min, false, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = Double.parseDouble(data.get(index).getSecond());
-    expected = index;
-    count = ZSets.ZCOUNT(map, key, min, true, max, false);
-    assertEquals(expected, count);
-
-    // Start is in the range and stop is greater than maximum score
-    max = MAX + 1;
-    index = r.nextInt(data.size());
-    min = Double.parseDouble(data.get(index).getSecond());
-    expected = data.size() - index - 1;
-    count = ZSets.ZCOUNT(map, key, min, false, max, false);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = Double.parseDouble(data.get(index).getSecond());
-    expected = data.size() - index;
-    count = ZSets.ZCOUNT(map, key, min, true, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = Double.parseDouble(data.get(index).getSecond());
-    expected = data.size() - index - 1;
-    count = ZSets.ZCOUNT(map, key, min, false, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = Double.parseDouble(data.get(index).getSecond());
-    expected = data.size() - index;
-    count = ZSets.ZCOUNT(map, key, min, true, max, false);
-    assertEquals(expected, count);
-    // Last one: check -inf, +inf
-    min = -Double.MAX_VALUE;
-    max = Double.MAX_VALUE;
-    expected = data.size();
-
-    count = ZSets.ZCOUNT(map, key, min, false, max, false);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, min, true, max, true);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, min, false, max, true);
-    assertEquals(expected, count);
-    count = ZSets.ZCOUNT(map, key, min, true, max, false);
-    assertEquals(expected, count);
   }
 
-  @Ignore
   @Test
   public void testZLEXCOUNT() {
-    //FIXME: test failed in memory debug mode
-    // but no memory leaks
-    Random r = new Random();
-    int numMembers =  memoryDebug? 100: 1000;
-    String key = "key";
-    List<Pair<String>> data = loadData(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
+    // We test both compact and normal mode
+    int[] capacity = new int[] { 100, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      Random r = new Random();
+      int numMembers = memoryDebug ? 100 : capacity[j];
+      String key = "key";
+      List<Pair<String>> data = loadData(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    Collections.sort(data);
+      Collections.sort(data);
 
-    // 1. test both inclusive: start and end
-    for (int i = 0; i < 10; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
+      // 1. test both inclusive: start and end
+      for (int i = 0; i < 10; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        String min = data.get(start).getFirst();
+        String max = data.get(stop).getFirst();
+
+        int expected = stop - start + 1; // both are inclusive
+        long count = ZSets.ZLEXCOUNT(map, key, min, true, max, true);
+        assertEquals(expected, (int) count);
       }
-      String min = data.get(start).getFirst();
-      String max = data.get(stop).getFirst();
+      // 2. test both non-inclusive
+      for (int i = 0; i < 10; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        String min = data.get(start).getFirst();
+        String max = data.get(stop).getFirst();
 
-      int expected = stop - start + 1; // both are inclusive
-      long count = ZSets.ZLEXCOUNT(map, key, min, true, max, true);
-      assertEquals(expected, (int) count);
+        int expected = stop - start - 1; // both are exclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZLEXCOUNT(map, key, min, false, max, false);
+        assertEquals(expected, (int) count);
+      }
+
+      // 3. test start inclusive end non-inclusive
+      for (int i = 0; i < 10; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        String min = data.get(start).getFirst();
+        String max = data.get(stop).getFirst();
+
+        int expected = stop - start; // both are inclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZLEXCOUNT(map, key, min, true, max, false);
+        assertEquals(expected, (int) count);
+      }
+
+      // 4. test start non-inclusive, end - inclusive
+      for (int i = 0; i < 10; i++) {
+        int id1 = r.nextInt(data.size());
+        int id2 = r.nextInt(data.size());
+        int start, stop;
+        if (id1 < id2) {
+          start = id1;
+          stop = id2;
+        } else {
+          start = id2;
+          stop = id1;
+        }
+        String min = data.get(start).getFirst();
+        String max = data.get(stop).getFirst();
+
+        int expected = stop - start; // both are inclusive
+        if (expected < 0) {
+          expected = 0;
+        }
+        long count = ZSets.ZLEXCOUNT(map, key, min, false, max, true);
+        assertEquals(expected, (int) count);
+      }
+      // Test Edges
+
+      // Both start and stop are out of range () less than minimum -
+      // all 4 inclusive combinations
+      String MIN = "0"; // All members in the test are random strings [A,Z], '0' < 'A'
+      String MAX = data.get(data.size() - 1).getFirst() + "0";
+      long expected = 0;
+      long count = ZSets.ZLEXCOUNT(map, key, MIN, false, MIN + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, MIN + 1, true);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, MIN + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, false, MIN + 1, true);
+      assertEquals(expected, count);
+      // Both start and stop are greater than maximum score
+      count = ZSets.ZLEXCOUNT(map, key, MAX, false, MAX + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MAX, true, MAX + 1, true);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MAX, true, MAX + 1, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MAX, false, MAX + 1, true);
+      assertEquals(expected, count);
+      // Start is less than minimum, stop is greater than max
+      expected = data.size();
+      count = ZSets.ZLEXCOUNT(map, key, MIN, false, MAX, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, MAX, true);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, MAX, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, MIN, false, MAX, true);
+      assertEquals(expected, count);
+
+      // Start is less than minimum score and stop is in the range
+      int index = r.nextInt(data.size());
+      String max = data.get(index).getFirst();
+      expected = index;
+      count = ZSets.ZLEXCOUNT(map, key, MIN, false, max, false);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = data.get(index).getFirst();
+      expected = index + 1;
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = data.get(index).getFirst();
+      expected = index + 1;
+      count = ZSets.ZLEXCOUNT(map, key, MIN, false, max, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      max = data.get(index).getFirst();
+      expected = index;
+      count = ZSets.ZLEXCOUNT(map, key, MIN, true, max, false);
+      assertEquals(expected, count);
+
+      // Start is in the range and stop is greater than maximum score
+      index = r.nextInt(data.size());
+      String min = data.get(index).getFirst();
+      expected = data.size() - index - 1;
+      count = ZSets.ZLEXCOUNT(map, key, min, false, MAX, false);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = data.get(index).getFirst();
+      expected = data.size() - index;
+      count = ZSets.ZLEXCOUNT(map, key, min, true, MAX, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = data.get(index).getFirst();
+      expected = data.size() - index - 1;
+      count = ZSets.ZLEXCOUNT(map, key, min, false, MAX, true);
+      assertEquals(expected, count);
+
+      index = r.nextInt(data.size());
+      min = data.get(index).getFirst();
+      expected = data.size() - index;
+      count = ZSets.ZLEXCOUNT(map, key, min, true, MAX, false);
+      assertEquals(expected, count);
+      // Last one: check -inf, +inf
+      expected = data.size();
+
+      count = ZSets.ZLEXCOUNT(map, key, null, false, null, false);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, null, true, null, true);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, null, false, null, true);
+      assertEquals(expected, count);
+      count = ZSets.ZLEXCOUNT(map, key, null, true, null, false);
+      assertEquals(expected, count);
+      
+      ZSets.DELETE(map, key);
     }
-    // 2. test both non-inclusive
-    for (int i = 0; i < 10; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      String min = data.get(start).getFirst();
-      String max = data.get(stop).getFirst();
-
-      int expected = stop - start - 1; // both are exclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZLEXCOUNT(map, key, min, false, max, false);
-      assertEquals(expected, (int) count);
-    }
-
-    // 3. test start inclusive end non-inclusive
-    for (int i = 0; i < 10; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      String min = data.get(start).getFirst();
-      String max = data.get(stop).getFirst();
-
-      int expected = stop - start; // both are inclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZLEXCOUNT(map, key, min, true, max, false);
-      assertEquals(expected, (int) count);
-    }
-
-    // 4. test start non-inclusive, end - inclusive
-    for (int i = 0; i < 10; i++) {
-      int id1 = r.nextInt(data.size());
-      int id2 = r.nextInt(data.size());
-      int start, stop;
-      if (id1 < id2) {
-        start = id1;
-        stop = id2;
-      } else {
-        start = id2;
-        stop = id1;
-      }
-      String min = data.get(start).getFirst();
-      String max = data.get(stop).getFirst();
-
-      int expected = stop - start; // both are inclusive
-      if (expected < 0) {
-        expected = 0;
-      }
-      long count = ZSets.ZLEXCOUNT(map, key, min, false, max, true);
-      assertEquals(expected, (int) count);
-    }
-    // Test Edges
-
-    // Both start and stop are out of range () less than minimum -
-    // all 4 inclusive combinations
-    String MIN = "0"; // All members in the test are random strings [A,Z], '0' < 'A'
-    String MAX = data.get(data.size() - 1).getFirst() + "0";
-    long expected = 0;
-    long count = ZSets.ZLEXCOUNT(map, key, MIN, false, MIN + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, MIN + 1, true);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, MIN + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, false, MIN + 1, true);
-    assertEquals(expected, count);
-    // Both start and stop are greater than maximum score
-    count = ZSets.ZLEXCOUNT(map, key, MAX, false, MAX + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MAX, true, MAX + 1, true);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MAX, true, MAX + 1, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MAX, false, MAX + 1, true);
-    assertEquals(expected, count);
-    // Start is less than minimum, stop is greater than max
-    expected = data.size();
-    count = ZSets.ZLEXCOUNT(map, key, MIN, false, MAX, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, MAX, true);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, MAX, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, MIN, false, MAX, true);
-    assertEquals(expected, count);
-
-    // Start is less than minimum score and stop is in the range
-    int index = r.nextInt(data.size());
-    String max = data.get(index).getFirst();
-    expected = index;
-    count = ZSets.ZLEXCOUNT(map, key, MIN, false, max, false);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = data.get(index).getFirst();
-    expected = index + 1;
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = data.get(index).getFirst();
-    expected = index + 1;
-    count = ZSets.ZLEXCOUNT(map, key, MIN, false, max, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    max = data.get(index).getFirst();
-    expected = index;
-    count = ZSets.ZLEXCOUNT(map, key, MIN, true, max, false);
-    assertEquals(expected, count);
-
-    // Start is in the range and stop is greater than maximum score
-    index = r.nextInt(data.size());
-    String min = data.get(index).getFirst();
-    expected = data.size() - index - 1;
-    count = ZSets.ZLEXCOUNT(map, key, min, false, MAX, false);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = data.get(index).getFirst();
-    expected = data.size() - index;
-    count = ZSets.ZLEXCOUNT(map, key, min, true, MAX, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = data.get(index).getFirst();
-    expected = data.size() - index - 1;
-    count = ZSets.ZLEXCOUNT(map, key, min, false, MAX, true);
-    assertEquals(expected, count);
-
-    index = r.nextInt(data.size());
-    min = data.get(index).getFirst();
-    expected = data.size() - index;
-    count = ZSets.ZLEXCOUNT(map, key, min, true, MAX, false);
-    assertEquals(expected, count);
-    // Last one: check -inf, +inf
-    expected = data.size();
-
-    count = ZSets.ZLEXCOUNT(map, key, null, false, null, false);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, null, true, null, true);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, null, false, null, true);
-    assertEquals(expected, count);
-    count = ZSets.ZLEXCOUNT(map, key, null, true, null, false);
-    assertEquals(expected, count);
   }
 
   @Test
   public void testZPOPMAX() {
-
-    Random r = new Random();
-    int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 100;
-    String key = "key";
-    int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
-    for (int i = 0; i < numIterations; i++) {
-      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-      long card = ZSets.ZCARD(map, key);
-      assertEquals(numMembers, (int) card);
-
-      // For the last iteration we check count > data size
-      int num = i < (numIterations - 1) ? r.nextInt(data.size()) : data.size() + 100;
-      int expected = i < (numIterations - 1) ? num : data.size();
-      List<Pair<String>> list = ZSets.ZPOPMAX(map, key, num, bufSize);
-      assertEquals(expected, list.size());
-      for (int j = 0; j < expected; j++) {
-        Pair<String> p1 = list.get(j);
-        Pair<String> p2 = data.get(data.size() - 1 - j);
-        assertEquals(p2, p1);
+    int[] capacity = new int[] { 500, 1000 };
+    for (int k = 0; k < capacity.length; k++) {
+      Random r = new Random();
+      int numMembers = capacity[k];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
+      for (int i = 0; i < numIterations; i++) {
+        List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+        long card = ZSets.ZCARD(map, key);
+        assertEquals(numMembers, (int) card);
+        // For the last iteration we check count > data size
+        int num = i < (numIterations - 1) ? r.nextInt(data.size()) : data.size() + 100;
+        int expected = i < (numIterations - 1) ? num : data.size();
+        List<Pair<String>> list = ZSets.ZPOPMAX(map, key, num, bufSize);
+        assertEquals(expected, list.size());
+        for (int j = 0; j < expected; j++) {
+          Pair<String> p1 = list.get(j);
+          Pair<String> p2 = data.get(data.size() - 1 - j);
+          assertEquals(p2, p1);
+        }
+        card = ZSets.ZCARD(map, key);
+        assertEquals(data.size() - expected, (int) card);
+        boolean res = ZSets.DELETE(map, key);
+        if (expected < data.size()) {
+          assertTrue(res);
+        } else {
+          assertFalse(res);
+        }
       }
-      card = ZSets.ZCARD(map, key);
-      assertEquals(data.size() - expected, (int) card);
+      // Last test: test small buffer
+      loadData(key, numMembers);
+      List<Pair<String>> list = ZSets.ZPOPMAX(map, key, 100, 100);
+      // we expect empty list
+      assertEquals(0, list.size());
       boolean res = ZSets.DELETE(map, key);
-      if (expected < data.size()) {
-        assertTrue(res);
-      } else {
-        assertFalse(res);
-      }
+      assertTrue(res);
     }
-    // Last test: test small buffer
-    loadData(key, numMembers);
-    List<Pair<String>> list = ZSets.ZPOPMAX(map, key, 100, 100);
-    // we expect empty list
-    assertEquals(0, list.size());
-    boolean res = ZSets.DELETE(map, key);
-    assertTrue(res);
   }
 
   @Test
   public void testZPOPMIN() {
-
-    Random r = new Random();
-    int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 100;
-    String key = "key";
-    int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
-    for (int i = 0; i < numIterations; i++) {
-      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-      long card = ZSets.ZCARD(map, key);
-      assertEquals(numMembers, (int) card);
-      // For the last iteration we check count > data size
-      int num = i < (numIterations - 1) ? r.nextInt(data.size()) : data.size() + 100;
-      int expected = i < (numIterations - 1) ? num : data.size();
-      List<Pair<String>> list = ZSets.ZPOPMIN(map, key, num, bufSize);
-      assertEquals(expected, list.size());
-      for (int j = 0; j < expected; j++) {
-        Pair<String> p1 = list.get(j);
-        Pair<String> p2 = data.get(j);
-        assertEquals(p2, p1);
+    int[] capacity = new int[] { 500, 1000 };
+    for (int k = 0; k < capacity.length; k++) {
+      Random r = new Random();
+      int numMembers = capacity[k];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
+      for (int i = 0; i < numIterations; i++) {
+        List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+        long card = ZSets.ZCARD(map, key);
+        assertEquals(numMembers, (int) card);
+        // For the last iteration we check count > data size
+        int num = i < (numIterations - 1) ? r.nextInt(data.size()) : data.size() + 100;
+        int expected = i < (numIterations - 1) ? num : data.size();
+        List<Pair<String>> list = ZSets.ZPOPMIN(map, key, num, bufSize);
+        assertEquals(expected, list.size());
+        for (int j = 0; j < expected; j++) {
+          Pair<String> p1 = list.get(j);
+          Pair<String> p2 = data.get(j);
+          assertEquals(p2, p1);
+        }
+        card = ZSets.ZCARD(map, key);
+        assertEquals(data.size() - expected, (int) card);
+        boolean res = ZSets.DELETE(map, key);
+        if (expected < data.size()) {
+          assertTrue(res);
+        } else {
+          assertFalse(res);
+        }
       }
-      card = ZSets.ZCARD(map, key);
-      assertEquals(data.size() - expected, (int) card);
+      // Last test: test small buffer
+      loadData(key, numMembers);
+      List<Pair<String>> list = ZSets.ZPOPMIN(map, key, 100, 100);
+      // we expect empty list
+      assertEquals(0, list.size());
       boolean res = ZSets.DELETE(map, key);
-      if (expected < data.size()) {
-        assertTrue(res);
-      } else {
-        assertFalse(res);
-      }
+      assertTrue(res);
     }
-    // Last test: test small buffer
-    loadData(key, numMembers);
-    List<Pair<String>> list = ZSets.ZPOPMIN(map, key, 100, 100);
-    // we expect empty list
-    assertEquals(0, list.size());
-    boolean res = ZSets.DELETE(map, key);
-    assertTrue(res);
   }
 
   @Test
   public void testZRANGE() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      Random r = new Random();
+      int numMembers = capacity[j];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
+      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
+      // Test with normal ranges (positive between 0 and data cardinality)
+      // w/o scores
+      for (int i = 0; i < numIterations; i++) {
+        int i1 = r.nextInt(data.size());
+        int i2 = r.nextInt(data.size());
+        int start, end;
+        if (i1 < i2) {
+          start = i1;
+          end = i2;
+        } else {
+          start = i2;
+          end = i1;
+        }
 
-    Random r = new Random();
-    int numMembers = 10000;
-    int numIterations =  memoryDebug? 10: 100;
-    String key = "key";
-    int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
-    List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-    // Test with normal ranges (positive between 0 and data cardinality)
-    // w/o scores
-    for (int i = 0; i < numIterations; i++) {
-      int i1 = r.nextInt(data.size());
-      int i2 = r.nextInt(data.size());
-      int start, end;
-      if (i1 < i2) {
-        start = i1;
-        end = i2;
-      } else {
-        start = i2;
-        end = i1;
+        int expectedNum = end - start + 1;
+        List<Pair<String>> list = ZSets.ZRANGE(map, key, start, end, false, bufSize);
+        assertEquals(expectedNum, list.size());
+        // Verify that we are correct
+        for (int k = start; k <= end; k++) {
+          Pair<String> expected = data.get(k);
+          Pair<String> result = list.get(k - start);
+          assertEquals(expected.getFirst(), result.getFirst());
+        }
+      }
+      // Test with normal ranges (positive between 0 and data cardinality)
+      // with scores
+      for (int i = 0; i < numIterations; i++) {
+        int i1 = r.nextInt(data.size());
+        int i2 = r.nextInt(data.size());
+        int start, end;
+        if (i1 < i2) {
+          start = i1;
+          end = i2;
+        } else {
+          start = i2;
+          end = i1;
+        }
+        int expectedNum = end - start + 1;
+        List<Pair<String>> list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
+        assertEquals(expectedNum, list.size());
+        // Verify that we are correct
+        for (int k = start; k <= end; k++) {
+          Pair<String> expected = data.get(k);
+          Pair<String> result = list.get(k - start);
+          assertEquals(expected, result);
+        }
       }
 
-      int expectedNum = end - start + 1;
-      List<Pair<String>> list = ZSets.ZRANGE(map, key, start, end, false, bufSize);
-      assertEquals(expectedNum, list.size());
-      // Verify that we are correct
-      for (int k = start; k <= end; k++) {
-        Pair<String> expected = data.get(k);
-        Pair<String> result = list.get(k - start);
-        assertEquals(expected.getFirst(), result.getFirst());
-      }
-    }
-    // Test with normal ranges (positive between 0 and data cardinality)
-    // with scores
-    for (int i = 0; i < numIterations; i++) {
-      int i1 = r.nextInt(data.size());
-      int i2 = r.nextInt(data.size());
-      int start, end;
-      if (i1 < i2) {
-        start = i1;
-        end = i2;
-      } else {
-        start = i2;
-        end = i1;
-      }
-      int expectedNum = end - start + 1;
+      // Test some edge cases
+      // 1. start = 0, end = last
+      int start = 0;
+      int end = data.size() - 1;
+
+      int expectedNum = data.size();
       List<Pair<String>> list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
@@ -1111,117 +1152,120 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> result = list.get(k - start);
         assertEquals(expected, result);
       }
-    }
 
-    // Test some edge cases
-    // 1. start = 0, end = last
-    int start = 0;
-    int end = data.size() - 1;
+      // start = end
+      start = end = 1;
+      expectedNum = 1;
+      list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      assertEquals(data.get(start), list.get(0));
 
-    int expectedNum = data.size();
-    List<Pair<String>> list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    // Verify that we are correct
-    for (int k = start; k <= end; k++) {
-      Pair<String> expected = data.get(k);
-      Pair<String> result = list.get(k - start);
-      assertEquals(expected, result);
-    }
+      // start > end
+      start = 2;
+      end = 1;
+      expectedNum = 0;
+      list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
 
-    // start = end
-    start = end = 1;
-    expectedNum = 1;
-    list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    assertEquals(data.get(start), list.get(0));
+      // negative offsets
+      start = -10;
+      end = -1;
+      expectedNum = end - start + 1;
 
-    // start > end
-    start = 2;
-    end = 1;
-    expectedNum = 0;
-    list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
+      list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      start += data.size();
+      end += data.size();
+      for (int i = start; i <= end; i++) {
+        Pair<String> expected = data.get(i);
+        Pair<String> result = list.get(i - start);
+        assertEquals(expected, result);
+      }
 
-    // negative offsets
-    start = -10;
-    end = -1;
-    expectedNum = end - start + 1;
-
-    list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    start += data.size();
-    end += data.size();
-    for (int i = start; i <= end; i++) {
-      Pair<String> expected = data.get(i);
-      Pair<String> result = list.get(i - start);
-      assertEquals(expected, result);
-    }
-
-    // end is larger than cardinality
-    start = -25;
-    end = data.size() + 1;
-    expectedNum = -start;
-    list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    start += data.size();
-    end = data.size() - 1;
-    for (int i = start; i <= end; i++) {
-      Pair<String> expected = data.get(i);
-      Pair<String> result = list.get(i - start);
-      assertEquals(expected, result);
+      // end is larger than cardinality
+      start = -25;
+      end = data.size() + 1;
+      expectedNum = -start;
+      list = ZSets.ZRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      start += data.size();
+      end = data.size() - 1;
+      for (int i = start; i <= end; i++) {
+        Pair<String> expected = data.get(i);
+        Pair<String> result = list.get(i - start);
+        assertEquals(expected, result);
+      }
+      ZSets.DELETE(map, key);
     }
   }
 
   @Test
   public void testZREVRANGE() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int j = 0; j < capacity.length; j++) {
+      Random r = new Random();
+      int numMembers = capacity[j];
+      int numIterations = memoryDebug ? 10 : 100;
+      String key = "key";
+      int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
+      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    Random r = new Random();
-    int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 100;
-    String key = "key";
-    int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
-    List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
+      // Test with normal ranges (positive between 0 and data cardinality)
+      // w/o scores
+      for (int i = 0; i < numIterations; i++) {
+        int i1 = r.nextInt(data.size());
+        int i2 = r.nextInt(data.size());
+        int start, end;
+        if (i1 < i2) {
+          start = i1;
+          end = i2;
+        } else {
+          start = i2;
+          end = i1;
+        }
+        int expectedNum = end - start + 1;
+        List<Pair<String>> list = ZSets.ZREVRANGE(map, key, start, end, false, bufSize);
+        assertEquals(expectedNum, list.size());
+        // Verify that we are correct
+        for (int k = start; k <= end; k++) {
+          Pair<String> expected = data.get(k);
+          Pair<String> result = list.get(end - k);
 
-    // Test with normal ranges (positive between 0 and data cardinality)
-    // w/o scores
-    for (int i = 0; i < numIterations; i++) {
-      int i1 = r.nextInt(data.size());
-      int i2 = r.nextInt(data.size());
-      int start, end;
-      if (i1 < i2) {
-        start = i1;
-        end = i2;
-      } else {
-        start = i2;
-        end = i1;
+          assertEquals(expected.getFirst(), result.getFirst());
+        }
       }
-      int expectedNum = end - start + 1;
-      List<Pair<String>> list = ZSets.ZREVRANGE(map, key, start, end, false, bufSize);
-      assertEquals(expectedNum, list.size());
-      // Verify that we are correct
-      for (int k = start; k <= end; k++) {
-        Pair<String> expected = data.get(k);
-        Pair<String> result = list.get(end - k);
+      // Test with normal ranges (positive between 0 and data cardinality)
+      // with scores
+      for (int i = 0; i < numIterations; i++) {
+        int i1 = r.nextInt(data.size());
+        int i2 = r.nextInt(data.size());
+        int start, end;
+        if (i1 < i2) {
+          start = i1;
+          end = i2;
+        } else {
+          start = i2;
+          end = i1;
+        }
+        int expectedNum = end - start + 1;
+        List<Pair<String>> list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
+        assertEquals(expectedNum, list.size());
+        // Verify that we are correct
+        for (int k = start; k <= end; k++) {
+          Pair<String> expected = data.get(k);
+          Pair<String> result = list.get(end - k);
+          assertEquals(expected, result);
+        }
+      }
 
-        assertEquals(expected.getFirst(), result.getFirst());
-      }
-    }
-    // Test with normal ranges (positive between 0 and data cardinality)
-    // with scores
-    for (int i = 0; i < numIterations; i++) {
-      int i1 = r.nextInt(data.size());
-      int i2 = r.nextInt(data.size());
-      int start, end;
-      if (i1 < i2) {
-        start = i1;
-        end = i2;
-      } else {
-        start = i2;
-        end = i1;
-      }
-      int expectedNum = end - start + 1;
+      // Test some edge cases
+      // 1. start = 0, end = last
+      int start = 0;
+      int end = data.size() - 1;
+
+      int expectedNum = data.size();
       List<Pair<String>> list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
@@ -1230,64 +1274,50 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> result = list.get(end - k);
         assertEquals(expected, result);
       }
-    }
 
-    // Test some edge cases
-    // 1. start = 0, end = last
-    int start = 0;
-    int end = data.size() - 1;
+      // start = end
+      start = end = 1;
+      expectedNum = 1;
+      list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      assertEquals(data.get(start), list.get(0));
 
-    int expectedNum = data.size();
-    List<Pair<String>> list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    // Verify that we are correct
-    for (int k = start; k <= end; k++) {
-      Pair<String> expected = data.get(k);
-      Pair<String> result = list.get(end - k);
-      assertEquals(expected, result);
-    }
+      // start > end
+      start = 2;
+      end = 1;
+      expectedNum = 0;
+      list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
 
-    // start = end
-    start = end = 1;
-    expectedNum = 1;
-    list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    assertEquals(data.get(start), list.get(0));
+      // negative offsets
+      start = -10;
+      end = -1;
+      expectedNum = end - start + 1;
 
-    // start > end
-    start = 2;
-    end = 1;
-    expectedNum = 0;
-    list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
+      list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      start += data.size();
+      end += data.size();
+      for (int i = start; i <= end; i++) {
+        Pair<String> expected = data.get(i);
+        Pair<String> result = list.get(end - i);
+        assertEquals(expected, result);
+      }
 
-    // negative offsets
-    start = -10;
-    end = -1;
-    expectedNum = end - start + 1;
-
-    list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    start += data.size();
-    end += data.size();
-    for (int i = start; i <= end; i++) {
-      Pair<String> expected = data.get(i);
-      Pair<String> result = list.get(end - i);
-      assertEquals(expected, result);
-    }
-
-    // end is larger than cardinality
-    start = -25;
-    end = data.size() + 1;
-    expectedNum = -start;
-    list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
-    assertEquals(expectedNum, list.size());
-    start += data.size();
-    end = data.size() - 1;
-    for (int i = start; i <= end; i++) {
-      Pair<String> expected = data.get(i);
-      Pair<String> result = list.get(end - i);
-      assertEquals(expected, result);
+      // end is larger than cardinality
+      start = -25;
+      end = data.size() + 1;
+      expectedNum = -start;
+      list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
+      assertEquals(expectedNum, list.size());
+      start += data.size();
+      end = data.size() - 1;
+      for (int i = start; i <= end; i++) {
+        Pair<String> expected = data.get(i);
+        Pair<String> result = list.get(end - i);
+        assertEquals(expected, result);
+      }
+      ZSets.DELETE(map, key);
     }
   }
 
@@ -1376,7 +1406,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     // 1. CARDINALITY > compact size (512)
 
-    int numMembers = 512;
+    int numMembers = 1000;
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
@@ -1495,7 +1525,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     // 1. CARDINALITY > compact size (512)
 
-    int numMembers = 512;
+    int numMembers = 1000;
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
@@ -1512,6 +1542,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 200;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -1750,6 +1781,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2086,6 +2118,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2111,52 +2144,55 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   @Test
   public void testZRANK() {
+    int[] capacity = new int[] { 500, 1000 };
+    for (int k = 0; k < capacity.length; k++) {
+      String key = "key";
+      int numMembers = capacity[k];
+      int numIterations = memoryDebug ? 10 : 100;
+      Random r = new Random();
+      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
 
-    String key = "key";
-    int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 100;
-    Random r = new Random();
-    List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-
-    for (int i = 0; i < numIterations; i++) {
-      int index = r.nextInt(data.size());
-      String member = data.get(index).getFirst();
-      long expected = index;
+      for (int i = 0; i < numIterations; i++) {
+        int index = r.nextInt(data.size());
+        String member = data.get(index).getFirst();
+        long expected = index;
+        long rank = ZSets.ZRANK(map, key, member);
+        assertEquals(expected, rank);
+      }
+      // Check non-existent
+      String member = "member";
       long rank = ZSets.ZRANK(map, key, member);
-      assertEquals(expected, rank);
+      assertEquals(-1L, rank);
+      ZSets.DELETE(map, key);
     }
-
-    // Check non-existent
-    String member = "member";
-    long rank = ZSets.ZRANK(map, key, member);
-    assertEquals(-1L, rank);
   }
 
   @Test
   public void testZREVRANK() {
-
-    String key = "key";
-    int numMembers = 1000;
-    int numIterations =  memoryDebug? 10: 100;
-    Random r = new Random();
-    List<Pair<String>> data = loadDataSortByScore(key, numMembers);
-    long card = ZSets.ZCARD(map, key);
-    assertEquals(numMembers, (int) card);
-
-    for (int i = 0; i < numIterations; i++) {
-      int index = r.nextInt(data.size());
-      String member = data.get(index).getFirst();
-      long expected = data.size() - index - 1;
+    int[] capacity = new int[] { 500, 1000 };
+    for (int k = 0; k < capacity.length; k++) {
+      String key = "key";
+      int numMembers = capacity[k];
+      int numIterations = memoryDebug ? 10 : 100;
+      Random r = new Random();
+      List<Pair<String>> data = loadDataSortByScore(key, numMembers);
+      long card = ZSets.ZCARD(map, key);
+      assertEquals(numMembers, (int) card);
+      for (int i = 0; i < numIterations; i++) {
+        int index = r.nextInt(data.size());
+        String member = data.get(index).getFirst();
+        long expected = data.size() - index - 1;
+        long rank = ZSets.ZREVRANK(map, key, member);
+        assertEquals(expected, rank);
+      }
+      // Check non-existent
+      String member = "member";
       long rank = ZSets.ZREVRANK(map, key, member);
-      assertEquals(expected, rank);
+      assertEquals(-1L, rank);
+      ZSets.DELETE(map, key);
     }
-
-    // Check non-existent
-    String member = "member";
-    long rank = ZSets.ZREVRANK(map, key, member);
-    assertEquals(-1L, rank);
   }
 
   private void testZRANGEBYSCORE_core(
@@ -2276,6 +2312,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2514,6 +2551,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2640,7 +2678,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
     // 1. CARDINALITY >= compact size (512)
 
-    int numMembers = 512;
+    int numMembers = 100;
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
@@ -2658,6 +2696,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2890,6 +2929,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
+    
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2919,7 +2959,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations =  memoryDebug? 10: 100;
 
@@ -3065,7 +3104,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
     /*DEBUG*/
     long seed = r.nextLong();
     r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
     List<Pair<String>> data;
     int numIterations =  memoryDebug? 10: 100;
 

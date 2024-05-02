@@ -33,9 +33,9 @@ import org.junit.Test;
  * it scans all the keys and calculated total value size of all keys, compares it with expected
  * number of appends.
  */
-public class AtomicAppendTestMT {
+public class AtomicAppendTest {
 
-  private static final Logger log = LogManager.getLogger(AtomicAppendTestMT.class);
+  private static final Logger log = LogManager.getLogger(AtomicAppendTest.class);
 
   static BigSortedMap map;
   static AtomicLong totalLoaded = new AtomicLong();

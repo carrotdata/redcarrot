@@ -27,7 +27,7 @@ import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 
 /** Scanner to iterate through set members */
-public class SetScanner extends Scanner {
+public final class SetScanner extends Scanner {
 
   private static final Logger log = LogManager.getLogger(SetScanner.class);
 
