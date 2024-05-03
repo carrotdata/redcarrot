@@ -2387,6 +2387,9 @@ public final class IndexBlock implements Comparable<IndexBlock> {
 
   /** Free memory */
   public void free() {
+    if(!valid) {
+      return;
+    }
     deallocateBlocks();
     // deallocate large keys
     deallocateLargeKeys();

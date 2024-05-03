@@ -1913,6 +1913,7 @@ public class ZSets {
   }
 
   /**
+   * Compatibility: negative offsets are not supported
    * Available since 2.8.9. Time complexity: O(log(N)+M) with N being the number of elements in the
    * sorted set and M the number of elements being returned. If M is constant (e.g. always asking
    * for the first 10 elements with LIMIT), you can consider it O(log(N)). When all the elements in
@@ -1972,71 +1973,79 @@ public class ZSets {
    * @return total serialized size of a response, if it is greater than bufferSize - repeat call
    *     with appropriately sized buffer
    */
-  public static long ZRANGEBYLEX(BigSortedMap map, long keyPtr, int keySize, long startPtr,
-      int startSize, boolean startInclusive, long endPtr, int endSize, boolean endInclusive,
-      long offset, long limit, long buffer, int bufferSize) {
 
-    // TODO: Use HashScanner if available
-    // See: ZCOUNTBYLEX as an example
-    boolean freeStart = false;
-    boolean freeEnd = false;
-    SetScanner setScanner = null;
-    Key key = null;
-    long ptr = 0;
 
-    try {
+public static long ZRANGEBYLEX(BigSortedMap map, long keyPtr, int keySize, long startPtr,
+    int startSize, boolean startInclusive, long endPtr, int endSize, boolean endInclusive,
+    long offset, long limit, long buffer, int bufferSize) {
 
-      if (endInclusive && endPtr > 0) {
-        endPtr = Utils.prefixKeyEndCorrect(endPtr, endSize);
-        endSize += 1;
-        freeEnd = true;
-      }
-      if (!startInclusive && startPtr > 0) {
-        startPtr = Utils.prefixKeyEndCorrect(startPtr, startSize);
-        startSize += 1;
-        freeStart = true;
-      }
-      key = getKey(keyPtr, keySize);
-      // Clean first 4 bytes
-      UnsafeAccess.putInt(buffer, 0);
-      int counter = 0;
-      long cardinality = ZCARD(map, keyPtr, keySize);
-      if (cardinality == 0) {
-        return 0;
-      }
-      if (offset >= cardinality) {
-        return 0;
-      } else if (offset < 0) {
-        offset += cardinality;
-        if (offset < 0) {
-          offset = 0;
+  if (offset < 0) {
+    return 0;
+  }
+  boolean freeStart = false;
+  boolean freeEnd = false;
+  SetScanner setScanner = null;
+  Key key = null;
+  long ptr = 0;
+
+  if (endInclusive && endPtr > 0) {
+    endPtr = Utils.prefixKeyEndCorrect(endPtr, endSize);
+    endSize += 1;
+    freeEnd = true;
+  }
+  if (!startInclusive && startPtr > 0) {
+    startPtr = Utils.prefixKeyEndCorrect(startPtr, startSize);
+    startSize += 1;
+    freeStart = true;
+  }
+  key = getKey(keyPtr, keySize);
+  // Clean first 4 bytes
+  UnsafeAccess.putInt(buffer, 0);
+ 
+  if (limit < 0) {
+    limit = Long.MAX_VALUE / 2; // VERY LARGE
+  }
+
+  KeysLocker.readLock(key);
+
+  ptr = buffer + Utils.SIZEOF_INT;
+  long $ptr = ptr;
+  // Make sure first 4 bytes does not contain garbage
+  UnsafeAccess.putInt(buffer, 0);
+  HashScanner hashScanner = null;
+  int count = 0;
+  try {
+    KeysLocker.readLock(key);
+    hashScanner =
+        Hashes.getScanner(map, keyPtr, keySize, startPtr, startSize, endPtr, endSize, false);
+    if (hashScanner != null) {
+      while (hashScanner.hasNext()) {
+        long fPtr = hashScanner.fieldAddress();
+        int fSize = hashScanner.fieldSize();
+        int fSizeSize = Utils.sizeUVInt(fSize);
+        if ((ptr + fSize + fSizeSize <= buffer + bufferSize)) {
+          if (offset <= count && offset + limit > count) {
+            Utils.writeUVInt($ptr, fSize);
+            UnsafeAccess.copy(fPtr, $ptr + fSizeSize, fSize);
+            // Update count
+            UnsafeAccess.putInt(buffer, count + 1 - (int) offset);
+            $ptr += fSize + fSizeSize;
+          }
+          count++;
+          if (count == offset + limit) {
+            break;
+          }
         }
+        ptr += fSize + fSizeSize;
+        hashScanner.next();
       }
-      if (limit < 0) {
-        limit = Long.MAX_VALUE / 2; // VERY LARGE
-      }
-
-      KeysLocker.readLock(key);
-
-      ptr = buffer + Utils.SIZEOF_INT;
-      // make sure first 4 bytes does not contain garbage
-      UnsafeAccess.putInt(buffer, 0);
-      // TODO: Optimize using SetScanner.skipTo API
+    } else {
+      // Run through the Set
       setScanner = Sets.getScanner(map, keyPtr, keySize, false);
       if (setScanner == null) {
         return 0;
       }
-      long pos = 0;
       while (setScanner.hasNext()) {
-        if (pos == offset + limit) {
-          break;
-        }
-        if (pos < offset) {
-          setScanner.next();
-          pos++;
-          continue;
-        }
-        pos++;
         long mPtr = setScanner.memberAddress();
         int mSize = setScanner.memberSize();
         mPtr += Utils.SIZEOF_DOUBLE;
@@ -2046,11 +2055,17 @@ public class ZSets {
         if (res2 < 0 && res1 >= 0) {
           int mSizeSize = Utils.sizeUVInt(mSize);
           if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
-            counter++;
-            Utils.writeUVInt(ptr, mSize);
-            UnsafeAccess.copy(mPtr, ptr + mSizeSize, mSize);
-            // Update count
-            UnsafeAccess.putInt(buffer, counter);
+            if (offset <= count && offset + limit > count) {
+              Utils.writeUVInt($ptr, mSize);
+              UnsafeAccess.copy(mPtr, $ptr + mSizeSize, mSize);
+              // Update count
+              UnsafeAccess.putInt(buffer, count + 1 - (int) offset);
+              $ptr += mSize + mSizeSize;
+            }
+            count++;
+            if (count == offset + limit) {
+              break;
+            }
           }
           ptr += mSize + mSizeSize;
         } else if (res2 >= 0) {
@@ -2058,26 +2073,28 @@ public class ZSets {
         }
         setScanner.next();
       }
-
-    } catch (IOException e) {
-    } finally {
-      if (setScanner != null) {
-        try {
-          setScanner.close();
-        } catch (IOException e) {
-        }
-      }
-      if (freeStart) {
-        UnsafeAccess.free(startPtr);
-      }
-      if (freeEnd) {
-        UnsafeAccess.free(endPtr);
-      }
-      KeysLocker.readUnlock(key);
     }
-    return ptr - buffer;
+  } catch (IOException e) {
+  } finally {
+    try {
+      if (hashScanner != null) {
+        hashScanner.close();
+      }
+      if (setScanner != null) {
+        setScanner.close();
+      }
+    } catch (IOException e) {
+    }
+    if (freeStart) {
+      UnsafeAccess.free(startPtr);
+    }
+    if (freeEnd) {
+      UnsafeAccess.free(endPtr);
+    }
+    KeysLocker.readUnlock(key);
   }
-
+  return ptr - buffer;
+}
   /**
    * For testing only
    *
@@ -2379,79 +2396,101 @@ public class ZSets {
       boolean withScores,
       long buffer,
       int bufferSize) {
+    
     if (minScore > maxScore) {
       return 0;
     }
-    Key k = getKey(keyPtr, keySize);
-    long cardinality = ZCARD(map, keyPtr, keySize);
     if (offset < 0) {
-      if (cardinality == 0) {
-        return 0;
-      }
-      offset = offset + cardinality;
-      if (offset < 0) {
-        offset = 0;
-      }
-    } else if (offset >= cardinality) {
+      // No support for negative offsets
       return 0;
     }
     if (limit < 0) {
       // Set very high value unreachable in a real life
       limit = Long.MAX_VALUE / 2;
     }
+    // Make sure first 4 bytes does not contain garbage
+    UnsafeAccess.putInt(buffer, 0);
+
     int count = 0;
+    long startPtr = 0, stopPtr = 0;
+    SetScanner scanner = null;
+    Key k = getKey(keyPtr, keySize);
+
     try {
       KeysLocker.readLock(k);
-      // TODO : SetScanner skipTo
-      SetScanner scanner = Sets.getScanner(map, keyPtr, keySize, false);
+
+      // TODO: double memory allocation - FIX it!!!!!!!!
+
+      startPtr = UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
+      Utils.doubleToLex(startPtr, minScore);
+      int startSize = Utils.SIZEOF_DOUBLE;
+
+      stopPtr = UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
+      Utils.doubleToLex(stopPtr, maxScore);
+      int stopSize = Utils.SIZEOF_DOUBLE;
+
+      if (maxInclusive && maxScore < Double.MAX_VALUE) {
+        stopPtr = Utils.prefixKeyEndNoAlloc(stopPtr, stopSize);
+        if (stopPtr == 0) {
+          stopSize = 0;
+        }
+      }
+      if (!minInclusive && minScore > -Double.MAX_VALUE) {
+        startPtr = Utils.prefixKeyEndNoAlloc(startPtr, startSize);
+        if (startPtr == 0) {
+          startSize = 0;
+        }
+      }
+      scanner =
+          Sets.getScanner(map, keyPtr, keySize, startPtr, startSize, stopPtr, stopSize, false);
       if (scanner == null) {
         return 0;
       }
       long ptr = buffer + Utils.SIZEOF_INT;
-      long off = 0;
-      // Make sure first 4 bytes does not contain garbage
-      UnsafeAccess.putInt(buffer, 0);
-      try {
-        while (scanner.hasNext()) {
-          if (off >= offset && off < (offset + limit)) {
-            int mSize = scanner.memberSize();
-            long mPtr = scanner.memberAddress();
-            double score = Utils.lexToDouble(mPtr);
-            if (between(score, minScore, maxScore, minInclusive, maxInclusive)) {
-              if (!withScores) {
-                mSize -= Utils.SIZEOF_DOUBLE;
-                mPtr += Utils.SIZEOF_DOUBLE;
-              }
-              int mSizeSize = Utils.sizeUVInt(mSize);
-              count++;
-              if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
-                Utils.writeUVInt(ptr, mSize);
-                UnsafeAccess.copy(mPtr, ptr + mSizeSize, mSize);
-                // Update count
-                UnsafeAccess.putInt(buffer, count);
-              }
-              ptr += mSize + mSizeSize;
-            }
-          } else if (off >= offset + limit) {
+      long $ptr = ptr;
+      while (scanner.hasNext()) {
+        int mSize = scanner.memberSize();
+        long mPtr = scanner.memberAddress();
+        if (!withScores) {
+          mSize -= Utils.SIZEOF_DOUBLE;
+          mPtr += Utils.SIZEOF_DOUBLE;
+        }
+        int mSizeSize = Utils.sizeUVInt(mSize);
+
+        if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
+          if (count >= offset && count < offset + limit) {
+            Utils.writeUVInt($ptr, mSize);
+            UnsafeAccess.copy(mPtr, $ptr + mSizeSize, mSize);
+            // Update count
+            UnsafeAccess.putInt(buffer, count + 1 - (int) offset);
+            $ptr += mSize + mSizeSize;
+          }
+          count++;
+          if (count == offset + limit) {
             break;
           }
-          off++;
-          scanner.next();
         }
-      } catch (IOException e) {
-        // Should not be here
-      } finally {
-        try {
-          if (scanner != null) {
-            scanner.close();
-          }
-        } catch (IOException e) {
-        }
+        ptr += mSize + mSizeSize;
+        scanner.next();
       }
       return ptr - buffer;
+    } catch (IOException e) {
     } finally {
+      try {
+        if (scanner != null) {
+          scanner.close();
+        }
+      } catch (IOException e) {
+      }
+      if (startPtr > 0) {
+        UnsafeAccess.free(startPtr);
+      }
+      if (stopPtr > 0) {
+        UnsafeAccess.free(stopPtr);
+      }
       KeysLocker.readUnlock(k);
     }
+    return 0;
   }
 
   /**
@@ -3802,6 +3841,7 @@ public class ZSets {
     }
   }
   /**
+   * Compatibility: do not support negative offsets
    * Available since 2.8.9. Time complexity: O(log(N)+M) with N being the number of elements in the
    * sorted set and M the number of elements being returned. If M is constant (e.g. always asking
    * for the first 10 elements with LIMIT), you can consider it O(log(N)). When all the elements in
@@ -3839,6 +3879,9 @@ public class ZSets {
       long limit,
       long buffer,
       int bufferSize) {
+    if (offset < 0) {
+      return 0;
+    }
     boolean freeEnd = false, freeStart = false;
     if (endInclusive && endPtr > 0) {
       endPtr = Utils.prefixKeyEndCorrect(endPtr, endSize);
@@ -3852,68 +3895,86 @@ public class ZSets {
     }
     Key key = getKey(keyPtr, keySize);
     SetScanner setScanner = null;
-    long ptr = 0;
-    int counter = 0;
-    long cardinality = ZCARD(map, keyPtr, keySize);
-    if (cardinality == 0) {
-      return 0;
-    }
-    if (offset < 0) {
-      offset += cardinality;
-      if (offset < 0) {
-        offset = 0;
-      }
-    }
+    long ptr = buffer + Utils.SIZEOF_INT;
+ 
     if (limit < 0) {
       limit = Long.MAX_VALUE / 2; // VERY LARGE
     }
+    int count = 0;
+    HashScanner hashScanner = null;
+    long $ptr = ptr; 
+    // make sure first 4 bytes does not contain garbage
+    UnsafeAccess.putInt(buffer, 0);
     try {
       KeysLocker.readLock(key);
-      ptr = buffer + Utils.SIZEOF_INT;
-      // make sure first 4 bytes does not contain garbage
-      UnsafeAccess.putInt(buffer, 0);
       // Reverse scanner
-      setScanner = Sets.getScanner(map, keyPtr, keySize, false, true);
-      if (setScanner == null) {
-        return 0;
-      }
-      long pos = cardinality - 1;
-      do {
-        if (pos < offset) {
-          break;
-        }
-        if (pos >= offset + limit) {
-          pos--;
-          continue;
-        }
-        long mPtr = setScanner.memberAddress();
-        int mSize = setScanner.memberSize();
-        mPtr += Utils.SIZEOF_DOUBLE;
-        mSize -= Utils.SIZEOF_DOUBLE;
-        int res1 = startPtr == 0 ? 1 : Utils.compareTo(mPtr, mSize, startPtr, startSize);
-        int res2 = endPtr == 0 ? -1 : Utils.compareTo(mPtr, mSize, endPtr, endSize);
-        if (res2 < 0 && res1 >= 0) {
-          int mSizeSize = Utils.sizeUVInt(mSize);
-          if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
-            counter++;
-            Utils.writeUVInt(ptr, mSize);
-            UnsafeAccess.copy(mPtr, ptr + mSizeSize, mSize);
-            // Update count
-            UnsafeAccess.putInt(buffer, counter);
+      hashScanner =
+          Hashes.getScanner(
+              map, keyPtr, keySize, startPtr, startSize, endPtr, endSize, false, true);
+      if (hashScanner != null) {
+        do {
+          long fPtr = hashScanner.fieldAddress();
+          int fSize = hashScanner.fieldSize();
+          int fSizeSize = Utils.sizeUVInt(fSize);
+          if (ptr + fSize + fSizeSize <= buffer + bufferSize) {
+            if (count >= offset && count < offset + limit) {
+              Utils.writeUVInt($ptr, fSize);
+              UnsafeAccess.copy(fPtr, $ptr + fSizeSize, fSize);
+              // Update count
+              UnsafeAccess.putInt(buffer, count - (int) offset + 1);
+              $ptr += fSize + fSizeSize;
+            }
+            count++;
+            if (count == offset + limit) {
+              break;
+            }
           }
-          ptr += mSize + mSizeSize;
-        } else if (res1 < 0) {
-          break;
+          ptr += fSize + fSizeSize;
+        } while (hashScanner.previous());
+      } else {
+        // Run through the Set
+        setScanner = Sets.getScanner(map, keyPtr, keySize, false, true);
+        if (setScanner == null) {
+          return 0;
         }
-        pos--;
-      } while (setScanner.previous());
+        do {
+          long mPtr = setScanner.memberAddress();
+          int mSize = setScanner.memberSize();
+          mPtr += Utils.SIZEOF_DOUBLE;
+          mSize -= Utils.SIZEOF_DOUBLE;
+          int res1 = startPtr == 0 ? 1 : Utils.compareTo(mPtr, mSize, startPtr, startSize);
+          int res2 = endPtr == 0 ? -1 : Utils.compareTo(mPtr, mSize, endPtr, endSize);
+          if (res2 < 0 && res1 >= 0) {
+            int mSizeSize = Utils.sizeUVInt(mSize);
+            if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
+              if (count >= offset && count < offset + limit) {
+                Utils.writeUVInt($ptr, mSize);
+                UnsafeAccess.copy(mPtr, $ptr + mSizeSize, mSize);
+                // Update count
+                UnsafeAccess.putInt(buffer, count - (int) offset + 1);
+                $ptr += mSize + mSizeSize;
+              }
+              count++;
+              if (count == offset + limit) {
+                break;
+              }
+            }
+            ptr += mSize + mSizeSize;
+          } else if (res1 < 0) {
+            break;
+          }
+        } while (setScanner.previous());
+      }
     } catch (IOException e) {
     } finally {
-      if (setScanner != null) {
-        try {
-          setScanner.close();
-        } catch (IOException e) {
+      try {
+        if (hashScanner != null) {
+          hashScanner.close();
         }
+        if (setScanner != null) {
+          setScanner.close();
+        }
+      } catch (IOException e) {
       }
       if (freeStart) {
         UnsafeAccess.free(startPtr);
@@ -4025,11 +4086,9 @@ public class ZSets {
     Key key = getKey(keyPtr, keySize);
     HashScanner hashScanner = null;
     SetScanner setScanner = null;
-    long cardPtr = getCardinalityMember(keyPtr, keySize);
 
-    long ptr = 0;
+    long ptr = buffer + Utils.SIZEOF_INT;
     int count = 0;
-    ptr = buffer + Utils.SIZEOF_INT;
     // Make sure first 4 bytes does not contain garbage
     UnsafeAccess.putInt(buffer, 0);
     try {
@@ -4042,10 +4101,6 @@ public class ZSets {
         do {
           long fPtr = hashScanner.fieldAddress();
           int fSize = hashScanner.fieldSize();
-          if (isCardinalityMember(fPtr, fSize, cardPtr)) {
-            // WILL it run while()?
-            continue;
-          }
           int fSizeSize = Utils.sizeUVInt(fSize);
           if (ptr + fSize + fSizeSize <= buffer + bufferSize) {
             count++;
@@ -4094,9 +4149,6 @@ public class ZSets {
           setScanner.close();
         }
       } catch (IOException e) {
-      }
-      if (cardPtr > 0) {
-        UnsafeAccess.free(cardPtr);
       }
       if (freeStart) {
         UnsafeAccess.free(startPtr);
@@ -4205,67 +4257,84 @@ public class ZSets {
       boolean withScores,
       long buffer,
       int bufferSize) {
-    Key k = getKey(keyPtr, keySize);
-
-    long cardinality = ZCARD(map, keyPtr, keySize);
-    if (cardinality == 0 || offset >= cardinality) {
+    
+    if (minScore > maxScore || offset < 0) {
       return 0;
-    }
-
-    if (offset < 0) {
-      offset = offset + cardinality;
-      if (offset < 0) offset = 0;
     }
     if (limit < 0) {
       // Set very high value unreachable in a real life
       limit = Long.MAX_VALUE / 2;
     }
-    int count = 0;
-    long ptr = buffer + Utils.SIZEOF_INT;
+    // Make sure first 4 bytes does not contain garbage
+    UnsafeAccess.putInt(buffer, 0);
+
+    Key k = getKey(keyPtr, keySize);
+    long startPtr = 0, stopPtr = 0;
     SetScanner scanner = null;
+    long ptr = buffer + Utils.SIZEOF_INT;
+    long $ptr = ptr;
     try {
       KeysLocker.readLock(k);
-      // Reverse scanner
-      scanner = Sets.getScanner(map, keyPtr, keySize, false, true);
+      startPtr = UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
+      Utils.doubleToLex(startPtr, minScore);
+      int startSize = Utils.SIZEOF_DOUBLE;
+      stopPtr = UnsafeAccess.malloc(Utils.SIZEOF_DOUBLE);
+      Utils.doubleToLex(stopPtr, maxScore);
+      int stopSize = Utils.SIZEOF_DOUBLE;
+      if (maxInclusive && maxScore < Double.MAX_VALUE) {
+        stopPtr = Utils.prefixKeyEndNoAlloc(stopPtr, stopSize);
+        // Never be 0
+      }
+      if (!minInclusive && minScore > -Double.MAX_VALUE) {
+        startPtr = Utils.prefixKeyEndNoAlloc(startPtr, startSize);
+        // Never be 0
+      }
+      scanner =
+          Sets.getScanner(
+              map, keyPtr, keySize, startPtr, startSize, stopPtr, stopSize, false, true);
       if (scanner == null) {
         return 0;
       }
-      long off = cardinality - 1;
-      // Make sure first 4 bytes does not contain garbage
-      UnsafeAccess.putInt(buffer, 0);
+
+      int count = 0;
       do {
-        if (off >= offset && off < (offset + limit)) {
-          int mSize = scanner.memberSize();
-          long mPtr = scanner.memberAddress();
-          double score = Utils.lexToDouble(mPtr);
-          if (between(score, minScore, maxScore, minInclusive, maxInclusive)) {
-            if (!withScores) {
-              mSize -= Utils.SIZEOF_DOUBLE;
-              mPtr += Utils.SIZEOF_DOUBLE;
-            }
-            int mSizeSize = Utils.sizeUVInt(mSize);
-            count++;
-            // TODO: when buffer is full - stop
-            if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
-              Utils.writeUVInt(ptr, mSize);
-              UnsafeAccess.copy(mPtr, ptr + mSizeSize, mSize);
-              // Update count
-              UnsafeAccess.putInt(buffer, count);
-            }
-            ptr += mSize + mSizeSize;
-          } else if (off < offset) {
+        int mSize = scanner.memberSize();
+        long mPtr = scanner.memberAddress();
+        if (!withScores) {
+          mSize -= Utils.SIZEOF_DOUBLE;
+          mPtr += Utils.SIZEOF_DOUBLE;
+        }
+        int mSizeSize = Utils.sizeUVInt(mSize);
+        // TODO: when buffer is full - finish execution
+        if (ptr + mSize + mSizeSize <= buffer + bufferSize) {
+          if (count >= offset && count < offset + limit) {
+            Utils.writeUVInt($ptr, mSize);
+            UnsafeAccess.copy(mPtr, $ptr + mSizeSize, mSize);
+            // Update count
+            UnsafeAccess.putInt(buffer, count + 1 - (int) offset);
+            $ptr += mSize + mSizeSize;
+          }
+          count++;
+          if (count == offset + limit) {
             break;
           }
         }
-        off--;
+        ptr += mSize + mSizeSize;
       } while (scanner.previous());
     } catch (IOException e) {
+      // should not be here
     } finally {
       try {
         if (scanner != null) {
           scanner.close();
         }
       } catch (IOException e) {
+      }
+      if (startPtr > 0) {
+        UnsafeAccess.free(startPtr);
+      }
+      if (stopPtr > 0) {
+        UnsafeAccess.free(stopPtr);
       }
       KeysLocker.readUnlock(k);
     }

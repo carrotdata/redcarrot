@@ -1357,8 +1357,9 @@ public class BigSortedMap {
           }
         }
         prev = b;
-        if (b.isEmpty()) {
-          // TODO: fix this code
+        if (b.isEmpty() && !b.isFirstIndexBlock()) {
+          map.remove(b);
+          b.free();
           continue;
         }
         long del = b.deleteRange(startKeyPtr, startKeyLength, endKeyPtr, endKeyLength, version);
@@ -1366,7 +1367,7 @@ public class BigSortedMap {
           // TODO: what race conditions are possible?
           // Do we need to lock index block?
           map.remove(b);
-          b.invalidate();
+          b.free();
         }
         if (del == 0 && !firstBlock) {
           break;
