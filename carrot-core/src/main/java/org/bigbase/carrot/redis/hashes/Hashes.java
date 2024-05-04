@@ -830,6 +830,7 @@ public class Hashes {
   }
 
   /**
+   * TODO: This operation is O(N). Should we use Sets approach to keep cardinality in a separate key
    * Returns the number of fields contained in the hash stored at key. Return value Integer reply:
    * number of fields in the hash, or 0 when key does not exist.
    *
@@ -1537,6 +1538,7 @@ public class Hashes {
     return result;
   }
   /**
+   * TODO: HashIncrementLong operation (update in place)
    * Increments the number stored at field in the hash stored at key by increment. If key does not
    * exist, a new key holding a hash is created. If field does not exist the value is set to 0
    * before the operation is performed. The range of values supported by HINCRBY is limited to 64
@@ -2264,6 +2266,8 @@ public class Hashes {
   }
 
   /**
+   * TODO: this is O(N) complexity. Redis claims O(log(N
+   * )
    * When called with just the key argument, return a random field from the hash value stored at
    * key. If the provided count argument is positive, return an array of distinct fields. The
    * array's length is either count or the hash's number of fields (HLEN), whichever is lower. If

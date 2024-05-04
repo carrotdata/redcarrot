@@ -224,7 +224,7 @@ public class BitmapCodec implements Codec {
   }
 
   @Override
-  public long getTotalProcessed() {
+  public long getTotalBytesProcessed() {
     // TODO Auto-generated method stub
     return 0;
   }

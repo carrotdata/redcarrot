@@ -137,7 +137,7 @@ public class LZ4HCCodec implements Codec {
   }
 
   @Override
-  public long getTotalProcessed() {
+  public long getTotalBytesProcessed() {
     return totalSize;
   }
 

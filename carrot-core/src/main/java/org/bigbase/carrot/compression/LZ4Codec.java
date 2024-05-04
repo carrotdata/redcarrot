@@ -15,6 +15,7 @@ package org.bigbase.carrot.compression;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -27,18 +28,14 @@ public class LZ4Codec implements Codec {
 
   private static final Logger log = LogManager.getLogger(LZ4Codec.class);
 
-  /** The Constant LOG. */
-  @SuppressWarnings("unused")
-  private static final Logger LOG = LogManager.getLogger(LZ4Codec.class);
-
   /** The min comp size. */
   private int minCompSize = 100;
 
   /** The total size. */
-  private long totalSize = 0;
+  private AtomicLong totalSize = new AtomicLong();
 
   /** The total comp size. */
-  private long totalCompSize = 0;
+  private AtomicLong totalCompSize = new AtomicLong();
 
   /** The level. */
   private int level = 1;
@@ -54,9 +51,9 @@ public class LZ4Codec implements Codec {
   @Override
   public int compress(ByteBuffer src, ByteBuffer dst) throws IOException {
 
-    this.totalSize += (src.limit() - src.position());
+    this.totalSize.addAndGet(src.limit() - src.position());
     int total = LZ4.compress(src, dst);
-    this.totalCompSize += total;
+    this.totalCompSize.addAndGet(total);
     return total;
   }
 
@@ -110,10 +107,10 @@ public class LZ4Codec implements Codec {
    */
   @Override
   public double getAvgCompressionRatio() {
-    if (totalCompSize == 0) {
+    if (totalCompSize.get() == 0) {
       return 1.d;
     } else {
-      return ((double) totalSize) / totalCompSize;
+      return ((double) totalSize.get()) / totalCompSize.get();
     }
   }
 
@@ -135,8 +132,8 @@ public class LZ4Codec implements Codec {
   }
 
   @Override
-  public long getTotalProcessed() {
-    return totalSize;
+  public long getTotalBytesProcessed() {
+    return totalSize.get();
   }
 
   public static void main(String[] args) throws IOException {

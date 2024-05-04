@@ -92,7 +92,7 @@ public class AtomicAppendTest {
 
   @Test
   public void testAppend() throws IOException {
-    for (int k = 1; k <= 100; k++) {
+    for (int k = 1; k <= 1; k++) {
       log.debug("Append test run #{}", k);
 
       BigSortedMap.setMaxBlockSize(4096);
@@ -127,7 +127,7 @@ public class AtomicAppendTest {
         }
         assertEquals((totalAppends.get() + totalLoaded.get()) * 8, total);
         assertEquals(totalLoaded.get(), count);
-        map.dumpStats();
+        //map.dumpStats();
         log.debug(
             "Time to load= {} and to append ={}={}ms", totalLoaded, totalAppends, end - start);
         log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());

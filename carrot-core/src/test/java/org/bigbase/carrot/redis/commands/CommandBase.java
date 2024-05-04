@@ -225,7 +225,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer starts");
+    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer finishes");
   }
   // INVALID REQUESTS
 

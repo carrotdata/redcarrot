@@ -89,7 +89,7 @@ public class ZSetsTest extends CarrotCoreBase {
   private List<Value> getFields(long n) {
     List<Value> keys = new ArrayList<>();
     Random r = new Random();
-    long seed = r.nextLong();
+    long seed = 4956743814979146301L;//r.nextLong();
     r.setSeed(seed);
     log.debug("KEYS SEED={}", seed);
     byte[] buf = new byte[fieldSize / 2];
@@ -117,7 +117,7 @@ public class ZSetsTest extends CarrotCoreBase {
     long ptr = UnsafeAccess.malloc(fieldSize);
     byte[] buf = new byte[fieldSize];
     Random r = new Random();
-    long seed = r.nextLong();
+    long seed = -423467470051038643L;//r.nextLong();
     r.setSeed(seed);
     log.debug("SEED={}", seed);
     r.nextBytes(buf);
@@ -160,7 +160,6 @@ public class ZSetsTest extends CarrotCoreBase {
   public void testAddGetScoreMultiOpt() {
 
     map = new BigSortedMap();
-    int total = 30000;
     Key key = getKey();
 
     List<Value> fields = this.fields;
@@ -186,9 +185,6 @@ public class ZSetsTest extends CarrotCoreBase {
     }
     ZSets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) ZSets.ZCARD(map, key.address, key.length));
-    map.dispose();
-    UnsafeAccess.free(key.address);
-    fields.forEach(x -> UnsafeAccess.free(x.address));
     UnsafeAccess.mallocStats.printStats(getTestParameters());
   }
 

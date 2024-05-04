@@ -23,6 +23,9 @@ public interface Codec {
   /** The Constant COMPRESSION_THRESHOLD. */
   public static final String COMPRESSION_THRESHOLD = "compression.threshold";
 
+  public static final String COMPRESSION_LEVEL = "compression.level";
+  
+  public static final String COMPRESSION_DICTIONARY_SIZE = "compression.dictionary.size";
   /**
    * Compress the content in the given input buffer. After the compression, you can retrieve the
    * compressed data from the output buffer [pos() ... limit()) (compressed data size = limit() -
@@ -100,7 +103,11 @@ public interface Codec {
    */
   public double getAvgCompressionRatio();
 
-  public long getTotalProcessed();
+  /**
+   * Get total bytes processed
+   * @return bytes processed
+   */
+  public long getTotalBytesProcessed();
 
   /**
    * Sets the level.
@@ -115,4 +122,20 @@ public interface Codec {
    * @return the level
    */
   public int getLevel();
+  
+  /**
+   * Is dictionary compression supported
+   * @return true or false
+   */
+  public default boolean isDictionarySupported() {
+    return false;
+  }
+  
+  /**
+   * Get dictionary size
+   * @return dictionary size
+   */
+  public default int getDictionarySize() {
+    return 0;
+  }
 }

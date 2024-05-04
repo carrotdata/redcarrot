@@ -693,20 +693,18 @@ public class ZSets {
         long mPtr = scanner.memberAddress();
         int mSize = scanner.memberSize();
         scanned++;
-        if (mSize - Utils.SIZEOF_DOUBLE != memberSize) {
-          continue;
-        }
-        if (Utils.compareTo(
-                mPtr + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE, memberPtr, memberSize)
-            == 0) {
-          ptr = mPtr;
-          size = mSize;
-          scanner.close();
-          scanner = null;
-          break;
+        if (mSize - Utils.SIZEOF_DOUBLE == memberSize) {  
+          if (Utils.compareTo(
+                mPtr + Utils.SIZEOF_DOUBLE, mSize - Utils.SIZEOF_DOUBLE, memberPtr, memberSize) == 0) {
+            ptr = mPtr;
+            size = mSize;
+            scanner.close();
+            scanner = null;
+            break;
+          }
         }
         scanner.next();
-      }
+      }  
       if (ptr > 0) {
         value = Utils.lexToDouble(ptr);
         if (options != MutationOptions.NX) {
