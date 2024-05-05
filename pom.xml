@@ -11,7 +11,7 @@
     <url>http://www.server.com</url>
 
     <properties>
-        <revision>0.3-SNAPSHOT</revision>
+        <revision>0.4-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
     </properties>
