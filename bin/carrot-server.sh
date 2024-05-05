@@ -21,7 +21,10 @@ for ix in $(find "${libdir}"); do
   CPATH=${ix}\:${CPATH}
 done
 
-export JVM_OPTS="--add-opens java.base/java.nio=ALL-UNNAMED -cp .:${CPATH} ${APP_OPTS}"
+export JVM_OPTS="--add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED \
+	--add-opens java.base/java.security=ALL-UNNAMED --add-opens jdk.unsupported/sun.misc=ALL-UNNAMED \
+	--add-opens java.base/sun.security.action=ALL-UNNAMED --add-opens jdk.naming.rmi/com.sun.jndi.rmi.registry=ALL-UNNAMED \
+	--add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -cp .:${CPATH} ${APP_OPTS}"
 
 #===== find pid =====
 # shellcheck disable=SC2120
