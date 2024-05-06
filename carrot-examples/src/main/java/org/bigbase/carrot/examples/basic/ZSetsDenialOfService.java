@@ -65,7 +65,7 @@ public class ZSetsDenialOfService {
   private static final Logger log = LogManager.getLogger(ZSetsDenialOfService.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   static long buffer = UnsafeAccess.malloc(4096);

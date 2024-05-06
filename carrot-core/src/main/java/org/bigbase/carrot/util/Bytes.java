@@ -859,19 +859,6 @@ public class Bytes {
     }
   }
 
-  /**
-   * Put an int value out to the specified byte array position (Unsafe).
-   *
-   * @param bytes the byte array
-   * @param offset position in the array
-   * @param val int to write out
-   * @return incremented offset
-   * @deprecated As of release 2.0.0, this will be removed in HBase 3.0.0.
-   */
-  @Deprecated
-  public static int putIntUnsafe(byte[] bytes, int offset, int val) {
-    return UnsafeAccess.putInt(bytes, offset, val);
-  }
 
   /**
    * Convert a short value to a byte array of {@link #SIZEOF_SHORT} bytes long.
@@ -1059,25 +1046,6 @@ public class Bytes {
     byte[] tcBytes = new byte[length - SIZEOF_INT];
     System.arraycopy(bytes, offset + SIZEOF_INT, tcBytes, 0, length - SIZEOF_INT);
     return new BigDecimal(new BigInteger(tcBytes), scale);
-  }
-
-  /**
-   * Put a BigDecimal value out to the specified byte array position.
-   *
-   * @param bytes the byte array
-   * @param offset position in the array
-   * @param val BigDecimal to write out
-   * @return incremented offset
-   */
-  public static int putBigDecimal(byte[] bytes, int offset, BigDecimal val) {
-    if (bytes == null) {
-      return offset;
-    }
-
-    byte[] valueBytes = val.unscaledValue().toByteArray();
-    byte[] result = new byte[valueBytes.length + SIZEOF_INT];
-    offset = putInt(result, offset, val.scale());
-    return putBytes(result, offset, valueBytes, 0, valueBytes.length);
   }
 
   /**

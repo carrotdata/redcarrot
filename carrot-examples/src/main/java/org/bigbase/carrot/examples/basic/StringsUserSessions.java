@@ -69,7 +69,7 @@ public class StringsUserSessions {
   private static final Logger log = LogManager.getLogger(StringsUserSessions.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   static long keyBuf = UnsafeAccess.malloc(64);

@@ -69,7 +69,7 @@ public class HashesAddresses {
   private static final Logger log = LogManager.getLogger(HashesAddresses.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.setMallocDebugEnabled(true);
   }
 
   static long keyBuf = UnsafeAccess.malloc(64);

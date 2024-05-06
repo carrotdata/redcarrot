@@ -87,7 +87,7 @@ public class SparseBitmapsComparison {
       };
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   private static Key getKey() {

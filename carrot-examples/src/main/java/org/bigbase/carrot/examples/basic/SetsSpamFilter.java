@@ -76,7 +76,7 @@ public class SetsSpamFilter {
   private static final Logger log = LogManager.getLogger(SetsSpamFilter.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   static long buffer = UnsafeAccess.malloc(4096);

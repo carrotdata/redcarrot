@@ -35,8 +35,11 @@ public class BigSortedMapPerfTest {
     log.debug("Set up: block = 4096; Mem={}", 10000000);
 
     // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-
     BigSortedMap.setMaxBlockSize(4096);
+
+  }
+
+  public long loadData() {
     map = new BigSortedMap(100000000L);
     totalLoaded = 1;
     long start = System.currentTimeMillis();
@@ -64,22 +67,29 @@ public class BigSortedMapPerfTest {
             + " RPS="
             + (totalLoaded * 1000) / (end - start));
     log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
+    return totalLoaded;
   }
-
+  
   @Test
   public void testCountRecords() throws IOException {
     log.debug("testCountRecords");
     int n = 10;
-    long start = System.currentTimeMillis();
-    for (int i = 0; i < n; i++) {
-      log.debug("Scan Run started {}", i);
-      totalScanned += countRecords();
-      log.debug("Scan Run finished {}", i);
-    }
-    long end = System.currentTimeMillis();
-
-    log.debug("{} RPS", totalScanned * 1000 / (end - start));
+    int c = 0;
+    while(c++ < 1) {
+      long totalTime = 0;
+      totalScanned = 0;
+      loadData();
+      for (int i = 0; i < n; i++) {
+        log.debug("Scan Run started {}", i);
+        long start = System.currentTimeMillis();
+        totalScanned += countRecords();
+        totalTime += System.currentTimeMillis() - start;
+        log.debug("Scan Run finished {}", i);
+      }
+      map.dispose();
+    log.debug("{} RPS", totalScanned * 1000 / totalTime);
     assertEquals(n * totalLoaded, totalScanned);
+    }
   }
 
   long countRecords() throws IOException {

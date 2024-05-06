@@ -60,7 +60,7 @@ public class SetsAllEnglishWords {
   private static final Logger log = LogManager.getLogger(SetsAllEnglishWords.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   static long buffer = UnsafeAccess.malloc(4096);

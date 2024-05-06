@@ -63,7 +63,7 @@ public class StringsAtomicCounters {
   private static final Logger log = LogManager.getLogger(StringsAtomicCounters.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.debug = true;
   }
 
   static long buffer = UnsafeAccess.malloc(4096);

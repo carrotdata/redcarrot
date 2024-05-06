@@ -72,7 +72,7 @@ public class HashesUserSessions {
   private static final Logger log = LogManager.getLogger(HashesUserSessions.class);
 
   static {
-    UnsafeAccess.debug = true;
+    //UnsafeAccess.setMallocDebugEnabled(true);
   }
 
   static long keyBuf = UnsafeAccess.malloc(64);
