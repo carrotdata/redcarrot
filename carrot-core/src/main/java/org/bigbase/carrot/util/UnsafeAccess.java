@@ -35,7 +35,7 @@ import sun.misc.Unsafe;
 
 public final class UnsafeAccess {
   
-  public final static String MALLOC_DEBUG = "MALLOC_DEBUG";
+  public final static String MEMORY_DEBUG = "memoryDebug";
   
   static interface Platform {
     
@@ -390,7 +390,7 @@ public final class UnsafeAccess {
     } else {
       BYTE_ARRAY_BASE_OFFSET = -1;
     }
-    debug = System.getProperty(MALLOC_DEBUG) != null;
+    debug = System.getProperty(MEMORY_DEBUG) != null;
     if (littleEndian) {
       platform = debug? new LittleEndianPlatformDebug(): new LittleEndianPlatform();
     } else {

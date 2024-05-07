@@ -54,12 +54,6 @@ public abstract class CarrotCoreBase {
 
     map = new BigSortedMap(MEM_ALLOCATE);
     nKeyValues = memoryDebug ? KEY_VALUE_SIZE_DEBUG : KEY_VALUE_SIZE;
-    
-    /*if (memoryDebug) {
-      UnsafeAccess.setMallocDebugStackTraceEnabled(true);
-      UnsafeAccess.setStackTraceRecordingLimit(10);
-      UnsafeAccess.setStackTraceRecordingFilter(bufferSizes::contains);
-    } */  
   }
 
   @After
