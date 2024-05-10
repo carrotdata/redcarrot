@@ -2421,7 +2421,9 @@ public class BigSortedMap {
     File snapshotFile = new File(dir, "snapshot.data");
     if (!snapshotFile.exists()) {
       log.error("Snapshot file does not exists: {}", snapshotFile.getAbsolutePath());
-      return new BigSortedMap();
+      BigSortedMap bsm = new BigSortedMap();
+      bsm.setSnapshotDir(snapshotDir);
+      return bsm;
     }
 
     RandomAccessFile raf = null;

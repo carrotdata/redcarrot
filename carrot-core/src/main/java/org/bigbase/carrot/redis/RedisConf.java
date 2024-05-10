@@ -42,7 +42,7 @@ public class RedisConf {
   public static final String CONF_SNAPSHOT_INTERVAL_SECS = "snapshot.interval.seconds";
   public static final String CONF_SERVER_LOG_DIR_PATH = "server.log.dir.path";
   public static final String CONF_SERVER_WAL_DIR_PATH = "server.wal.dir.path";
-
+  public static final String CONF_SERVER_TEST_MODE = "server.test.mode";
   public static final int DEFAULT_SNAPSHOT_INTERVAL_SECS = 0; // no snapshots
   public static final String DEFAULT_SERVER_WAL_DIR_PATH = "./WALs";
   public static final String DEFAULT_SERVER_LOG_DIR_PATH = "./logs";
@@ -55,7 +55,8 @@ public class RedisConf {
   public static final String DEFAULT_COMPRESSION_CODEC = "none";
   public static final int DEFAULT_THREAD_POOL_SIZE =
       Math.max(1, Runtime.getRuntime().availableProcessors() / 4);
-  public static final int DEFAULT_ZSET_MAX_COMPACT_SIZE = 512;
+  public static final int DEFAULT_ZSET_MAX_COMPACT_SIZE = 100;
+  public static final boolean DEFAULT_SERVER_TEST_MODE = false; 
 
   /* Data block configuration section */
   /* Comma separated list of data block sizes*/
@@ -260,6 +261,23 @@ public class RedisConf {
     return props.getProperty(CONF_SERVER_WAL_DIR_PATH, DEFAULT_SERVER_WAL_DIR_PATH);
   }
 
+  /**
+   * Get test mode
+   * @return test mode
+   */
+  public boolean getTestMode() {
+    String mode = props.getProperty(CONF_SERVER_TEST_MODE, Boolean.toString(DEFAULT_SERVER_TEST_MODE));
+    return Boolean.parseBoolean(mode);
+  }
+  
+  /**
+   * Set test property
+   * @param b
+   */
+  public void setTestMode(boolean b) {
+    props.setProperty(CONF_SERVER_TEST_MODE, Boolean.toString(b));
+  }
+  
   /**
    * Return cluster slots
    *

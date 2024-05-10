@@ -61,6 +61,9 @@ public enum CodecType {
         return CodecFactory.getInstance().getCodec(CodecType.LZ4);
       case 2:
         return CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
+      case 4:
+        return CodecFactory.getInstance().getCodec(CodecType.ZSTD);
+            
     }
     return null;
   }

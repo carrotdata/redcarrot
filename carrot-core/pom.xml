@@ -36,6 +36,10 @@
             <artifactId>RoaringBitmap</artifactId>
             <scope>test</scope>
         </dependency>
+	<dependency>
+             <groupId>com.onecache</groupId>
+             <artifactId>zstd-jni</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

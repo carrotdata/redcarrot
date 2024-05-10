@@ -30,7 +30,7 @@ public class CodecFactory {
   /** Boolean array with TRUE value for each codec if supported, FALSE otherwise */
   private static boolean[] supportedCodecs = new boolean[CodecType.values().length];
 
-  private static Codec[] codecs = {new LZ4Codec(), new LZ4HCCodec()};
+  private static Codec[] codecs = {new LZ4Codec(), new LZ4HCCodec(), null, new ZstdCodec()};
 
   /**
    * Gets the single instance of CodecFactory.
@@ -55,7 +55,9 @@ public class CodecFactory {
 
     // test each codec and memorize if it is supported
     for (Codec codec : codecs) {
-      supportedCodecs[codec.getType().ordinal()] = checkCodec(codec, buf);
+      if (codec != null) {
+        supportedCodecs[codec.getType().ordinal()] = checkCodec(codec, buf);
+      }
     }
   }
 
@@ -82,16 +84,8 @@ public class CodecFactory {
     if (!supportedCodecs[type.ordinal()]) {
       return null;
     }
-    switch (type) {
-      case LZ4:
-        return new LZ4Codec();
-      case LZ4HC:
-        return new LZ4HCCodec();
-      case NONE:
-        return null;
-      default: 
-        return null;
-    }
+    int id = type.ordinal();
+    return getCodec(id);
   }
   
   /**
