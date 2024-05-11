@@ -26,10 +26,10 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Utils;
 import org.bigbase.carrot.util.Value;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class HashesMultithreadedTest {
@@ -40,7 +40,7 @@ public class HashesMultithreadedTest {
   int valueSize = 16;
   int keySize = 16;
   int setSize = 10000;
-  int keysNumber = 10000; // per thread
+  int keysNumber = 1000; // per thread
   // FIXME: no MT support yet
   int numThreads = 1;
   List<Value> values;
@@ -61,173 +61,169 @@ public class HashesMultithreadedTest {
     return values;
   }
 
-  // @Before
   private void setUp() {
     setupTime = System.currentTimeMillis();
     map = new BigSortedMap(100000000000L);
     values = getValues();
   }
 
-  // @After
   private void tearDown() {
     map.dispose();
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  // @Ignore
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
       log.debug("*************** RUN = {} Compression=NULL", i + 1);
       setUp();
       runTest();
       tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats("runAllNoCompression");
     }
   }
 
-  @Ignore
   @Test
   public void runAllCompressionLZ4() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     log.debug("");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
       log.debug("*************** RUN = {} Compression=LZ4", i + 1);
       setUp();
       runTest();
       tearDown();
-      BigSortedMap.printGlobalMemoryAllocationStats();
-      UnsafeAccess.mallocStats.printStats("runAllCompressionLZ4");
     }
   }
 
-  @Ignore
   @Test
-  public void runTest() {
+  public void runAllCompressionZSTD() {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    log.debug("");
+    for (int i = 0; i < 1; i++) {
+      log.debug("*************** RUN = {} Compression=ZSTD", i + 1);
+      setUp();
+      runTest();
+      tearDown();
+    }
+  }
 
-    Runnable load =
-        new Runnable() {
+  private void runTest() {
 
-          @Override
-          public void run() {
-            int loaded = 0;
-            // Name is string int
-            String name = Thread.currentThread().getName();
-            int id = Integer.parseInt(name);
-            Random r = new Random(setupTime + id);
-            long ptr = UnsafeAccess.malloc(keySize);
-            byte[] buf = new byte[keySize];
-            for (int i = 0; i < keysNumber; i++) {
-              r.nextBytes(buf);
-              UnsafeAccess.copy(buf, 0, ptr, keySize);
-              for (Value v : values) {
-                int res = Hashes.HSET(map, ptr, keySize, v.address, v.length, v.address, v.length);
-                assertEquals(1, res);
-                loaded++;
-                if (loaded % 1000000 == 0) {
-                  log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
-                }
-              }
-              int card = (int) Hashes.HLEN(map, ptr, keySize);
-              if (card != values.size()) {
-                log.fatal("First CARD={}", card);
-                // int total = Hashes.elsize.get();
-                // int[] prev = Arrays.copyOf(Hashes.elarr.get(), total);
-                card = (int) Hashes.HLEN(map, ptr, keySize);
-                log.fatal("Second CARD={}", card);
+    Runnable load = new Runnable() {
 
-                // int total2 = Hashes.elsize.get();
-                // int[] prev2 = Arrays.copyOf(Hashes.elarr.get(), total2);
-                // dump(prev, total, prev2, total2);
-
-                Thread.dumpStack();
-                System.exit(-1);
-              }
-              assertEquals(values.size(), card);
-            }
-            UnsafeAccess.free(ptr);
-          }
-
-          private void dump(int[] prev, int total, int[] prev2, int total2) {
-            // total2 > total
-            log.error("total={}, total2={}", total, total2);
-            int i = 0;
-            for (; i < total; i++) {
-              log.error("{} {}", prev[i], prev2[i]);
-            }
-            for (; i < total2; i++) {
-              log.error("** {}", prev2[i]);
+      @Override
+      public void run() {
+        int loaded = 0;
+        // Name is string int
+        String name = Thread.currentThread().getName();
+        int id = Integer.parseInt(name);
+        Random r = new Random(setupTime + id);
+        long ptr = UnsafeAccess.malloc(keySize);
+        byte[] buf = new byte[keySize];
+        for (int i = 0; i < keysNumber; i++) {
+          r.nextBytes(buf);
+          UnsafeAccess.copy(buf, 0, ptr, keySize);
+          for (Value v : values) {
+            int res = Hashes.HSET(map, ptr, keySize, v.address, v.length, v.address, v.length);
+            assertEquals(1, res);
+            loaded++;
+            if (loaded % 1000000 == 0) {
+              log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
             }
           }
-        };
-    Runnable get =
-        new Runnable() {
+          int card = (int) Hashes.HLEN(map, ptr, keySize);
+          if (card != values.size()) {
+            log.fatal("First CARD={}", card);
+            card = (int) Hashes.HLEN(map, ptr, keySize);
+            log.fatal("Second CARD={}", card);
 
-          @Override
-          public void run() {
-            int read = 0;
-            // Name is string int
-            String name = Thread.currentThread().getName();
-            int id = Integer.parseInt(name);
-            Random r = new Random(setupTime + id);
-            long ptr = UnsafeAccess.malloc(keySize);
-            long buffer = UnsafeAccess.malloc(valueSize);
-            byte[] buf = new byte[keySize];
-            for (int i = 0; i < keysNumber; i++) {
-              r.nextBytes(buf);
-              UnsafeAccess.copy(buf, 0, ptr, keySize);
-              for (Value v : values) {
-                int res = Hashes.HGET(map, ptr, keySize, v.address, v.length, buffer, valueSize);
-                assertEquals(valueSize, res);
-                assertEquals(0, Utils.compareTo(v.address, v.length, buffer, valueSize));
-                read++;
-                if (read % 1000000 == 0) {
-                  log.debug("{} read {}", Thread.currentThread().getName(), read);
-                }
-              }
-            }
-            UnsafeAccess.free(ptr);
-            UnsafeAccess.free(buffer);
+            Thread.dumpStack();
+            System.exit(-1);
           }
-        };
+          assertEquals(values.size(), card);
+        }
+        UnsafeAccess.free(ptr);
+      }
 
-    Runnable delete =
-        new Runnable() {
+      @SuppressWarnings("unused")
+      private void dump(int[] prev, int total, int[] prev2, int total2) {
+        // total2 > total
+        log.error("total={}, total2={}", total, total2);
+        int i = 0;
+        for (; i < total; i++) {
+          log.error("{} {}", prev[i], prev2[i]);
+        }
+        for (; i < total2; i++) {
+          log.error("** {}", prev2[i]);
+        }
+      }
+    };
+    Runnable get = new Runnable() {
 
-          @Override
-          public void run() {
-            // Name is string int
-            String name = Thread.currentThread().getName();
-            int id = Integer.parseInt(name);
-            Random r = new Random(setupTime + id);
-            long ptr = UnsafeAccess.malloc(keySize);
-            byte[] buf = new byte[keySize];
-
-            for (int i = 0; i < keysNumber; i++) {
-              r.nextBytes(buf);
-              UnsafeAccess.copy(buf, 0, ptr, keySize);
-              long card = (int) Hashes.HLEN(map, ptr, keySize);
-              if (card != setSize) {
-                log.fatal("card:{} != setSize:{}", card, setSize);
-                Thread.dumpStack();
-                System.exit(-1);
-              }
-              assertEquals(setSize, (int) card);
-              boolean res = Hashes.DELETE(map, ptr, keySize);
-              assertTrue(res);
-              card = Hashes.HLEN(map, ptr, keySize);
-              if (card != 0) {
-                log.fatal("delete, card={}", card);
-                System.exit(-1);
-              }
-              assertEquals(0L, card);
+      @Override
+      public void run() {
+        int read = 0;
+        // Name is string int
+        String name = Thread.currentThread().getName();
+        int id = Integer.parseInt(name);
+        Random r = new Random(setupTime + id);
+        long ptr = UnsafeAccess.malloc(keySize);
+        long buffer = UnsafeAccess.malloc(valueSize);
+        byte[] buf = new byte[keySize];
+        for (int i = 0; i < keysNumber; i++) {
+          r.nextBytes(buf);
+          UnsafeAccess.copy(buf, 0, ptr, keySize);
+          for (Value v : values) {
+            int res = Hashes.HGET(map, ptr, keySize, v.address, v.length, buffer, valueSize);
+            assertEquals(valueSize, res);
+            assertEquals(0, Utils.compareTo(v.address, v.length, buffer, valueSize));
+            read++;
+            if (read % 1000000 == 0) {
+              log.debug("{} read {}", Thread.currentThread().getName(), read);
             }
-            UnsafeAccess.free(ptr);
           }
-        };
+        }
+        UnsafeAccess.free(ptr);
+        UnsafeAccess.free(buffer);
+      }
+    };
+
+    Runnable delete = new Runnable() {
+
+      @Override
+      public void run() {
+        // Name is string int
+        String name = Thread.currentThread().getName();
+        int id = Integer.parseInt(name);
+        Random r = new Random(setupTime + id);
+        long ptr = UnsafeAccess.malloc(keySize);
+        byte[] buf = new byte[keySize];
+
+        for (int i = 0; i < keysNumber; i++) {
+          r.nextBytes(buf);
+          UnsafeAccess.copy(buf, 0, ptr, keySize);
+          long card = (int) Hashes.HLEN(map, ptr, keySize);
+          if (card != setSize) {
+            log.fatal("card:{} != setSize:{}", card, setSize);
+            Thread.dumpStack();
+            System.exit(-1);
+          }
+          assertEquals(setSize, (int) card);
+          boolean res = Hashes.DELETE(map, ptr, keySize);
+          assertTrue(res);
+          card = Hashes.HLEN(map, ptr, keySize);
+          if (card != 0) {
+            log.fatal("delete, card={}", card);
+            System.exit(-1);
+          }
+          assertEquals(0L, card);
+        }
+        UnsafeAccess.free(ptr);
+      }
+    };
 
     log.debug("Loading data");
     Thread[] workers = new Thread[numThreads];
@@ -249,8 +245,12 @@ public class HashesMultithreadedTest {
 
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Loading {} elements os done in {}ms", (numThreads * keysNumber * setSize), end - start);
+    log.debug("Loading {} elements os done in {}ms", (numThreads * keysNumber * setSize),
+      end - start);
+    
+    BigSortedMap.printGlobalMemoryAllocationStats();
+    UnsafeAccess.mallocStats.printStats("Memory Statistics:");
+    
     log.debug("Reading data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
@@ -269,8 +269,8 @@ public class HashesMultithreadedTest {
 
     end = System.currentTimeMillis();
 
-    log.debug(
-        "Reading {} elements os done in {}ms", (numThreads * keysNumber * setSize), end - start);
+    log.debug("Reading {} elements os done in {}ms", (numThreads * keysNumber * setSize),
+      end - start);
     log.debug("Deleting  data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {

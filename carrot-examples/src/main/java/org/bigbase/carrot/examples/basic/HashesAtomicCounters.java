@@ -85,10 +85,11 @@ public class HashesAtomicCounters {
   }
 
   static long buffer = UnsafeAccess.malloc(4096);
-  static List<Key> keys = new ArrayList<Key>();
   static long keyTotalSize = 0;
   static long N = 1000000;
   static int MAX_VALUE = 1000;
+  static List<Key> keys = new ArrayList<Key>((int) N);
+
 
   static {
     for (int i = 0; i < N; i++) {
@@ -98,6 +99,9 @@ public class HashesAtomicCounters {
       UnsafeAccess.copy(bkey, 0, key, bkey.length);
       keys.add(new Key(key, bkey.length));
       keyTotalSize += skey.length();
+      if (i % 10000 == 0) {
+        log.debug("i={}", i);
+      }
     }
     Random r = new Random();
     long seed = r.nextLong();
@@ -116,6 +120,9 @@ public class HashesAtomicCounters {
     runTest();
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
     Utils.freeKeys(keys);
     UnsafeAccess.mallocStats.printStats("HashesAtomicCounters.main");

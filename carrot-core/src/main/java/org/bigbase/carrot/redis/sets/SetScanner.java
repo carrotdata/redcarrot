@@ -504,7 +504,10 @@ public final class SetScanner extends Scanner {
         skipLocal((int) (this.pos + pos - this.position));
         return this.position;
       } else {
-        this.position += left;
+        // This is the hack to make this method compatible 
+        // with large offset (greater than cardinality)
+        //but caller must check return value
+        this.position += left - 1;
         try {
           mapScanner.next();
           if (mapScanner.hasNext()) {
@@ -513,6 +516,7 @@ public final class SetScanner extends Scanner {
             this.valueNumber = Commons.numElementsInValue(this.valueAddress);
             this.pos = 0;
             this.offset = NUM_ELEM_SIZE;
+            this.position++;
           } else {
             break;
           }

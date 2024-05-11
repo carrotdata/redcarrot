@@ -1212,6 +1212,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       List<Pair<String>> data = loadDataSortByScore(key, numMembers);
       long card = ZSets.ZCARD(map, key);
       assertEquals(numMembers, (int) card);
+      int size = data.size();
 
       // Test with normal ranges (positive between 0 and data cardinality)
       // w/o scores
@@ -1231,8 +1232,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         assertEquals(expectedNum, list.size());
         // Verify that we are correct
         for (int k = start; k <= end; k++) {
-          Pair<String> expected = data.get(k);
-          Pair<String> result = list.get(end - k);
+          Pair<String> expected = data.get(size - k - 1);
+          Pair<String> result = list.get(k - start);
 
           assertEquals(expected.getFirst(), result.getFirst());
         }
@@ -1255,8 +1256,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         assertEquals(expectedNum, list.size());
         // Verify that we are correct
         for (int k = start; k <= end; k++) {
-          Pair<String> expected = data.get(k);
-          Pair<String> result = list.get(end - k);
+          Pair<String> expected = data.get(size - k - 1);
+          Pair<String> result = list.get(k - start);
           assertEquals(expected, result);
         }
       }
@@ -1281,7 +1282,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       expectedNum = 1;
       list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
       assertEquals(expectedNum, list.size());
-      assertEquals(data.get(start), list.get(0));
+      assertEquals(data.get(size - start - 1), list.get(0));
 
       // start > end
       start = 2;
@@ -1297,25 +1298,26 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
       list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
       assertEquals(expectedNum, list.size());
-      start += data.size();
-      end += data.size();
-      for (int i = start; i <= end; i++) {
+      start = -start - 1;
+      end = -end - 1;
+      for (int i = start; i <= end; i--) {
         Pair<String> expected = data.get(i);
-        Pair<String> result = list.get(end - i);
+        Pair<String> result = list.get(i - start);
         assertEquals(expected, result);
       }
 
       // end is larger than cardinality
+      
       start = -25;
-      end = data.size() + 1;
+      end = size + 100;
       expectedNum = -start;
       list = ZSets.ZREVRANGE(map, key, start, end, true, bufSize);
       assertEquals(expectedNum, list.size());
-      start += data.size();
-      end = data.size() - 1;
+      start += size;
+      end = size - 1;
       for (int i = start; i <= end; i++) {
-        Pair<String> expected = data.get(i);
-        Pair<String> result = list.get(end - i);
+        Pair<String> expected = data.get(size - i - 1);
+        Pair<String> result = list.get(i - start);
         assertEquals(expected, result);
       }
       ZSets.DELETE(map, key);

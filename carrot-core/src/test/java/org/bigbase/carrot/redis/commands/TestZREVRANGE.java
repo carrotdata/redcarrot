@@ -67,21 +67,21 @@ public class TestZREVRANGE extends CommandBase {
             + "$2\r\nc4\r\n$3\r\n5.0\r\n$2\r\nc5\r\n$3\r\n4.0\r\n"
             + "$2\r\nc6\r\n$3\r\n3.0\r\n$2\r\nc7\r\n$3\r\n2.0\r\n"
             + "$2\r\nc8\r\n$3\r\n1.0\r\n$2\r\nc9\r\n$3\r\n0.0\r\n",
-        "*1\r\n$2\r\nc9\r\n",
-        "*1\r\n$2\r\nc3\r\n",
-        "*2\r\n$2\r\nc9\r\n$3\r\n0.0\r\n",
-        "*2\r\n$2\r\nc3\r\n$3\r\n6.0\r\n",
+        "*1\r\n$2\r\nc0\r\n",
+        "*1\r\n$2\r\nc6\r\n",
+        "*2\r\n$2\r\nc0\r\n$3\r\n9.0\r\n",
+        "*2\r\n$2\r\nc6\r\n$3\r\n3.0\r\n",
         "*0\r\n",
         "*0\r\n",
         "*0\r\n",
         "*0\r\n",
         "*0\r\n",
         "*0\r\n",
-        "*4\r\n$2\r\nc4\r\n$2\r\nc5\r\n$2\r\nc6\r\n$2\r\nc7\r\n",
-        "*7\r\n$2\r\nc0\r\n$2\r\nc1\r\n$2\r\nc2\r\n$2\r\nc3\r\n$2\r\nc4\r\n$2\r\nc5\r\n$2\r\nc6\r\n",
-        "*8\r\n$2\r\nc4\r\n$3\r\n5.0\r\n$2\r\nc5\r\n$3\r\n4.0\r\n$2\r\nc6\r\n$3\r\n3.0\r\n$2\r\nc7\r\n$3\r\n2.0\r\n",
-        "*14\r\n$2\r\nc0\r\n$3\r\n9.0\r\n$2\r\nc1\r\n$3\r\n8.0\r\n$2\r\nc2\r\n$3\r\n7.0\r\n$2\r\nc3\r\n$3\r\n6.0\r\n"
-            + "$2\r\nc4\r\n$3\r\n5.0\r\n$2\r\nc5\r\n$3\r\n4.0\r\n$2\r\nc6\r\n$3\r\n3.0\r\n"
+        "*4\r\n$2\r\nc2\r\n$2\r\nc3\r\n$2\r\nc4\r\n$2\r\nc5\r\n",
+        "*7\r\n$2\r\nc3\r\n$2\r\nc4\r\n$2\r\nc5\r\n$2\r\nc6\r\n$2\r\nc7\r\n$2\r\nc8\r\n$2\r\nc9\r\n",
+        "*8\r\n$2\r\nc2\r\n$3\r\n7.0\r\n$2\r\nc3\r\n$3\r\n6.0\r\n$2\r\nc4\r\n$3\r\n5.0\r\n$2\r\nc5\r\n$3\r\n4.0\r\n",
+        "*14\r\n$2\r\nc3\r\n$3\r\n6.0\r\n$2\r\nc4\r\n$3\r\n5.0\r\n$2\r\nc5\r\n$3\r\n4.0\r\n$2\r\nc6\r\n$3\r\n3.0\r\n"
+            + "$2\r\nc7\r\n$3\r\n2.0\r\n$2\r\nc8\r\n$3\r\n1.0\r\n$2\r\nc9\r\n$3\r\n0.0\r\n"
       };
 
   protected String[] invalidRequests =

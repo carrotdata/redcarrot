@@ -69,7 +69,7 @@ public class SetsAllEnglishWords {
   static {
     Random r = new Random();
     byte[] bkey = new byte[8];
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 20; i++) {
       r.nextBytes(bkey);
       long key = UnsafeAccess.malloc(bkey.length);
       UnsafeAccess.copy(bkey, 0, key, bkey.length);
@@ -89,6 +89,9 @@ public class SetsAllEnglishWords {
     runTest(args[0]);
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    runTest(args[0]);
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest(args[0]);
   }
 

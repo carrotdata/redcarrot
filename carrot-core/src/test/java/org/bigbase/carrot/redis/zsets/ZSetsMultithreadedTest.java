@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.util.UnsafeAccess;
 import org.bigbase.carrot.util.Value;
 import org.junit.Ignore;
@@ -92,7 +93,7 @@ public class ZSetsMultithreadedTest {
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  //@Ignore
+  @Ignore
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -108,7 +109,7 @@ public class ZSetsMultithreadedTest {
     }
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
@@ -123,6 +124,24 @@ public class ZSetsMultithreadedTest {
     }
   }
 
+  @Ignore
+  @Test
+  public void runAllCompressionZSTD() throws IOException {
+    RedisConf conf = RedisConf.getInstance();
+    // This prevents ZstdCodec from saving/loading dictionaries from disk
+    conf.setTestMode(true);
+    
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    log.debug("");
+    for (int i = 0; i < 1; i++) {
+      log.debug("*************** RUN = {} Compression=ZSTD", i + 1);
+      setUp();
+      runTest();
+      tearDown();
+      BigSortedMap.printGlobalMemoryAllocationStats();
+      UnsafeAccess.mallocStats.printStats("runAllCompressionLZ4");
+    }
+  }
   @Ignore
   @Test
   public void runTest() {

@@ -717,7 +717,7 @@ public class Sets {
   public static long SCARDSCAN(BigSortedMap map, String key) {
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
-    long result = SCARDSCAN(map, keyPtr, keySize);
+    long result = SCARD(map, keyPtr, keySize);
     UnsafeAccess.free(keyPtr);
     return result;
   }
@@ -732,7 +732,7 @@ public class Sets {
    * @return number of elements
    * @throws IOException
    */
-  public static long SCARDSCAN(BigSortedMap map, long keyPtr, int keySize) {
+  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
 
     Key k = getKey(keyPtr, keySize);
     long total = 0;
@@ -769,32 +769,81 @@ public class Sets {
     }
     return total;
   }
+  
+  /**
+   * Cardinality in compact mode
+   * @param map
+   * @param keyPtr
+   * @param keySize
+   * @return -1, - not compact mode, 0 - empty or cardinality i compact mode
+   */
+  public static long SCARD_COMPACT(BigSortedMap map, long keyPtr, int keySize, int maxCompactMode) {
 
-  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
-    // This key contains sets cardinality
-    keySize = buildKey(keyPtr, keySize, 0, 0);
-    keyPtr = keyArena.get();
-    checkValueArena(Utils.SIZEOF_LONG);
-    long buffer = valueArena.get();
-    long size = map.get(keyPtr, keySize, buffer, Utils.SIZEOF_LONG, 0);
-    if (size == Utils.SIZEOF_LONG) {
-      return UnsafeAccess.toLong(buffer);
-    } else if (size < 0) {
-      return 0; // for compatibility
+    Key k = getKey(keyPtr, keySize);
+    long total = 0;
+    long startKeyPtr = 0, endKeyPtr = 0;
+    try {
+      KeysLocker.readLock(k);
+      startKeyPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
+      int kSize = buildKey(keyPtr, keySize, Commons.ZERO, 1, startKeyPtr);
+      int endKeySize = kSize - 1;
+      endKeyPtr = Utils.prefixKeyEnd(startKeyPtr, endKeySize);
+      if (endKeyPtr == 0) {
+        endKeySize = 0;
+      }
+      BigSortedMapScanner scanner = map.getScanner(startKeyPtr, kSize, endKeyPtr, endKeySize);
+      if (scanner == null) {
+        return 0; // empty or does not exists
+      }
+      int count = 0;
+      while (scanner.hasNext() && count++ < maxCompactMode) {
+        long valuePtr = scanner.valueAddress();
+        total += numElementsInValue(valuePtr);
+        count++;
+        scanner.next();
+      }
+      scanner.close();
+      return count>= maxCompactMode? -1: count;
+    } catch (IOException e) {
+      // should never be thrown
+    } finally {
+      if (startKeyPtr > 0) {
+        UnsafeAccess.free(startKeyPtr);
+      }
+      if (endKeyPtr > 0) {
+        UnsafeAccess.free(endKeyPtr);
+      }
+      KeysLocker.readUnlock(k);
     }
-    //TODO
-    throw new RuntimeException();
+    return total;
   }
 
+//  public static long SCARD(BigSortedMap map, long keyPtr, int keySize) {
+//    // This key contains sets cardinality
+//    keySize = buildKey(keyPtr, keySize, 0, 0);
+//    keyPtr = keyArena.get();
+//    checkValueArena(Utils.SIZEOF_LONG);
+//    long buffer = valueArena.get();
+//    long size = map.get(keyPtr, keySize, buffer, Utils.SIZEOF_LONG, 0);
+//    if (size == Utils.SIZEOF_LONG) {
+//      return UnsafeAccess.toLong(buffer);
+//    } else if (size < 0) {
+//      return 0; // for compatibility
+//    }
+//    //TODO
+//    throw new RuntimeException();
+//  }
+//
   public static long SINCRCARD(BigSortedMap map, long keyPtr, int keySize, long incr) {
     // This key contains sets cardinality
-    keySize = buildKey(keyPtr, keySize, 0, 0);
-    keyPtr = keyArena.get();
-    try {
-      return map.incrementLongOp(keyPtr, keySize, incr);
-    } catch (OperationFailedException e) {
-      throw new RuntimeException(e);
-    }
+//    keySize = buildKey(keyPtr, keySize, 0, 0);
+//    keyPtr = keyArena.get();
+//    try {
+//      return map.incrementLongOp(keyPtr, keySize, incr);
+//    } catch (OperationFailedException e) {
+//      throw new RuntimeException(e);
+//    }
+    return 0;
   }
   
   private static boolean deleteCardKey(BigSortedMap map, long keyPtr, int keySize) {

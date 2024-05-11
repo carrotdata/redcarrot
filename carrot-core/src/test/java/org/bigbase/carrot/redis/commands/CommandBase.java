@@ -74,14 +74,13 @@ public abstract class CommandBase {
       out.clear();
       String inline = validRequests[i];
       String request = Utils.inlineToRedisRequest(inline);
-      log.debug("REQUEST:");
-      log.debug("{}", inline);
-      // log.debug("{}", request);
+      //*DEBUG*/ log.debug("VALID REQUEST {}", request);
+      //*DEBUG*/ log.debug("EXP RESPONSE {}", validResponses[i]);
+
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
-      log.debug("\nRESULT:");
-      log.debug("{}", result);
+      //*DEBUG*/ log.debug("RESPONSE {}", result);
 
       if (validResponses[i].equals(SKIP_VERIFY)) {
         // TODO: we need some verification
@@ -170,9 +169,17 @@ public abstract class CommandBase {
       out.clear();
       String inline = validRequests[i];
       String request = inline;
+      
+     
+      
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
+      log.info ("INLINE REQUEST: {}", request);
+      log.info ("INLINE RESPONSE: {}", result);
+      log.info ("EXPECTED RESPONSE: {}", validResponses[i]);
+
+
       if (validResponses[i].equals(SKIP_VERIFY)) {
         log.debug(result);
       } else {

@@ -19,6 +19,8 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bigbase.carrot.compression.CodecFactory;
+import org.bigbase.carrot.compression.CodecType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -34,7 +36,9 @@ public class BigSortedMapPerfTest {
   public static void setUp() {
     log.debug("Set up: block = 4096; Mem={}", 10000000);
 
-    // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+
     BigSortedMap.setMaxBlockSize(4096);
 
   }
@@ -86,9 +90,11 @@ public class BigSortedMapPerfTest {
         totalTime += System.currentTimeMillis() - start;
         log.debug("Scan Run finished {}", i);
       }
-      map.dispose();
+     
     log.debug("{} RPS", totalScanned * 1000 / totalTime);
+    BigSortedMap.printGlobalMemoryAllocationStats();
     assertEquals(n * totalLoaded, totalScanned);
+    map.dispose();
     }
   }
 

@@ -79,7 +79,7 @@ public class HashesUserSessions {
   static long fieldBuf = UnsafeAccess.malloc(64);
   static long valBuf = UnsafeAccess.malloc(64);
 
-  static long N = 100000;
+  static long N = 1000000;
   static long totalDataSize = 0;
   static List<UserSession> userSessions = new ArrayList<UserSession>();
 
@@ -100,6 +100,9 @@ public class HashesUserSessions {
     runTest();
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 
@@ -123,15 +126,15 @@ public class HashesUserSessions {
 
       List<KeyValue> list = us.asList();
       totalDataSize += Utils.size(list);
-
+      int expected = list.size();
       int num = Hashes.HSET(map, keyBuf, keySize, list);
-      if (num != list.size()) {
+      if (num != expected) {
         log.fatal("ERROR in HSET");
         System.exit(-1);
       }
 
       if (count % 10000 == 0) {
-        log.debug("set {}", count);
+        log.info("set {}", count);
       }
 
       list.forEach(KeyValue::free);

@@ -109,9 +109,9 @@ public class BigSortedMapPerfTestClusterMode {
 
   @Test
   public void testClusterPerformance() {
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    BigSortedMap.setGlobalMemoryLimit(10000000000L);
-    int numThreads = 8;
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    BigSortedMap.setGlobalMemoryLimit(100000000L);
+    int numThreads = 2;
     Thread[] workers = new Thread[numThreads];
 
     for (int i = 0; i < numThreads; i++) {

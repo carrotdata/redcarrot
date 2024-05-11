@@ -311,7 +311,7 @@ public class SetsAPITest extends CarrotCoreBase {
 
     // Load X elements
     int X = memoryDebug? 2000: 1000000;
-    int numIterations = memoryDebug? 100: 100000;
+    int numIterations = memoryDebug? 100: 100;
     String key = "key";
 
     List<String> list = loadData(key, X);

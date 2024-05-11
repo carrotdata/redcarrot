@@ -93,6 +93,9 @@ public class HashesAddresses {
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    runTest();
   }
 
   private static void runTest() throws IOException, OperationFailedException {
@@ -103,30 +106,33 @@ public class HashesAddresses {
 
     long startTime = System.currentTimeMillis();
     int count = 0;
+    int n = 1;
+    for (int i = 0; i < n; i++) {
+      
+      for (Address us : addressList) {
+        count++;
+        String skey = Address.getUserId(count);
+        byte[] bkey = skey.getBytes();
+        int keySize = bkey.length;
+        UnsafeAccess.copy(bkey, 0, keyBuf, keySize);
 
-    for (Address us : addressList) {
-      count++;
-      String skey = Address.getUserId(count);
-      byte[] bkey = skey.getBytes();
-      int keySize = bkey.length;
-      UnsafeAccess.copy(bkey, 0, keyBuf, keySize);
+        totalDataSize += keySize;
 
-      totalDataSize += keySize;
+        List<KeyValue> list = us.asList();
+        totalDataSize += Utils.size(list);
+        int expected = list.size();
+        int num = Hashes.HSET(map, keyBuf, keySize, list);
+        if (num != expected) {
+          log.fatal("ERROR in HSET, num={} expected={}, count={}", num, list.size(), count);
+          System.exit(-1);
+        }
 
-      List<KeyValue> list = us.asList();
-      totalDataSize += Utils.size(list);
+        if (count % 10000 == 0) {
+          log.debug("set {}", count);
+        }
 
-      int num = Hashes.HSET(map, keyBuf, keySize, list);
-      if (num != list.size()) {
-        log.fatal("ERROR in HSET");
-        System.exit(-1);
+        list.forEach(KeyValue::free);
       }
-
-      if (count % 10000 == 0) {
-        log.debug("set {}", count);
-      }
-
-      list.forEach(KeyValue::free);
     }
     long endTime = System.currentTimeMillis();
 
