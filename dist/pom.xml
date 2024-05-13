@@ -27,10 +27,6 @@
             <groupId>org.bigbase</groupId>
             <artifactId>carrot-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.bigbase</groupId>
-            <artifactId>carrot-examples</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
