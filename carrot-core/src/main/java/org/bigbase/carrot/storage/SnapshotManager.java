@@ -47,7 +47,7 @@ public class SnapshotManager {
     boolean result = worker.take(store, sync);
     if (!result) {
       // WARN
-      log.debug("WARNING! Active snapshot started at {}", worker.getLastSnapshotTime());
+      log.debug("Active snapshot started at {}", worker.getLastSnapshotTime());
     }
     return result;
   }

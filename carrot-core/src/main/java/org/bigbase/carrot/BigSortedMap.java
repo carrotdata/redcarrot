@@ -970,17 +970,16 @@ public class BigSortedMap {
    * @param b index block
    */
   public void readLock(IndexBlock b) {
-//    int index = (b.hashCode() % locks.length);
-//    ReentrantReadWriteLock lock = locks[index];
-//    lock.readLock().lock();
+    int index = (b.hashCode() % locks.length);
+    ReentrantReadWriteLock lock = locks[index];
+    lock.readLock().lock();
   }
 
   /** Read unlock */
   public void readUnlock(IndexBlock b) {
-
-//    int index = (b.hashCode() % locks.length);
-//    ReentrantReadWriteLock lock = locks[index];
-//    lock.readLock().unlock();
+    int index = (b.hashCode() % locks.length);
+    ReentrantReadWriteLock lock = locks[index];
+    lock.readLock().unlock();
   }
 
   /**
@@ -990,16 +989,16 @@ public class BigSortedMap {
    * @throws InterruptedException
    */
   public void writeLock(IndexBlock b) {
-//    int index = (b.hashCode() % locks.length);
-//    ReentrantReadWriteLock lock = locks[index];
-//    lock.writeLock().lock();
+    int index = (b.hashCode() % locks.length);
+    ReentrantReadWriteLock lock = locks[index];
+    lock.writeLock().lock();
   }
 
   /** Write unlock */
   public void writeUnlock(IndexBlock b) {
-//    int index = (b.hashCode() % locks.length);
-//    ReentrantReadWriteLock lock = locks[index];
-//    lock.writeLock().unlock();
+    int index = (b.hashCode() % locks.length);
+    ReentrantReadWriteLock lock = locks[index];
+    lock.writeLock().unlock();
   }
 
   private final IndexBlock getThreadLocalBlock() {
@@ -1309,6 +1308,40 @@ public class BigSortedMap {
         }
       };
 
+      
+  private List<IndexBlock> lockRange(long startKeyPtr, int startKeyLength, long endKeyPtr, int endKeyLength){
+    IndexBlock kvBlock = getThreadLocalBlock();
+    long version = getSequenceId();
+    kvBlock.putForSearch(startKeyPtr, startKeyLength, version);
+    List<IndexBlock> blocks = new ArrayList<IndexBlock>();
+    IndexBlock first = map.floorKey(kvBlock);
+    if (first == null) {
+      return blocks;
+    }
+    kvBlock.reset();
+    kvBlock.putForSearch(endKeyPtr, endKeyLength, version);
+    // Can be null
+    IndexBlock afterLast = map.higherKey(kvBlock);
+    IndexBlock current = first;
+    while (current != afterLast) {
+      if (current.isEmpty() && !current.isFirstIndexBlock()) {
+        map.remove(current);
+        IndexBlock ib = current;
+        current = map.higherKey(current);
+        ib.free();
+        continue;
+      }
+      try {
+        current.writeLock();
+      } catch (RetryOperationException e) {
+        continue;
+      }
+      blocks.add(current);
+      current = map.higherKey(current);
+    }
+    return blocks;
+  }
+  
   /**
    * TODO: How to safely delete empty index blocks?
    *
@@ -1316,56 +1349,20 @@ public class BigSortedMap {
    *
    * @param startKeyPtr key address
    * @param startKeyLength key length
-   * @return number of delted keys
+   * @return number of deleted keys
    */
   public long deleteRange(long startKeyPtr, int startKeyLength, long endKeyPtr, int endKeyLength) {
-    IndexBlock kvBlock = getThreadLocalBlock();
-    long version = getSequenceId();
-    long deleted = 0;
-    kvBlock.putForSearch(startKeyPtr, startKeyLength, version);
-    IndexBlock b = null, prev = null;
+    
+    List<IndexBlock> blocks = lockRange(startKeyPtr, startKeyLength, endKeyPtr, endKeyLength);
+    IndexBlock b = null;
     boolean firstBlock = true;
-    int seqNumber;
-
-    while (true) {
+    int deleted = 0;
+    long version = getSequenceId();
+    for (int i = 0; i < blocks.size(); i++) {
       try {
-        long loopStartTime = System.currentTimeMillis();
-        // We need it to avoid releasing write lock from a wrong block
-        b = null;
-        b = firstBlock ? map.floorKey(kvBlock) : map.higherKey(prev);
-        if (b == null) {
-          break;
-        }
-        writeLock(b);
-
-        if (!b.isValid()) {
-          continue;
-        }
-        seqNumber = b.getSeqNumberSplitOrMerge();
-
-        if (b.hasRecentUnsafeModification(loopStartTime)) {
-          // TODO: what happens after index block split?
-          IndexBlock bbb = firstBlock ? map.floorKey(kvBlock) : map.higherKey(prev);
-          if (b != bbb) {
-            continue;
-          } else {
-            int sn = b.getSeqNumberSplitOrMerge();
-            if (sn != seqNumber) {
-              seqNumber = sn;
-              continue;
-            }
-          }
-        }
-        prev = b;
-        if (b.isEmpty() && !b.isFirstIndexBlock()) {
-          map.remove(b);
-          b.free();
-          continue;
-        }
+        b = blocks.get(i);
         long del = b.deleteRange(startKeyPtr, startKeyLength, endKeyPtr, endKeyLength, version);
         if (b.isEmpty() && !b.isFirstIndexBlock()) {
-          // TODO: what race conditions are possible?
-          // Do we need to lock index block?
           map.remove(b);
           b.free();
         }
@@ -1381,14 +1378,12 @@ public class BigSortedMap {
       } catch (RetryOperationException e) {
         continue;
       } finally {
-        if (b != null) {
-          writeUnlock(b);
-        }
+        b.writeUnlock();
       }
     }
     return deleted;
   }
-
+  
   /**
    * Delete key operation
    *
@@ -2262,6 +2257,7 @@ public class BigSortedMap {
   private static int BUFFER_SIZE = 256 * 1024;
 
   // WRITE DATA
+  @SuppressWarnings("resource")
   public void snapshot() {
     // Check if dir exists
     // Check if snapshotDir is NULL - during tests
@@ -2293,38 +2289,35 @@ public class BigSortedMap {
     log.debug("Snapshot file opened: {}", snapshotFile.getAbsolutePath());
 
     // main loop over all index blocks
-    IndexBlock ib = null, cur = null;
-    int version = -1;
-    ByteBuffer buf = ByteBuffer.allocateDirect(BUFFER_SIZE); // bb.get();
+    // We readLock two consecutive index blocks to prevent index block 
+    // "split-in-the-middle" issue
+    IndexBlock prev = null, cur = null;
+    ByteBuffer buf = ByteBuffer.allocateDirect(BUFFER_SIZE); 
     buf.clear();
-    boolean locked = false;
     while (true) {
-      locked = false;
       try {
-        if (ib != null) {
-          version = ib.getSeqNumberSplitOrMerge();
-        }
-        cur = nextIndexBlock(ib);
+        cur = nextIndexBlock(prev);
         if (cur == null) {
+          if (prev != null) {
+            prev.readUnlock();
+          }
+          // We are done
           break;
         } else if (cur.isValid() == false) {
           // TODO: is it safe?
           continue;
         }
         // Lock current index block
-        cur.readLock();
-        locked = true;
-        if (ib != null && ib.hasRecentUnsafeModification()) {
-          int v = ib.getSeqNumberSplitOrMerge();
-          if (v != version) {
-            // We caught IB split in fly
-            ib = cur;
-            continue;
-          }
+        cur.readLock(); 
+        // Unlock previous one
+        if (prev != null) {
+          prev.readUnlock();
         }
         // Process index block
-        cur.saveData(fc, buf);
-        ib = cur;
+        if (cur.isValid()) {
+          cur.saveData(fc, buf);
+        }
+        prev = cur;
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException e) {
@@ -2332,10 +2325,6 @@ public class BigSortedMap {
             "Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
         log.error("StackTrace: ", e);
         return;
-      } finally {
-        if (cur != null && locked) {
-          cur.readUnlock();
-        }
       }
     }
 
