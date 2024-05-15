@@ -713,4 +713,154 @@ public class Utils {
   private static void okResponse(long ptr, ByteBuffer buf) {
     buf.put(OK_RESP);
   }
+  
+  /**
+   * Convert Redis glob-style pattern into Java regular expression
+   * @param globPattern Redis regex pattern
+   * @return Java regex pattern
+   */
+  public static String globToRegex(String globPattern) {
+    StringBuilder regex = new StringBuilder("^");
+    for (int i = 0; i < globPattern.length(); i++) {
+        char c = globPattern.charAt(i);
+        switch (c) {
+            case '*':
+                regex.append(".*");
+                break;
+            case '?':
+                regex.append('.');
+                break;
+            case '.':
+            case '(':
+            case ')':
+            case '+':
+            case '|':
+            case '^':
+            case '$':
+            case '@':
+            case '%':
+                regex.append('\\').append(c); // Escape special regex characters
+                break;
+            case '\\':
+                if (i + 1 < globPattern.length()) {
+                    char nextChar = globPattern.charAt(i + 1);
+                    if (nextChar == '*' || nextChar == '?') {
+                        regex.append(nextChar);
+                        i++; // Skip next character as it's escaped
+                    } else {
+                        regex.append('\\').append(nextChar);
+                        i++; // Standard regex escaping
+                    }
+                }
+                break;
+            default:
+                regex.append(c);
+        }
+    }
+    regex.append('$');
+    return regex.toString();
+}
+  /**
+   * Converts a standard POSIX Shell globbing pattern into a regular expression
+   * pattern. The result can be used with the standard {@link java.util.regex} API to
+   * recognize strings which match the glob pattern.
+   * <p/>
+   * See also, the POSIX Shell language:
+   * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01
+   * 
+   * @param pattern A glob pattern.
+   * @return A regex pattern to recognize the given glob pattern.
+   */
+  
+  public static final String convertGlobToRegex(String pattern) {
+      StringBuilder sb = new StringBuilder(pattern.length());
+      int inGroup = 0;
+      int inClass = 0;
+      int firstIndexInClass = -1;
+      sb.append("^");
+      char[] arr = pattern.toCharArray();
+      for (int i = 0; i < arr.length; i++) {
+          char ch = arr[i];
+          switch (ch) {
+              case '\\':
+                  if (++i >= arr.length) {
+                      sb.append('\\');
+                  } else {
+                      char next = arr[i];
+                      switch (next) {
+                          case ',':
+                              // escape not needed
+                              break;
+                          case 'Q':
+                          case 'E':
+                              // extra escape needed
+                              sb.append('\\');
+                          default:
+                              sb.append('\\');
+                      }
+                      sb.append(next);
+                  }
+                  break;
+              case '*':
+                  if (inClass == 0)
+                      sb.append(".*");
+                  else
+                      sb.append('*');
+                  break;
+              case '?':
+                  if (inClass == 0)
+                      sb.append('.');
+                  else
+                      sb.append('?');
+                  break;
+              case '[':
+                  inClass++;
+                  firstIndexInClass = i+1;
+                  sb.append('[');
+                  break;
+              case ']':
+                  inClass--;
+                  sb.append(']');
+                  break;
+              case '.':
+              case '(':
+              case ')':
+              case '+':
+              case '|':
+              case '^':
+              case '$':
+              case '@':
+              case '%':
+                  if (inClass == 0 || (firstIndexInClass != i && ch == '^'))
+                      sb.append('\\');
+                  sb.append(ch);
+                  break;
+              case '!':
+                  if (firstIndexInClass == i)
+                      sb.append('^');
+                  else
+                      sb.append('!');
+                  break;
+              case '{':
+                  inGroup++;
+                  sb.append('(');
+                  break;
+              case '}':
+                  inGroup--;
+                  sb.append(')');
+                  break;
+              case ',':
+                  if (inGroup > 0)
+                      sb.append('|');
+                  else
+                      sb.append(',');
+                  break;
+              default:
+                  sb.append(ch);
+          }
+      }
+      sb.append("$");
+      return sb.toString();
+  }
+
 }
