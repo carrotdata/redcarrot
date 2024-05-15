@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.redis.zsets.ZSets;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -28,18 +29,31 @@ import org.bigbase.carrot.util.Utils;
 /**
  * ----- Data structures to keep user targeting:
  *
- * <p>7. UserActionWords: ZSET keeps user behavior userId -> {word,score} We record user actions for
+ * <p>
+ * 7. UserActionWords: 
+ * ZSET keeps user behavior userId -> {word,score} We record user actions for
  * every ad he/she acts on in the following way: if user acts on ad, we get the list of words
- * targeted by this ad and increment score for every word in the user's ordered set. 8.
- * UserViewWords: ZSET - the same as above but only for views (this data set is much bigger than in
- * 7.) 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours,
- * days. 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours,
+ * targeted by this ad and increment score for every word in the user's ordered set.
+ * 8. UserViewWords: 
+ * ZSET - the same as above but only for views (this data set is much bigger than in 7.) 
+ * 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours,
+ * days. 
+ * 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours,
  * days.
  *
  * <p>Results:
  *
- * <p>Redis 6.0.10 = 992,291,824 Carrot no compression = 254,331,520 Carrot LZ4 compression =
- * 234,738,048 Carrot LZ4HC compression = 227,527,936
+ * <p>
+ * 1. Redis 7.2.4 = 994,670,544 
+ * 2. Carrot no compression = 255,629,376 
+ * 3. Carrot LZ4 compression = 223,004,224 
+ * 4. Carrot ZSTD compression = 203,970,624
+ * 
+ *     Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 3.9x
+ *   2. Carrot LZ4            ~ 4.5x
+ *   3. Carrot ZSTD           ~ 4.9x  
  *
  * <p>Notes:
  *
@@ -54,9 +68,11 @@ public class TestCarrotAdServerUserTarget {
   static final int MAX_USERS = 1000;
 
   public static void main(String[] args) {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     runTestNoCompression();
     runTestCompressionLZ4();
-    runTestCompressionLZ4HC();
+    runTestCompressionZSTD();
   }
 
   private static void runTestNoCompression() {
@@ -71,9 +87,9 @@ public class TestCarrotAdServerUserTarget {
     runTest();
   }
 
-  private static void runTestCompressionLZ4HC() {
-    log.debug("\nTest , compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runTestCompressionZSTD() {
+    log.debug("\nTest , compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 

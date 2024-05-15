@@ -51,13 +51,16 @@ import org.bigbase.carrot.util.UnsafeAccess;
  *
  * <p>Memory usage:
  *
- * <p>1. No compression - 69MB 2. LZ4 compression - 35.43MB 3. LZ4HC compression - 34.86MB
+ * <p>
+ * 1. No compression - 79,707,904 
+ * 2. LZ4 compression - 38,663,616 
+ * 3. ZSTD compression - 32,765,568
  *
- * <p>Redis usage - 388.5 MB
+ * <p>Redis usage - 406,372,784
  *
  * <p>Redis/Carrot:
  *
- * <p>No compression 388.5/69 = 5.63 LZ4 388.5/35.43 = 10.97 LZ4HC 388.5/34.86 = 11.14
+ * <p>No compression 388.5/69 = 5.1 LZ4 388.5/35.43 = 10.5 LZ4HC 388.5/34.86 = 12.4
  */
 public class TestCarrotGeoIP {
 
@@ -69,7 +72,7 @@ public class TestCarrotGeoIP {
   public static void main(String[] args) throws IOException {
     runNoCompression(args[0], args[1]);
     runCompressionLZ4(args[0], args[1]);
-    runCompressionLZ4HC(args[0], args[1]);
+    runCompressionZSTD(args[0], args[1]);
   }
 
   private static void runNoCompression(String f1, String f2) throws IOException {
@@ -84,9 +87,9 @@ public class TestCarrotGeoIP {
     runTest(f1, f2);
   }
 
-  private static void runCompressionLZ4HC(String f1, String f2) throws IOException {
-    log.debug("Compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runCompressionZSTD(String f1, String f2) throws IOException {
+    log.debug("Compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest(f1, f2);
   }
 

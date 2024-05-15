@@ -73,11 +73,11 @@ public class RedisClusterTest {
 
   private static final Logger log = LogManager.getLogger(RedisClusterTest.class);
 
-  static long N = 10000000;
+  static long N = 1000000;
   static long totalDataSize = 0;
   static List<UserSession> userSessions = new ArrayList<>();
   static AtomicLong index = new AtomicLong(0);
-  static int NUM_THREADS = 8;
+  static int NUM_THREADS = 1;
 
   static {
     for (int i = 0; i < N; i++) {

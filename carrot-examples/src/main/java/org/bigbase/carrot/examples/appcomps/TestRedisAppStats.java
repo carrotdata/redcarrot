@@ -52,7 +52,7 @@ public class TestRedisAppStats {
   private static final Logger log = LogManager.getLogger(TestRedisAppStats.class);
 
   static final String KEY_PREFIX = "stats:profilepage:access:";
-  static final int hoursToKeep = 1000 * 365 * 24;
+  static final int hoursToKeep = 10 * 365 * 24;
 
   public static void main(String[] args) throws IOException {
     runTest();

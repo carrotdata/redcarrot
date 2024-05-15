@@ -27,6 +27,7 @@ import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.zsets.ZSets;
 import org.bigbase.carrot.util.UnsafeAccess;
 
@@ -45,20 +46,23 @@ import org.bigbase.carrot.util.UnsafeAccess;
  *
  * <p>Results: 0. Average data size {host, number_of_requests} = 21 bytes 1. No compression. Used
  * RAM per session object is 53 bytes 2. LZ4 compression. Used RAM per session object is 34 bytes 3.
- * LZ4HC compression. Used RAM per session object is 30 bytes
+ * LZ4HC compression. Used RAM per session object is 30 bytes, ZSTD - 18 bytes
  *
- * <p>Redis usage per record , using ZSets is 116
+ * <p>Redis usage per record , using ZSets is 112
  *
  * <p>Total used Redis memory is shown by 'used_memory' in Redis CLI.
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 116/53 ~ 2.2x 2) LZ4 compression 116/34 ~ 3.4x 3) LZ4HC compression 116/30 =
- * 3.9x
+ * <p>
+ * 1) No compression 112/53 ~ 2.1x 
+ * 2) LZ4 compression 112/34 ~ 3.3x 
+ * 3) LZ4HC compression 112/30 = 3.8x, 
+ * 4) ZSTD = 112 / 18 ~ 6.4
  *
  * <p>Effect of a compression:
  *
- * <p>LZ4 - 53/34 ~ 1.6x (to no compression) LZ4HC - 53/30 ~ 1.8x (to no compression)
+ * <p>LZ4 - 53/34 ~ 1.6x (to no compression) LZ4HC - 53/30 ~ 1.8x (to no compression), ZSTD = 53 / 18 =~ 3.0x
  */
 public class ZSetsDenialOfService {
 
@@ -87,15 +91,16 @@ public class ZSetsDenialOfService {
   static List<String> hosts = new ArrayList<String>();
 
   public static void main(String[] args) throws IOException, OperationFailedException {
-
-    log.debug("RUN compression = NONE");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
-    runTest();
-    log.debug("RUN compression = LZ4");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
-    runTest();
-    log.debug("RUN compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
+//    log.debug("RUN compression = NONE");
+//    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
+//    runTest();
+//    log.debug("RUN compression = LZ4");
+//    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+//    runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
 
     // Now load hosts
@@ -107,8 +112,8 @@ public class ZSetsDenialOfService {
       log.debug("RUN compression = LZ4 - REAL DATA");
       BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
       runTest();
-      log.debug("RUN compression = LZ4HC - REAL DATA");
-      BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+      log.debug("RUN compression = ZSTD - REAL DATA");
+      BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
       runTest();
     }
   }

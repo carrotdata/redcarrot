@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.redis.sets.Sets;
 import org.bigbase.carrot.redis.zsets.ZSets;
@@ -85,14 +86,69 @@ import org.bigbase.carrot.util.Utils;
  *
  * <p>-- Ads indexing
  *
- * <p>Redis 6.0.10 - 888,155,696 Carrot (no compression) - 154,989,056 Carrot (LZ4 compression) -
- * 73,236,608 Carrot (LZ4HC compression) - 72,454,784
+ * <p>
+ * 1. Redis 7.2.4 - 725,312,048 
+ * 2. Carrot no compression - 179,609,408 
+ * 3. Carrot LZ4 compression - 83,026,176 
+ * 4. Carrot ZSTD compression - 56,552,128
  *
+ *  Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 4.0x
+ *   2. Carrot LZ4            ~ 8.7x
+ *   3. Carrot ZSTD           ~ 12.8x 
+ *   
  * <p>-- User targeting
- *
+ * 
+ * 1. Redis 7.2.4 = 994,670,544 
+ * 2. Carrot no compression = 255,629,376 
+ * 3. Carrot LZ4 compression = 223,004,224 
+ * 4. Carrot ZSTD compression = 203,970,624
+ * 
+ *     Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 3.9x
+ *   2. Carrot LZ4            ~ 4.5x
+ *   3. Carrot ZSTD           ~ 4.9x 
+ *   
  * <p>-- Ads performance
+ * 
+ * Redis 7.2.4 = 1,527,734,024 
+ * Carrot no compression = 652,325,376 
+ * Carrot LZ4 compression = 476,455,424 
+ * Carrot ZSTD compression = 364,447,872
  *
+ *  Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 2.34x
+ *   2. Carrot LZ4            ~ 3.2x
+ *   3. Carrot ZSTD           ~ 4.2x  
+ *   
  * <p>-- Site performance
+ * 
+ * 1. Redis 7.2.4 = 2,421,441,296 
+ * 2. Carrot no compression = 733,330,944 
+ * 3. Carrot LZ4 compression = 675,045,888 
+ * 4. Carrot ZSTD compression = 577,178,368
+ * 
+ *    Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 3.3x
+ *   2. Carrot LZ4            ~ 3.6x
+ *   3. Carrot ZSTD           ~ 4.2x  
+ *
+ *  TOTAL RAM usage for all applications:
+ *  
+ * 1. Redis 7.2.4 - 5,669,157,912 bytes
+ * 2. Carrot no compression - 1,820,895,104
+ * 3. Carrot LZ4 compression - 1,457,531,712 
+ * 4. Carrot ZSTD compression - 1,202,148,992
+ *
+ *  Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 3.1x
+ *   2. Carrot LZ4            ~ 3.9x
+ *   3. Carrot ZSTD           ~ 4.7x 
  */
 public class TestCarrotAdServerAdIndexing {
 
@@ -103,9 +159,12 @@ public class TestCarrotAdServerAdIndexing {
   static final int MAX_LOCATIONS = 10000;
 
   public static void main(String[] args) {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     runTestNoCompression();
     runTestCompressionLZ4();
     runTestCompressionLZ4HC();
+    runTestCompressionZSTD();
   }
 
   private static void runTestNoCompression() {
@@ -126,6 +185,12 @@ public class TestCarrotAdServerAdIndexing {
     runTest();
   }
 
+  private static void runTestCompressionZSTD() {
+    log.debug("\nTest , compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    runTest();
+  }
+  
   private static void runTest() {
     BigSortedMap map = new BigSortedMap(10000000000L);
     doLocAds(map);

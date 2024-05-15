@@ -51,7 +51,7 @@ import redis.clients.jedis.Jedis;
  * session object is 94 bytes (COMPRESSION = 2.37) 3. LZ4HC compression. Used RAM per session object
  * is 88 bytes (COMPRESSION = 2.5)
  *
- * <p>Redis usage per session object, using String encoding is ~290 bytes
+ * <p>Redis usage per session object, using String encoding is ~300 bytes
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
@@ -66,11 +66,11 @@ public class RedisStringsUserSessions {
 
   private static final Logger log = LogManager.getLogger(RedisStringsUserSessions.class);
 
-  static long N = 10000000;
+  static long N = 1000000;
   static long totalDataSize = 0;
   static List<UserSession> userSessions = new ArrayList<UserSession>();
   static AtomicLong index = new AtomicLong(0);
-  static int NUM_THREADS = 4;
+  static int NUM_THREADS = 1;
 
   static {
     for (int i = 0; i < N; i++) {
@@ -110,33 +110,33 @@ public class RedisStringsUserSessions {
 
     log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
-    index.set(0);
-
-    r =
-        () -> {
-          try {
-            runGets();
-          } catch (Exception e) {
-            log.error("StackTrace: ", e);
-          }
-        };
-    workers = new Thread[NUM_THREADS];
-    for (int i = 0; i < NUM_THREADS; i++) {
-      workers[i] = new Thread(r);
-    }
-    start = System.currentTimeMillis();
-    Arrays.stream(workers).forEach(x -> x.start());
-    Arrays.stream(workers)
-        .forEach(
-            x -> {
-              try {
-                x.join();
-              } catch (Exception e) {
-              }
-            });
-    end = System.currentTimeMillis();
-
-    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
+//    index.set(0);
+//
+//    r =
+//        () -> {
+//          try {
+//            runGets();
+//          } catch (Exception e) {
+//            log.error("StackTrace: ", e);
+//          }
+//        };
+//    workers = new Thread[NUM_THREADS];
+//    for (int i = 0; i < NUM_THREADS; i++) {
+//      workers[i] = new Thread(r);
+//    }
+//    start = System.currentTimeMillis();
+//    Arrays.stream(workers).forEach(x -> x.start());
+//    Arrays.stream(workers)
+//        .forEach(
+//            x -> {
+//              try {
+//                x.join();
+//              } catch (Exception e) {
+//              }
+//            });
+//    end = System.currentTimeMillis();
+//
+//    log.debug("Finished {} sets in {}ms. RPS={}", N, end - start, N * 1000 / (end - start));
 
     start = System.currentTimeMillis();
     client.save();

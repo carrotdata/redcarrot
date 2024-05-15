@@ -65,7 +65,7 @@ public class RedisHashesAtomicCounters {
 
   private static final Logger log = LogManager.getLogger(RedisHashesAtomicCounters.class);
 
-  static long N = 10000000;
+  static long N = 1000000;
   static long totalDataSize = 0;
   static int MAX_VALUE = 1000;
 

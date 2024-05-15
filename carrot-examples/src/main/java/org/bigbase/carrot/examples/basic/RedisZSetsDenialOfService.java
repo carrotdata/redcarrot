@@ -68,6 +68,7 @@ public class RedisZSetsDenialOfService {
   static long totalDataSize = 0;
   static Random rnd = new Random();
   static int index = 0;
+  static long N = 1_000_000;
 
   static List<String> hosts = new ArrayList<String>();
 
@@ -76,10 +77,9 @@ public class RedisZSetsDenialOfService {
     if (args.length > 0) {
       loadHosts(args[0]);
       log.debug("RUN Redis - REAL DATA");
-      runTest();
-    } else {
-      log.debug("You forgot host site list file. Boom. Exited.");
-    }
+      
+    } 
+    runTest();
   }
 
   @SuppressWarnings("deprecation")
@@ -102,12 +102,11 @@ public class RedisZSetsDenialOfService {
    */
   private static void runTest() throws IOException {
 
-    Jedis client = new Jedis("localhost");
+    Jedis client = new Jedis("localhost", 6379);
 
     long startTime = System.currentTimeMillis();
     String key = "key";
-    long max = hosts.size();
-
+    long max = hosts.size()> 0? hosts.size(): N;
     for (int i = 0; i < max; i++) {
 
       String host = getNextHost();
@@ -138,6 +137,16 @@ public class RedisZSetsDenialOfService {
   }
 
   static String getNextHost() {
-    return hosts.get((index++) % hosts.size());
+    if (hosts.size() > 0) {
+      return hosts.get(index++ % hosts.size()) ;
+    }
+
+    return Integer.toString(rnd.nextInt(256))
+        + "."
+        + Integer.toString(rnd.nextInt(256))
+        + "."
+        + Integer.toString(rnd.nextInt(256))
+        + "."
+        + Integer.toString(rnd.nextInt(256));
   }
 }

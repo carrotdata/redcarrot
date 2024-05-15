@@ -25,6 +25,7 @@ import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.examples.util.UserSession;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.strings.Strings;
 import org.bigbase.carrot.redis.util.MutationOptions;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -49,16 +50,16 @@ import org.bigbase.carrot.util.UnsafeAccess;
  * <p>Average key + session object size is 222 bytes. We load 100K user session objects
  *
  * <p>Results: 0. Average user session data size = 222 bytes (includes key size) 1. No compression.
- * Used RAM per session object is 275 bytes (COMPRESSION= 0.8) 2. LZ4 compression. Used RAM per
- * session object is 94 bytes (COMPRESSION = 2.37) 3. LZ4HC compression. Used RAM per session object
- * is 88 bytes (COMPRESSION = 2.5)
+ * Used RAM per session object is 300 bytes (COMPRESSION= 0.8) 2. LZ4 compression. Used RAM per
+ * session object is 115 bytes (COMPRESSION = 2.37) 3. LZ4HC compression. Used RAM per session object
+ * is 108 bytes (COMPRESSION = 2.5), ZSTD - 65 bytes
  *
- * <p>Redis estimate per session object, using String encoding is ~320 bytes
+ * <p>Redis using String encoding is ~314 bytes per session
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 320/275 ~ 1.16x 2) LZ4 compression 320/94 ~ 3.4x 3) LZ4HC compression 320/88
- * ~ 3.64x
+ * <p>1) No compression 314/300 ~ 1.07x 2) LZ4 compression 314/115 ~ 2.8x 3) LZ4HC compression 314/108
+ * ~ 2.96x, ZSTD compression 314/65 ~ 4.8x
  *
  * <p>Effect of a compression:
  *
@@ -74,7 +75,7 @@ public class StringsUserSessions {
 
   static long keyBuf = UnsafeAccess.malloc(64);
   static long valBuf = UnsafeAccess.malloc(512);
-  static long N = 100000;
+  static long N = 1000000;
   static long totalDataSize = 0;
   static List<UserSession> userSessions = new ArrayList<UserSession>();
 
@@ -86,7 +87,8 @@ public class StringsUserSessions {
   }
 
   public static void main(String[] args) throws IOException, OperationFailedException {
-
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
@@ -95,6 +97,9 @@ public class StringsUserSessions {
     runTest();
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 

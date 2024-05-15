@@ -24,6 +24,7 @@ import org.bigbase.carrot.BigSortedMapScanner;
 import org.bigbase.carrot.IndexBlock;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 
 /**
  * Redis Book. Simple social network application. See description here:
@@ -53,45 +54,51 @@ import org.bigbase.carrot.compression.CodecType;
  *
  * <p>-- User average memory size (bytes):
  *
- * <p>No compression - 151 LZ4 compression - 89 LZ4HC compression - 88
+ * <p>No compression - 158 LZ4 compression - 94 ZSTD compression - 75
  *
  * <p>-- User statuses average memory size (bytes):
  *
- * <p>No compression - 456470 LZ4 compression - 211431 LZ4HC compression - 204365
+ * <p>No compression - 533590 LZ4 compression - 317842 ZSTD compression - 232423
  *
  * <p>-- User Timeline average memory size (bytes):
  *
- * <p>No compression - 76780 LZ4 compression - 57075 LZ4HC compression - 53794
+ * <p>No compression - 78731 LZ4 compression - 59782 ZSTD compression - 53257
  *
  * <p>-- User Followers average memory size (bytes):
  *
- * <p>No compression - 18,620 LZ4 compression - 15,362 LZ4HC compression - 15,432
+ * <p>No compression - 23292 LZ4 compression - 18674 ZSTD compression - 14263
  *
  * <p>-- User Following average memory size (bytes):
  *
- * <p>No compression - 29,760 LZ4 compression - 26,576 LZ4HC compression - 26,528
+ * <p>No compression - 35379 LZ4 compression - 31020 ZSTD compression - 25205
  *
  * <p>TOTAL size (user, user statuses, profile timeline, followers, following):
  *
- * <p>No compression ~ 580,000 LZ4 compression ~ 311,000 LZ4HC compression ~ 301,000
+ * <p>No compression ~ 670,992 LZ4 compression ~ 427,318 ZSTD compression ~ 325,218
  *
  * <p>REDIS RESULTS:
  *
- * <p>-- User average memory size (bytes): 219 -- User statuses average memory size (bytes): 718,183
- * -- User Timeline average memory size (bytes): 420,739 -- User Followers average memory size
- * (bytes): 33,700 -- User Following average memory size (bytes): 56,790
+ * <p>
+ * -- User average memory size (bytes): 219 
+ * -- User statuses average memory size (bytes): 757,183
+ * -- User Timeline average memory size (bytes): 409,739 
+ * -- User Followers average memory size (bytes): 34,200
+ * -- User Following average memory size (bytes): 56,830
  *
  * <p>TOTAL size (user, user statuses, profile timeline, followers, following): 1,229,631
  *
  * <p>OVERALL RESULTS:
  *
- * <p>Redis 6.0.10 ~ 1,300,000 Carrot (no compression) ~ 580,000 Carrot (LZ4) ~ 311,000 Carrot
- * (LZ4HC) ~ 301,000
+ * <p> 
+ * Redis 7.2.4 ~ 1,257,952 
+ * Carrot (no compression) ~ 670,992
+ * Carrot (LZ4) ~ 427,318 
+ * Carrot (ZSTD) ~ 325,218
  *
  * <p>Redis - to -Carrot RAM usage:
  *
- * <p>Redis/ Carrot no compression = 2.24 Redis/ Carrot LZ4 compression = 4.18 Redis/ Carrot LZ4HC
- * compression = 4.32
+ * <p>Redis/ Carrot no compression = 1.9 Redis/ Carrot LZ4 compression = 3.0 Redis/ Carrot ZSTD
+ * compression = 3.9
  */
 public class TestCarrotTwitter {
 
@@ -118,23 +125,25 @@ public class TestCarrotTwitter {
   }
 
   public static void main(String[] args) {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     runUsersNoCompression();
     runUsersLZ4Compression();
-    runUsersLZ4HCCompression();
+    runUsersZSTDCompression();
     runUserStatusNoCompression();
     runUserStatusLZ4Compression();
-    runUserStatusLZ4HCCompression();
+    runUserStatusZSTDCompression();
 
     runUserTimelinesNoCompression();
     runUserTimelineLZ4Compression();
-    runUserTimelineLZ4HCCompression();
+    runUserTimelineZSTDCompression();
 
     runUserFollowersNoCompression();
     runUserFollowersLZ4Compression();
-    runUserFollowersLZ4HCCompression();
+    runUserFollowersZSTDCompression();
     runUserFollowingNoCompression();
     runUserFollowingLZ4Compression();
-    runUserFollowingLZ4HCCompression();
+    runUserFollowingZSTDCompression();
     printSummary();
   }
 
@@ -206,9 +215,9 @@ public class TestCarrotTwitter {
     runUsers();
   }
 
-  private static void runUsersLZ4HCCompression() {
-    log.debug("\nTest Users, compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runUsersZSTDCompression() {
+    log.debug("\nTest Users, compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runUsers();
   }
 
@@ -256,9 +265,9 @@ public class TestCarrotTwitter {
     runUserStatuses();
   }
 
-  private static void runUserStatusLZ4HCCompression() {
-    log.debug("\nTest User Status, compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runUserStatusZSTDCompression() {
+    log.debug("\nTest User Status, compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runUserStatuses();
   }
 
@@ -294,9 +303,9 @@ public class TestCarrotTwitter {
     runUserTimelines();
   }
 
-  private static void runUserTimelineLZ4HCCompression() {
-    log.debug("\nTest User Timeline, compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runUserTimelineZSTDCompression() {
+    log.debug("\nTest User Timeline, compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runUserTimelines();
   }
 
@@ -337,9 +346,9 @@ public class TestCarrotTwitter {
     runUserFollowers();
   }
 
-  private static void runUserFollowersLZ4HCCompression() {
-    log.debug("\nTest User Followers, compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runUserFollowersZSTDCompression() {
+    log.debug("\nTest User Followers, compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runUserFollowers();
   }
 
@@ -380,9 +389,9 @@ public class TestCarrotTwitter {
     runUserFollowing();
   }
 
-  private static void runUserFollowingLZ4HCCompression() {
-    log.debug("\nTest User Following, compression=LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runUserFollowingZSTDCompression() {
+    log.debug("\nTest User Following, compression=ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runUserFollowing();
   }
 }

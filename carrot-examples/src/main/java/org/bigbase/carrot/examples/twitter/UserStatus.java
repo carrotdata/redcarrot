@@ -90,7 +90,7 @@ public class UserStatus extends KeyValues {
   }
 
   public String getUid() {
-    return props.getProperty(POSTED);
+    return props.getProperty(UID);
   }
 
   public String getPrivate() {

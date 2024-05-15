@@ -23,6 +23,7 @@ import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.examples.util.Address;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -47,22 +48,25 @@ import org.bigbase.carrot.util.Utils;
  *
  * <p>Average key + address object size is 86 bytes. We load 413689 user address objects
  *
- * <p>Results: 0. Average user address data size = 86 bytes 1. No compression. Used RAM per address
- * object is 124 bytes (COMPRESSION= 0.7) 2. LZ4 compression. Used RAM per address object is 66
- * bytes (COMPRESSION = 1.3) 3. LZ4HC compression. Used RAM per address object is 63.6 bytes
- * (COMPRESSION = 1.35)
- *
- * <p>Redis estimate per address object, using Hashes with ziplist encodings (most efficient) is 161
- * (actually it can be more, this is a low estimate based on evaluation of a Redis code)
+ * <p>Results: 
+ * 0. Average user address data size = 86 bytes 
+ * 1. No compression. Used RAM per address object is 124 bytes (COMPRESSION= 0.7) 
+ * 2. LZ4 compression. Used RAM per address object is 66 bytes (COMPRESSION = 1.3) 
+ * 3. LZ4HC compression. Used RAM per address object is 63.6 bytes (COMPRESSION = 1.35)
+ * 4. ZSTD compression. Used RAM per object is 40 bytes. (COMPRESSION = 2.15)
+ * <p>Redis using Hashes with ziplist encodings (most efficient) is 192 (exact)
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 161/124 = 1.3x 2) LZ4 compression 161/66 = 2.44x 3) LZ4HC compression
- * 161/63.6 = 2.53x
+ * <p>
+ * 1) No compression 192/124 = 1.5x 
+ * 2) LZ4 compression 192/66 = 2.9x 
+ * 3) LZ4HC compression 192/63.6 = 3.0x
+ * 4) ZSTD compression 192/40 = 4.8x
  *
  * <p>Effect of a compression:
  *
- * <p>LZ4 - 1.3/0.7 = 1.86x (to no compression) LZ4HC - 1.35/0.7 = 1.93x (to no compression)
+ * <p>LZ4 - 1.3/0.7 = 1.86x (to no compression) LZ4HC - 1.35/0.7 = 1.93x (to no compression), ZSTD 2.15/ 0.7 = 3.0
  */
 public class HashesAddresses {
 
@@ -83,17 +87,16 @@ public class HashesAddresses {
   public static void main(String[] args) throws IOException, OperationFailedException {
 
     addressList = Address.loadFromFile(args[0]);
-
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
     log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    log.debug("RUN compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    runTest();
     log.debug("RUN compression = ZSTD");
+    
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }

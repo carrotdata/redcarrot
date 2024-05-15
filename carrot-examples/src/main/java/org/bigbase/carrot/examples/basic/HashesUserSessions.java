@@ -25,6 +25,7 @@ import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.examples.util.UserSession;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.util.KeyValue;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -48,24 +49,29 @@ import org.bigbase.carrot.util.Utils;
  * <p>Test description: <br>
  * UserSession object has 10 fields, one field (UserId) is used as a Hash key
  *
- * <p>Average key + session object size is 192 bytes. We load 100K user session objects
+ * <p>Average key + session object size is 234 bytes. We load 1M user session objects
  *
- * <p>Results: 0. Average user session data size = 192 bytes 1. No compression. Used RAM per session
- * object is 249 bytes (COMPRESSION= 0.77) 2. LZ4 compression. Used RAM per session object is 90
- * bytes (COMPRESSION = 2.14) 3. LZ4HC compression. Used RAM per session object is 87 bytes
- * (COMPRESSION = 2.20)
+ * <p>Results: 
+ * 0. Average user session data size = 234 bytes 
+ * 1. No compression. Used RAM per session object is 284 bytes (COMPRESSION= 0.82) 
+ * 2. LZ4 compression. Used RAM per session object is 111 bytes (COMPRESSION = 2.11) 
+ * 3. ZSTD compression. Used RAM per session object is 64 bytes(COMPRESSION = 3.66)
  *
  * <p>Redis estimate per session object, using Hashes with ziplist encodings is 290 (actually it can
  * be more, this is a low estimate based on evaluating Redis code)
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 290/249 = 1.17x 2) LZ4 compression 290/90 = 3.22x 3) LZ4HC compression
- * 290/87 = 3.33x
+ * <p>
+ * 1) No compression 290/284 ~ 1.x 
+ * 2) LZ4 compression 290/111 = 2.6x 
+ * 3) ZSTD compression 290/64 = 4.5x
  *
  * <p>Effect of a compression:
  *
- * <p>LZ4 - 3.22/1.17 = 2.75x (to no compression) LZ4HC - 3.33/1.17 = 2.85x (to no compression)
+ * <p>
+ * LZ4 - 2.11/0.82 = 2.57x (to no compression) 
+ * ZSTD - 3.66/0.82 = 4.46x (to no compression)
  */
 public class HashesUserSessions {
 
@@ -91,17 +97,16 @@ public class HashesUserSessions {
   }
 
   public static void main(String[] args) throws IOException, OperationFailedException {
-
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
     log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    log.debug("RUN compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    runTest();
     log.debug("RUN compression = ZSTD");
+    
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }

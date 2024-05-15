@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 
 /**
  * Counters and statistics. Redis Book, Chapter 5.1:
@@ -37,7 +38,7 @@ import org.bigbase.carrot.compression.CodecType;
  * access - statistics on total access time hour - 8 byte timestamp for the hour
  *
  * <p>There are 24*365 = 8,760 hours in a year, so there are 8,760 keys in the application. For
- * Redis we will use ordered sets (ZSET) as recommended in the book), for Carrot we will use HASH
+ * Redis we will use Hash as recommended in the book), for Carrot we will use HASH as well
  * type to store the data.
  *
  * <p>We collect the following statistics:
@@ -49,13 +50,19 @@ import org.bigbase.carrot.compression.CodecType;
  *
  * <p>Results Carrot:
  *
- * <p>No compression - 11,370,240 LZ4 - 5,464,448 LZ4HC - 5,288,960
+ * 1. No compression - 11,644,928 
+ * 2. LZ4 - 5,789,568 
+ * 3. ZSTD - 3,873,088
  *
  * <p>Results Redis ~ 16,400,000
  *
  * <p>Redis/Carrot memory usage:
  *
- * <p>No compression = 1.45 LZ4 compression = 3.0 LZ4HC compression = 3.1
+ * <p>
+ * 1. No compression = 1.45 
+ * 2. LZ4 compression = 3.0 
+ * 3. ZSTD compression = 4.2
+ * 
  */
 public class TestCarrotAppStats {
 
@@ -65,9 +72,11 @@ public class TestCarrotAppStats {
   static final int hoursToKeep = 10 * 365 * 24;
 
   public static void main(String[] args) {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     runTestNoCompression();
     runTestCompressionLZ4();
-    runTestCompressionLZ4HC();
+    runTestCompressionZSTD();
   }
 
   private static void runTestNoCompression() {
@@ -82,9 +91,9 @@ public class TestCarrotAppStats {
     runTest();
   }
 
-  private static void runTestCompressionLZ4HC() {
-    log.debug("\nTest , compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runTestCompressionZSTD() {
+    log.debug("\nTest , compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 

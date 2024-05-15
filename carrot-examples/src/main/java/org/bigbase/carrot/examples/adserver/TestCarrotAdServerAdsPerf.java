@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.redis.zsets.ZSets;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -39,9 +40,17 @@ import org.bigbase.carrot.util.Utils;
  *
  * <p>Results:
  *
- * <p>Redis 6.0.10 = 1,524,734,024 Carrot no compression = 634,412,288 Carrot LZ4 compression =
- * 455,271,552 Carrot LZ4HC compression = 426,146,816
+ * <p>
+ * Redis 7.2.4 = 1,527,734,024 
+ * Carrot no compression = 652,325,376 
+ * Carrot LZ4 compression = 476,455,424 
+ * Carrot ZSTD compression = 364,447,872
  *
+ *  Memory ratio Redis/Carrot:
+ *  
+ *   1. Carrot no compression ~ 2.34x
+ *   2. Carrot LZ4            ~ 3.2x
+ *   3. Carrot ZSTD           ~ 4.2x  
  * <p>Notes:
  *
  * <p>1. The test uses synthetic data, which is mostly random and not compressible 2. For AdSitePerf
@@ -55,9 +64,11 @@ public class TestCarrotAdServerAdsPerf {
   static final int MAX_SITES = 10000;
 
   public static void main(String[] args) {
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     runTestNoCompression();
     runTestCompressionLZ4();
-    runTestCompressionLZ4HC();
+    runTestCompressionZSTD();
   }
 
   private static void runTestNoCompression() {
@@ -72,9 +83,9 @@ public class TestCarrotAdServerAdsPerf {
     runTest();
   }
 
-  private static void runTestCompressionLZ4HC() {
-    log.debug("\nTest , compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runTestCompressionZSTD() {
+    log.debug("\nTest , compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 

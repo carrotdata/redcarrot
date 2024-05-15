@@ -68,7 +68,7 @@ public class HashesAPITest extends CarrotCoreBase {
     List<String> list = new ArrayList<>();
     Random r = new Random();
     for (int i = 0; i < n; i++) {
-      int size = r.nextInt(10) + 5;
+      int size = r.nextInt(10) + 10;
       String m = Utils.getRandomStr(r, size);
       list.add(m);
       int res = Hashes.HSET(map, key, m, m);

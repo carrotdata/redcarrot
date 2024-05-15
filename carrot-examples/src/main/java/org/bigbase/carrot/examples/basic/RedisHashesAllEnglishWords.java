@@ -43,7 +43,7 @@ import redis.clients.jedis.Jedis;
  * <p>1) No compression 24.3M/3.5M ~ 6.9x 2) LZ4 compression 24.3M/2.8M ~ 8.4x 3) LZ4HC compression
  * 24.3M/2.6M ~ 9.0x
  *
- * <p>Redis Hashes RAM usage is 5.1M
+ * <p>Redis Hashes RAM usage is ~6,140,000
  *
  * <p>1) No compression 5.1M/3.5M ~ 1.5x 2) LZ4 compression 5.1M/2.8M ~ 1.8x 3) LZ4HC compression
  * 5.1M/2.6M ~ 2.0x
@@ -79,9 +79,9 @@ public class RedisHashesAllEnglishWords {
       totalLength += line.length();
       count++;
       int hash = Math.abs(line.hashCode());
-      int rem = hash % 300;
+      int rem = hash % 6000;
       String key = baseKey + rem;
-      client.hset(key, line, "1");
+      client.sadd(key, line);
       if ((count % 10000) == 0 && count > 0) {
         log.debug("Loaded {}", count);
       }
@@ -94,7 +94,7 @@ public class RedisHashesAllEnglishWords {
     log.debug("Press any key ...");
     System.in.read();
 
-    for (int i = 0; i < 300; i++) {
+    for (int i = 0; i < 3000; i++) {
       String key = baseKey + i;
       client.del(key);
     }

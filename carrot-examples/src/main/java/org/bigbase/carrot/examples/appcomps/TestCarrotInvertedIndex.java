@@ -39,10 +39,16 @@ import org.bigbase.carrot.util.Utils;
  *
  * <p>word -> {id1, id2, ..idk}, idn - 4 - byte integer
  *
- * <p>Redis takes 64.5 bytes per one doc id (which is 4 byte long) Carrot takes 5.8 bytes
+ * <p>
+ * Redis 7.2.4 takes 39.5 bytes per one doc id (which is 4 byte long) 
+ * Carrot takes 5.5 bytes ( no compression and LZ4) and 4.9 for ZSTD
  *
- * <p>Redis - to - Carrot memory usage = 64.5/5.8 = 11.1 Because the data is poorly compressible we
- * tested only Carrot w/o compression.
+ * <p>
+ * Redis - to - Carrot memory usage:
+ *  39.5/5.5 = 7.2 (no compression and LZ4)
+ *  39.5/ 4.9 = 8.0 for ZSTD
+ * Notes: the data is synthetic and random therefore is not compressible,
+ * in a real applications the performance numbers for Carrot will be much better 
  */
 public class TestCarrotInvertedIndex {
 
@@ -52,9 +58,10 @@ public class TestCarrotInvertedIndex {
   static int maxDocs = 5000;
 
   public static void main(String[] args) {
+    
     runTestNoCompression();
-    // runTestCompressionLZ4();
-    // runTestCompressionLZ4HC();
+    runTestCompressionLZ4();
+    runTestCompressionZSTD();
   }
 
   private static void runTestNoCompression() {
@@ -69,10 +76,9 @@ public class TestCarrotInvertedIndex {
     runTest();
   }
 
-  @SuppressWarnings("unused")
-  private static void runTestCompressionLZ4HC() {
-    log.debug("\nTest , compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+  private static void runTestCompressionZSTD() {
+    log.debug("\nTest , compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 

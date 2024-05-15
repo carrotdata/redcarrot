@@ -1563,7 +1563,7 @@ public class Utils {
   public static long size(List<KeyValue> list) {
     long size = 0;
     for (KeyValue kv : list) {
-      size += kv.keySize + kv.valueSize;
+      size += kv.keySize + kv.valueSize + sizeUVInt(kv.keySize) + sizeUVInt(kv.valueSize);
     }
     return size;
   }

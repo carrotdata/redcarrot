@@ -106,9 +106,9 @@ public class RedisHashesSpamFilter {
       totalLength += line.length();
       count++;
       int hash = Math.abs(line.hashCode());
-      int rem = hash % 100;
+      int rem = hash % 1000;
       String key = baseKey + rem;
-      client.hset(key, line, "1");
+      client.sadd(key, line);
       if ((count % 10000) == 0 && count > 0) {
         log.debug("Loaded {}", count);
       }

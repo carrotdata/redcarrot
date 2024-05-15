@@ -25,6 +25,7 @@ import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.hashes.Hashes;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -41,35 +42,25 @@ import org.bigbase.carrot.util.Utils;
  *
  * <p>Notes: in a real usage scenario, counter values are not random and can be compressed more
  *
- * <p>Results (Random 1..1000):
+ * <p>Results (Values are semi - random 1..1000 - skewed to 0):
  *
- * <p>1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 8.8 bytes
- * per counter 3. Carrot LZ4 - 7.2 bytes per counter 4. Carrot LZ4HC - 7.1 bytes per counter 5.
- * Redis memory usage per counter is 8 bytes (HINCRBY)
- *
- * <p>RAM usage (Redis-to-Carrot)
- *
- * <p>1) No compression 8/8.8 ~ 0.9x 2) LZ4 compression 8/7.2 ~ 1.1x 3) LZ4HC compression 90/7.1 ~
- * 1.3x
- *
- * <p>Effect of a compression:
- *
- * <p>LZ4 - 8.8/7.2 = 1.22 (to no compression) LZ4HC - 8.8/7.1 = 1.24 (to no compression)
- *
- * <p>Results (Semi - Random 1..100 - skewed to 0):
- *
- * <p>1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 7.7 bytes
- * per counter 3. Carrot LZ4 - 6.5 bytes per counter 4. Carrot LZ4HC - 6.4 bytes per counter 5.
- * Redis memory usage per counter is 7.3 bytes (HINCRBY)
+ * <p>1. Average counter size is 16 (13 bytes - key, 3 - value) 
+ * 2. Carrot No compression. 7.6 bytes per counter 
+ * 3. Carrot LZ4 - 6.4 bytes per counter 
+ * 4. Carrot ZSTD - 3.9 bytes per counter 
+ * 5. Redis memory usage per counter is 5.5 bytes (HINCRBY)
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 7.3/7.7 ~ 0.95x 2) LZ4 compression 7.3/6.5 ~ 1.12x 3) LZ4HC compression
- * 7.3/6.4 ~ 1.14x
+ * <p>1) No compression 5.5/7.6 ~  
+ * 2) LZ4 compression 5.5/6.4 ~  
+ * 3) ZSTD compression 5.5/3.9 ~ 1.4x
  *
  * <p>Effect of a compression:
  *
- * <p>LZ4 - 7.7/6.5 = 1.18 (to no compression) LZ4HC - 7.7/6.4 = 1.2 (to no compression)
+ * <p>
+ * LZ4 - 7.6/6.4 = 1.18 (to no compression) 
+ * ZSTD - 7.6/3.9 = 1.95 (to no compression)
  *
  * <p>Redis
  *
@@ -111,17 +102,16 @@ public class HashesAtomicCounters {
   }
 
   public static void main(String[] args) throws IOException, OperationFailedException {
-
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
     log.debug("RUN compression = LZ4");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
-    log.debug("RUN compression = LZ4HC");
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
-    runTest();
     log.debug("RUN compression = ZSTD");
+  
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
     Utils.freeKeys(keys);

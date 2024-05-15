@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.sparse.SparseBitmaps;
 import org.bigbase.carrot.redis.util.Commons;
 import org.bigbase.carrot.util.Key;
@@ -82,12 +83,15 @@ public class SparseBitmapsComparison {
 
   static double[] dencities =
       new double[] {
-        /*0.000001, 0.00001, 0.0001, 0.001,*/
-        0.01 /*, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1*/
+        0.000001, 0.00001, 0.0001, 0.001,
+        0.01 , 0.02, 0.03, 0.04, 0.05, 0.075, 0.1
       };
 
   static {
     //UnsafeAccess.debug = true;
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
+    
   }
 
   private static Key getKey() {
@@ -135,6 +139,17 @@ public class SparseBitmapsComparison {
     }
   }
 
+  private static void runAllCompressionZSTD() {
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    log.debug("");
+    for (int i = 0; i < dencities.length; i++) {
+      dencity = dencities[i];
+
+      log.debug("*************** RUN = {} Compression=ZSTD, dencity={}", i + 1, dencity);
+      allTests();
+    }
+  }
+
   private static void runAllCompressionLZ4HC() {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
     log.debug("");
@@ -145,7 +160,6 @@ public class SparseBitmapsComparison {
       allTests();
     }
   }
-
   private static void allTests() {
     setUp();
     testPerformance();
@@ -187,8 +201,8 @@ public class SparseBitmapsComparison {
   }
 
   public static void main(String[] args) {
-    runAllNoCompression();
-    runAllCompressionLZ4();
+    //runAllNoCompression();
+    //runAllCompressionLZ4();
     runAllCompressionLZ4HC();
   }
 }

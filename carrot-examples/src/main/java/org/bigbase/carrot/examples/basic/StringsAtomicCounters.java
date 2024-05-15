@@ -25,6 +25,7 @@ import org.bigbase.carrot.BigSortedMap;
 import org.bigbase.carrot.compression.CodecFactory;
 import org.bigbase.carrot.compression.CodecType;
 import org.bigbase.carrot.ops.OperationFailedException;
+import org.bigbase.carrot.redis.RedisConf;
 import org.bigbase.carrot.redis.strings.Strings;
 import org.bigbase.carrot.util.Key;
 import org.bigbase.carrot.util.UnsafeAccess;
@@ -40,18 +41,29 @@ import org.bigbase.carrot.util.UnsafeAccess;
  *
  * <p>Results:
  *
- * <p>1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 37.5 bytes
- * per counter 3. Carrot LZ4 - 10.8 bytes per counter 4. Carrot LZ4HC - 10.3 bytes per counter 5.
- * Redis memory usage per counter is 57.5 bytes
+ * <p>
+ * 1. Average counter size is 21 (13 bytes - key, 8 - value) 
+ * 2. Carrot No compression. 37.5 bytes 
+ * ( 8 bytes expiration + 2 bytes for key and value length + 1 byte for data type)
+ * per counter 
+ * 3. Carrot LZ4 - 10.8 bytes per counter 
+ * 4. Carrot LZ4HC - 10.3 bytes per counter 
+ * 5. Carrot ZSTD - 7.2 bytes
+ * 6. Redis memory usage per counter is 57.5 bytes
  *
  * <p>RAM usage (Redis-to-Carrot)
  *
- * <p>1) No compression 57.5/37.5 ~ 1.5x 2) LZ4 compression 57.5/10.8 ~ 5.3x 3) LZ4HC compression
- * 57.5/10.3 ~ 5.6x
+ * <p>1) No compression 57.5/37.5 ~ 1.5x 
+ * 2) LZ4 compression 57.5/10.8 ~ 5.3x 
+ * 3) LZ4HC compression 57.5/10.3 ~ 5.6x
+ * 4) ZSTD compression  57.5 / 7.2 ~ 8.0
  *
  * <p>Effect of a compression:
  *
- * <p>LZ4 - 37.5/10.8 = 3.5 (to no compression) LZ4HC - 37.5/10.3 = 3.6 (to no compression)
+ * <p>
+ *   LZ4 - 37.5/10.8 = 3.5 (to no compression) 
+ *   LZ4HC - 37.5/10.3 = 3.6 (to no compression)
+ *   ZSTD  - 37.5 / 7.2 = 5.2
  *
  * <p>Redis
  *
@@ -86,6 +98,8 @@ public class StringsAtomicCounters {
 
   public static void main(String[] args) throws IOException, OperationFailedException {
 
+    RedisConf conf = RedisConf.getInstance();
+    conf.setTestMode(true);
     log.debug("RUN compression = NONE");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     runTest();
@@ -94,6 +108,9 @@ public class StringsAtomicCounters {
     runTest();
     log.debug("RUN compression = LZ4HC");
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4HC));
+    runTest();
+    log.debug("RUN compression = ZSTD");
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
 
