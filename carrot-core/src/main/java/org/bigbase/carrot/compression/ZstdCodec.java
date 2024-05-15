@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -102,7 +103,7 @@ public class ZstdCodec implements Codec {
   private int dictSize = 1 << 16;
   
   /* Compression level */
-  private int compLevel = -1;
+  private int compLevel = 3;
   
   /* Dictionary enabled */
   private boolean dictionaryEnabled = true;
@@ -402,14 +403,22 @@ public class ZstdCodec implements Codec {
     if (!success) {
       return;
     }
+    log.debug("Start training");
     this.trainingDataSize = new AtomicInteger();
     this.trainingData = new ConcurrentLinkedQueue<Long>();
   }
 
-  private synchronized void addTrainingData(long ptr, int size) {
+  public synchronized void addTrainingData(long ptr, int size) {
     if (!trainingInProgress.get() || finalizingTraining.get()) {
       return;
     }
+    // There is the issue with the implementation
+    // we add to the training set data blocks not data items
+    // it means that there are too many duplicates in samples
+    // therefore we add probability element
+    ThreadLocalRandom r = ThreadLocalRandom.current();
+    double d = r.nextDouble();
+    if (d > 0.01d) return;
     long $ptr = UnsafeAccess.malloc(size + Utils.SIZEOF_INT);
     UnsafeAccess.copy(ptr, $ptr + Utils.SIZEOF_INT, size);
     UnsafeAccess.putInt($ptr,  size);
@@ -418,7 +427,7 @@ public class ZstdCodec implements Codec {
     checkFinishTraining();
   }
   
-  private boolean isTrainingRequired() {
+  public boolean isTrainingRequired() {
     if (!this.dictionaryEnabled) {
       return false;
     }
@@ -448,7 +457,6 @@ public class ZstdCodec implements Codec {
     Runnable r = () -> {
       byte[] dict;
       ZstdDictTrainer trainer = new ZstdDictTrainer(this.trainingDataSize.get(), this.dictSize);
-      log.debug("Start training");
       for (Long ptr: this.trainingData) {
         int size = UnsafeAccess.toInt(ptr);
         byte[] data = new byte[size];
