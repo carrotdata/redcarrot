@@ -3,7 +3,7 @@
 # Yeah, let set individual JAVA_HOME in .bashrc ?
 # JAVA_HOME variable could be set on stand alone not-dev server.
 #export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.11.jdk/Contents/Home
-export RELEASE=carrot-0.3-SNAPSHOT
+export RELEASE=carrot-0.4-SNAPSHOT
 export DISTRIBUTION=${RELEASE}.tar.gz
 export APPS_PARAMS="conf/carrot-redis.conf"
 export INSTANCE_NAME=DEV_$(pwd)

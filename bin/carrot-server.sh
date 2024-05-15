@@ -27,7 +27,6 @@ export JVM_OPTS="--add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-opens
 	--add-opens java.base/sun.net=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -cp .:${CPATH} ${APP_OPTS}"
 
 #===== find pid =====
-# shellcheck disable=SC2120
 pid() {
   echo "$(ps -aef | grep "${INSTANCE_NAME}" | grep -v grep | awk {'print $2'})"
 }
@@ -95,7 +94,6 @@ reboot() {
 usage() {
   echo
   echo Usage:
-  # shellcheck disable=SC2102
   echo \$\> \./carrot-server.sh [start]\|[stop]\|[reboot]
   echo
 }
