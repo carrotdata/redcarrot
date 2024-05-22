@@ -84,7 +84,7 @@
                 <scope>compile</scope>
             </dependency>
   	   <dependency>
-             <groupId>com.onecache</groupId>
+             <groupId>com.carrotdata</groupId>
              <artifactId>zstd-jni</artifactId>
              <version>1.5.6-3</version>
           </dependency>

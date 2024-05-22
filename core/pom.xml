@@ -37,7 +37,7 @@
             <scope>test</scope>
         </dependency>
 	<dependency>
-             <groupId>com.onecache</groupId>
+             <groupId>com.carrotdata</groupId>
              <artifactId>zstd-jni</artifactId>
         </dependency>
     </dependencies>
