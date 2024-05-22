@@ -10,15 +10,15 @@
     <version>${revision}</version>
 
     <parent>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot</artifactId>
+        <groupId>com.carrotdata</groupId>
+        <artifactId>redcarrot</artifactId>
         <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>org.bigbase</groupId>
-            <artifactId>carrot-common</artifactId>
+            <groupId>com.carrotdata</groupId>
+            <artifactId>common</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -42,7 +42,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.bigbase</groupId>
+                                    <groupId>com.carrotdata</groupId>
                                     <artifactId>liblz4</artifactId>
                                     <version>${revision}</version>
                                     <type>${lib.packaging}</type>
@@ -51,7 +51,7 @@
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>
-                                ${project.build.directory}/classes/org/bigbase/lz4/native/${lib.path.plaftorm.suffix}
+                                ${project.build.directory}/classes/com/carrotdata/lz4/native/${lib.path.plaftorm.suffix}
                             </outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>

@@ -3,7 +3,6 @@
 usage() {
   echo
   echo Usage:
-  # shellcheck disable=SC2046
   echo $(basename "$0") bn=\<backup name\> mn=\<module name\> cp=\<compare phrase\>
   echo
   exit 1

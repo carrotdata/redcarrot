@@ -1,0 +1,59 @@
+/*
+ Copyright (C) 2021-present Carrot, Inc.
+
+ <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ Server Side Public License, version 1, as published by MongoDB, Inc.
+
+ <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ Server Side Public License for more details.
+
+ <p>You should have received a copy of the Server Side Public License along with this program. If
+ not, see <http://www.mongodb.com/licensing/server-side-public-license>.
+*/
+package com.carrotdata.redcarrot.examples.twitter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+/** Class Followers - represents user's followers */
+public class Followers extends Users {
+
+  Followers(User user) {
+    super(user);
+  }
+
+  @Override
+  public String getKey() {
+    return "followers:" + user.getId();
+  }
+
+  @Override
+  /**
+   * Generate followers for a given user
+   *
+   * @param user user to follow
+   * @return user's followers
+   */
+  public void generateUsers() {
+    users = new ArrayList<GenuineUser>();
+
+    long registered = Long.valueOf(user.getSignup());
+    int numFollowers = user.getTotalFollowers();
+    if (numFollowers == 0) return;
+
+    Calendar cal = Calendar.getInstance();
+    Date today = cal.getTime();
+    cal.setTimeInMillis(registered);
+    Date regtime = cal.getTime();
+    long interval = (today.getTime() - registered) / numFollowers;
+    int count = 0;
+    while (count++ < numFollowers) {
+      long time = regtime.getTime();
+      String id = Long.toString(Id.nextId(time));
+      users.add(new GenuineUser(id, time / 1000)); // We keep seconds only
+      regtime.setTime(time + interval);
+    }
+  }
+}

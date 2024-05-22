@@ -3,10 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.bigbase</groupId>
-    <artifactId>carrot</artifactId>
+    <groupId>com.carrotdata</groupId>
+    <artifactId>redcarrot</artifactId>
     <packaging>pom</packaging>
-    <name>Carrot</name>
+    <name>Redcarrot</name>
     <version>${revision}</version>
     <url>http://www.server.com</url>
 
@@ -21,22 +21,22 @@
         <dependencies>
             <!--      modules-->
             <dependency>
-                <groupId>org.bigbase</groupId>
-                <artifactId>carrot-core</artifactId>
+                <groupId>com.carrotdata</groupId>
+                <artifactId>core</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>org.bigbase</groupId>
-                <artifactId>carrot-common</artifactId>
+                <groupId>com.carrotdata</groupId>
+                <artifactId>common</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>org.bigbase</groupId>
-                <artifactId>carrot-examples</artifactId>
+                <groupId>com.carrotdata</groupId>
+                <artifactId>examples</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>org.bigbase</groupId>
+                <groupId>com.carrotdata</groupId>
                 <artifactId>lz4-java</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -92,12 +92,12 @@
     </dependencyManagement>
 
     <modules>
-        <module>carrot-common</module>
+        <module>common</module>
         <module>lz4</module>
         <module>lz4-java</module>
-        <module>carrot-core</module>
+        <module>core</module>
         <module>dist</module>
-        <module>carrot-examples</module>
+        <module>examples</module>
     </modules>
 
     <build>

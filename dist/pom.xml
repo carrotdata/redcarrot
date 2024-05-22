@@ -9,23 +9,23 @@
     <version>${revision}</version>
 
     <parent>
-        <groupId>org.bigbase</groupId>
-        <artifactId>carrot</artifactId>
+        <groupId>com.carrotdata</groupId>
+        <artifactId>redcarrot</artifactId>
         <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>org.bigbase</groupId>
-            <artifactId>carrot-common</artifactId>
+            <groupId>com.carrotdata</groupId>
+            <artifactId>common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bigbase</groupId>
+            <groupId>com.carrotdata</groupId>
             <artifactId>lz4-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.bigbase</groupId>
-            <artifactId>carrot-core</artifactId>
+            <groupId>com.carrotdata</groupId>
+            <artifactId>core</artifactId>
         </dependency>
     </dependencies>
 
@@ -36,17 +36,17 @@
                 <version>3.7.1</version>
                 <executions>
                     <execution>
-                        <id>carrot-assembly</id>
+                        <id>redcarrot-assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assemble/carrot-assembly.xml</descriptor>
+                                <descriptor>src/main/assemble/redcarrot-assembly.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>carrot-${revision}</finalName>
+                            <finalName>redcarrot-${revision}</finalName>
                         </configuration>
                     </execution>
                 </executions>
