@@ -116,10 +116,10 @@
                         <exclude>**/BigSortedMapTestMT.java</exclude>
                         <exclude>**/AtomicAppendTestMT.java</exclude>
                         <exclude>**/AtomicIncrementTestMT.java</exclude>
-                        <exclude>**/HashesMultithreadedTest.java</exclude>
-                        <exclude>**/SetsMultithreadedTest.java</exclude>
+                        <!--exclude>**/HashesMultithreadedTest.java</exclude-->
+                        <!--exclude>**/SetsMultithreadedTest.java</exclude-->
                         <exclude>**/TestBitmapCompression.java</exclude>
-                        <exclude>**/ZSetsMultithreadedTest.java</exclude>
+                        <!--exclude>**/ZSetsMultithreadedTest.java</exclude-->
                         <exclude>**/SparseBitmapTest.java</exclude>
                     </excludes>
                     <systemProperties>
@@ -220,7 +220,7 @@
         </profile>
 
         <profile>
-            <id>mac</id>
+            <id>mac-x86_64</id>
             <activation>
                 <os>
                     <family>Mac</family>
@@ -235,9 +235,24 @@
                 <lib.suffix>-mac</lib.suffix>
             </properties>
         </profile>
-
         <profile>
-            <id>linux</id>
+            <id>mac-aarch64</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/darwin</JAVA_INCLUDE>
+                <jemalloc.include>include_mac</jemalloc.include>
+                <lib.packaging>dylib</lib.packaging>
+                <lib.path.plaftorm.suffix>Mac/aarch64</lib.path.plaftorm.suffix>
+                <lib.suffix>-mac</lib.suffix>
+            </properties>
+        </profile>	
+        <profile>
+            <id>linux-amd64</id>
             <activation>
                 <os>
                     <family>Linux</family>
@@ -249,6 +264,22 @@
                 <jemalloc.include>include_linux</jemalloc.include>
                 <lib.packaging>so</lib.packaging>
                 <lib.path.plaftorm.suffix>Linux/amd64</lib.path.plaftorm.suffix>
+                <lib.suffix>-linux</lib.suffix>
+            </properties>
+        </profile>
+        <profile> 
+          <id>linux-aarch64</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <JAVA_INCLUDE>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/linux</JAVA_INCLUDE>
+                <jemalloc.include>include_linux</jemalloc.include>
+                <lib.packaging>so</lib.packaging>
+                <lib.path.plaftorm.suffix>Linux/aarch64</lib.path.plaftorm.suffix>
                 <lib.suffix>-linux</lib.suffix>
             </properties>
         </profile>
