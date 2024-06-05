@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.io.IOException;
@@ -38,24 +34,22 @@ public class RedcarrotNodeServer implements Runnable {
   /*
    * Input buffer
    */
-  static ThreadLocal<ByteBuffer> inBuf =
-      new ThreadLocal<ByteBuffer>() {
-        @Override
-        protected ByteBuffer initialValue() {
-          return ByteBuffer.allocateDirect(bufferSize);
-        }
-      };
+  static ThreadLocal<ByteBuffer> inBuf = new ThreadLocal<ByteBuffer>() {
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocateDirect(bufferSize);
+    }
+  };
 
   /*
    * Output buffer
    */
-  static ThreadLocal<ByteBuffer> outBuf =
-      new ThreadLocal<ByteBuffer>() {
-        @Override
-        protected ByteBuffer initialValue() {
-          return ByteBuffer.allocateDirect(bufferSize);
-        }
-      };
+  static ThreadLocal<ByteBuffer> outBuf = new ThreadLocal<ByteBuffer>() {
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocateDirect(bufferSize);
+    }
+  };
 
   private String host;
   private int port;
@@ -63,7 +57,6 @@ public class RedcarrotNodeServer implements Runnable {
   private Thread runner;
 
   /**
-   *
    * @param host
    * @param port
    */
@@ -121,35 +114,35 @@ public class RedcarrotNodeServer implements Runnable {
     serverSocket.register(selector, ops, null);
     log.debug("[{}] Node server started on port: {}]", Thread.currentThread().getName(), port);
 
-    Consumer<SelectionKey> action =
-        key -> {
-          try {
-            if (!key.isValid()) return;
-            if (key.isValid() && key.isAcceptable()) {
-              SocketChannel client = serverSocket.accept();
-              // Adjusts this channel's blocking mode to false
-              client.configureBlocking(false);
-              client.setOption(StandardSocketOptions.TCP_NODELAY, true);
-              client.setOption(StandardSocketOptions.SO_SNDBUF, 64 * 1024);
-              client.setOption(StandardSocketOptions.SO_RCVBUF, 64 * 1024);
-              // Operation-set bit for read operations
-              client.register(selector, SelectionKey.OP_READ);
-              log.debug("[{}] Connection Accepted: {}]", Thread.currentThread().getName(), client.getLocalAddress());
-            } else if (key.isValid() && key.isReadable()) {
-              // Check if it is in use
-              RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
-              if (att != null && att.inUse()) return;
-              // process request
-              processRequest(key);
-            }
-          } catch (IOException e) {
-            log.error("StackTrace: ", e);
-            log.error("Shutting down node ...");
-            store.dispose();
-            store = null;
-            log.error("Bye-bye folks. See you soon :)");
-          }
-        };
+    Consumer<SelectionKey> action = key -> {
+      try {
+        if (!key.isValid()) return;
+        if (key.isValid() && key.isAcceptable()) {
+          SocketChannel client = serverSocket.accept();
+          // Adjusts this channel's blocking mode to false
+          client.configureBlocking(false);
+          client.setOption(StandardSocketOptions.TCP_NODELAY, true);
+          client.setOption(StandardSocketOptions.SO_SNDBUF, 64 * 1024);
+          client.setOption(StandardSocketOptions.SO_RCVBUF, 64 * 1024);
+          // Operation-set bit for read operations
+          client.register(selector, SelectionKey.OP_READ);
+          log.debug("[{}] Connection Accepted: {}]", Thread.currentThread().getName(),
+            client.getLocalAddress());
+        } else if (key.isValid() && key.isReadable()) {
+          // Check if it is in use
+          RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
+          if (att != null && att.inUse()) return;
+          // process request
+          processRequest(key);
+        }
+      } catch (IOException e) {
+        log.error("StackTrace: ", e);
+        log.error("Shutting down node ...");
+        store.dispose();
+        store = null;
+        log.error("Bye-bye folks. See you soon :)");
+      }
+    };
     // Infinite loop..
     // Keep server running
     while (true) {
@@ -164,7 +157,6 @@ public class RedcarrotNodeServer implements Runnable {
 
   /**
    * Process incoming request
-   *
    * @param key selection key for a socket channel
    */
   private void processRequest(SelectionKey key) {
@@ -247,7 +239,6 @@ public class RedcarrotNodeServer implements Runnable {
 
   /**
    * Release key - mark it not in use
-   *
    * @param key
    */
   void release(SelectionKey key) {
@@ -257,7 +248,6 @@ public class RedcarrotNodeServer implements Runnable {
 
   /**
    * Checks if request is complete
-   *
    * @param in input data buffer
    * @return true - complete, false - otherwise
    */

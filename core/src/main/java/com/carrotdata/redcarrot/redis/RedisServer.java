@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.io.IOException;
@@ -49,7 +45,6 @@ public class RedisServer {
 
   /**
    * Has server started yet?
-   *
    * @return true, false
    */
   public static boolean hasStarted() {
@@ -58,16 +53,14 @@ public class RedisServer {
 
   /** Start server in a separate thread */
   public static void start() {
-    new Thread(
-            () -> {
-              try {
-                RedisServer.main(new String[] {});
-              } catch (IOException e) {
-                // TODO Auto-generated catch block
-                log.error("StackTrace: ", e);
-              }
-            })
-        .start();
+    new Thread(() -> {
+      try {
+        RedisServer.main(new String[] {});
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        log.error("StackTrace: ", e);
+      }
+    }).start();
 
     while (!hasStarted()) {
       try {
@@ -82,7 +75,6 @@ public class RedisServer {
 
   /**
    * Network server Main method (entry point)
-   *
    * @param args command line argument list (path to a configuration file)
    * @throws IOException
    */
@@ -117,33 +109,32 @@ public class RedisServer {
 
     started = true;
 
-    Consumer<SelectionKey> action =
-        key -> {
-          try {
-            if (!key.isValid()) return;
-            if (key.isValid() && key.isAcceptable()) {
-              SocketChannel client = serverSocket.accept();
-              // Adjusts this channel's blocking mode to false
-              client.configureBlocking(false);
-              client.setOption(StandardSocketOptions.TCP_NODELAY, true);
-              // Operation-set bit for read operations
-              client.register(selector, SelectionKey.OP_READ);
-              log.debug("Connection Accepted: {}", client.getLocalAddress());
-            } else if (key.isValid() && key.isReadable()) {
-              // Check if it is in use
-              RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
-              if (att != null && att.inUse()) return;
-              service.submit(key);
-            }
-          } catch (IOException e) {
-            log.debug("Shutting down server ...");
-            service.shutdown();
-            store.dispose();
-            store = null;
-            service = null;
-            log.debug("Bye-bye folks. See you soon :)");
-          }
-        };
+    Consumer<SelectionKey> action = key -> {
+      try {
+        if (!key.isValid()) return;
+        if (key.isValid() && key.isAcceptable()) {
+          SocketChannel client = serverSocket.accept();
+          // Adjusts this channel's blocking mode to false
+          client.configureBlocking(false);
+          client.setOption(StandardSocketOptions.TCP_NODELAY, true);
+          // Operation-set bit for read operations
+          client.register(selector, SelectionKey.OP_READ);
+          log.debug("Connection Accepted: {}", client.getLocalAddress());
+        } else if (key.isValid() && key.isReadable()) {
+          // Check if it is in use
+          RequestHandlers.Attachment att = (RequestHandlers.Attachment) key.attachment();
+          if (att != null && att.inUse()) return;
+          service.submit(key);
+        }
+      } catch (IOException e) {
+        log.debug("Shutting down server ...");
+        service.shutdown();
+        store.dispose();
+        store = null;
+        service = null;
+        log.debug("Bye-bye folks. See you soon :)");
+      }
+    };
     // Infinite loop..
     // Keep server running
     while (true) {

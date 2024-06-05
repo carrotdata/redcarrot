@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -48,8 +44,8 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
         keys.add(new Key(ptr, len));
       }
     }
-    log.debug(
-        "M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize());
+    log.debug("M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(),
+      BigSortedMap.getGlobalDataSize());
     return keys;
   }
 
@@ -94,6 +90,7 @@ public class DataBlockLargeKVsTest extends DataBlockTest {
       b.free();
     }
   }
+
   /**
    * 1. K & V are both in data block and > 12 - push V out of data block 2. K & V both external,
    * increasing value size should keep them both external 3. K is in data block , V is external,

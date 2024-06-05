@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.util;
 
 import static com.carrotdata.redcarrot.util.UnsafeAccess.firstBitSetByte;
@@ -51,6 +47,7 @@ public class Utils {
   public static final int BITS_PER_BYTE = 8;
 
   private static Random rnd = new Random();
+
   /**
    * Returns true if x1 is less than x2, when both values are treated as unsigned long. Both values
    * are passed as is read by Unsafe. When platform is Little Endian, have to convert to
@@ -92,7 +89,6 @@ public class Utils {
 
   /**
    * Lexicographically compare two arrays.
-   *
    * @param buffer1 left operand
    * @param buffer2 right operand
    * @param offset1 Where to start comparing in the left buffer
@@ -101,8 +97,8 @@ public class Utils {
    * @param length2 How much to compare from the right buffer
    * @return 0 if equal, < 0 if left is less than right, etc.
    */
-  public static int compareTo(
-      byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2, int length2) {
+  public static int compareTo(byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2,
+      int length2) {
 
     Unsafe theUnsafe = UnsafeAccess.theUnsafe;
     // Short circuit equal case
@@ -159,7 +155,6 @@ public class Utils {
 
   /**
    * Lexicographically compare array and native memory.
-   *
    * @param buffer1 left operand
    * @param address right operand - native
    * @param offset1 Where to start comparing in the left buffer
@@ -221,7 +216,6 @@ public class Utils {
 
   /**
    * Lexicographically compare two native memory pointers.
-   *
    * @param buffer1 left operand
    * @param address right operand - native
    * @param offset1 Where to start comparing in the left buffer
@@ -283,7 +277,6 @@ public class Utils {
 
   /**
    * Calculates common prefix (number of bytes) of two byte arrays.
-   *
    * @param buffer1 left operand
    * @param buffer2 right operand
    * @param offset1 Where to start comparing in the left buffer
@@ -292,8 +285,8 @@ public class Utils {
    * @param length2 How much to compare from the right buffer
    * @return length of common prefix in bytes.
    */
-  public static int prefix(
-      byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2, int length2) {
+  public static int prefix(byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2,
+      int length2) {
 
     Unsafe theUnsafe = UnsafeAccess.theUnsafe;
     // Short circuit equal case
@@ -347,7 +340,6 @@ public class Utils {
 
   /**
    * Calculates common prefix (number of bytes) of two byte arrays.
-   *
    * @param buffer1 left operand
    * @param address right operand - native
    * @param offset1 Where to start comparing in the left buffer
@@ -405,7 +397,6 @@ public class Utils {
 
   /**
    * Calculates common prefix (number of bytes) of two byte arrays
-   *
    * @param buffer1 left operand
    * @param address right operand - native
    * @param offset1 Where to start comparing in the left buffer
@@ -461,46 +452,38 @@ public class Utils {
   }
 
   public static void sort(List<byte[]> list) {
-    Collections.sort(
-        list,
-        new Comparator<byte[]>() {
-          @Override
-          public int compare(byte[] left, byte[] right) {
-            return Bytes.compareTo(left, right);
-          }
-        });
+    Collections.sort(list, new Comparator<byte[]>() {
+      @Override
+      public int compare(byte[] left, byte[] right) {
+        return Bytes.compareTo(left, right);
+      }
+    });
   }
 
   public static void sortKeys(List<? extends Key> list) {
-    Collections.sort(
-        list,
-        new Comparator<Key>() {
-          @Override
-          public int compare(Key k1, Key k2) {
-            return Utils.compareTo(k1.address, k1.length, k2.address, k2.length);
-          }
-        });
+    Collections.sort(list, new Comparator<Key>() {
+      @Override
+      public int compare(Key k1, Key k2) {
+        return Utils.compareTo(k1.address, k1.length, k2.address, k2.length);
+      }
+    });
   }
 
   public static void sortValueScores(List<? extends ValueScore> list) {
     Collections.sort(list);
   }
 
-  
   public static void sortKeyValues(List<? extends KeyValue> list) {
-    Collections.sort(
-        list,
-        new Comparator<KeyValue>() {
-          @Override
-          public int compare(KeyValue k1, KeyValue k2) {
-            return Utils.compareTo(k1.keyPtr, k1.keySize, k2.keyPtr, k2.keySize);
-          }
-        });
+    Collections.sort(list, new Comparator<KeyValue>() {
+      @Override
+      public int compare(KeyValue k1, KeyValue k2) {
+        return Utils.compareTo(k1.keyPtr, k1.keySize, k2.keyPtr, k2.keySize);
+      }
+    });
   }
 
   /**
    * TODO: Test it TODO: handle all 0xff key Calculates end key for prefix scanner
-   *
    * @param start start key address
    * @param startSize start key size
    * @return end key address if success, or -1
@@ -523,7 +506,6 @@ public class Utils {
 
   /**
    * TODO: Test correct version Calculates end key for prefix scanner
-   *
    * @param start start key address
    * @param startSize start key size
    * @return end key address if success
@@ -539,7 +521,6 @@ public class Utils {
 
   /**
    * TODO: handle all 0xff key Calculates end key for prefix scanner
-   *
    * @param start start key address
    * @param startSize start key size
    * @return end key address if success, or -1
@@ -558,9 +539,9 @@ public class Utils {
     UnsafeAccess.free(start);
     return 0;
   }
+
   /**
    * TODO: THIS METHOD IS UNSAFE??? CHECK IT Read unsigned VarInt
-   *
    * @param ptr address to read from
    * @return int value
    */
@@ -585,7 +566,6 @@ public class Utils {
 
   /**
    * Returns size of unsigned variable integer in bytes
-   *
    * @param value
    * @return size in bytes
    */
@@ -606,9 +586,9 @@ public class Utils {
   static final int v2 = 1 << 14;
   static final int v3 = 1 << 21;
   static final int v4 = 1 << 28;
+
   /**
    * Writes unsigned variable integer
-   *
    * @param ptr address to write to
    * @param value
    * @return number of bytes written
@@ -637,15 +617,14 @@ public class Utils {
     return 0;
   }
 
-  private static byte[] BYTE_BITS = new byte[] {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
-  private static byte[] BYTE_LAST_BIT =
-      new byte[] {
-        -1 /*0*/, 3 /*1*/, 2 /*2*/, 3 /*3*/, 1 /*4*/, 3 /*5*/, 2 /*6*/, 3 /*7*/, 0 /*8*/, 3 /*9*/,
-        2 /*10*/, 3 /*11*/, 1 /*12*/, 3 /*13*/, 2 /*14*/, 3 /*15*/
-      };
+  private static byte[] BYTE_BITS = new byte[] { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
+  private static byte[] BYTE_LAST_BIT = new byte[] { -1 /* 0 */, 3 /* 1 */, 2 /* 2 */, 3 /* 3 */,
+      1 /* 4 */, 3 /* 5 */, 2 /* 6 */, 3 /* 7 */, 0 /* 8 */, 3 /* 9 */, 2 /* 10 */, 3 /* 11 */,
+      1 /* 12 */, 3 /* 13 */, 2 /* 14 */, 3 /* 15 */
+  };
+
   /**
    * Counts set bits in a byte value
-   *
    * @param b value
    * @return number of set bits
    */
@@ -666,9 +645,9 @@ public class Utils {
     }
     return BYTE_LAST_BIT[(b & 0xff) >>> 4];
   }
+
   /**
    * Count bits in a short value
-   *
    * @param s short value
    * @return number of bits set
    */
@@ -678,7 +657,6 @@ public class Utils {
 
   /**
    * TODO: test Returns offset (0 - based) of a last bit set in a memory region
-   *
    * @param ptr address of a memory region
    * @param length length of a memory region
    * @return offset or -1 if no set bit
@@ -710,7 +688,6 @@ public class Utils {
 
   /**
    * Murmur3hash implementation with native pointer.
-   *
    * @param ptr the address of memory
    * @param len the length of memory
    * @param seed the seed
@@ -769,7 +746,6 @@ public class Utils {
 
   /**
    * Not sure if it is truly random
-   *
    * @param ptr pointer
    * @param len length
    * @param buffer buffer
@@ -785,43 +761,26 @@ public class Utils {
   /** Conversion string-number utility methods */
 
   /** All possible chars for representing a number as a String */
-  static final byte[] digits = {
-    '0', '1', '2', '3', '4', '5',
-    '6', '7', '8', '9', 'a', 'b',
-    'c', 'd', 'e', 'f', 'g', 'h',
-    'i', 'j', 'k', 'l', 'm', 'n',
-    'o', 'p', 'q', 'r', 's', 't',
-    'u', 'v', 'w', 'x', 'y', 'z'
-  };
+  static final byte[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
+      'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+      'w', 'x', 'y', 'z' };
 
-  static final byte[] DigitTens = {
-    '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-    '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
-    '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
-    '3', '3', '3', '3', '3', '3', '3', '3', '3', '3',
-    '4', '4', '4', '4', '4', '4', '4', '4', '4', '4',
-    '5', '5', '5', '5', '5', '5', '5', '5', '5', '5',
-    '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
-    '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
-    '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
-    '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
-  };
+  static final byte[] DigitTens = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1',
+      '1', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '3', '3',
+      '3', '3', '3', '3', '3', '3', '3', '3', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '5',
+      '5', '5', '5', '5', '5', '5', '5', '5', '5', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
+      '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '8', '8', '8', '8', '8', '8', '8', '8', '8',
+      '8', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', };
 
-  static final byte[] DigitOnes = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-  };
+  static final byte[] DigitOnes = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2',
+      '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1',
+      '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+      '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8',
+      '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', };
+
   /**
    * Convert string representation to a long value
-   *
    * @param ptr address, where string starts
    * @param size size of a string
    * @return long value
@@ -873,7 +832,6 @@ public class Utils {
 
   /**
    * Convert string representation to a long value
-   *
    * @param buf byte array
    * @param off offset
    * @param size size of a string
@@ -897,7 +855,7 @@ public class Utils {
         } else if (firstChar != '+') numberFormatException(buf, off, size);
 
         if (len == 1) // Cannot have lone "+" or "-"
-        numberFormatException(buf, off, size);
+          numberFormatException(buf, off, size);
         i++;
       }
       multmin = limit / 10;
@@ -939,7 +897,6 @@ public class Utils {
 
   /**
    * Convert string representation in a byte buffer to a long value
-   *
    * @param buf byte array
    * @param off offset
    * @param size size of a string
@@ -993,7 +950,6 @@ public class Utils {
 
   /**
    * Converts long to string representation and stores it in memory
-   *
    * @param v long value
    * @param ptr memory address
    * @param size memory size
@@ -1038,7 +994,6 @@ public class Utils {
 
   /**
    * Converts long to string representation and stores it in memory
-   *
    * @param v long value
    * @param ptr memory address
    * @param size memory size
@@ -1086,7 +1041,6 @@ public class Utils {
 
   /**
    * Converts long to string representation and stores it in memory
-   *
    * @param v long value
    * @param ptr memory address
    * @param size memory size
@@ -1137,8 +1091,8 @@ public class Utils {
    * Places characters representing the integer i into the character array buf. The characters are
    * placed into the buffer backwards starting with the least significant digit at the specified
    * index (exclusive), and working backwards from there.
-   *
-   * <p>Will fail if i == Long.MIN_VALUE
+   * <p>
+   * Will fail if i == Long.MIN_VALUE
    */
   static void getChars(long i, long buf, int size) {
     long q;
@@ -1175,7 +1129,7 @@ public class Utils {
 
     // Fall thru to fast mode for smaller numbers
     // assert(i2 <= 65536, i2);
-    for (; ; ) {
+    for (;;) {
       q2 = (i2 * 52429) >>> (16 + 3);
       r = i2 - ((q2 << 3) + (q2 << 1)); // r = i2-(q2*10) ...
       UnsafeAccess.putByte(buf + (--charPos), digits[r]);
@@ -1198,18 +1152,16 @@ public class Utils {
   }
 
   /** String - Double conversion */
-  static ThreadLocal<byte[]> buffer =
-      new ThreadLocal<byte[]>() {
+  static ThreadLocal<byte[]> buffer = new ThreadLocal<byte[]>() {
 
-        @Override
-        protected byte[] initialValue() {
-          return new byte[64];
-        }
-      };
+    @Override
+    protected byte[] initialValue() {
+      return new byte[64];
+    }
+  };
 
   /**
    * Writes string to a byte buffer
-   *
    * @param s string
    * @param buf byte buffer
    */
@@ -1222,7 +1174,6 @@ public class Utils {
 
   /**
    * Used for testing only
-   *
    * @param buf byte buffer
    * @return
    */
@@ -1238,9 +1189,9 @@ public class Utils {
       return new String(bytes, pos, limit - pos);
     }
   }
+
   /**
    * TODO: mutable string Converts string representation to double
-   *
    * @param ptr address of a string
    * @param size size of a string
    * @return double
@@ -1271,12 +1222,11 @@ public class Utils {
 
   /**
    * Converts double into string and stores it at memory address 'ptr'
-   *
    * @param d double value
    * @param ptr memory address
    * @param size memory size
    * @return size of a string representation, if size is greater than memory buffer size, call must
-   *     be repeated
+   *         be repeated
    */
   public static final int doubleToStr(double d, long ptr, int size) {
     String s = Double.toString(d);
@@ -1289,9 +1239,9 @@ public class Utils {
     }
     return len;
   }
+
   /**
    * Generated random array (with possible repeats)
-   *
    * @param max max value
    * @param count total random elements count
    * @return random long array sorted
@@ -1308,7 +1258,6 @@ public class Utils {
 
   /**
    * TODO: test Generated random array (with no possible repeats)
-   *
    * @param max max value
    * @param count total random elements count
    * @return random distinct (array) sorted
@@ -1348,9 +1297,9 @@ public class Utils {
       return arr;
     }
   }
+
   /**
    * Checks if array contains the element
-   *
    * @param arr integer array
    * @param v element
    * @return true, if - yes, false - otherwise
@@ -1368,7 +1317,6 @@ public class Utils {
 
   /**
    * TODO: test it Bit count in a memory block
-   *
    * @param valuePtr start address
    * @param valueSize length of a block
    * @return total number of bits set to 1
@@ -1407,9 +1355,9 @@ public class Utils {
     }
     return c;
   }
+
   /**
    * TODO: test Returns first position of the set bit ('1')
-   *
    * @param valuePtr memory address start
    * @param valueSize memory block length
    * @return position of a first set ('1') bit or -1 if no set bits
@@ -1459,7 +1407,6 @@ public class Utils {
 
   /**
    * TODO: test Returns first position of a unset bit
-   *
    * @param valuePtr memory address start
    * @param valueSize memory block length
    * @return position of a first unset ('0') bit or -1
@@ -1510,10 +1457,10 @@ public class Utils {
   static final long MAX_FRACTION = FRACTION_MASK;
   static final long EXP_MASK = 0x7ff0000000000000L;
   static final long MAX_EXP = EXP_MASK;
+
   /**
    * Convert double to lexicographically sortable sequence of bytes, which preserves double value
    * order
-   *
    * @param ptr address of a buffer
    * @param v double value
    */
@@ -1536,7 +1483,6 @@ public class Utils {
 
   /**
    * Reads double from a lexicographical stream of bytes
-   *
    * @param ptr address
    * @return double value
    */
@@ -1556,7 +1502,6 @@ public class Utils {
 
   /**
    * Gets overall allocated memory size for a list of objects
-   *
    * @param list
    * @return total size
    */
@@ -1570,7 +1515,6 @@ public class Utils {
 
   /**
    * Free memory
-   *
    * @param keys
    */
   public static void freeKeys(List<? extends Key> keys) {
@@ -1581,7 +1525,6 @@ public class Utils {
 
   /**
    * Free memory
-   *
    * @param kvs
    */
   public static void freeKeyValues(List<KeyValue> kvs) {
@@ -1593,7 +1536,6 @@ public class Utils {
 
   /**
    * Copy list
-   *
    * @param list
    * @return list copy
    */
@@ -1605,7 +1547,6 @@ public class Utils {
 
   /**
    * Copy list
-   *
    * @param list
    * @return list copy
    */
@@ -1617,7 +1558,6 @@ public class Utils {
 
   /**
    * Copy list
-   *
    * @param list
    * @return list copy
    */
@@ -1629,7 +1569,6 @@ public class Utils {
 
   /**
    * Copy list
-   *
    * @param list
    * @return list copy
    */
@@ -1641,7 +1580,6 @@ public class Utils {
 
   /**
    * Reads memory as a string
-   *
    * @param ptr address
    * @param size size of a memory
    * @return string
@@ -1661,7 +1599,6 @@ public class Utils {
   /**
    * TODO: optimize for speed TODO: Regex flavors? What flavor does Java support? Checks if a memory
    * blob specified by address and size matches regular expression
-   *
    * @param ptr address
    * @param size size
    * @param pattern pattern to match
@@ -1674,7 +1611,6 @@ public class Utils {
 
   /**
    * Read memory as byte array
-   *
    * @param ptr address
    * @param size size of a memory
    * @return byte array
@@ -1687,7 +1623,6 @@ public class Utils {
 
   /**
    * Converts string representation of a number to a byte array
-   *
    * @param value string number
    * @return number as a byte array
    */
@@ -1707,7 +1642,6 @@ public class Utils {
 
   /**
    * Generates random alphanumeric string
-   *
    * @param r random generator
    * @param size size of a string to generate
    * @return string
@@ -1725,7 +1659,6 @@ public class Utils {
 
   /**
    * Counts elements in a reverse scanner
-   *
    * @param s scanner
    * @return total number of elements
    * @throws IOException
@@ -1738,9 +1671,9 @@ public class Utils {
     } while (s.previous());
     return total;
   }
+
   /**
    * Counts elements in a direct scanner
-   *
    * @param s scanner
    * @return total number of elements
    * @throws IOException
@@ -1758,7 +1691,6 @@ public class Utils {
 
   /**
    * Checks if list has all unique members. List must be sorted.
-   *
    * @param list
    * @return true/false
    */
@@ -1775,7 +1707,6 @@ public class Utils {
 
   /**
    * Fills memory area with random data
-   *
    * @param ptr pointer
    * @param size size of a memory area
    */
@@ -1788,7 +1719,6 @@ public class Utils {
 
   /**
    * Read pointers from a memory buffer list
-   *
    * @param ptr buffer address
    * @param num number of elements
    * @return array of pointers
@@ -1808,7 +1738,6 @@ public class Utils {
 
   /**
    * Read pointer sizes from a memory buffer list
-   *
    * @param ptr buffer address
    * @param num number of elements
    * @return array of pointers
@@ -1859,7 +1788,6 @@ public class Utils {
 
   /**
    * Reads list of key-values from a memory blob
-   *
    * @param inDataPtr address of a memory
    * @param numPairs number of KVs to read
    * @return list of key-value pairs
@@ -1883,7 +1811,6 @@ public class Utils {
 
   /**
    * Reads list of values from memory blob
-   *
    * @param inDataPtr address of a memory
    * @param num number of values to read
    * @return list of values
@@ -1903,7 +1830,6 @@ public class Utils {
 
   /**
    * To upper case
-   *
    * @param addr address of a string byte array
    * @param len length of an array
    */

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertTrue;
@@ -51,9 +47,9 @@ public class BigSortedMapTestMT {
     long key;
     long value;
     byte[] keyBuf = new byte[keySize];
-    int[] valueSizeDistribution =
-        new int[] {10 /*p0*/, 100 /*p50*/, 220 /*p90*/, 450 /*p95*/, 3000 /*p99*/, 9500 /*p100*/};
-//    double[] pp = new double[] {0, 0.5, 0.9, 0.95, 0.99, 1.0};
+    int[] valueSizeDistribution = new int[] { 10 /* p0 */, 100 /* p50 */, 220 /* p90 */,
+        450 /* p95 */, 3000 /* p99 */, 9500 /* p100 */ };
+    // double[] pp = new double[] {0, 0.5, 0.9, 0.95, 0.99, 1.0};
     Random r = new Random();
 
     public Worker(BigSortedMap map, String name) {
@@ -131,15 +127,10 @@ public class BigSortedMapTestMT {
             }
             if (size > 0) {
               assertTrue(
-                  Thread.currentThread().getName()
-                      + " ERROR  num="
-                      + i
-                      + " totalLoaded="
-                      + totalLoaded.get()
-                      + " size="
-                      + size,
-                  size >= valueSizeDistribution[0]
-                      && size <= valueSizeDistribution[valueSizeDistribution.length - 1]);
+                Thread.currentThread().getName() + " ERROR  num=" + i + " totalLoaded="
+                    + totalLoaded.get() + " size=" + size,
+                size >= valueSizeDistribution[0]
+                    && size <= valueSizeDistribution[valueSizeDistribution.length - 1]);
             }
           } else {
             int n = r.nextInt((int) (totalLoaded.get() * 0.9));
@@ -165,15 +156,10 @@ public class BigSortedMapTestMT {
             }
             if (size > 0) {
               assertTrue(
-                  Thread.currentThread().getName()
-                      + " ERROR  num="
-                      + i
-                      + " totalLoaded="
-                      + totalLoaded.get()
-                      + " size="
-                      + size,
-                  size >= valueSizeDistribution[0]
-                      && size <= valueSizeDistribution[valueSizeDistribution.length - 1]);
+                Thread.currentThread().getName() + " ERROR  num=" + i + " totalLoaded="
+                    + totalLoaded.get() + " size=" + size,
+                size >= valueSizeDistribution[0]
+                    && size <= valueSizeDistribution[valueSizeDistribution.length - 1]);
             }
           } else {
             int n = r.nextInt((int) (totalLoaded.get() * 0.9));
@@ -181,14 +167,9 @@ public class BigSortedMapTestMT {
           }
         }
         if (i % 1000000 == 0) {
-          log.debug(
-              "{}- {} allocated={} data={} index={} max={}",
-              Thread.currentThread().getName(),
-              i,
-              BigSortedMap.getGlobalAllocatedMemory(),
-              BigSortedMap.getGlobalDataSize(),
-              BigSortedMap.getGlobalIndexSize(),
-              BigSortedMap.getGlobalMemoryLimit());
+          log.debug("{}- {} allocated={} data={} index={} max={}", Thread.currentThread().getName(),
+            i, BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize(),
+            BigSortedMap.getGlobalIndexSize(), BigSortedMap.getGlobalMemoryLimit());
         }
       }
 
@@ -346,13 +327,8 @@ public class BigSortedMapTestMT {
         if (count > 1) {
           int result = Utils.compareTo(current, keySize, prev, keySize);
           if (result <= 0) {
-            log.debug(
-                "{} prevVersion={} prevType={} curVersion={} curType={}",
-                result,
-                prevVersion,
-                prevType,
-                scanner.keyVersion(),
-                scanner.keyOpType());
+            log.debug("{} prevVersion={} prevType={} curVersion={} curType={}", result, prevVersion,
+              prevType, scanner.keyVersion(), scanner.keyOpType());
           }
           assertTrue(result > 0);
         }
@@ -400,17 +376,11 @@ public class BigSortedMapTestMT {
         }
       }
 
-      log.debug(
-          "MEM={}\nDATA={}\nUTILIZATION={}",
-          BigSortedMap.getGlobalAllocatedMemory(),
-          BigSortedMap.getGlobalDataSize(),
-          (double) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
-      log.debug(
-          "num threads={} PUT={} GET={} SCAN={}",
-          totalThreads,
-          putsPs.get(),
-          comboPs.get(),
-          scanPs.get());
+      log.debug("MEM={}\nDATA={}\nUTILIZATION={}", BigSortedMap.getGlobalAllocatedMemory(),
+        BigSortedMap.getGlobalDataSize(),
+        (double) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
+      log.debug("num threads={} PUT={} GET={} SCAN={}", totalThreads, putsPs.get(), comboPs.get(),
+        scanPs.get());
       map.dispose();
       putsPs.set(0);
       comboPs.set(0);

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -49,114 +45,103 @@ import com.carrotdata.redcarrot.util.ValueScore;
 /**
  * Support for packing multiple field-values into one K-V value under the same key. This is for
  * compact representation of naturally ordered HASHEs. key -> field -> value under a common key
- *
- * <p>In a key-value store, hash data is stored in a value.
- *
- * <p>Value format:
- *
- * <p>N - number of pairs - 2 bytes { field size - VLE (variable length encoding) value size - VLE
+ * <p>
+ * In a key-value store, hash data is stored in a value.
+ * <p>
+ * Value format:
+ * <p>
+ * N - number of pairs - 2 bytes { field size - VLE (variable length encoding) value size - VLE
  * (variable length encoding) field data value data } +N
  */
 public class Hashes {
 
   private static final Logger log = LogManager.getLogger(Hashes.class);
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
-  static ThreadLocal<Long> valueArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  static ThreadLocal<Long> valueArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  static ThreadLocal<Integer> valueArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  static ThreadLocal<Integer> valueArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   static int INCR_ARENA_SIZE = 64;
-  static ThreadLocal<Long> incrArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(INCR_ARENA_SIZE);
-        }
-      };
+  static ThreadLocal<Long> incrArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(INCR_ARENA_SIZE);
+    }
+  };
 
   /** Thread local updates Hash Exists */
-  private static ThreadLocal<HashExists> hashExists =
-      new ThreadLocal<HashExists>() {
-        @Override
-        protected HashExists initialValue() {
-          return new HashExists();
-        }
-      };
+  private static ThreadLocal<HashExists> hashExists = new ThreadLocal<HashExists>() {
+    @Override
+    protected HashExists initialValue() {
+      return new HashExists();
+    }
+  };
 
   /** Thread local updates Hash Set */
-  private static ThreadLocal<HashSet> hashSet =
-      new ThreadLocal<HashSet>() {
-        @Override
-        protected HashSet initialValue() {
-          return new HashSet();
-        }
-      };
+  private static ThreadLocal<HashSet> hashSet = new ThreadLocal<HashSet>() {
+    @Override
+    protected HashSet initialValue() {
+      return new HashSet();
+    }
+  };
 
   /** Thread local updates Hash Delete */
-  private static ThreadLocal<HashDelete> hashDelete =
-      new ThreadLocal<HashDelete>() {
-        @Override
-        protected HashDelete initialValue() {
-          return new HashDelete();
-        }
-      };
+  private static ThreadLocal<HashDelete> hashDelete = new ThreadLocal<HashDelete>() {
+    @Override
+    protected HashDelete initialValue() {
+      return new HashDelete();
+    }
+  };
 
   /** Thread local updates Hash Get */
-  private static ThreadLocal<HashGet> hashGet =
-      new ThreadLocal<HashGet>() {
-        @Override
-        protected HashGet initialValue() {
-          return new HashGet();
-        }
-      };
+  private static ThreadLocal<HashGet> hashGet = new ThreadLocal<HashGet>() {
+    @Override
+    protected HashGet initialValue() {
+      return new HashGet();
+    }
+  };
 
   /** Thread local updates Hash Value Length */
-  private static ThreadLocal<HashValueLength> hashValueLength =
-      new ThreadLocal<HashValueLength>() {
-        @Override
-        protected HashValueLength initialValue() {
-          return new HashValueLength();
-        }
-      };
+  private static ThreadLocal<HashValueLength> hashValueLength = new ThreadLocal<HashValueLength>() {
+    @Override
+    protected HashValueLength initialValue() {
+      return new HashValueLength();
+    }
+  };
 
-  private static ThreadLocal<Key> key =
-      new ThreadLocal<Key>() {
-        @Override
-        protected Key initialValue() {
-          return new Key(0, 0);
-        }
-      };
+  private static ThreadLocal<Key> key = new ThreadLocal<Key>() {
+    @Override
+    protected Key initialValue() {
+      return new Key(0, 0);
+    }
+  };
+
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -171,7 +156,6 @@ public class Hashes {
 
   /**
    * Checks value arena size
-   *
    * @param required size
    */
   static void checkValueArena(int required) {
@@ -186,7 +170,6 @@ public class Hashes {
 
   /**
    * Build key for Hash. It uses thread local key arena TODO: data type prefix
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param fieldPtr field address
@@ -209,7 +192,6 @@ public class Hashes {
 
   /**
    * Build key for Hash. It uses provided arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param fieldPtr field address
@@ -230,7 +212,6 @@ public class Hashes {
 
   /**
    * Gets and initializes Key
-   *
    * @param ptr key address
    * @param size key size
    * @return key instance
@@ -244,7 +225,6 @@ public class Hashes {
 
   /**
    * Delete hash by Key
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -256,7 +236,6 @@ public class Hashes {
 
   /**
    * Delete hash by Key
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -292,9 +271,8 @@ public class Hashes {
    * a new key holding a hash is created. If field already exists in the hash, it is overwritten. As
    * of Redis 4.0.0, HSET is variadic and allows for multiple field/value pairs. Return value
    * Integer reply: The number of fields that were added.
-   *
-   * <p>TODO: FIXME - do we count overwritten fields?
-   *
+   * <p>
+   * TODO: FIXME - do we count overwritten fields?
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -302,14 +280,8 @@ public class Hashes {
    * @param valueSize value size
    * @return The number of fields that were added.
    */
-  public static int HSET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long[] fieldPtrs,
-      int[] fieldSizes,
-      long[] valuePtrs,
-      int[] valueSizes) {
+  public static int HSET(BigSortedMap map, long keyPtr, int keySize, long[] fieldPtrs,
+      int[] fieldSizes, long[] valuePtrs, int[] valueSizes) {
 
     Key k = getKey(keyPtr, keySize);
     int count = 0;
@@ -338,7 +310,6 @@ public class Hashes {
 
   /**
    * For testing only - NOPE
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -401,7 +372,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field field name
@@ -426,7 +396,6 @@ public class Hashes {
 
   /**
    * HSET for a single field-value (zero object allocation)
-   *
    * @param map sorted map storage
    * @param keyPtr set key address
    * @param keySize set key size
@@ -436,21 +405,14 @@ public class Hashes {
    * @param valueSize value name size
    * @return 1 or 0
    */
-  public static int HSET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long valuePtr,
-      int valueSize) {
+  public static int HSET(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long valuePtr, int valueSize) {
 
     return HSET(map, keyPtr, keySize, fieldPtr, fieldSize, valuePtr, valueSize, true);
   }
 
   /**
    * HSET for a single field-value (zero object allocation)
-   *
    * @param map sorted map storage
    * @param keyPtr set key address
    * @param keySize set key size
@@ -461,15 +423,8 @@ public class Hashes {
    * @param lock lock if true
    * @return 1 or 0
    */
-  public static int HSET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long valuePtr,
-      int valueSize,
-      boolean lock) {
+  public static int HSET(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long valuePtr, int valueSize, boolean lock) {
 
     Key k = getKey(keyPtr, keySize);
     int count = 0;
@@ -492,7 +447,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map store
    * @param key key
    * @param member member
@@ -517,7 +471,6 @@ public class Hashes {
 
   /**
    * Adds multiple elements to an empty (non-existent) hash This is highly optimized version
-   *
    * @param map sorted map storage
    * @param keyPtr hash's key address
    * @param keySize hash's key size
@@ -619,15 +572,14 @@ public class Hashes {
   /**
    * Adds multiple elements to an empty (non-existent) hash This is highly optimized version -
    * ZSets.ZADD version
-   *
    * @param map sorted map storage
    * @param keyPtr hash's key address
    * @param keySize hash's key size
    * @param members list of field - value elements to add
    * @return number of elements added
    */
-  public static int HSET_NEW_ZADD(
-      BigSortedMap map, long keyPtr, int keySize, List<ValueScore> members) {
+  public static int HSET_NEW_ZADD(BigSortedMap map, long keyPtr, int keySize,
+      List<ValueScore> members) {
     Key k = getKey(keyPtr, keySize);
     int count = 0;
     try {
@@ -708,11 +660,8 @@ public class Hashes {
         prev = kv;
         continue;
       }
-      int add =
-          kv.length
-              + Utils.sizeUVInt(kv.length)
-              + Utils.SIZEOF_DOUBLE
-              + Utils.sizeUVInt(Utils.SIZEOF_DOUBLE);
+      int add = kv.length + Utils.sizeUVInt(kv.length) + Utils.SIZEOF_DOUBLE
+          + Utils.sizeUVInt(Utils.SIZEOF_DOUBLE);
       if (size + add > maxValueSize) {
         return size == NUM_ELEM_SIZE ? size + add : size;
       }
@@ -732,7 +681,6 @@ public class Hashes {
 
   /**
    * HMSET - obsolete
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -740,20 +688,13 @@ public class Hashes {
    * @param valueSize value size
    * @return The number of fields that were added.
    */
-  public static int HMSET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long[] fieldPtrs,
-      int[] fieldSizes,
-      long[] valuePtrs,
-      int[] valueSizes) {
+  public static int HMSET(BigSortedMap map, long keyPtr, int keySize, long[] fieldPtrs,
+      int[] fieldSizes, long[] valuePtrs, int[] valueSizes) {
     return HSET(map, keyPtr, keySize, fieldPtrs, fieldSizes, valuePtrs, valueSizes);
   }
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field filed name
@@ -779,7 +720,6 @@ public class Hashes {
    * Sets field in the hash stored at key to value, only if field does not yet exist. If key does
    * not exist, a new key holding a hash is created. If field already exists, this operation has no
    * effect.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -787,14 +727,8 @@ public class Hashes {
    * @param valueSize value size
    * @return 1 if success, 0 if field exists
    */
-  public static int HSETNX(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long valuePtr,
-      int valueSize) {
+  public static int HSETNX(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long valuePtr, int valueSize) {
 
     Key k = getKey(keyPtr, keySize);
 
@@ -816,7 +750,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash's key
    * @return number of fields in a hash
@@ -833,7 +766,6 @@ public class Hashes {
    * TODO: This operation is O(N). Should we use Sets approach to keep cardinality in a separate key
    * Returns the number of fields contained in the hash stored at key. Return value Integer reply:
    * number of fields in the hash, or 0 when key does not exist.
-   *
    * @param map sorted map storage
    * @param keyPtr hash key
    * @param keySize hash key size
@@ -877,9 +809,9 @@ public class Hashes {
       readUnlock(k);
     }
   }
+
   /**
    * Checks if the Hash is empty
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -936,7 +868,6 @@ public class Hashes {
 
   /**
    * Return serialized hash size
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -986,7 +917,6 @@ public class Hashes {
    * multiple field arguments. Redis versions older than 2.4 can only remove a field per call. To
    * remove multiple fields from a hash in an atomic fashion in earlier versions, use a MULTI / EXEC
    * block.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -994,8 +924,8 @@ public class Hashes {
    * @param valueSize value size
    * @return the number of fields that were removed from the hash
    */
-  public static int HDEL(
-      BigSortedMap map, long keyPtr, int keySize, long[] fieldPtrs, int[] fieldSizes) {
+  public static int HDEL(BigSortedMap map, long keyPtr, int keySize, long[] fieldPtrs,
+      int[] fieldSizes) {
 
     Key k = getKey(keyPtr, keySize);
     int deleted = 0;
@@ -1029,7 +959,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1048,7 +977,6 @@ public class Hashes {
 
   /**
    * HDEL for single field ( zero object allocation)
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1062,7 +990,6 @@ public class Hashes {
 
   /**
    * HDEL for single field ( zero object allocation)
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1071,8 +998,8 @@ public class Hashes {
    * @param lock lock if true
    * @return 1 or 0 (number of deleted fields)
    */
-  public static int HDEL(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize, boolean lock) {
+  public static int HDEL(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      boolean lock) {
 
     Key k = getKey(keyPtr, keySize);
     int deleted = 0;
@@ -1102,20 +1029,13 @@ public class Hashes {
    * Not in Redis API Calculates number of elements between start member (inclusive) and stop member
    * (exclusive). When both": start and stop member are nulls this call is equivalent to HLEN
    */
-  public static long HCOUNT(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long startPtr,
-      int startSize,
-      long stopPtr,
-      int stopSize) {
+  public static long HCOUNT(BigSortedMap map, long keyPtr, int keySize, long startPtr,
+      int startSize, long stopPtr, int stopSize) {
     return 0;
   }
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1143,46 +1063,31 @@ public class Hashes {
 
   /**
    * HDEL for the single field ( zero object allocation) with a value returned to the buffer
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
    * @param fieldPtr field address
    * @param fieldSize field size
    * @return 0 - not found, otherwise length of the value serialized, if greater than buffer size,
-   *     the call must be repeated with the appropriately sized buffer
+   *         the call must be repeated with the appropriately sized buffer
    */
-  public static int HDEL(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long buffer,
-      int bufferSize) {
+  public static int HDEL(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long buffer, int bufferSize) {
     return HDEL(map, keyPtr, keySize, fieldPtr, fieldSize, buffer, bufferSize, true);
   }
 
   /**
    * HDEL for the single field ( zero object allocation) with a value returned to the buffer
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
    * @param fieldPtr field address
    * @param fieldSize field size
    * @return 0 - not found, otherwise length of the value serialized, if greater than buffer size,
-   *     the call must be repeated with the appropriately sized buffer
+   *         the call must be repeated with the appropriately sized buffer
    */
-  public static int HDEL(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long buffer,
-      int bufferSize,
-      boolean lock) {
+  public static int HDEL(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long buffer, int bufferSize, boolean lock) {
 
     Key k = getKey(keyPtr, keySize);
     try {
@@ -1212,7 +1117,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1229,11 +1133,11 @@ public class Hashes {
     UnsafeAccess.free(fieldPtr);
     return result;
   }
+
   /**
    * Returns if field is an existing field in the hash stored at key. Return value Integer reply,
    * specifically: 1 if the hash contains field. 0 if the hash does not contain field, or key does
    * not exist.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -1241,8 +1145,8 @@ public class Hashes {
    * @param fieldSize field size
    * @return 1 if field exists, 0 - otherwise
    */
-  public static int HEXISTS(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize) {
+  public static int HEXISTS(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
+      int fieldSize) {
     Key k = getKey(keyPtr, keySize);
     try {
       readLock(k);
@@ -1260,7 +1164,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1287,7 +1190,6 @@ public class Hashes {
 
   /**
    * Returns the value associated with field in the hash stored at key.
-   *
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1296,22 +1198,16 @@ public class Hashes {
    * @param valueBuf value buffer
    * @param valueBufSize value buffer size
    * @return size of value, one should check this and if it is greater than valueBufSize means that
-   *     call should be repeated with an appropriately sized value buffer, -1 - if does not exists
+   *         call should be repeated with an appropriately sized value buffer, -1 - if does not
+   *         exists
    */
-  public static int HGET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long valueBuf,
-      int valueBufSize) {
+  public static int HGET(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long valueBuf, int valueBufSize) {
     return HGET(map, keyPtr, keySize, fieldPtr, fieldSize, valueBuf, valueBufSize, true);
   }
 
   /**
    * Returns the value associated with field in the hash stored at key.
-   *
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1321,17 +1217,11 @@ public class Hashes {
    * @param valueBufSize value buffer size
    * @param lock lock if true
    * @return size of value, one should check this and if it is greater than valueBufSize means that
-   *     call should be repeated with an appropriately sized value buffer, -1 - if does not exists
+   *         call should be repeated with an appropriately sized value buffer, -1 - if does not
+   *         exists
    */
-  public static int HGET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldPtr,
-      int fieldSize,
-      long valueBuf,
-      int valueBufSize,
-      boolean lock) {
+  public static int HGET(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
+      long valueBuf, int valueBufSize, boolean lock) {
     Key k = getKey(keyPtr, keySize);
     try {
       if (lock) {
@@ -1356,7 +1246,6 @@ public class Hashes {
 
   /**
    * Get long counter value
-   *
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1382,7 +1271,6 @@ public class Hashes {
 
   /**
    * Get float counter value
-   *
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1390,9 +1278,8 @@ public class Hashes {
    * @param fieldSize field size
    * @return long counter value or exception
    */
-  public static double HGETF(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize)
-      throws OperationFailedException {
+  public static double HGETF(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
+      int fieldSize) throws OperationFailedException {
     int size = HGET(map, keyPtr, keySize, fieldPtr, fieldSize, incrArena.get(), INCR_ARENA_SIZE);
     if (size < 0 || size > INCR_ARENA_SIZE) {
       throw new OperationFailedException("Not a valid data type");
@@ -1409,7 +1296,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param fields list of fields
@@ -1448,7 +1334,7 @@ public class Hashes {
       // Free memory
       UnsafeAccess.free(keyPtr);
       UnsafeAccess.free(buffer);
-      Arrays.stream(fieldPtrs).forEach( x -> UnsafeAccess.free(x));
+      Arrays.stream(fieldPtrs).forEach(x -> UnsafeAccess.free(x));
     }
   }
 
@@ -1458,10 +1344,8 @@ public class Hashes {
    * treated as empty hashes, running HMGET against a non-existing key will return a list of nil
    * values. Return value: Array reply: list of values associated with the given fields, in the same
    * order as they are requested.
-   *
-   * <p>Serialized buffer format: [NUM_VALUES] - 4 bytes [VALUE]+ [VALUE] : [SIZE] 4 bytes
-   * [VALUE_DATA]
-   *
+   * <p>
+   * Serialized buffer format: [NUM_VALUES] - 4 bytes [VALUE]+ [VALUE] : [SIZE] 4 bytes [VALUE_DATA]
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -1470,17 +1354,11 @@ public class Hashes {
    * @param valueBuf values buffer
    * @param valueBufSize values buffer size
    * @return total size of serialized values, if this size is greater than valueBufSize, the call
-   *     must be repeated with appropriately sized buffer, -1 if key does not exist Special value
-   *     size is reserved for NULL -> -1
+   *         must be repeated with appropriately sized buffer, -1 if key does not exist Special
+   *         value size is reserved for NULL -> -1
    */
-  public static long HMGET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long[] fieldPtrs,
-      int[] fieldSizes,
-      long valueBuf,
-      int valueBufSize) {
+  public static long HMGET(BigSortedMap map, long keyPtr, int keySize, long[] fieldPtrs,
+      int[] fieldSizes, long valueBuf, int valueBufSize) {
 
     Key k = getKey(keyPtr, keySize);
     long ptr = valueBuf + Utils.SIZEOF_INT;
@@ -1518,7 +1396,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1537,14 +1414,13 @@ public class Hashes {
     UnsafeAccess.free(fieldPtr);
     return result;
   }
+
   /**
-   * TODO: HashIncrementLong operation (update in place)
-   * Increments the number stored at field in the hash stored at key by increment. If key does not
-   * exist, a new key holding a hash is created. If field does not exist the value is set to 0
-   * before the operation is performed. The range of values supported by HINCRBY is limited to 64
-   * bit signed integers. Return value Integer reply: the value at field after the increment
-   * operation.
-   *
+   * TODO: HashIncrementLong operation (update in place) Increments the number stored at field in
+   * the hash stored at key by increment. If key does not exist, a new key holding a hash is
+   * created. If field does not exist the value is set to 0 before the operation is performed. The
+   * range of values supported by HINCRBY is limited to 64 bit signed integers. Return value Integer
+   * reply: the value at field after the increment operation.
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1554,9 +1430,8 @@ public class Hashes {
    * @return new counter value
    * @throws OperationFailedException
    */
-  public static long HINCRBY(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize, long incr)
-      throws OperationFailedException {
+  public static long HINCRBY(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
+      int fieldSize, long incr) throws OperationFailedException {
     Key k = getKey(keyPtr, keySize);
     try {
       writeLock(k);
@@ -1594,7 +1469,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field hash field
@@ -1623,9 +1497,8 @@ public class Hashes {
    * or the specified increment are not parsable as a double precision floating point number. The
    * exact behavior of this command is identical to the one of the INCRBYFLOAT command, please refer
    * to the documentation of INCRBYFLOAT for further information.
-   *
-   * <p>Return value: Bulk string reply: the value of field after the increment.
-   *
+   * <p>
+   * Return value: Bulk string reply: the value of field after the increment.
    * @param map ordered map
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1635,9 +1508,8 @@ public class Hashes {
    * @return new counter value
    * @throws OperationFailedException
    */
-  public static double HINCRBYFLOAT(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize, double incr)
-      throws OperationFailedException {
+  public static double HINCRBYFLOAT(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
+      int fieldSize, double incr) throws OperationFailedException {
     Key k = getKey(keyPtr, keySize);
     try {
       writeLock(k);
@@ -1675,7 +1547,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param field field
@@ -1691,12 +1562,12 @@ public class Hashes {
     UnsafeAccess.free(fieldPtr);
     return result;
   }
+
   /**
    * Returns the string length of the value associated with field in the hash stored at key. If the
    * key or the field do not exist, 0 is returned. Return value Integer reply: the string length of
    * the value associated with field, or zero when field is not present in the hash or key does not
    * exist at all.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -1704,8 +1575,8 @@ public class Hashes {
    * @param fieldSize field size
    * @return length of value
    */
-  public static int HSTRLEN(
-      BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize) {
+  public static int HSTRLEN(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
+      int fieldSize) {
     Key k = getKey(keyPtr, keySize);
     try {
       readLock(k);
@@ -1724,7 +1595,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key set's key
    * @param lastSeenMember last seen member
@@ -1732,20 +1602,13 @@ public class Hashes {
    * @param bufferSize recommended buffer size
    * @return list of members
    */
-  public static List<Pair<String>> HSCAN(
-      BigSortedMap map,
-      String key,
-      String lastSeenMember,
-      int count,
-      int bufferSize,
-      String regex) {
+  public static List<Pair<String>> HSCAN(BigSortedMap map, String key, String lastSeenMember,
+      int count, int bufferSize, String regex) {
 
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
-    long lastSeenPtr =
-        lastSeenMember == null
-            ? 0
-            : UnsafeAccess.allocAndCopy(lastSeenMember, 0, lastSeenMember.length());
+    long lastSeenPtr = lastSeenMember == null ? 0
+        : UnsafeAccess.allocAndCopy(lastSeenMember, 0, lastSeenMember.length());
     int lastSeenSize = lastSeenMember == null ? 0 : lastSeenMember.length();
     long buffer = UnsafeAccess.malloc(bufferSize);
     // Clear first 4 bytes of a buffer
@@ -1798,7 +1661,6 @@ public class Hashes {
    * returning only a small number of elements per call, they can be used in production without the
    * downside of commands like KEYS or SMEMBERS that may block the server for a long time (even
    * several seconds) when called against big collections of keys or elements.
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -1809,18 +1671,10 @@ public class Hashes {
    * @param bufferSize buffer size
    * @param regex pattern
    * @return total serialized size of the response, if greater than bufferSize, the call must be
-   *     retried with the appropriately sized buffer
+   *         retried with the appropriately sized buffer
    */
-  public static long HSCAN(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long lastSeenFieldPtr,
-      int lastSeenFieldSize,
-      int count,
-      long buffer,
-      int bufferSize,
-      String regex) {
+  public static long HSCAN(BigSortedMap map, long keyPtr, int keySize, long lastSeenFieldPtr,
+      int lastSeenFieldSize, int count, long buffer, int bufferSize, String regex) {
 
     // Clear first 4 bytes
     UnsafeAccess.putInt(buffer, 0);
@@ -1871,13 +1725,13 @@ public class Hashes {
         int fSizeSize = Utils.sizeUVInt(fSize);
         // 06-24
         // if (fSize + fSizeSize > lastSeenSize) {
-        //  lastSeenSize = fSize + fSizeSize;
+        // lastSeenSize = fSize + fSizeSize;
         // }
         long vPtr = scanner.fieldValueAddress();
         int vSize = scanner.fieldValueSize();
         int vSizeSize = Utils.sizeUVInt(vSize);
         if (
-        /*06-24*/ lastPtr + 2 * (fSize + fSizeSize) + vSize + vSizeSize <= buffer + bufferSize) {
+        /* 06-24 */ lastPtr + 2 * (fSize + fSizeSize) + vSize + vSizeSize <= buffer + bufferSize) {
           // Update last seen
           lastSeenSet = true;
           checkValueArena(fSize + fSizeSize);
@@ -1941,7 +1795,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param bufSize buffer size
@@ -1977,24 +1830,24 @@ public class Hashes {
       UnsafeAccess.free(buffer);
     }
   }
+
   /**
    * Available since 2.0.0. Time complexity: O(N) where N is the size of the hash. Returns all
    * fields and values of the hash stored at key. In the returned value, every field name is
    * followed by its value, so the length of the reply is twice the size of the hash.
-   *
-   * <p>Return value Array reply: list of fields and their values stored in the hash, or an empty
-   * list when key does not exist.
-   *
+   * <p>
+   * Return value Array reply: list of fields and their values stored in the hash, or an empty list
+   * when key does not exist.
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
    * @param buffer buffer address
    * @param bufferSize buffer size
    * @return total serialized size of the response, if greater then bufferSize the call must be
-   *     retried with the appropriately sized buffer
+   *         retried with the appropriately sized buffer
    */
-  public static long HGETALL(
-      BigSortedMap map, long keyPtr, int keySize, long buffer, int bufferSize) {
+  public static long HGETALL(BigSortedMap map, long keyPtr, int keySize, long buffer,
+      int bufferSize) {
     Key key = getKey(keyPtr, keySize);
     HashScanner scanner = null;
     try {
@@ -2044,17 +1897,16 @@ public class Hashes {
    * Available since 2.0.0. Time complexity: O(N) where N is the size of the hash. Returns all field
    * names in the hash stored at key. Return value Array reply: list of fields in the hash, or an
    * empty list when key does not exist.
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
    * @param buffer buffer address
    * @param bufferSize buffer size
    * @return total serialized size of the response, if greater then bufferSize the call must be
-   *     retried with the appropriately sized buffer
+   *         retried with the appropriately sized buffer
    */
-  public static long HKEYS(
-      BigSortedMap map, long keyPtr, int keySize, long buffer, int bufferSize) {
+  public static long HKEYS(BigSortedMap map, long keyPtr, int keySize, long buffer,
+      int bufferSize) {
     Key key = getKey(keyPtr, keySize);
     HashScanner scanner = null;
     try {
@@ -2098,7 +1950,6 @@ public class Hashes {
 
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param bufSize buffer size
@@ -2129,9 +1980,9 @@ public class Hashes {
       UnsafeAccess.free(buffer);
     }
   }
+
   /**
    * For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param bufSize buffer size
@@ -2167,17 +2018,16 @@ public class Hashes {
    * Available since 2.0.0. Time complexity: O(N) where N is the size of the hash. Returns all field
    * values in the hash stored at key. Return value Array reply: list of values in the hash, or an
    * empty list when key does not exist.
-   *
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
    * @param buffer buffer address
    * @param bufferSize buffer size
    * @return total serialized size of the response, if greater then bufferSize the call must be
-   *     retried with the appropriately sized buffer
+   *         retried with the appropriately sized buffer
    */
-  public static long HVALS(
-      BigSortedMap map, long keyPtr, int keySize, long buffer, int bufferSize) {
+  public static long HVALS(BigSortedMap map, long keyPtr, int keySize, long buffer,
+      int bufferSize) {
     Key key = getKey(keyPtr, keySize);
     HashScanner scanner = null;
     try {
@@ -2222,7 +2072,6 @@ public class Hashes {
 
   /**
    * TODO: unit tests in API For testing only
-   *
    * @param map sorted map storage
    * @param key hash key
    * @param count count to return
@@ -2230,8 +2079,8 @@ public class Hashes {
    * @param bufSize buffer size
    * @return list of K-V or K-K
    */
-  public static List<Pair<String>> HRANDFIELD(
-      BigSortedMap map, String key, int count, boolean withValues, int bufSize) {
+  public static List<Pair<String>> HRANDFIELD(BigSortedMap map, String key, int count,
+      boolean withValues, int bufSize) {
     List<Pair<String>> list = new ArrayList<Pair<String>>();
     long keyPtr = UnsafeAccess.allocAndCopy(key, 0, key.length());
     int keySize = key.length();
@@ -2266,16 +2115,14 @@ public class Hashes {
   }
 
   /**
-   * TODO: this is O(N) complexity. Redis claims O(log(N
-   * )
-   * When called with just the key argument, return a random field from the hash value stored at
-   * key. If the provided count argument is positive, return an array of distinct fields. The
-   * array's length is either count or the hash's number of fields (HLEN), whichever is lower. If
-   * called with a negative count, the behavior changes and the command is allowed to return the
-   * same field multiple times. In this case, the number of returned fields is the absolute value of
-   * the specified count. The optional WITHVALUES modifier changes the reply so it includes the
-   * respective values of the randomly selected hash fields.
-   *
+   * TODO: this is O(N) complexity. Redis claims O(log(N ) When called with just the key argument,
+   * return a random field from the hash value stored at key. If the provided count argument is
+   * positive, return an array of distinct fields. The array's length is either count or the hash's
+   * number of fields (HLEN), whichever is lower. If called with a negative count, the behavior
+   * changes and the command is allowed to return the same field multiple times. In this case, the
+   * number of returned fields is the absolute value of the specified count. The optional WITHVALUES
+   * modifier changes the reply so it includes the respective values of the randomly selected hash
+   * fields.
    * @param map sorted map storage
    * @param keyPtr hash key address
    * @param keySize hash key size
@@ -2285,14 +2132,8 @@ public class Hashes {
    * @param bufSize buffer size
    * @return full serialized size of the response
    */
-  public static long HRANDFIELD(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      int count,
-      boolean withValues,
-      long bufferPtr,
-      int bufferSize) {
+  public static long HRANDFIELD(BigSortedMap map, long keyPtr, int keySize, int count,
+      boolean withValues, long bufferPtr, int bufferSize) {
 
     Key k = getKey(keyPtr, keySize);
     boolean distinct = count > 0;
@@ -2318,8 +2159,7 @@ public class Hashes {
       }
       if (index == null) {
         // Return all elements
-        return withValues
-            ? HGETALL(map, keyPtr, keySize, bufferPtr, bufferSize)
+        return withValues ? HGETALL(map, keyPtr, keySize, bufferPtr, bufferSize)
             : HKEYS(map, keyPtr, keySize, bufferPtr, bufferSize);
       }
       scanner = getScanner(map, keyPtr, keySize, false);
@@ -2339,15 +2179,14 @@ public class Hashes {
 
   /**
    * TODO: change return value to full serialized size Return number of written element
-   *
    * @param scanner set scanner
    * @param index array of random indexes to read
    * @param bufferPtr buffer
    * @param bufferSize buffer size
    * @return serialized size of the response
    */
-  private static long readByIndex(
-      HashScanner scanner, long[] index, long bufferPtr, int bufferSize, boolean withValues) {
+  private static long readByIndex(HashScanner scanner, long[] index, long bufferPtr, int bufferSize,
+      boolean withValues) {
 
     long ptr = bufferPtr + Utils.SIZEOF_INT;
     UnsafeAccess.putInt(bufferPtr, 0);
@@ -2389,7 +2228,6 @@ public class Hashes {
    * Get hash scanner for hash operations, as since we can create multiple hash scanners in the same
    * thread we can not use thread local variables WARNING: we can not create multiple scanners in a
    * single thread
-   *
    * @param map sorted map to run on
    * @param keyPtr key address
    * @param keySize key size
@@ -2404,7 +2242,6 @@ public class Hashes {
    * Get hash scanner for hash operations, as since we can create multiple hash scanners in the same
    * thread we can not use thread local variables WARNING: we can not create multiple scanners in a
    * single thread
-   *
    * @param map sorted map to run on
    * @param keyPtr key address
    * @param keySize key size
@@ -2412,8 +2249,8 @@ public class Hashes {
    * @param reverse reverse scanner
    * @return hash scanner
    */
-  public static HashScanner getScanner(
-      BigSortedMap map, long keyPtr, int keySize, boolean safe, boolean reverse) {
+  public static HashScanner getScanner(BigSortedMap map, long keyPtr, int keySize, boolean safe,
+      boolean reverse) {
 
     long kPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + 2 * Utils.SIZEOF_BYTE);
     UnsafeAccess.putByte(kPtr, (byte) DataType.HASH.ordinal());
@@ -2429,8 +2266,7 @@ public class Hashes {
       endKeySize = 0;
     }
     BigSortedMapScanner scanner =
-        safe
-            ? map.getSafeScanner(kPtr, keySize, endPtr, endKeySize, reverse)
+        safe ? map.getSafeScanner(kPtr, keySize, endPtr, endKeySize, reverse)
             : map.getScanner(kPtr, keySize, endPtr, endKeySize, reverse);
     if (scanner == null) {
       if (endPtr > 0) UnsafeAccess.free(endPtr);
@@ -2457,39 +2293,22 @@ public class Hashes {
    * Get hash scanner for hash operations, as since we can create multiple hash scanners in the same
    * thread we can not use thread local variables WARNING: we can not create multiple scanners in a
    * single thread
-   *
    * @param map sorted map to run on
    * @param keyPtr key address
    * @param keySize key size
    * @param safe get safe instance
    * @return hash scanner
    */
-  public static HashScanner getScanner(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long startFieldPtr,
-      int startFieldSize,
-      long endFieldPtr,
-      int endFieldSize,
-      boolean safe) {
-    return getScanner(
-        map,
-        keyPtr,
-        keySize,
-        startFieldPtr,
-        startFieldSize,
-        endFieldPtr,
-        endFieldSize,
-        safe,
-        false);
+  public static HashScanner getScanner(BigSortedMap map, long keyPtr, int keySize,
+      long startFieldPtr, int startFieldSize, long endFieldPtr, int endFieldSize, boolean safe) {
+    return getScanner(map, keyPtr, keySize, startFieldPtr, startFieldSize, endFieldPtr,
+      endFieldSize, safe, false);
   }
 
   /**
    * Get hash scanner for hash operations, as since we can create multiple hash scanners in the same
    * thread we can not use thread local variables WARNING: we can not create multiple scanners in a
    * single thread
-   *
    * @param map sorted map to run on
    * @param keyPtr key address
    * @param keySize key size
@@ -2497,15 +2316,8 @@ public class Hashes {
    * @param reverse reverse scanner
    * @return hash scanner
    */
-  public static HashScanner getScanner(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long fieldStartPtr,
-      int fieldStartSize,
-      long fieldStopPtr,
-      int fieldStopSize,
-      boolean safe,
+  public static HashScanner getScanner(BigSortedMap map, long keyPtr, int keySize,
+      long fieldStartPtr, int fieldStartSize, long fieldStopPtr, int fieldStopSize, boolean safe,
       boolean reverse) {
     // TODO Check start stop 0
     // TODO: for public API - primary key locking?
@@ -2518,20 +2330,16 @@ public class Hashes {
       }
     }
     // Special handling when fieldStartPtr == 0 (from beginning)
-    long startPtr =
-        UnsafeAccess.malloc(
-            keySize
-                + KEY_SIZE
-                + Utils.SIZEOF_BYTE
-                + (fieldStartSize == 0 ? Utils.SIZEOF_BYTE : fieldStartSize));
+    long startPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + Utils.SIZEOF_BYTE
+        + (fieldStartSize == 0 ? Utils.SIZEOF_BYTE : fieldStartSize));
     fieldStartPtr = fieldStartPtr == 0 ? ZERO : fieldStartPtr;
     fieldStartSize = fieldStartSize == 0 ? 1 : fieldStartSize;
 
     int startPtrSize = buildKey(keyPtr, keySize, fieldStartPtr, fieldStartSize, startPtr);
-    //    if (fieldStartSize == 0) {
-    //      startPtrSize += 1;
-    //      UnsafeAccess.putByte(startPtr + startPtrSize - 1, (byte) 0);
-    //    }
+    // if (fieldStartSize == 0) {
+    // startPtrSize += 1;
+    // UnsafeAccess.putByte(startPtr + startPtrSize - 1, (byte) 0);
+    // }
 
     long stopPtr = UnsafeAccess.malloc(keySize + KEY_SIZE + Utils.SIZEOF_BYTE + fieldStopSize);
     int stopPtrSize = buildKey(keyPtr, keySize, fieldStopPtr, fieldStopSize, stopPtr);
@@ -2542,7 +2350,7 @@ public class Hashes {
       }
     }
     if (
-    /*reverse &&*/ fieldStartPtr > 0) {
+    /* reverse && */ fieldStartPtr > 0) {
       // Get floorKey
       long size = map.floorKey(startPtr, startPtrSize, valueArena.get(), valueArenaSize.get());
       if (size > valueArenaSize.get()) {
@@ -2551,13 +2359,8 @@ public class Hashes {
         size = map.floorKey(startPtr, startPtrSize, valueArena.get(), valueArenaSize.get());
       }
       // check first 5 + keySize bytes
-      if (size > 0
-          && Utils.compareTo(
-                  startPtr,
-                  keySize + Utils.SIZEOF_INT + Utils.SIZEOF_BYTE,
-                  valueArena.get(),
-                  keySize + Utils.SIZEOF_INT + Utils.SIZEOF_BYTE)
-              == 0) {
+      if (size > 0 && Utils.compareTo(startPtr, keySize + Utils.SIZEOF_INT + Utils.SIZEOF_BYTE,
+        valueArena.get(), keySize + Utils.SIZEOF_INT + Utils.SIZEOF_BYTE) == 0) {
         // free start key
         UnsafeAccess.free(startPtr);
         startPtr = UnsafeAccess.malloc(size);
@@ -2568,8 +2371,7 @@ public class Hashes {
 
     // TODO do not use thread local in scanners - check it
     BigSortedMapScanner scanner =
-        safe
-            ? map.getSafeScanner(startPtr, startPtrSize, stopPtr, stopPtrSize, reverse)
+        safe ? map.getSafeScanner(startPtr, startPtrSize, stopPtr, stopPtrSize, reverse)
             : map.getScanner(startPtr, startPtrSize, stopPtr, stopPtrSize, reverse);
     if (scanner == null) {
       UnsafeAccess.free(startPtr);
@@ -2579,9 +2381,8 @@ public class Hashes {
 
     HashScanner hs = null;
     try {
-      hs =
-          new HashScanner(
-              scanner, fieldStartPtr, fieldStartSize, fieldStopPtr, fieldStopSize, reverse);
+      hs = new HashScanner(scanner, fieldStartPtr, fieldStartSize, fieldStopPtr, fieldStopSize,
+          reverse);
       hs.setDisposeKeysOnClose(true);
     } catch (IOException e) {
       try {
@@ -2599,7 +2400,6 @@ public class Hashes {
 
   /**
    * Finds location of a given field in a Value object
-   *
    * @param foundRecordAddress address of K-V record
    * @param fieldPtr field's address
    * @param fieldSize field's size
@@ -2625,7 +2425,6 @@ public class Hashes {
   // public static boolean DEBUG = false;
   /**
    * Finds first field which is greater or equals to a given one in a Value object
-   *
    * @param foundRecordAddress address of a K-V record
    * @param fieldPtr field address
    * @param field field size
@@ -2650,7 +2449,6 @@ public class Hashes {
 
   /**
    * Gets value size from the address of field-value pair
-   *
    * @param fieldValuePtr address
    * @return size of a value
    */
@@ -2663,7 +2461,6 @@ public class Hashes {
 
   /**
    * Get full value size including length prefix
-   *
    * @param fieldValuePtr address of a record
    * @return full size
    */
@@ -2674,7 +2471,6 @@ public class Hashes {
 
   /**
    * Gets field size from the address of field-value pair
-   *
    * @param fieldValuePtr address
    * @return size of a value
    */
@@ -2682,9 +2478,9 @@ public class Hashes {
     int fSize = Utils.readUVInt(fieldValuePtr);
     return fSize;
   }
+
   /**
    * Gets value address from the address of field-value pair
-   *
    * @param fieldValuePtr address
    * @return address of a value
    */
@@ -2699,7 +2495,6 @@ public class Hashes {
 
   /**
    * Gets field address from the address of field-value pair
-   *
    * @param fieldValuePtr address
    * @return address of a value
    */
@@ -2711,9 +2506,9 @@ public class Hashes {
 
     return fieldValuePtr + skip;
   }
+
   /**
    * Returns suggested split address
-   *
    * @param valuePtr value address
    * @return address of a split point
    */
@@ -2738,7 +2533,6 @@ public class Hashes {
 
   /**
    * Returns suggested number of elements in a left split
-   *
    * @param valuePtr value address
    * @return address of a split point
    */
@@ -2765,7 +2559,6 @@ public class Hashes {
 
   /**
    * Compare field, which starts in a given address with a given field
-   *
    * @param ptr address of an first field-value record
    * @param fieldPtr address of a second element
    * @param fieldSize second element size

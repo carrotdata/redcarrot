@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.addNumElements;
@@ -46,6 +42,7 @@ public class HashDelete extends Operation {
   int valueSize = 0;
 
   boolean checkForEmpty = false;
+
   /** Constructor */
   public HashDelete() {
     setFloorKey(true);
@@ -68,7 +65,6 @@ public class HashDelete extends Operation {
 
   /**
    * Gets value size
-   *
    * @return serialized value size
    */
   public int getValueSize() {
@@ -77,7 +73,6 @@ public class HashDelete extends Operation {
 
   /**
    * Sets the buffer for return value
-   *
    * @param ptr buffer address
    * @param size buffer size
    */
@@ -88,7 +83,6 @@ public class HashDelete extends Operation {
 
   /**
    * Sets parent sorted map
-   *
    * @param map sorted map
    */
   public void setMap(BigSortedMap map) {
@@ -111,8 +105,8 @@ public class HashDelete extends Operation {
     int hashKeySize = hashKeySizeWithPrefix - Commons.KEY_PREFIX_SIZE;
     boolean isFirstKey = isFirstKey(foundKeyAddress, foundKeySize, hashKeySize);
     // Prefix keys must be equals
-    if (Utils.compareTo(keyAddress, hashKeySizeWithPrefix, foundKeyAddress, hashKeySizeWithPrefix)
-        != 0) {
+    if (Utils.compareTo(keyAddress, hashKeySizeWithPrefix, foundKeyAddress,
+      hashKeySizeWithPrefix) != 0) {
       // Hash does not exists
       return false;
     }
@@ -133,10 +127,8 @@ public class HashDelete extends Operation {
     if (buffer > 0 && bufferSize >= fieldValueSize + fieldValueSizeSize) {
       // Copy value into the buffer
       Utils.writeUVInt(buffer, fieldValueSize);
-      UnsafeAccess.copy(
-          addr + fieldSize + fieldSizeSize + fieldValueSizeSize,
-          buffer + fieldValueSizeSize,
-          fieldValueSize);
+      UnsafeAccess.copy(addr + fieldSize + fieldSizeSize + fieldValueSizeSize,
+        buffer + fieldValueSizeSize, fieldValueSize);
     } else if (buffer > 0 && bufferSize < fieldValueSize + fieldValueSizeSize) {
       return false;
     }
@@ -154,8 +146,8 @@ public class HashDelete extends Operation {
     long ptr = Hashes.valueArena.get();
     // TODO: check this
     UnsafeAccess.copy(valueAddress, ptr, addr - valueAddress);
-    UnsafeAccess.copy(
-        addr + toCut, ptr + addr - valueAddress, valueSize - toCut - (addr - valueAddress));
+    UnsafeAccess.copy(addr + toCut, ptr + addr - valueAddress,
+      valueSize - toCut - (addr - valueAddress));
 
     // set # of updates to 1
     this.updatesCount = 1;
@@ -164,7 +156,7 @@ public class HashDelete extends Operation {
     this.values[0] = ptr;
     this.valueSizes[0] = valueSize - toCut;
     // TODO: Verify that we do not need to check canDelete to delete
-    if (numElements == 0 && !isFirstKey /*&& canDelete(foundKeyAddress, foundKeySize)*/) {
+    if (numElements == 0 && !isFirstKey /* && canDelete(foundKeyAddress, foundKeySize) */) {
       // Delete Key, b/c its empty
       // TODO: we postpone deleting empty first key
       this.updateTypes[0] = true;

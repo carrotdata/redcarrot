@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.twitter;
 
 import java.io.IOException;
@@ -18,7 +14,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.Assert;
 import com.carrotdata.redcarrot.BigSortedMap;
 import com.carrotdata.redcarrot.BigSortedMapScanner;
 import com.carrotdata.redcarrot.IndexBlock;
@@ -29,75 +24,69 @@ import com.carrotdata.redcarrot.redis.RedisConf;
 /**
  * Redis Book. Simple social network application. See description here:
  * https://redislabs.com/ebook/part-2-core-concepts/chapter-8-building-a-simple-social-network/
- *
- * <p>We implemented the following data types from the above book: user, user statuses, timelines,
+ * <p>
+ * We implemented the following data types from the above book: user, user statuses, timelines,
  * followers, following in Carrot and Redis and compared memory usage per average user.
- *
- * <p>Some assumptions have been made, based on available information on the Internet:
- *
- * <p>1. We tried to use followers distribution which is as close to the real (Twitter) as possible.
+ * <p>
+ * Some assumptions have been made, based on available information on the Internet:
+ * <p>
+ * 1. We tried to use followers distribution which is as close to the real (Twitter) as possible.
  * The majority of users have pretty small number of followers (median is less than 100) but some
  * influential can have 100's of thousands and even millions. 2. Number of following is pretty small
  * and does not vary as much as the number of followers 3. On average, user makes 2 posts (status
  * updates) per day. 4. User registration date is a random date between 2010 and now. So If user
  * registered in 2010 he (she) made 2 * 365 * 10 = 7300 status updates.
- *
- * <p>Every User has the following data sets:
- *
- * <p>User - user's personal data User status - list of all messages posted by user (without order)
+ * <p>
+ * Every User has the following data sets:
+ * <p>
+ * User - user's personal data User status - list of all messages posted by user (without order)
  * Profile Timeline - all messages posted by a user in a reverse chronological order. Followers -
  * list of user's followers Following - list of other user's this user is following to.
- *
- * <p>We measure the overall memory usage per one average social network user.
- *
- * <p>CARROT RESULTS:
- *
- * <p>-- User average memory size (bytes):
- *
- * <p>No compression - 158 LZ4 compression - 94 ZSTD compression - 75
- *
- * <p>-- User statuses average memory size (bytes):
- *
- * <p>No compression - 533590 LZ4 compression - 317842 ZSTD compression - 232423
- *
- * <p>-- User Timeline average memory size (bytes):
- *
- * <p>No compression - 78731 LZ4 compression - 59782 ZSTD compression - 53257
- *
- * <p>-- User Followers average memory size (bytes):
- *
- * <p>No compression - 23292 LZ4 compression - 18674 ZSTD compression - 14263
- *
- * <p>-- User Following average memory size (bytes):
- *
- * <p>No compression - 35379 LZ4 compression - 31020 ZSTD compression - 25205
- *
- * <p>TOTAL size (user, user statuses, profile timeline, followers, following):
- *
- * <p>No compression ~ 670,992 LZ4 compression ~ 427,318 ZSTD compression ~ 325,218
- *
- * <p>REDIS RESULTS:
- *
  * <p>
- * -- User average memory size (bytes): 219 
- * -- User statuses average memory size (bytes): 757,183
- * -- User Timeline average memory size (bytes): 409,739 
- * -- User Followers average memory size (bytes): 34,200
- * -- User Following average memory size (bytes): 56,830
- *
- * <p>TOTAL size (user, user statuses, profile timeline, followers, following): 1,229,631
- *
- * <p>OVERALL RESULTS:
- *
- * <p> 
- * Redis 7.2.4 ~ 1,257,952 
- * Carrot (no compression) ~ 670,992
- * Carrot (LZ4) ~ 427,318 
- * Carrot (ZSTD) ~ 325,218
- *
- * <p>Redis - to -Carrot RAM usage:
- *
- * <p>Redis/ Carrot no compression = 1.9 Redis/ Carrot LZ4 compression = 3.0 Redis/ Carrot ZSTD
+ * We measure the overall memory usage per one average social network user.
+ * <p>
+ * CARROT RESULTS:
+ * <p>
+ * -- User average memory size (bytes):
+ * <p>
+ * No compression - 158 LZ4 compression - 94 ZSTD compression - 75
+ * <p>
+ * -- User statuses average memory size (bytes):
+ * <p>
+ * No compression - 533590 LZ4 compression - 317842 ZSTD compression - 232423
+ * <p>
+ * -- User Timeline average memory size (bytes):
+ * <p>
+ * No compression - 78731 LZ4 compression - 59782 ZSTD compression - 53257
+ * <p>
+ * -- User Followers average memory size (bytes):
+ * <p>
+ * No compression - 23292 LZ4 compression - 18674 ZSTD compression - 14263
+ * <p>
+ * -- User Following average memory size (bytes):
+ * <p>
+ * No compression - 35379 LZ4 compression - 31020 ZSTD compression - 25205
+ * <p>
+ * TOTAL size (user, user statuses, profile timeline, followers, following):
+ * <p>
+ * No compression ~ 670,992 LZ4 compression ~ 427,318 ZSTD compression ~ 325,218
+ * <p>
+ * REDIS RESULTS:
+ * <p>
+ * -- User average memory size (bytes): 219 -- User statuses average memory size (bytes): 757,183 --
+ * User Timeline average memory size (bytes): 409,739 -- User Followers average memory size (bytes):
+ * 34,200 -- User Following average memory size (bytes): 56,830
+ * <p>
+ * TOTAL size (user, user statuses, profile timeline, followers, following): 1,229,631
+ * <p>
+ * OVERALL RESULTS:
+ * <p>
+ * Redis 7.2.4 ~ 1,257,952 Carrot (no compression) ~ 670,992 Carrot (LZ4) ~ 427,318 Carrot (ZSTD) ~
+ * 325,218
+ * <p>
+ * Redis - to -Carrot RAM usage:
+ * <p>
+ * Redis/ Carrot no compression = 1.9 Redis/ Carrot LZ4 compression = 3.0 Redis/ Carrot ZSTD
  * compression = 3.9
  */
 public class TestCarrotTwitter {
@@ -116,12 +105,9 @@ public class TestCarrotTwitter {
 
   private static void printSummary() {
     log.debug(
-        "Carrot memory usage per user (user, statuses, profile timeline, followers, following)={}",
-        avg_user_size
-            + avg_user_status_size
-            + avg_user_timeline_size
-            + avg_user_followers_size
-            + avg_user_following_size);
+      "Carrot memory usage per user (user, statuses, profile timeline, followers, following)={}",
+      avg_user_size + avg_user_status_size + avg_user_timeline_size + avg_user_followers_size
+          + avg_user_following_size);
   }
 
   public static void main(String[] args) {
@@ -328,10 +314,8 @@ public class TestCarrotTwitter {
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_followers_size = (double) memory / numUsers;
     map.dispose();
-    log.debug(
-        "avg_user_followers_size={} bytes. Avg #folowers={}",
-        avg_user_followers_size,
-        total / numUsers);
+    log.debug("avg_user_followers_size={} bytes. Avg #folowers={}", avg_user_followers_size,
+      total / numUsers);
   }
 
   private static void runUserFollowersNoCompression() {
@@ -371,10 +355,8 @@ public class TestCarrotTwitter {
     long memory = BigSortedMap.getGlobalAllocatedMemory();
     avg_user_following_size = (double) memory / numUsers;
     map.dispose();
-    log.debug(
-        "avg_user_following_size={} bytes. Avg #folowing={}",
-        avg_user_following_size,
-        total / numUsers);
+    log.debug("avg_user_following_size={} bytes. Avg #folowing={}", avg_user_following_size,
+      total / numUsers);
   }
 
   private static void runUserFollowingNoCompression() {

@@ -32,8 +32,8 @@ public abstract class CarrotCoreBase {
   protected BigSortedMap map;
   protected long nKeyValues;
 
-  @Rule public TestName testName = new TestName();
-
+  @Rule
+  public TestName testName = new TestName();
 
   static {
     memoryDebug = Boolean.parseBoolean(System.getProperty("memoryDebug"));
@@ -77,26 +77,19 @@ public abstract class CarrotCoreBase {
 
   @Parameterized.Parameters(name = "Run with codec={0}")
   public static Collection<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {
-          {CodecFactory.getInstance().getCodec(CodecType.LZ4)},
-          {CodecFactory.getInstance().getCodec(CodecType.NONE)}
-          //          {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
-        });
+    return Arrays.asList(new Object[][] { { CodecFactory.getInstance().getCodec(CodecType.LZ4) },
+        { CodecFactory.getInstance().getCodec(CodecType.NONE) }
+        // {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
+    });
   }
 
   /** @return Tests parameters */
   protected String getTestParameters() {
-    return String.format(
-        "%s.%s(codec=%s)",
-        getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
-        testName.getMethodName().substring(0, testName.getMethodName().indexOf("[")),
-        testName.getMethodName().contains("codec=null")
-            ? "null"
-            : testName
-                .getMethodName()
-                .substring(
-                    testName.getMethodName().lastIndexOf(".") + 1,
-                    testName.getMethodName().length() - 15));
+    return String.format("%s.%s(codec=%s)",
+      getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
+      testName.getMethodName().substring(0, testName.getMethodName().indexOf("[")),
+      testName.getMethodName().contains("codec=null") ? "null"
+          : testName.getMethodName().substring(testName.getMethodName().lastIndexOf(".") + 1,
+            testName.getMethodName().length() - 15));
   }
 }

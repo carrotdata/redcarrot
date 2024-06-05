@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sets;
 
 import java.io.IOException;
@@ -68,23 +64,24 @@ public class SetsAPITest extends CarrotCoreBase {
       }
     }
   }
-  
+
   @Ignore
   @Test
   public void testSCARDSCAN() {
     String key = "key";
     for (int i = 0; i < 1; i++) {
-      log.debug("Run = "+ (i + 1));
+      log.debug("Run = " + (i + 1));
       int n = 1_000_000;
       loadDataVoid(key, n);
       long t1 = System.nanoTime();
       long card = Sets.SCARDSCAN(map, key);
       long t2 = System.nanoTime();
       assertEquals(n, card);
-      log.debug("Time to count {} element = {} ms", n, (t2 - t1)/1_000_000);
+      log.debug("Time to count {} element = {} ms", n, (t2 - t1) / 1_000_000);
       Sets.DELETE(map, key);
     }
   }
+
   @Test
   public void testSimpleCalls() {
 
@@ -104,7 +101,7 @@ public class SetsAPITest extends CarrotCoreBase {
     result = Sets.SISMEMBER(map, "key1", "member1");
     assertEquals(0, result);
     // Add multiple members
-    result = Sets.SADD(map, "key", new String[] {"member1", "member2", "member3"});
+    result = Sets.SADD(map, "key", new String[] { "member1", "member2", "member3" });
     // We expect only 2 new elements
     assertEquals(2, result);
 
@@ -152,8 +149,8 @@ public class SetsAPITest extends CarrotCoreBase {
     assertEquals(3, members.size());
 
     // Add multiple members
-    result =
-        Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
+    result = Sets.SADD(map, "key",
+      new String[] { "member1", "member2", "member3", "member4", "member5" });
     // We expect only 2 new elements
     assertEquals(2, result);
 
@@ -171,8 +168,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testMoveOperation() {
 
     // Add multiple members
-    int result =
-        Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
+    int result = Sets.SADD(map, "key",
+      new String[] { "member1", "member2", "member3", "member4", "member5" });
     // We expect only 2 new elements
     assertEquals(5, result);
     result = Sets.SMOVE(map, "key", "key1", "member1");
@@ -216,37 +213,34 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testMultipleMembersOperation() {
 
     // Add multiple members
-    int result =
-        Sets.SADD(map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
+    int result = Sets.SADD(map, "key",
+      new String[] { "member1", "member2", "member3", "member4", "member5" });
     assertEquals(5, result);
-    byte[] res =
-        Sets.SMISMEMBER(
-            map, "key", new String[] {"member1", "member2", "member3", "member4", "member5"});
+    byte[] res = Sets.SMISMEMBER(map, "key",
+      new String[] { "member1", "member2", "member3", "member4", "member5" });
     // All must be 1
     assertEquals(5, res.length);
     for (byte value : res) {
       assertEquals(1, (int) value);
     }
 
-    res = Sets.SMISMEMBER(map, "key", new String[] {"member3", "member4", "member5"});
+    res = Sets.SMISMEMBER(map, "key", new String[] { "member3", "member4", "member5" });
     // All must be 1
     assertEquals(3, res.length);
     for (byte b : res) {
       assertEquals(1, (int) b);
     }
 
-    res =
-        Sets.SMISMEMBER(
-            map, "key1", new String[] {"member1", "member2", "member3", "member4", "member5"});
+    res = Sets.SMISMEMBER(map, "key1",
+      new String[] { "member1", "member2", "member3", "member4", "member5" });
     // All must be 1
     assertEquals(5, res.length);
     for (byte re : res) {
       assertEquals(0, (int) re);
     }
 
-    res =
-        Sets.SMISMEMBER(
-            map, "key", new String[] {"xember1", "xember2", "xember3", "member4", "member5"});
+    res = Sets.SMISMEMBER(map, "key",
+      new String[] { "xember1", "xember2", "xember3", "member4", "member5" });
     // All must be 1
     assertEquals(5, res.length);
     assertEquals(0, (int) res[0]);
@@ -260,8 +254,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSscanNoRegex() {
 
     // Load X elements
-    int X = memoryDebug? 1000: 10000;
-    int numIterations = memoryDebug? 100: 1000;
+    int X = memoryDebug ? 1000 : 10000;
+    int numIterations = memoryDebug ? 100 : 1000;
     String key = "key";
     Random r = new Random();
     List<String> list = loadData(key, X);
@@ -310,8 +304,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testCardinalityPerformance() {
 
     // Load X elements
-    int X = memoryDebug? 2000: 1000000;
-    int numIterations = memoryDebug? 100: 100;
+    int X = memoryDebug ? 2000 : 1000000;
+    int numIterations = memoryDebug ? 100 : 100;
     String key = "key";
 
     List<String> list = loadData(key, X);
@@ -344,8 +338,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSscanWithRegex() {
 
     // Load X elements
-    int X = memoryDebug? 1000: 10000;
-    int numIterations = memoryDebug? 10: 100;
+    int X = memoryDebug ? 1000 : 10000;
+    int numIterations = memoryDebug ? 10 : 100;
     String key = "key";
     String regex = "^A.*";
     Random r = new Random();
@@ -442,7 +436,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testSetScannerSkipLarge() throws IOException {
 
     // Load X elements
-    int X = memoryDebug? 10000: 100000;
+    int X = memoryDebug ? 10000 : 100000;
     String key = "key";
     List<String> list = loadData(key, X);
 
@@ -498,8 +492,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerSkipRandom() throws IOException {
 
     // Load N elements
-    int N = memoryDebug? 10000 :100000;
-    int numIter = memoryDebug? 100: 1000;
+    int N = memoryDebug ? 10000 : 100000;
+    int numIter = memoryDebug ? 100 : 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -534,8 +528,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerSkipRandomSingleScanner() throws IOException {
 
     // Load N elements
-    int N = memoryDebug? 10000: 100000;
-    int numIter = memoryDebug? 100: 1000;
+    int N = memoryDebug ? 10000 : 100000;
+    int numIter = memoryDebug ? 100 : 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -564,29 +558,22 @@ public class SetsAPITest extends CarrotCoreBase {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        numIter
-            + " random skips x"
-            + 10
-            + " for "
-            + N
-            + " cardinality set time="
-            + (end - start)
-            + "ms");
+    log.debug(numIter + " random skips x" + 10 + " for " + N + " cardinality set time="
+        + (end - start) + "ms");
   }
 
   @Test
   public void testScannerRandomMembersEdgeCases() {
 
     // Load N elements
-    int N = memoryDebug? 1000: 10000;
+    int N = memoryDebug ? 1000 : 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
     Collections.sort(list);
 
-    List<String> result =
-        Sets.SRANDMEMBER(map, key, 100, 1705); // Required size is 1704 for 100 elements
+    List<String> result = Sets.SRANDMEMBER(map, key, 100, 1705); // Required size is 1704 for 100
+                                                                 // elements
     assertEquals(100, result.size());
 
     result = Sets.SRANDMEMBER(map, key, 100, 1704); // Required size is 1104 for 100 elements
@@ -612,8 +599,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembers() {
 
     // Load N elements
-    int N = memoryDebug? 10000: 100000;
-    int numIter = memoryDebug? 100: 1000;
+    int N = memoryDebug ? 10000 : 100000;
+    int numIter = memoryDebug ? 100 : 1000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -650,7 +637,7 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersDeleteEdgeCases() {
 
     // Load N elements
-    int N = memoryDebug? 1000: 10000;
+    int N = memoryDebug ? 1000 : 10000;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -682,8 +669,8 @@ public class SetsAPITest extends CarrotCoreBase {
   public void testScannerRandomMembersDelete() {
 
     // Load N elements
-    int N = memoryDebug? 10000: 100000;
-    int numIter = memoryDebug? 10: 100;
+    int N = memoryDebug ? 10000 : 100000;
+    int numIter = memoryDebug ? 10 : 100;
     String key = "key";
     List<String> list = loadData(key, N);
 
@@ -708,32 +695,27 @@ public class SetsAPITest extends CarrotCoreBase {
     log.debug("{} random members for {} cardinality set time={}ms", numIter, N, end - start);
 
     // Check negatives
-    //    start = System.currentTimeMillis();
-    //    for(int i = 0; i < numIter; i++) {
-    //      List<String> result = Sets.SPOP(map, key, -10, 4096);
-    //      assertEquals(10, result.size());
-    //      assertTrue(list.containsAll(result));
-    //      // verify that they were deleted
-    //      for (String s: result) {
-    //        int res = Sets.SISMEMBER(map, key, s);
-    //        assertEquals(0, res);
-    //      }
-    //      if (i % 100 == 0) {
-    //        log.debug("Skipped {}", i);
-    //      }
-    //    }
-    //    end = System.currentTimeMillis();
-    //    log.debug(numIter + " random members for "+ N +" cardinality set time="+ (end -
+    // start = System.currentTimeMillis();
+    // for(int i = 0; i < numIter; i++) {
+    // List<String> result = Sets.SPOP(map, key, -10, 4096);
+    // assertEquals(10, result.size());
+    // assertTrue(list.containsAll(result));
+    // // verify that they were deleted
+    // for (String s: result) {
+    // int res = Sets.SISMEMBER(map, key, s);
+    // assertEquals(0, res);
+    // }
+    // if (i % 100 == 0) {
+    // log.debug("Skipped {}", i);
+    // }
+    // }
+    // end = System.currentTimeMillis();
+    // log.debug(numIter + " random members for "+ N +" cardinality set time="+ (end -
     // start)+"ms");
   }
 
-  private static int scan(
-      BigSortedMap map,
-      String key,
-      String lastSeenMember,
-      int count,
-      int bufferSize,
-      String regex) {
+  private static int scan(BigSortedMap map, String key, String lastSeenMember, int count,
+      int bufferSize, String regex) {
     // TODO bifferSize never used
 
     int total = 0;
@@ -753,5 +735,6 @@ public class SetsAPITest extends CarrotCoreBase {
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+  }
 }

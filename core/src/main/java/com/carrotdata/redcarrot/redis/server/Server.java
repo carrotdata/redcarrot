@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.server;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -31,41 +27,36 @@ public class Server {
 
   private static final Logger log = LogManager.getLogger(Server.class);
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
-  static ThreadLocal<Long> valueArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  static ThreadLocal<Long> valueArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  static ThreadLocal<Integer> valueArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  static ThreadLocal<Integer> valueArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -80,7 +71,6 @@ public class Server {
 
   /**
    * Checks value arena size
-   *
    * @param required size
    */
   static void checkValueArena(int required) {
@@ -92,9 +82,9 @@ public class Server {
     valueArena.set(ptr);
     valueArenaSize.set(required);
   }
+
   /**
    * Build key for String. It uses thread local key arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param fieldPtr field address
@@ -117,7 +107,6 @@ public class Server {
    * amount of microseconds already elapsed in the current second. Basically the interface is very
    * similar to the one of the gettimeofday system call. Return value: Array reply, specifically: A
    * multi bulk reply containing two elements: unix time in seconds. microseconds.
-   *
    * @return current time in milliseconds
    */
   public static long TIME() {
@@ -126,20 +115,20 @@ public class Server {
 
   /**
    * SHUTDOWN [NOSAVE|SAVE]
-   *
-   * <p>Available since 1.0.0. The command behavior is the following:
-   *
-   * <p>Stop all the clients. Perform a blocking SAVE if at least one save point is configured.
-   * Flush the Append Only File if AOF is enabled. Quit the server. If persistence is enabled this
+   * <p>
+   * Available since 1.0.0. The command behavior is the following:
+   * <p>
+   * Stop all the clients. Perform a blocking SAVE if at least one save point is configured. Flush
+   * the Append Only File if AOF is enabled. Quit the server. If persistence is enabled this
    * commands makes sure that Redis is switched off without the lost of any data. This is not
    * guaranteed if the client uses simply SAVE and then QUIT because other clients may alter the DB
    * data between the two commands. Note: A Redis instance that is configured for not persisting on
    * disk (no AOF configured, nor "save" directive) will not dump the RDB file on SHUTDOWN, as
    * usually you don't want Redis instances used only for caching to block on when shutting down.
-   *
-   * <p>SAVE and NOSAVE modifiers
-   *
-   * <p>It is possible to specify an optional modifier to alter the behavior of the command.
+   * <p>
+   * SAVE and NOSAVE modifiers
+   * <p>
+   * It is possible to specify an optional modifier to alter the behavior of the command.
    * Specifically: SHUTDOWN SAVE will force a DB saving operation even if no save points are
    * configured. SHUTDOWN NOSAVE will prevent a DB saving operation even if one or more save points
    * are configured. (You can think of this variant as an hypothetical ABORT command that just stops
@@ -162,12 +151,11 @@ public class Server {
    * appendonly no followed by a SHUTDOWN NOSAVE. T he first command will turn off the AOF if
    * needed, and will terminate the AOF rewriting child if there is one active. The second command
    * will not have any problem to execute since the AOF is no longer enabled.
-   *
-   * <p>Return value:
-   *
-   * <p>Simple string reply on error. On success nothing is returned since the server quits and the
+   * <p>
+   * Return value:
+   * <p>
+   * Simple string reply on error. On success nothing is returned since the server quits and the
    * connection is closed.
-   *
    * @param map sorted map storage
    * @param save save data on exit
    * @return true on success, false - otherwise
@@ -188,7 +176,6 @@ public class Server {
    * child (for instance errors in the fork(2) system call), the SAVE command can be a good last
    * resort to perform the dump of the latest dataset. Please refer to the persistence documentation
    * for detailed information. Return value Simple string reply: The commands returns OK on success.
-   *
    * @param map sorted map storage
    * @return true on success, false -otherwise
    */
@@ -210,7 +197,6 @@ public class Server {
    * documentation for detailed information. Return value Simple string reply: Background saving
    * started if BGSAVE started correctly or Background saving scheduled when used with the SCHEDULE
    * subcommand. History >= 3.2.2: Added the SCHEDULE option.
-   *
    * @param map sorted map storage
    */
   static class SnapshotThread extends Thread {
@@ -229,7 +215,7 @@ public class Server {
     public void run() {
       while (true) {
         waitForWork();
-        /*DEBUG*/
+        /* DEBUG */
         log.debug("[{}] BGSAVE started", Thread.currentThread().getName());
         BigSortedMap map = schedules.get(0);
         map.snapshot();
@@ -264,7 +250,6 @@ public class Server {
 
   /**
    * BGSAVE command
-   *
    * @param map sorted map storage
    * @param schedule schedule if true
    * @return false - error, true - ok
@@ -290,12 +275,12 @@ public class Server {
       }
     }
   }
+
   /**
    * Available since 1.0.0. Return the UNIX TIME of the last DB save executed with success. A client
    * may check if a BGSAVE command succeeded reading the LASTSAVE value, then issuing a BGSAVE
    * command and checking at regular intervals every N seconds if LASTSAVE changed. Return value
    * Integer reply: an UNIX time stamp.
-   *
    * @param map sorted map storage
    * @return UNIX time stamp
    */
@@ -313,10 +298,10 @@ public class Server {
    * asynchronously SYNC: flushes the databases synchronously Note: an asynchronous FLUSHALL command
    * only deletes keys that were present at the time the command was invoked. Keys created during an
    * asynchronous flush will be unaffected.
-   *
-   * <p>Return value: Simple string reply
-   *
-   * <p>History: >= 4.0.0: Added the ASYNC flushing mode modifier. >= 6.2.0: Added the SYNC flushing
+   * <p>
+   * Return value: Simple string reply
+   * <p>
+   * History: >= 4.0.0: Added the ASYNC flushing mode modifier. >= 6.2.0: Added the SYNC flushing
    * mode modifier and the lazyfree-lazy-user-flush configuration directive.
    */
   public static void FLUSHALL(BigSortedMap map) {
@@ -327,11 +312,9 @@ public class Server {
 
   /**
    * COMMAND COUNT
-   *
-   * <p>Available since 2.8.13. Time complexity: O(1) Returns Integer reply of number of total
-   * commands in this Redis server. Return value Integer reply: number of commands returned by
-   * COMMAND
-   *
+   * <p>
+   * Available since 2.8.13. Time complexity: O(1) Returns Integer reply of number of total commands
+   * in this Redis server. Return value Integer reply: number of commands returned by COMMAND
    * @return total number of supported commands
    */
   public static int COMMAND_COUNT() {

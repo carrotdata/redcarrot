@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.compression;
 
 import java.io.File;
@@ -40,35 +36,30 @@ import com.github.luben.zstd.ZstdDictCompress;
 import com.github.luben.zstd.ZstdDictDecompress;
 import com.github.luben.zstd.ZstdDictTrainer;
 
-
-
 /**
- * Not sure if we need this. Codec must be 
- *
+ * Not sure if we need this. Codec must be
  */
 public class ZstdCodec implements Codec {
 
   private static final Logger log = LogManager.getLogger(ZstdCodec.class);
-  
+
   /**
    * Dictionary map dictId -> data
    */
   static ConcurrentHashMap<Integer, byte[]> dictData = new ConcurrentHashMap<Integer, byte[]>();
-  
+
   /**
-   * Compression context objects - Thread Local STorage. 
-   * {dictionaryId -> compression context}
+   * Compression context objects - Thread Local STorage. {dictionaryId -> compression context}
    */
   static ThreadLocal<HashMap<Integer, ZstdCompressCtx>> compContextMap =
       new ThreadLocal<HashMap<Integer, ZstdCompressCtx>>();
-  
+
   /**
-   * Decompression context objects. Thread Local Storage
-   * dictionaryId -> decompression context}
+   * Decompression context objects. Thread Local Storage dictionaryId -> decompression context}
    */
   static ThreadLocal<HashMap<Integer, ZstdDecompressCtx>> decompContextMap =
       new ThreadLocal<HashMap<Integer, ZstdDecompressCtx>>();
-  
+
   /**
    * For testing
    */
@@ -76,20 +67,20 @@ public class ZstdCodec implements Codec {
     dictData.clear();
     HashMap<Integer, ZstdCompressCtx> compContext = compContextMap.get();
     if (compContext != null) {
-      for (ZstdCompressCtx v: compContext.values()) {
-          v.reset();
+      for (ZstdCompressCtx v : compContext.values()) {
+        v.reset();
       }
     }
-    compContextMap.set(new HashMap<Integer,ZstdCompressCtx>());
+    compContextMap.set(new HashMap<Integer, ZstdCompressCtx>());
     HashMap<Integer, ZstdDecompressCtx> decompContext = decompContextMap.get();
     if (decompContext != null) {
-      for (ZstdDecompressCtx v: decompContext.values()) {
-          v.reset();   
+      for (ZstdDecompressCtx v : decompContext.values()) {
+        v.reset();
       }
     }
-    decompContextMap.set(new HashMap<Integer,ZstdDecompressCtx>());
+    decompContextMap.set(new HashMap<Integer, ZstdDecompressCtx>());
   }
-  
+
   /** The min comp size. */
   private int minCompSize = 100;
 
@@ -98,40 +89,40 @@ public class ZstdCodec implements Codec {
 
   /** The total comp size. */
   private AtomicLong totalCompSize = new AtomicLong();
-  
+
   /* Dictionary size in bytes */
   private int dictSize = 1 << 16;
-  
+
   /* Compression level */
-  private int compLevel = 3;
-  
+  private int compLevel = -1;
+
   /* Dictionary enabled */
   private boolean dictionaryEnabled = true;
-  
+
   /* Current dictionary level (maximum) */
   private volatile int currentDictVersion;
-  
+
   /* Training in progress */
   private AtomicBoolean trainingInProgress = new AtomicBoolean(false);
-  
+
   /**
    * Finalizing training
    */
   private AtomicBoolean finalizingTraining = new AtomicBoolean(false);
-  
+
   /* Current size of a training data */
   private AtomicInteger trainingDataSize;
-  
+
   /* List of data pointers for training */
   private ConcurrentLinkedQueue<Long> trainingData;
-  
-  /* Is dictionary training in async mode*/
+
+  /* Is dictionary training in async mode */
   private boolean trainingAsync = true;
-  
+
   private static volatile boolean initDone;
-  
+
   private boolean testMode = false;
-  
+
   public ZstdCodec() {
     try {
       init();
@@ -139,7 +130,7 @@ public class ZstdCodec implements Codec {
       log.error("Failed to initialize ZstdCodec", e);
     }
   }
-  
+
   @Override
   public int compress(ByteBuffer src, ByteBuffer dst) throws IOException {
     int len = src.remaining();
@@ -165,9 +156,10 @@ public class ZstdCodec implements Codec {
     if (isTrainingRequired()) {
       addTrainingData(src, srcSize);
     }
-    ZstdCompressCtx currentCtx = getCompressContext(dictId);    
+    ZstdCompressCtx currentCtx = getCompressContext(dictId);
     int off = Utils.SIZEOF_SHORT;
-    int compressedSize = currentCtx.compressNativeNative(dst + off, dstCapacity - off, src, srcSize);
+    int compressedSize =
+        currentCtx.compressNativeNative(dst + off, dstCapacity - off, src, srcSize);
 
     if (compressedSize + off >= srcSize + Utils.SIZEOF_INT) {
       return compressedSize + off;
@@ -185,7 +177,8 @@ public class ZstdCodec implements Codec {
     src += Utils.SIZEOF_SHORT;
     ZstdDecompressCtx currentCtx = getDecompressContext(dictId);
     try {
-      int decompressedSize = currentCtx.decompressNativeNative(dst, dstCapacity, src, srcSize - Utils.SIZEOF_SHORT);
+      int decompressedSize =
+          currentCtx.decompressNativeNative(dst, dstCapacity, src, srcSize - Utils.SIZEOF_SHORT);
       return decompressedSize;
     } catch (Throwable t) {
       log.error("dictId={} e={}", dictId, t);
@@ -193,7 +186,6 @@ public class ZstdCodec implements Codec {
     }
   }
 
-  
   @Override
   public int getCompressionThreshold() {
     return minCompSize;
@@ -239,19 +231,19 @@ public class ZstdCodec implements Codec {
     if (ctxMap == null) {
       ctxMap = new HashMap<Integer, ZstdCompressCtx>();
       Map<Integer, byte[]> dictMap = dictData;
-        for (Map.Entry<Integer, byte[]> e: dictMap.entrySet()) {
-          ZstdDictCompress dictCompress = new ZstdDictCompress(e.getValue(), this.compLevel);
-          ZstdCompressCtx compContext = new ZstdCompressCtx();
-          compContext.loadDict(dictCompress);
-          compContext.setLevel(this.compLevel);
-          ctxMap.put(e.getKey(), compContext);
-        }
-      
+      for (Map.Entry<Integer, byte[]> e : dictMap.entrySet()) {
+        ZstdDictCompress dictCompress = new ZstdDictCompress(e.getValue(), this.compLevel);
+        ZstdCompressCtx compContext = new ZstdCompressCtx();
+        compContext.loadDict(dictCompress);
+        compContext.setLevel(this.compLevel);
+        ctxMap.put(e.getKey(), compContext);
+      }
+
       compContextMap.set(ctxMap);
       // Initialize dictionary id = 0 (no dictionary)
       initCompContext(0, null);
     }
-  
+
     // Now check the current level
     ZstdCompressCtx currentCtxt = ctxMap.get(dictId);
     if (currentCtxt == null) {
@@ -266,7 +258,7 @@ public class ZstdCodec implements Codec {
     }
     return currentCtxt;
   }
-  
+
   private ZstdDecompressCtx getDecompressContext(int dictId) {
     // compression context using current dictionary id
     HashMap<Integer, ZstdDecompressCtx> ctxMap = decompContextMap.get();
@@ -274,12 +266,12 @@ public class ZstdCodec implements Codec {
     if (ctxMap == null) {
       ctxMap = new HashMap<Integer, ZstdDecompressCtx>();
       Map<Integer, byte[]> dictMap = dictData;
-        for (Map.Entry<Integer, byte[]> e: dictMap.entrySet()) {
-          ZstdDictDecompress dictDecompress = new ZstdDictDecompress(e.getValue());
-          ZstdDecompressCtx decompContext = new ZstdDecompressCtx();
-          decompContext.loadDict(dictDecompress);
-          ctxMap.put(e.getKey(), decompContext);
-        }
+      for (Map.Entry<Integer, byte[]> e : dictMap.entrySet()) {
+        ZstdDictDecompress dictDecompress = new ZstdDictDecompress(e.getValue());
+        ZstdDecompressCtx decompContext = new ZstdDecompressCtx();
+        decompContext.loadDict(dictDecompress);
+        ctxMap.put(e.getKey(), decompContext);
+      }
 
       decompContextMap.set(ctxMap);
       // Initialize dictionary id = 0 (no dictionary)
@@ -301,16 +293,16 @@ public class ZstdCodec implements Codec {
     }
     return currentCtxt;
   }
-  
+
   private synchronized void init() throws IOException {
     if (initDone) return;
     RedisConf config = RedisConf.getInstance();
     this.testMode = config.getTestMode();
     // TODO: config
-//    this.dictSize = config.getCacheCompressionDictionarySize(cacheName);
-//    this.compLevel = config.getCacheCompressionLevel(cacheName);
-//    this.dictionaryEnabled = config.isCacheCompressionDictionaryEnabled(cacheName);
-//    this.trainingAsync = config.isCacheCompressionDictionaryTrainingAsync(cacheName);
+    // this.dictSize = config.getCacheCompressionDictionarySize(cacheName);
+    // this.compLevel = config.getCacheCompressionLevel(cacheName);
+    // this.dictionaryEnabled = config.isCacheCompressionDictionaryEnabled(cacheName);
+    // this.trainingAsync = config.isCacheCompressionDictionaryTrainingAsync(cacheName);
     String dictDir = config.getDataDir(0);
     File dir = new File(dictDir, "dict");
     if (!dir.exists()) {
@@ -324,27 +316,27 @@ public class ZstdCodec implements Codec {
     loadDictionaries(dir);
     initDone = true;
   }
-  
+
   private int getIdFromName(String name) {
     String strId = name.split("\\.")[1];
     int id = Integer.parseInt(strId);
     return id;
   }
-  
+
   private void loadDictionaries(File dir) throws IOException {
     if (testMode) return;
     int maxId = 0;
     File[] list = dir.listFiles();
-    for (File f: list) {
-        byte[] data = Files.readAllBytes(Path.of(f.toURI()));
-        String name = f.getName();
-        int id = getIdFromName(name);
-        if (id > maxId) {
-          maxId = id;
-        }
-        dictData.put(id, data);
+    for (File f : list) {
+      byte[] data = Files.readAllBytes(Path.of(f.toURI()));
+      String name = f.getName();
+      int id = getIdFromName(name);
+      if (id > maxId) {
+        maxId = id;
+      }
+      dictData.put(id, data);
     }
-    this.currentDictVersion = maxId;   
+    this.currentDictVersion = maxId;
   }
 
   private void saveDictionary(int id, byte[] data) throws IOException {
@@ -355,21 +347,21 @@ public class ZstdCodec implements Codec {
     dir.mkdirs();
     String name = makeDictFileName(id);
     File dictFile = new File(dir, name);
-    FileOutputStream fos = new FileOutputStream(dictFile);    
+    FileOutputStream fos = new FileOutputStream(dictFile);
     fos.write(data);
     fos.close();
   }
-  
+
   private String makeDictFileName(int id) {
     return "dict." + id;
   }
-  
+
   private void initCompContext(int id, byte[] dict) {
     ZstdCompressCtx compContext = new ZstdCompressCtx();
     compContext.setLevel(this.compLevel);
     HashMap<Integer, ZstdCompressCtx> ctxMap = compContextMap.get();
     if (ctxMap == null) {
-      ctxMap = new HashMap<Integer, ZstdCompressCtx> ();
+      ctxMap = new HashMap<Integer, ZstdCompressCtx>();
       compContextMap.set(ctxMap);
     }
     if (dict == null) {
@@ -380,12 +372,12 @@ public class ZstdCodec implements Codec {
     }
     ctxMap.put(id, compContext);
   }
-  
+
   private void initDecompContext(int id, byte[] dict) {
     ZstdDecompressCtx decompContext = new ZstdDecompressCtx();
     HashMap<Integer, ZstdDecompressCtx> ctxMap = decompContextMap.get();
     if (ctxMap == null) {
-      ctxMap = new HashMap<Integer, ZstdDecompressCtx> ();
+      ctxMap = new HashMap<Integer, ZstdDecompressCtx>();
       decompContextMap.set(ctxMap);
     }
     if (dict == null) {
@@ -421,12 +413,12 @@ public class ZstdCodec implements Codec {
     if (d > 0.01d) return;
     long $ptr = UnsafeAccess.malloc(size + Utils.SIZEOF_INT);
     UnsafeAccess.copy(ptr, $ptr + Utils.SIZEOF_INT, size);
-    UnsafeAccess.putInt($ptr,  size);
+    UnsafeAccess.putInt($ptr, size);
     this.trainingData.add($ptr);
     this.trainingDataSize.addAndGet(size);
     checkFinishTraining();
   }
-  
+
   public boolean isTrainingRequired() {
     if (!this.dictionaryEnabled) {
       return false;
@@ -441,23 +433,23 @@ public class ZstdCodec implements Codec {
   private int getRecommendedTrainingDataSize() {
     return 100 * this.dictSize;
   }
-  
+
   private void checkFinishTraining() {
     if (this.dictionaryEnabled && this.trainingDataSize.get() >= getRecommendedTrainingDataSize()) {
       finishTraining();
     }
   }
-  
+
   @SuppressWarnings("unused")
   private void finishTraining() {
-    if (! finalizingTraining.compareAndSet(false, true)) {
+    if (!finalizingTraining.compareAndSet(false, true)) {
       return;
     }
 
     Runnable r = () -> {
       byte[] dict;
       ZstdDictTrainer trainer = new ZstdDictTrainer(this.trainingDataSize.get(), this.dictSize);
-      for (Long ptr: this.trainingData) {
+      for (Long ptr : this.trainingData) {
         int size = UnsafeAccess.toInt(ptr);
         byte[] data = new byte[size];
         UnsafeAccess.copy(ptr + Utils.SIZEOF_INT, data, 0, size);
@@ -471,7 +463,7 @@ public class ZstdCodec implements Codec {
       this.currentDictVersion++;
       // Deallocate resources
       this.trainingDataSize.set(0);
-      while(!this.trainingData.isEmpty()) {
+      while (!this.trainingData.isEmpty()) {
         long ptr = this.trainingData.poll();
         UnsafeAccess.free(ptr);
       }

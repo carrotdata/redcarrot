@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.common.nativelib;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,20 +35,19 @@ import java.util.Properties;
  * This class loads a native library xxx (xxx.dll, xxx.so, etc.) according to the user platform
  * (<i>os.name</i> and <i>os.arch</i>). The natively compiled libraries bundled to java jar contain
  * the codes of the original java and JNI programs to access native code.
- *
- * <p>In default, no configuration is required to use native loader.
- *
- * <p>This LibLoader searches for native libraries (xxx.dll, xxx.so, etc.) in the following order:
- *
+ * <p>
+ * In default, no configuration is required to use native loader.
+ * <p>
+ * This LibLoader searches for native libraries (xxx.dll, xxx.so, etc.) in the following order:
  * <ol>
- *   <li>(System property: <i>koda.lib.path</i>)
- *   <li>One of the libraries embedded in XXX-java-(version).jar extracted into (System property:
- *       <i>java.io.tempdir</i> or if <i>koda.tempdir</i> is set, use this folder.)
- *   <li>Folders specified by java.lib.path system property (This is the default path that JVM
- *       searches for native libraries)
+ * <li>(System property: <i>koda.lib.path</i>)
+ * <li>One of the libraries embedded in XXX-java-(version).jar extracted into (System property:
+ * <i>java.io.tempdir</i> or if <i>koda.tempdir</i> is set, use this folder.)
+ * <li>Folders specified by java.lib.path system property (This is the default path that JVM
+ * searches for native libraries)
  * </ol>
- *
- * <p>If you do not want to use folder <i>java.io.tempdir</i>, set the System property
+ * <p>
+ * If you do not want to use folder <i>java.io.tempdir</i>, set the System property
  * <i>koda.tempdir</i>. For example, to use <i>/tmp/koda</i> as a temporary folder to copy native
  * libraries, use -D option of JVM:
  *
@@ -69,8 +64,12 @@ public class LibLoader {
   public static final String KEY_KODA_LIB_PATH = "koda.lib.path";
   public static final String KEY_KODA_TEMPDIR = "koda.tempdir";
   public static final String KEY_KODA_USE_SYSTEMLIB = "koda.use.systemlib";
-  public static final String KEY_KODA_DISABLE_BUNDLED_LIBS =
-      "koda.disable.bundled.libs"; // Depreciated, but preserved for backward compatibility
+  public static final String KEY_KODA_DISABLE_BUNDLED_LIBS = "koda.disable.bundled.libs"; // Depreciated,
+                                                                                          // but
+                                                                                          // preserved
+                                                                                          // for
+                                                                                          // backward
+                                                                                          // compatibility
 
   private static HashSet<String> isLoadedSet = new HashSet<String>();
 
@@ -88,7 +87,7 @@ public class LibLoader {
     if (in == null) throw new IOException(resourcePath + " is not found");
     byte[] buf = new byte[1024];
     ByteArrayOutputStream byteCodeBuf = new ByteArrayOutputStream();
-    for (int readLength; (readLength = in.read(buf)) != -1; ) {
+    for (int readLength; (readLength = in.read(buf)) != -1;) {
       byteCodeBuf.write(buf, 0, readLength);
     }
     in.close();
@@ -118,8 +117,8 @@ public class LibLoader {
    * Load Native library and its JNI native implementation in the root class loader. This process is
    * necessary to avoid the JNI multi-loading issue when the same JNI library is loaded by different
    * class loaders in the same JVM.
-   *
-   * <p>In order to load native code in the root class loader, this method first inject NativeLoader
+   * <p>
+   * In order to load native code in the root class loader, this method first inject NativeLoader
    * class into the root class loader, because {@link System#load(String)} method uses the class
    * loader of the caller class when loading native libraries.
    *
@@ -143,7 +142,6 @@ public class LibLoader {
    * Note that Java's class loader first delegates the class lookup to its parent class loader. So
    * once NativeLoader is loaded by the root class loader, no child class loader initialize
    * NativeLoader again.
-   *
    * @return
    */
   static synchronized Object load(String[] classesToPreload, String nativeLibName) {
@@ -183,18 +181,14 @@ public class LibLoader {
 
       List<byte[]> preloadClassByteCode = new ArrayList<byte[]>(classesToPreload.length);
       for (String each : classesToPreload) {
-        preloadClassByteCode.add(
-            getByteCode(String.format("/%s.class", each.replaceAll("\\.", "/"))));
+        preloadClassByteCode
+            .add(getByteCode(String.format("/%s.class", each.replaceAll("\\.", "/"))));
       }
 
       // Create SnappyNativeLoader class from a byte code
       Class<?> classLoader = Class.forName("java.lang.ClassLoader");
-      Method defineClass =
-          classLoader.getDeclaredMethod(
-              "defineClass",
-              new Class[] {
-                String.class, byte[].class, int.class, int.class, ProtectionDomain.class
-              });
+      Method defineClass = classLoader.getDeclaredMethod("defineClass",
+        new Class[] { String.class, byte[].class, int.class, int.class, ProtectionDomain.class });
 
       ProtectionDomain pd = System.class.getProtectionDomain();
 
@@ -202,8 +196,8 @@ public class LibLoader {
       defineClass.setAccessible(true);
       try {
         // Create a new class using a ClassLoader#defineClass
-        defineClass.invoke(
-            rootClassLoader, nativeLoaderClassName, byteCode, 0, byteCode.length, pd);
+        defineClass.invoke(rootClassLoader, nativeLoaderClassName, byteCode, 0, byteCode.length,
+          pd);
 
         // And also define dependent classes in the root class loader
         for (int i = 0; i < classesToPreload.length; ++i) {
@@ -227,7 +221,6 @@ public class LibLoader {
   /**
    * Load java's native code using load method of the NativeLoader class injected to the root class
    * loader.
-   *
    * @param loaderClass
    * @param libName - library name
    * @throws SecurityException
@@ -238,19 +231,19 @@ public class LibLoader {
    */
   private static void loadNativeLibrary(Class<?> loaderClass, String libName)
       throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-          IllegalAccessException, InvocationTargetException {
-    if (loaderClass == null)
-      throw new KodaError(
-          KodaErrorCode.FAILED_TO_LOAD_NATIVE_LIBRARY, "missing native loader class");
+      IllegalAccessException, InvocationTargetException {
+    if (loaderClass == null) throw new KodaError(KodaErrorCode.FAILED_TO_LOAD_NATIVE_LIBRARY,
+        "missing native loader class");
 
     File nativeLib = findNativeLibrary(libName);
     if (nativeLib != null) {
       // Load extracted or specified java native library.
-      Method loadMethod = loaderClass.getDeclaredMethod("load", new Class[] {String.class});
+      Method loadMethod = loaderClass.getDeclaredMethod("load", new Class[] { String.class });
       loadMethod.invoke(null, nativeLib.getAbsolutePath());
     } else {
       // Load preinstalled lib (in the path -Djava.library.path)
-      Method loadMethod = loaderClass.getDeclaredMethod("loadLibrary", new Class[] {String.class});
+      Method loadMethod =
+          loaderClass.getDeclaredMethod("loadLibrary", new Class[] { String.class });
       loadMethod.invoke(null, libName);
     }
   }
@@ -268,7 +261,6 @@ public class LibLoader {
 
   /**
    * Computes the MD5 value of the input stream
-   *
    * @param input
    * @return
    * @throws IOException
@@ -279,7 +271,8 @@ public class LibLoader {
     try {
       MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
       DigestInputStream digestInputStream = new DigestInputStream(in, digest);
-      for (; digestInputStream.read() >= 0; ) {}
+      for (; digestInputStream.read() >= 0;) {
+      }
 
       ByteArrayOutputStream md5out = new ByteArrayOutputStream();
       md5out.write(digest.digest());
@@ -298,14 +291,13 @@ public class LibLoader {
 
   /**
    * Extract the specified library file to the target folder
-   *
    * @param libFolderForCurrentOS
    * @param libraryFileName
    * @param targetFolder
    * @return
    */
-  private static File extractLibraryFile(
-      String libFolderForCurrentOS, String libraryName, String targetFolder) {
+  private static File extractLibraryFile(String libFolderForCurrentOS, String libraryName,
+      String targetFolder) {
     String libraryFileName = mapLibraryName(libraryName);
     String nativeLibraryFilePath = libFolderForCurrentOS + "/" + libraryFileName;
     final String prefix = "native-" + getVersion(libraryName) + "-";
@@ -325,9 +317,8 @@ public class LibLoader {
           // remove old native library file
           boolean deletionSucceeded = extractedLibFile.delete();
           if (!deletionSucceeded) {
-            throw new IOException(
-                "failed to remove existing native library file: "
-                    + extractedLibFile.getAbsolutePath());
+            throw new IOException("failed to remove existing native library file: "
+                + extractedLibFile.getAbsolutePath());
           }
         }
       }
@@ -348,8 +339,7 @@ public class LibLoader {
       if (!System.getProperty("os.name").contains("Windows")) {
         try {
           Runtime.getRuntime()
-              .exec(new String[] {"chmod", "755", extractedLibFile.getAbsolutePath()})
-              .waitFor();
+              .exec(new String[] { "chmod", "755", extractedLibFile.getAbsolutePath() }).waitFor();
         } catch (Throwable e) {
         }
       }

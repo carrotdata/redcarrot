@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.compression.lz4;
 
 import java.lang.reflect.Field;
@@ -34,22 +30,19 @@ public class Lz4Benchmark {
   static Unsafe unsafe;
 
   static {
-    unsafe =
-        (Unsafe)
-            AccessController.doPrivileged(
-                new PrivilegedAction<Object>() {
-                  @Override
-                  public Object run() {
-                    try {
-                      Field f = Unsafe.class.getDeclaredField("theUnsafe");
-                      f.setAccessible(true);
-                      return f.get(null);
-                    } catch (Throwable e) {
-                      log.error("sun.misc.Unsafe is not accessible: ", e);
-                    }
-                    return null;
-                  }
-                });
+    unsafe = (Unsafe) AccessController.doPrivileged(new PrivilegedAction<Object>() {
+      @Override
+      public Object run() {
+        try {
+          Field f = Unsafe.class.getDeclaredField("theUnsafe");
+          f.setAccessible(true);
+          return f.get(null);
+        } catch (Throwable e) {
+          log.error("sun.misc.Unsafe is not accessible: ", e);
+        }
+        return null;
+      }
+    });
   }
 
   @Test
@@ -68,7 +61,7 @@ public class Lz4Benchmark {
         int size = LZ4.decompressDirectAddress(buf, r, src, blockSize);
       }
       long endTime = System.currentTimeMillis();
-      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / endTime - startTime);
+      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / (endTime - startTime));
     }
     unsafe.freeMemory(address);
     unsafe.freeMemory(buf);
@@ -91,7 +84,7 @@ public class Lz4Benchmark {
         int size = LZ4.decompressDirectAddress(buf, r, src, blockSize);
       }
       long endTime = System.currentTimeMillis();
-      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / endTime - startTime);
+      log.debug("{} block comp/decomp per sec", numBlocks * 1000 / (endTime - startTime));
     }
     unsafe.freeMemory(address);
     unsafe.freeMemory(buf);

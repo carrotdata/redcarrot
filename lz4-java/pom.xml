@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>lz4-java</artifactId>
-    <packaging>jar</packaging>
-    <name>LZ4 Java</name>
-    <url>http://www.server.com</url>
-    <version>${revision}</version>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>lz4-java</artifactId>
+	<packaging>jar</packaging>
+	<name>LZ4 Java</name>
+	<url>http://www.server.com</url>
 
-    <parent>
-        <groupId>com.carrotdata</groupId>
-        <artifactId>redcarrot</artifactId>
-        <version>${revision}</version>
-    </parent>
+	<parent>
+		<groupId>com.carrotdata</groupId>
+		<artifactId>redcarrot</artifactId>
+		<version>${revision}</version>
+	</parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.carrotdata</groupId>
-            <artifactId>common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>com.carrotdata</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.carrotdata</groupId>
-                                    <artifactId>liblz4</artifactId>
-                                    <version>${revision}</version>
-                                    <type>${lib.packaging}</type>
-                                    <overWrite>false</overWrite>
-                                    <destFileName>liblz4.${lib.packaging}</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>
-                                ${project.build.directory}/classes/com/carrotdata/lz4/native/${lib.path.plaftorm.suffix}
-                            </outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.carrotdata</groupId>
+									<artifactId>liblz4</artifactId>
+									<version>${revision}</version>
+									<type>${lib.packaging}</type>
+									<overWrite>false</overWrite>
+									<destFileName>liblz4.${lib.packaging}</destFileName>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>
+								${project.build.directory}/classes/com/carrotdata/lz4/native/${lib.path.plaftorm.suffix}
+							</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

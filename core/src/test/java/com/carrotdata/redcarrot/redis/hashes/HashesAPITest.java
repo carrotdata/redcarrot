@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static org.junit.Assert.assertEquals;
@@ -47,7 +43,8 @@ public class HashesAPITest extends CarrotCoreBase {
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+  }
 
   private List<String> loadData(String key, int n) {
     List<String> list = new ArrayList<>();
@@ -342,7 +339,7 @@ public class HashesAPITest extends CarrotCoreBase {
     assertEquals(0, result.size());
 
     // Check nulls
-    fields = new String[] {list.get(0), "absd", list.get(2), "123", "679"};
+    fields = new String[] { list.get(0), "absd", list.get(2), "123", "679" };
     result = Hashes.HMGET(map, key, fields, bufSize);
 
     assertEquals(fields.length, result.size());
@@ -534,12 +531,7 @@ public class HashesAPITest extends CarrotCoreBase {
     assertEquals(0, total);
   }
 
-  private int scan(
-      String key,
-      String lastSeenMember,
-      int count,
-      int bufferSize,
-      String regex) {
+  private int scan(String key, String lastSeenMember, int count, int bufferSize, String regex) {
     int total = 0;
     List<Pair<String>> result;
     // Check overall functionality - full scan
@@ -560,12 +552,13 @@ public class HashesAPITest extends CarrotCoreBase {
 
     Collections.sort(list);
 
-    List<Pair<String>> result =
-        Hashes.HRANDFIELD(map, key, 100, false, 1105); // Required size is 1104 for 100 elements
+    List<Pair<String>> result = Hashes.HRANDFIELD(map, key, 100, false, 1105); // Required size is
+                                                                               // 1104 for 100
+                                                                               // elements
     assertEquals(100, result.size());
 
-    result =
-        Hashes.HRANDFIELD(map, key, 100, false, 1104); // Required size is 1104 for 100 elements
+    result = Hashes.HRANDFIELD(map, key, 100, false, 1104); // Required size is 1104 for 100
+                                                            // elements
     assertEquals(100, result.size());
 
     result = Hashes.HRANDFIELD(map, key, 100, false, 1103); // Required size is 1093 for 99 elements
@@ -646,7 +639,7 @@ public class HashesAPITest extends CarrotCoreBase {
     }
     end = System.currentTimeMillis();
     log.debug(
-        numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
+      numIter + " random members for " + N + " cardinality set time=" + (end - start) + "ms");
 
     // Now check with values
     start = System.currentTimeMillis();
@@ -684,7 +677,6 @@ public class HashesAPITest extends CarrotCoreBase {
 
   /**
    * Checks if list has all unique members. List must be sorted.
-   *
    * @param list List of unique values
    * @return true/false
    */

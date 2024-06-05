@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.basic;
 
 import java.io.IOException;
@@ -24,42 +20,41 @@ import redis.clients.jedis.Jedis;
 
 /**
  * This example shows how to use Redis Hashes.HINCRBY to keep huge list of atomic counters
- *
- * <p>Test Description:
- *
- * <p>Key format: "counter:number" number = [0:1M]
- *
- * <p>1. Load 1M long and double counters 2. Increment each by random number between 1:1000 3.
+ * <p>
+ * Test Description:
+ * <p>
+ * Key format: "counter:number" number = [0:1M]
+ * <p>
+ * 1. Load 1M long and double counters 2. Increment each by random number between 1:1000 3.
  * Calculate Memory usage
- *
- * <p>Redis
- *
- * <p>In Redis Hashes with ziplist encodings can be used to keep counters TODO: we need to compare
+ * <p>
+ * Redis
+ * <p>
+ * In Redis Hashes with ziplist encodings can be used to keep counters TODO: we need to compare
  * Redis optimized version with our default
- *
- * <p>Hashes:
- *
- * <p>Redis uses hashes to minimize RAM usage
- *
- * <p>key="counter:"+ num;
- *
- * <p>Hash key = Math.max(8, key.length - 3) // we use last 3 chars (digits) as a field name in a
- * hash
- *
- * <p>Redis usage is 8.3 bytes per counter for normal score distribution and 7.3 for skewed
+ * <p>
+ * Hashes:
+ * <p>
+ * Redis uses hashes to minimize RAM usage
+ * <p>
+ * key="counter:"+ num;
+ * <p>
+ * Hash key = Math.max(8, key.length - 3) // we use last 3 chars (digits) as a field name in a hash
+ * <p>
+ * Redis usage is 8.3 bytes per counter for normal score distribution and 7.3 for skewed
  * distribution
- *
- * <p>This is still greater than Carrot with LZ4, LZ4HC compression enabled:
- *
- * <p>Normal distribution:
- *
- * <p>Redis = 8.3 bytes per counter Carrot No compression = 8.8 Carrot LZ4 = 7.2 Carrot LZ4HC = 7.1
- *
- * <p>Skewed distribution:
- *
- * <p>Redis = 7.3 bytes per counter Carrot No compression = 7.7 Carrot LZ4 = 6.5 Carrot LZ4HC = 6.4
- *
- * <p>Overall we still see 20-25% RAM efficiency over Redis with Carrot LZ4/LZ4HC
+ * <p>
+ * This is still greater than Carrot with LZ4, LZ4HC compression enabled:
+ * <p>
+ * Normal distribution:
+ * <p>
+ * Redis = 8.3 bytes per counter Carrot No compression = 8.8 Carrot LZ4 = 7.2 Carrot LZ4HC = 7.1
+ * <p>
+ * Skewed distribution:
+ * <p>
+ * Redis = 7.3 bytes per counter Carrot No compression = 7.7 Carrot LZ4 = 6.5 Carrot LZ4HC = 6.4
+ * <p>
+ * Overall we still see 20-25% RAM efficiency over Redis with Carrot LZ4/LZ4HC
  */
 public class RedisHashesAtomicCounters {
 
@@ -97,11 +92,8 @@ public class RedisHashesAtomicCounters {
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded {} counters into hash, total size={} in {}ms",
-        N,
-        totalDataSize,
-        endTime - startTime);
+    log.debug("Loaded {} counters into hash, total size={} in {}ms", N, totalDataSize,
+      endTime - startTime);
 
     log.debug("Press any button ...");
     System.in.read();

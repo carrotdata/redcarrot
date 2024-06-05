@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -55,7 +51,6 @@ public class StringSet extends Operation {
 
   /**
    * Set keep TimeToLive
-   *
    * @param b value
    */
   public void setKeepTTL(boolean b) {
@@ -64,7 +59,6 @@ public class StringSet extends Operation {
 
   /**
    * set mutation options
-   *
    * @param opts options
    */
   public void setMutationOptions(MutationOptions opts) {
@@ -73,7 +67,6 @@ public class StringSet extends Operation {
 
   /**
    * Set value
-   *
    * @param ptr value address
    * @param size value size
    */

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sparse;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -49,81 +45,72 @@ public class SparseBitmaps {
   /** Bytes per chunk */
   static final int BYTES_PER_CHUNK = CHUNK_SIZE - HEADER_SIZE;
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
-  static ThreadLocal<Key> key =
-      new ThreadLocal<Key>() {
-        @Override
-        protected Key initialValue() {
-          return new Key(0, 0);
-        }
-      };
+  static ThreadLocal<Key> key = new ThreadLocal<Key>() {
+    @Override
+    protected Key initialValue() {
+      return new Key(0, 0);
+    }
+  };
 
   static int BUFFER_CAPACITY = CHUNK_SIZE + 80;
-  static ThreadLocal<Long> buffer =
-      new ThreadLocal<Long>() {
+  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
 
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(BUFFER_CAPACITY);
-        }
-      };
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(BUFFER_CAPACITY);
+    }
+  };
 
   static Codec codec = CodecFactory.getInstance().getCodec(CodecType.LZ4);
 
   /** Thread local updates Sparse Getbit */
-  private static ThreadLocal<SparseGetBit> sparseGetbit =
-      new ThreadLocal<SparseGetBit>() {
-        @Override
-        protected SparseGetBit initialValue() {
-          return new SparseGetBit();
-        }
-      };
+  private static ThreadLocal<SparseGetBit> sparseGetbit = new ThreadLocal<SparseGetBit>() {
+    @Override
+    protected SparseGetBit initialValue() {
+      return new SparseGetBit();
+    }
+  };
 
   /** Thread local updates Sparse SetBit */
-  private static ThreadLocal<SparseSetBit> sparseSetbit =
-      new ThreadLocal<SparseSetBit>() {
-        @Override
-        protected SparseSetBit initialValue() {
-          return new SparseSetBit();
-        }
-      };
+  private static ThreadLocal<SparseSetBit> sparseSetbit = new ThreadLocal<SparseSetBit>() {
+    @Override
+    protected SparseSetBit initialValue() {
+      return new SparseSetBit();
+    }
+  };
 
   /** Thread local updates Sparse Length */
-  private static ThreadLocal<SparseLength> sparseLength =
-      new ThreadLocal<SparseLength>() {
-        @Override
-        protected SparseLength initialValue() {
-          return new SparseLength();
-        }
-      };
+  private static ThreadLocal<SparseLength> sparseLength = new ThreadLocal<SparseLength>() {
+    @Override
+    protected SparseLength initialValue() {
+      return new SparseLength();
+    }
+  };
 
   /** Thread local updates Sparse SetChunk */
-  private static ThreadLocal<SparseSetChunk> sparseSetchunk =
-      new ThreadLocal<SparseSetChunk>() {
-        @Override
-        protected SparseSetChunk initialValue() {
-          return new SparseSetChunk();
-        }
-      };
+  private static ThreadLocal<SparseSetChunk> sparseSetchunk = new ThreadLocal<SparseSetChunk>() {
+    @Override
+    protected SparseSetChunk initialValue() {
+      return new SparseSetChunk();
+    }
+  };
 
   /**
    * Get compression / decompression buffer address
-   *
    * @return address
    */
   public static long getBufferAddress() {
@@ -132,7 +119,6 @@ public class SparseBitmaps {
 
   /**
    * Gets compression codec
-   *
    * @return compression codec
    */
   static Codec getCodec() {
@@ -141,7 +127,6 @@ public class SparseBitmaps {
 
   /**
    * Should we compress chunk? It depends on population count
-   *
    * @param popCount
    * @return true, if yes, false - otherwise
    */
@@ -161,7 +146,6 @@ public class SparseBitmaps {
 
   /**
    * Decompress chunk
-   *
    * @param chunkAddress chunk address
    * @param compressedSize compressed size
    * @return address of decompressed value - TLS buffer address
@@ -171,18 +155,14 @@ public class SparseBitmaps {
       return chunkAddress;
     }
     long ptr = buffer.get();
-    codec.decompress(
-        chunkAddress + HEADER_SIZE,
-        compressedSize,
-        ptr + HEADER_SIZE,
-        BUFFER_CAPACITY - HEADER_SIZE);
+    codec.decompress(chunkAddress + HEADER_SIZE, compressedSize, ptr + HEADER_SIZE,
+      BUFFER_CAPACITY - HEADER_SIZE);
     UnsafeAccess.putShort(ptr, getBitCount(chunkAddress));
     return ptr;
   }
 
   /**
    * Decompress chunk into provided buffer
-   *
    * @param chunkAddress chunk address
    * @param compressedSize compressed size
    * @param buffer buffer to decompress to - buffer size is BUFFER_CAPACITY
@@ -192,32 +172,24 @@ public class SparseBitmaps {
     if (!isCompressed(chunkAddress)) {
       return chunkAddress;
     }
-    codec.decompress(
-        chunkAddress + HEADER_SIZE,
-        compressedSize,
-        buffer + HEADER_SIZE,
-        BUFFER_CAPACITY - HEADER_SIZE);
+    codec.decompress(chunkAddress + HEADER_SIZE, compressedSize, buffer + HEADER_SIZE,
+      BUFFER_CAPACITY - HEADER_SIZE);
     UnsafeAccess.putShort(buffer, getBitCount(chunkAddress));
     return buffer;
   }
 
   /**
    * Compress chunk into provided buffer
-   *
    * @param chunkAddress chunk address
    * @param bitCount bits count
    * @param newChunk is this chunk new
    * @param buffer to compress to address
    * @return compressed chunk size, address is in buffer
    */
-  static int compress(
-      long chunkAddress /*Size is CHUNK_SIZE*/, int bitCount, boolean newChunk, long buf) {
-    int compSize =
-        codec.compress(
-            chunkAddress + HEADER_SIZE,
-            CHUNK_SIZE - HEADER_SIZE,
-            buf + HEADER_SIZE,
-            BUFFER_CAPACITY);
+  static int compress(long chunkAddress /* Size is CHUNK_SIZE */, int bitCount, boolean newChunk,
+      long buf) {
+    int compSize = codec.compress(chunkAddress + HEADER_SIZE, CHUNK_SIZE - HEADER_SIZE,
+      buf + HEADER_SIZE, BUFFER_CAPACITY);
     setBitCount(buf, bitCount, true);
     if (newChunk && chunkAddress != buffer.get()) {
       // deallocate previous address
@@ -231,7 +203,6 @@ public class SparseBitmaps {
 
   /**
    * Compress chunk with possible reallocation
-   *
    * @param chunkAddress chunkAddress
    * @param bitCount bit count
    * @param originPtr original chunk Address
@@ -244,7 +215,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: test Is chunk compressed
-   *
    * @param chunkAddress chunk address
    * @return true, if - yes, false - otherwise
    */
@@ -254,7 +224,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: test Set chunk compressed
-   *
    * @param chunkAddress chunk address
    * @param b true - compressed, false - otherwise
    */
@@ -266,7 +235,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: test Get total bits set in a chunk
-   *
    * @param chunkAddress chunk address
    * @return number of bits set
    */
@@ -276,7 +244,6 @@ public class SparseBitmaps {
 
   /**
    * Sets bit count TODO: test
-   *
    * @param chunkAddress
    * @param compressed
    */
@@ -289,7 +256,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: test Increments bit set count in a chunk
-   *
    * @param chunkAddress chunk address
    * @param incr increment value
    */
@@ -303,7 +269,6 @@ public class SparseBitmaps {
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -318,7 +283,6 @@ public class SparseBitmaps {
 
   /**
    * Build PREFIX key for Sparse. It uses thread local key arena TODO: data type prefix
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param fieldPtr field address
@@ -337,7 +301,6 @@ public class SparseBitmaps {
 
   /**
    * Build full key for a BLOCK for Sparse. It uses thread local key arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param offset offset of a bit
@@ -357,7 +320,6 @@ public class SparseBitmaps {
 
   /**
    * Build full key for Sparse into provided buffer. It uses thread local key arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param offset offset of a bit
@@ -375,7 +337,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: Check this method if keySize is FULL Get chunk offset from a chunk key
-   *
    * @param keyAddress key address
    * @param keySize key size
    */
@@ -387,7 +348,6 @@ public class SparseBitmaps {
 
   /**
    * Gets and initializes Key
-   *
    * @param ptr key address
    * @param size key size
    * @return key instance
@@ -401,7 +361,6 @@ public class SparseBitmaps {
 
   /**
    * TODO: test Checks if key exists
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -425,7 +384,6 @@ public class SparseBitmaps {
 
   /**
    * Delete sparse bitmap by Key
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -461,7 +419,6 @@ public class SparseBitmaps {
    * GETRANGE command start and end can contain negative values in order to index bytes starting
    * from the end of the string, where -1 is the last byte, -2 is the penultimate, and so forth.
    * Non-existent keys are treated as empty strings, so the command will return zero.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -513,12 +470,8 @@ public class SparseBitmaps {
       }
       long total = 0;
       try {
-        scanner =
-            map.getScanner(
-                keyArena.get() /* start key ptr*/,
-                kSize /* start key size*/,
-                endKeyPtr /* end key ptr */,
-                endKeySize /* end key size*/);
+        scanner = map.getScanner(keyArena.get() /* start key ptr */, kSize /* start key size */,
+          endKeyPtr /* end key ptr */, endKeySize /* end key size */);
 
         if (scanner == null) {
           return 0;
@@ -534,8 +487,7 @@ public class SparseBitmaps {
           boolean firstChunk = offsetBytes <= start;
           if (firstChunk || lastChunk) {
             valueAddress =
-                isCompressed(valueAddress)
-                    ? decompress(valueAddress, valueSize - HEADER_SIZE)
+                isCompressed(valueAddress) ? decompress(valueAddress, valueSize - HEADER_SIZE)
                     : valueAddress;
             total += bitCount(valueAddress, offset, start, end);
           } else {
@@ -566,7 +518,6 @@ public class SparseBitmaps {
    * string length, the string is assumed to be a contiguous space with 0 bits. When key does not
    * exist it is assumed to be an empty string, so offset is always out of range and the value is
    * also assumed to be a contiguous space with 0 bits.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key length
@@ -592,7 +543,6 @@ public class SparseBitmaps {
 
   /**
    * Overwrites existing chunk or inserts new one
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -600,8 +550,8 @@ public class SparseBitmaps {
    * @param chunkPtr chunk data address
    * @return true on success, false - otherwise
    */
-  public static boolean setChunk(
-      BigSortedMap map, long keyPtr, int keySize, long offset, long chunkPtr, int chunkLength) {
+  public static boolean setChunk(BigSortedMap map, long keyPtr, int keySize, long offset,
+      long chunkPtr, int chunkLength) {
     int kSize = buildKey(keyPtr, keySize, offset * Utils.BITS_PER_BYTE);
     SparseSetChunk setchunk = sparseSetchunk.get();
     setchunk.reset();
@@ -620,7 +570,6 @@ public class SparseBitmaps {
    * argument is required to be greater than or equal to 0, and smaller than 232 (this limits
    * bitmaps to 512MB). When the string at key is grown, added bits are set to 0. Actually we have
    * higher limit - 2GB per value
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -649,7 +598,6 @@ public class SparseBitmaps {
   /**
    * Returns the length of the string value stored at key. An error is returned when key holds a
    * non-string value.
-   *
    * @param map sorted map
    * @param keyPtr key
    * @param keySize
@@ -685,7 +633,6 @@ public class SparseBitmaps {
    * are used to specify a range. Like for the GETRANGE command start and end can contain negative
    * values in order to index bytes starting from the end of the string, where -1 is the last byte,
    * -2 is the penultimate, and so forth. Non-existent keys are treated as empty strings.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -693,20 +640,20 @@ public class SparseBitmaps {
    * @param start start offset (in bytes) inclusive
    * @param end end position (in bytes) inclusive, if Commons.NULL_LONG - means unspecified
    * @return The command returns the position of the first bit set to 1 or 0 according to the
-   *     request. If we look for set bits (the bit argument is 1) and the string is empty or
-   *     composed of just zero bytes, -1 is returned. If we look for clear bits (the bit argument is
-   *     0) and the string only contains bit set to 1, the function returns the first bit not part
-   *     of the string on the right. So if the string is three bytes set to the value 0xff the
-   *     command BITPOS key 0 will return 24, since up to bit 23 all the bits are 1. Basically, the
-   *     function considers the right of the string as padded with zeros if you look for clear bits
-   *     and specify no range or the start argument only. However, this behavior changes if you are
-   *     looking for clear bits and specify a range with both start and end. If no clear bit is
-   *     found in the specified range, the function returns -1 as the user specified a clear range
-   *     and there are no 0 bits in that range.
+   *         request. If we look for set bits (the bit argument is 1) and the string is empty or
+   *         composed of just zero bytes, -1 is returned. If we look for clear bits (the bit
+   *         argument is 0) and the string only contains bit set to 1, the function returns the
+   *         first bit not part of the string on the right. So if the string is three bytes set to
+   *         the value 0xff the command BITPOS key 0 will return 24, since up to bit 23 all the bits
+   *         are 1. Basically, the function considers the right of the string as padded with zeros
+   *         if you look for clear bits and specify no range or the start argument only. However,
+   *         this behavior changes if you are looking for clear bits and specify a range with both
+   *         start and end. If no clear bit is found in the specified range, the function returns -1
+   *         as the user specified a clear range and there are no 0 bits in that range.
    */
   // TODO: update bitmap length?
-  public static long SBITPOS(
-      BigSortedMap map, long keyPtr, int keySize, int bit, long start, long end) {
+  public static long SBITPOS(BigSortedMap map, long keyPtr, int keySize, int bit, long start,
+      long end) {
     Key kk = getKey(keyPtr, keySize);
     BigSortedMapScanner scanner = null;
     long endKeyPtr = 0;
@@ -785,10 +732,9 @@ public class SparseBitmaps {
             continue;
           }
 
-          valueAddress =
-              isCompressed(valueAddress)
-                  ? SparseBitmaps.decompress(valueAddress, valueSize - HEADER_SIZE)
-                  : valueAddress;
+          valueAddress = isCompressed(valueAddress)
+              ? SparseBitmaps.decompress(valueAddress, valueSize - HEADER_SIZE)
+              : valueAddress;
 
           long pos =
               getPosition(valueAddress, bit, offset /* bits */, start /* bytes */, end /* bytes */);
@@ -806,7 +752,7 @@ public class SparseBitmaps {
           strlen = 0;
         }
         return strlen * Utils.BITS_PER_BYTE;
-      } else if (bit == 0 /*&& EXISTS(map, keyPtr, keySize)*/) {
+      } else if (bit == 0 /* && EXISTS(map, keyPtr, keySize) */) {
         // endSet = true
         return start * Utils.BITS_PER_BYTE;
       } else {
@@ -828,15 +774,14 @@ public class SparseBitmaps {
 
   /**
    * TODO: test it Get bit count in the bit segment given offset, start and end
-   *
    * @param valueAddress address of a bit segment (4096 bytes)
    * @param offset offset of the segment
    * @param start start offset in bytes
    * @param end end offset in bytes
    * @return number of bits in this segment given all above
    */
-  static long bitCount(
-      final long valueAddress, final long offset, final long start, final long end) {
+  static long bitCount(final long valueAddress, final long offset, final long start,
+      final long end) {
 
     if (start * Utils.BITS_PER_BYTE <= offset
         && end * Utils.BITS_PER_BYTE >= offset + SparseBitmaps.BITS_PER_CHUNK) {
@@ -859,7 +804,6 @@ public class SparseBitmaps {
 
   /**
    * Get first position of a bit in a chunk
-   *
    * @param valueAddress memory start address
    * @param bit 1 or 0
    * @param offset offset of this chunk
@@ -897,7 +841,6 @@ public class SparseBitmaps {
    * from the end of the string. So -1 means the last character, -2 the penultimate and so forth.
    * The function handles out of range requests by limiting the resulting range to the actual length
    * of the string.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -906,16 +849,10 @@ public class SparseBitmaps {
    * @param bufferPtr buffer to copy to
    * @param bufferSize buffer size
    * @return size of a range, or -1, if key does not exists, if size > buferSize, the call must be
-   *     repeated with appropriately sized buffer
+   *         repeated with appropriately sized buffer
    */
-  public static long SGETRANGE(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long start,
-      long end,
-      long bufferPtr,
-      int bufferSize) {
+  public static long SGETRANGE(BigSortedMap map, long keyPtr, int keySize, long start, long end,
+      long bufferPtr, int bufferSize) {
     Key kk = getKey(keyPtr, keySize);
     BigSortedMapScanner scanner = null;
     long endKeyPtr = 0;
@@ -985,8 +922,7 @@ public class SparseBitmaps {
           long valueAddress = scanner.valueAddress();
           int valueSize = scanner.valueSize();
           valueAddress =
-              isCompressed(valueAddress)
-                  ? decompress(valueAddress, valueSize - HEADER_SIZE)
+              isCompressed(valueAddress) ? decompress(valueAddress, valueSize - HEADER_SIZE)
                   : valueAddress;
           long keyAddress = scanner.keyAddress();
           int keyLength = scanner.keySize();
@@ -999,8 +935,8 @@ public class SparseBitmaps {
           } else if (bytesOffset < off) {
             // First segment
             toCopy = Math.min(end - off + 1, BYTES_PER_CHUNK - (off - bytesOffset));
-            UnsafeAccess.copy(
-                valueAddress + HEADER_SIZE + off - bytesOffset, bufferPtr + off - start, toCopy);
+            UnsafeAccess.copy(valueAddress + HEADER_SIZE + off - bytesOffset,
+              bufferPtr + off - start, toCopy);
             off += toCopy;
             scanner.next();
             continue;
@@ -1037,7 +973,6 @@ public class SparseBitmaps {
    * at offset. Note that the maximum offset that you can set is 229 -1 (536870911), as Redis
    * Strings are limited to 512 megabytes. If you need to grow beyond this size, you can use
    * multiple keys.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1046,17 +981,16 @@ public class SparseBitmaps {
    * @param valueSize value size
    * @return new size of key's value
    */
-  public static long SSETRANGE(
-      BigSortedMap map, long keyPtr, int keySize, long offset, long valuePtr, int valueSize) {
+  public static long SSETRANGE(BigSortedMap map, long keyPtr, int keySize, long offset,
+      long valuePtr, int valueSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
       KeysLocker.writeLock(kk);
       int prefixSize = (int) (offset - offset / BYTES_PER_CHUNK * BYTES_PER_CHUNK);
       int suffixSize =
-          (int)
-              ((BYTES_PER_CHUNK + ((offset + valueSize) / BYTES_PER_CHUNK) * BYTES_PER_CHUNK)
-                  - (offset + valueSize));
+          (int) ((BYTES_PER_CHUNK + ((offset + valueSize) / BYTES_PER_CHUNK) * BYTES_PER_CHUNK)
+              - (offset + valueSize));
 
       // Process first chunk
       long ptr = buffer.get();
@@ -1067,9 +1001,10 @@ public class SparseBitmaps {
       int toCopy = Math.min((int) valueSize, BYTES_PER_CHUNK - prefixSize);
       UnsafeAccess.copy(valuePtr, ptr + HEADER_SIZE + prefixSize, toCopy);
 
-      long regionStartOffset = offset /** Utils.BITS_PER_BYTE */ / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
-      long regiontEndOffset =
-          (offset + valueSize) /** Utils.BITS_PER_BYTE*/ / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
+      long regionStartOffset = offset /** Utils.BITS_PER_BYTE */
+          / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
+      long regiontEndOffset = (offset + valueSize) /** Utils.BITS_PER_BYTE */
+          / BYTES_PER_CHUNK * BYTES_PER_CHUNK;
 
       if (regionStartOffset == regiontEndOffset) {
         // Inside a single chunk - clear end of a first chunk
@@ -1091,10 +1026,8 @@ public class SparseBitmaps {
         // Set last chunk
         // Clear the end
         UnsafeAccess.setMemory(ptr + CHUNK_SIZE - suffixSize, suffixSize, (byte) 0);
-        UnsafeAccess.copy(
-            valuePtr + valueSize - (BYTES_PER_CHUNK - suffixSize),
-            ptr + HEADER_SIZE,
-            BYTES_PER_CHUNK - suffixSize);
+        UnsafeAccess.copy(valuePtr + valueSize - (BYTES_PER_CHUNK - suffixSize), ptr + HEADER_SIZE,
+          BYTES_PER_CHUNK - suffixSize);
         off = ((offset + valueSize) / BYTES_PER_CHUNK) * BYTES_PER_CHUNK;
         setChunk(map, keyPtr, keySize, off, ptr, BYTES_PER_CHUNK - suffixSize);
       }

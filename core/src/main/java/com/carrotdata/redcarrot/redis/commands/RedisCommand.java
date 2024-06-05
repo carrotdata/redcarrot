@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import java.nio.ByteBuffer;
@@ -22,58 +18,55 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /**
  * Generic interface for Redis command
- *
- * <p>Format:
- *
- * <p>REQUEST:
- *
- * <p>inDataPtr - points to command parameter list
- *
- * <p>[4] - number of parameters including command name
- *
- * <p>Parameter+
- *
- * <p>Parameter: [4] - length [blob - parameter data]
- *
- * <p>First parameter in the list is always command name
- *
- * <p>REPLY: outBufferPtr - command execution result [1] reply type (NULL, INTEGER, DOUBLE, STRING,
+ * <p>
+ * Format:
+ * <p>
+ * REQUEST:
+ * <p>
+ * inDataPtr - points to command parameter list
+ * <p>
+ * [4] - number of parameters including command name
+ * <p>
+ * Parameter+
+ * <p>
+ * Parameter: [4] - length [blob - parameter data]
+ * <p>
+ * First parameter in the list is always command name
+ * <p>
+ * REPLY: outBufferPtr - command execution result [1] reply type (NULL, INTEGER, DOUBLE, STRING,
  * ARRAY, MAP, SET etc)
- *
- * <p>INTEGER: [8] DOUBLE: [8] NULL: [0] STRING: [4] string length [blob] string data
- *
- * <p>ARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [4] -
+ * <p>
+ * INTEGER: [8] DOUBLE: [8] NULL: [0] STRING: [4] string length [blob] string data
+ * <p>
+ * ARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [4] - size
+ * [blob] - element data
+ * <p>
+ * VARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [VINT] -
  * size [blob] - element data
- *
- * <p>VARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [VINT] -
- * size [blob] - element data
- *
- * <p>ZARRAY: TODO check [4] array serialized size [4] number of elements (each element is a pair of
+ * <p>
+ * ZARRAY: TODO check [4] array serialized size [4] number of elements (each element is a pair of
  * SCORE (8 bytes) followed by a field) ELEMENT* ELEMENT: [VINT] - size [blob] - element data
- *
- * <p>ZARRAY1: this type is used to indicate that scores must be removed from a response [4] array
+ * <p>
+ * ZARRAY1: this type is used to indicate that scores must be removed from a response [4] array
  * serialized size [4] number of elements (each element is a pair of SCORE (8 bytes) followed by a
  * field) ELEMENT* ELEMENT: [VINT] - size [blob] - element data
- *
- * <p>TYPED_ARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [1]
- * - type [blob] - element data
- *
- * <p>ERROR: [4] length [blob] error message
+ * <p>
+ * TYPED_ARRAY: TODO check [4] array serialized size [4] number of elements ELEMENT* ELEMENT: [1] -
+ * type [blob] - element data
+ * <p>
+ * ERROR: [4] length [blob] error message
  */
 public interface RedisCommand {
   static enum ReplyType {
-    OK,
-    SIMPLE,
-    INTEGER,
-    DOUBLE,
-    BULK_STRING,
-    ARRAY, /*fixed length field array - strings only*/
-    INT_ARRAY,
-    VARRAY /* variable length field - strings only*/,
-    ZARRAY, /* special handling for ZSCAN results - contains both score + member*/
-    ZARRAY1, /* cut score from result (first 8 bytes)*/
-    MULTI_BULK /* SCAN return*/,
-    MAP, /* not implemented yet */
+    OK, SIMPLE, INTEGER, DOUBLE, BULK_STRING, ARRAY, /* fixed length field array - strings only */
+    INT_ARRAY, VARRAY /* variable length field - strings only */, ZARRAY, /*
+                                                                           * special handling for
+                                                                           * ZSCAN results -
+                                                                           * contains both score +
+                                                                           * member
+                                                                           */
+    ZARRAY1, /* cut score from result (first 8 bytes) */
+    MULTI_BULK /* SCAN return */, MAP, /* not implemented yet */
     SET, /* not implemented yet */
     ERROR
   }
@@ -222,9 +215,8 @@ public interface RedisCommand {
     UnsafeAccess.putByte(ptr, (byte) ReplyType.BULK_STRING.ordinal());
     // skip length of a string
     ptr += Utils.SIZEOF_BYTE;
-    int len =
-        Utils.doubleToStr(
-            value, ptr + Utils.SIZEOF_INT, bufSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
+    int len = Utils.doubleToStr(value, ptr + Utils.SIZEOF_INT,
+      bufSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
     // We do not check len
     UnsafeAccess.putInt(ptr, len);
   }
@@ -262,16 +254,16 @@ public interface RedisCommand {
       ptr += bytes.length;
     }
   }
+
   /**
    * Execute the Redis command
-   *
    * @param map sorted map storaghe
    * @param inBufferPtr input buffer (Redis request)
    * @param outBufferPtr output buffer (Redis command output)
    * @param outBufferSize output buffer size
    */
-  public default void executeCommand(
-      BigSortedMap map, long inBufferPtr, long outBufferPtr, int outBufferSize) {
+  public default void executeCommand(BigSortedMap map, long inBufferPtr, long outBufferPtr,
+      int outBufferSize) {
     // By default reply is OK
     UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.OK.ordinal());
     execute(map, inBufferPtr, outBufferPtr, outBufferSize);
@@ -279,7 +271,6 @@ public interface RedisCommand {
 
   /**
    * Each command MUST implement this method
-   *
    * @param map sorted map storage
    * @param inBufferPtr input buffer (Redis request)
    * @param outBufferPtr output buffer (Redis command output)
@@ -289,7 +280,6 @@ public interface RedisCommand {
 
   /**
    * Reads new expiration time from a request buffer
-   *
    * @param ptr request buffer pointer
    * @param withException if true - throw exception
    * @param persists if true - check PERSISTS flag, otherwise - KEEPTTL
@@ -304,55 +294,52 @@ public interface RedisCommand {
     int size = UnsafeAccess.toInt(ptr);
     ptr += Utils.SIZEOF_INT;
     if (argsRemaining >= 2) {
-      if (size == EX_LENGTH
-          && (Utils.compareTo(EX_FLAG, EX_LENGTH, ptr, size) == 0
-              || Utils.compareTo(EX_FLAG_LOWER, EX_LENGTH, ptr, size) == 0)) {
+      if (size == EX_LENGTH && (Utils.compareTo(EX_FLAG, EX_LENGTH, ptr, size) == 0
+          || Utils.compareTo(EX_FLAG_LOWER, EX_LENGTH, ptr, size) == 0)) {
         // Read seconds
         ptr += size;
         int vSize = UnsafeAccess.toInt(ptr);
         ptr += Utils.SIZEOF_INT;
         long secs = Utils.strToLong(ptr, vSize);
         return System.currentTimeMillis() + secs * 1000;
-      } else if (size == PX_LENGTH
-          && (Utils.compareTo(PX_FLAG, PX_LENGTH, ptr, size) == 0
-              || Utils.compareTo(PX_FLAG_LOWER, PX_LENGTH, ptr, size) == 0)) {
-        // Read milliseconds
-        ptr += size;
-        int vSize = UnsafeAccess.toInt(ptr);
-        ptr += Utils.SIZEOF_INT;
-        long ms = Utils.strToLong(ptr, vSize);
-        return System.currentTimeMillis() + ms;
-      } else if (size == EXAT_LENGTH
-          && (Utils.compareTo(EXAT_FLAG, EXAT_LENGTH, ptr, size) == 0
-              || Utils.compareTo(EXAT_FLAG_LOWER, EXAT_LENGTH, ptr, size) == 0)) {
-        // Read seconds
-        ptr += size;
-        int vSize = UnsafeAccess.toInt(ptr);
-        ptr += Utils.SIZEOF_INT;
-        long secs = Utils.strToLong(ptr, vSize);
-        return secs * 1000;
-      } else if (size == PXAT_LENGTH
-          && (Utils.compareTo(PXAT_FLAG, PXAT_LENGTH, ptr, size) == 0
+      } else if (size == PX_LENGTH && (Utils.compareTo(PX_FLAG, PX_LENGTH, ptr, size) == 0
+          || Utils.compareTo(PX_FLAG_LOWER, PX_LENGTH, ptr, size) == 0)) {
+            // Read milliseconds
+            ptr += size;
+            int vSize = UnsafeAccess.toInt(ptr);
+            ptr += Utils.SIZEOF_INT;
+            long ms = Utils.strToLong(ptr, vSize);
+            return System.currentTimeMillis() + ms;
+          } else
+        if (size == EXAT_LENGTH && (Utils.compareTo(EXAT_FLAG, EXAT_LENGTH, ptr, size) == 0
+            || Utils.compareTo(EXAT_FLAG_LOWER, EXAT_LENGTH, ptr, size) == 0)) {
+              // Read seconds
+              ptr += size;
+              int vSize = UnsafeAccess.toInt(ptr);
+              ptr += Utils.SIZEOF_INT;
+              long secs = Utils.strToLong(ptr, vSize);
+              return secs * 1000;
+            } else
+          if (size == PXAT_LENGTH && (Utils.compareTo(PXAT_FLAG, PXAT_LENGTH, ptr, size) == 0
               || Utils.compareTo(PXAT_FLAG_LOWER, PXAT_LENGTH, ptr, size) == 0)) {
-        // Read seconds
-        ptr += size;
-        int vSize = UnsafeAccess.toInt(ptr);
-        ptr += Utils.SIZEOF_INT;
-        long ms = Utils.strToLong(ptr, vSize);
-        return ms;
-      }
-    } else if (persists
-        && size == PERSISTS_LENGTH
+                // Read seconds
+                ptr += size;
+                int vSize = UnsafeAccess.toInt(ptr);
+                ptr += Utils.SIZEOF_INT;
+                long ms = Utils.strToLong(ptr, vSize);
+                return ms;
+              }
+    } else if (persists && size == PERSISTS_LENGTH
         && (Utils.compareTo(PERSISTS_FLAG, PERSISTS_LENGTH, ptr, size) == 0
             || Utils.compareTo(PERSISTS_FLAG_LOWER, PERSISTS_LENGTH, ptr, size) == 0)) {
-      return 0; // reset expiration
-    } else if (!persists
-        && size == KEEPTTL_LENGTH
-        && (Utils.compareTo(KEEPTTL_FLAG, KEEPTTL_LENGTH, ptr, size) == 0
-            || Utils.compareTo(KEEPTTL_FLAG_LOWER, KEEPTTL_LENGTH, ptr, size) == 0)) {
-      // expire = -1 - means, do not overwrite existing expire - keepTTL
-      return -1;
-    }
+              return 0; // reset expiration
+            } else
+      if (!persists && size == KEEPTTL_LENGTH
+          && (Utils.compareTo(KEEPTTL_FLAG, KEEPTTL_LENGTH, ptr, size) == 0
+              || Utils.compareTo(KEEPTTL_FLAG_LOWER, KEEPTTL_LENGTH, ptr, size) == 0)) {
+                // expire = -1 - means, do not overwrite existing expire - keepTTL
+                return -1;
+              }
     if (withException) {
       throw new IllegalArgumentException(Utils.toString(ptr, size));
     }
@@ -361,7 +348,6 @@ public interface RedisCommand {
 
   /**
    * Default method
-   *
    * @param ptr
    * @param argsRemaining
    * @return
@@ -383,27 +369,29 @@ public interface RedisCommand {
     int retValue = 0;
     ptr += Utils.SIZEOF_INT;
 
-    if (!persists
-        && (Utils.compareTo(KEEPTTL_FLAG, KEEPTTL_LENGTH, ptr, size) == 0
-            || Utils.compareTo(KEEPTTL_FLAG_LOWER, KEEPTTL_LENGTH, ptr, size) == 0)) {
+    if (!persists && (Utils.compareTo(KEEPTTL_FLAG, KEEPTTL_LENGTH, ptr, size) == 0
+        || Utils.compareTo(KEEPTTL_FLAG_LOWER, KEEPTTL_LENGTH, ptr, size) == 0)) {
       retValue = 1;
-    } else if (persists
-        && (Utils.compareTo(PERSISTS_FLAG, PERSISTS_LENGTH, ptr, size) == 0
-            || Utils.compareTo(PERSISTS_FLAG_LOWER, PERSISTS_LENGTH, ptr, size) == 0)) {
-      retValue = 1;
-    } else if (Utils.compareTo(EX_FLAG, EX_LENGTH, ptr, size) == 0
-        || Utils.compareTo(EX_FLAG_LOWER, EX_LENGTH, ptr, size) == 0) {
-      retValue = 2;
-    } else if (Utils.compareTo(PX_FLAG, PX_LENGTH, ptr, size) == 0
-        || Utils.compareTo(PX_FLAG_LOWER, PX_LENGTH, ptr, size) == 0) {
-      retValue = 2;
-    } else if (Utils.compareTo(EXAT_FLAG, EXAT_LENGTH, ptr, size) == 0
-        || Utils.compareTo(EXAT_FLAG_LOWER, EXAT_LENGTH, ptr, size) == 0) {
-      retValue = 2;
-    } else if (Utils.compareTo(PXAT_FLAG, PXAT_LENGTH, ptr, size) == 0
-        || Utils.compareTo(PXAT_FLAG_LOWER, PXAT_LENGTH, ptr, size) == 0) {
-      retValue = 2;
-    }
+    } else if (persists && (Utils.compareTo(PERSISTS_FLAG, PERSISTS_LENGTH, ptr, size) == 0
+        || Utils.compareTo(PERSISTS_FLAG_LOWER, PERSISTS_LENGTH, ptr, size) == 0)) {
+          retValue = 1;
+        } else
+      if (Utils.compareTo(EX_FLAG, EX_LENGTH, ptr, size) == 0
+          || Utils.compareTo(EX_FLAG_LOWER, EX_LENGTH, ptr, size) == 0) {
+            retValue = 2;
+          } else
+        if (Utils.compareTo(PX_FLAG, PX_LENGTH, ptr, size) == 0
+            || Utils.compareTo(PX_FLAG_LOWER, PX_LENGTH, ptr, size) == 0) {
+              retValue = 2;
+            } else
+          if (Utils.compareTo(EXAT_FLAG, EXAT_LENGTH, ptr, size) == 0
+              || Utils.compareTo(EXAT_FLAG_LOWER, EXAT_LENGTH, ptr, size) == 0) {
+                retValue = 2;
+              } else
+            if (Utils.compareTo(PXAT_FLAG, PXAT_LENGTH, ptr, size) == 0
+                || Utils.compareTo(PXAT_FLAG_LOWER, PXAT_LENGTH, ptr, size) == 0) {
+                  retValue = 2;
+                }
 
     return retValue <= argsRemaining ? retValue : 0;
   }
@@ -416,29 +404,27 @@ public interface RedisCommand {
       return 1;
     } else if (Utils.compareTo(XX_FLAG, XX_LENGTH, ptr, size) == 0
         || Utils.compareTo(XX_FLAG_LOWER, XX_LENGTH, ptr, size) == 0) {
-      return 1;
-    }
+          return 1;
+        }
     return 0;
   }
 
   default MutationOptions getMutationOptions(long ptr) throws IllegalArgumentException {
     int size = UnsafeAccess.toInt(ptr);
     ptr += Utils.SIZEOF_INT;
-    if (size == NX_LENGTH
-        && (Utils.compareTo(NX_FLAG, NX_LENGTH, ptr, size) == 0
-            || Utils.compareTo(NX_FLAG_LOWER, NX_LENGTH, ptr, size) == 0)) {
+    if (size == NX_LENGTH && (Utils.compareTo(NX_FLAG, NX_LENGTH, ptr, size) == 0
+        || Utils.compareTo(NX_FLAG_LOWER, NX_LENGTH, ptr, size) == 0)) {
       return MutationOptions.NX;
-    } else if (size == XX_LENGTH
-        && (Utils.compareTo(XX_FLAG, XX_LENGTH, ptr, size) == 0
-            || Utils.compareTo(XX_FLAG_LOWER, XX_LENGTH, ptr, size) == 0)) {
-      return MutationOptions.XX;
-    }
+    } else if (size == XX_LENGTH && (Utils.compareTo(XX_FLAG, XX_LENGTH, ptr, size) == 0
+        || Utils.compareTo(XX_FLAG_LOWER, XX_LENGTH, ptr, size) == 0)) {
+          return MutationOptions.XX;
+        }
 
     return MutationOptions.NONE;
   }
+
   /**
    * Converts single element varray to a bulk string
-   *
    * @param ptr address of an varray
    */
   default void varrayToBulkString(long ptr) {
@@ -456,7 +442,6 @@ public interface RedisCommand {
   /**
    * Does command processor need to convert the result of execution to a Redis response format
    * automatically
-   *
    * @return true, false
    */
   public default boolean autoconvertToRedis() {

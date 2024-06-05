@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.util.ArrayList;
@@ -28,7 +24,7 @@ import com.carrotdata.redcarrot.redis.lists.Lists;
 public class RedcarrotMain {
 
   private static final Logger log = LogManager.getLogger(RedcarrotMain.class);
-  
+
   public static void main(String[] args) {
     if (args.length != 2) {
       usage();
@@ -56,9 +52,8 @@ public class RedcarrotMain {
     log("Shutdown finished.");
   }
 
-
   private static void startServer(String configFile) {
-    
+
     log("Starting Carrot server ...");
 
     loadConfigAndInit(configFile);
@@ -83,11 +78,12 @@ public class RedcarrotMain {
       nodeServer.join();
     }
     // shutdown
-    log.info("[" + Thread.currentThread().getName() + "] " +"Shutdown finished.");
+    log.info("[" + Thread.currentThread().getName() + "] " + "Shutdown finished.");
   }
 
   private static void usage() {
-    log.fatal("Usage: java com.carrotdata.redcarrot.redis.RedcarrotMain config_file_path [start|stop]");
+    log.fatal(
+      "Usage: java com.carrotdata.redcarrot.redis.RedcarrotMain config_file_path [start|stop]");
     System.exit(-1);
   }
 

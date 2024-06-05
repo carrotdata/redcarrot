@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import com.carrotdata.redcarrot.BigSortedMap;
@@ -39,22 +35,15 @@ public class HMGET implements RedisCommand {
     long[] fieldPtrs = Utils.loadPointers(inDataPtr, numArgs - 2);
     int[] fieldSizes = Utils.loadSizes(inDataPtr, numArgs - 2);
 
-    int size =
-        (int)
-            Hashes.HMGET(
-                map,
-                keyPtr,
-                keySize,
-                fieldPtrs,
-                fieldSizes,
-                outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
-                outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
+    int size = (int) Hashes.HMGET(map, keyPtr, keySize, fieldPtrs, fieldSizes,
+      outBufferPtr + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT,
+      outBufferSize - Utils.SIZEOF_BYTE - Utils.SIZEOF_INT);
 
     // Array reply
     UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.ARRAY.ordinal());
     // Array serialized size
-    UnsafeAccess.putInt(
-        outBufferPtr + Utils.SIZEOF_BYTE, size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
+    UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE,
+      size + Utils.SIZEOF_BYTE + Utils.SIZEOF_INT);
     // All data is in the out buffer, including number of elements
   }
 }

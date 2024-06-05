@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import static com.carrotdata.redcarrot.util.Utils.byteBufferToString;
@@ -65,7 +61,7 @@ public abstract class CommandBase {
 
   @Test
   public void testValidRequests() {
-    /*DEBUG*/ log.debug("testValidRequests starts");
+    /* DEBUG */ log.debug("testValidRequests starts");
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
 
@@ -74,13 +70,13 @@ public abstract class CommandBase {
       out.clear();
       String inline = validRequests[i];
       String request = Utils.inlineToRedisRequest(inline);
-      //*DEBUG*/ log.debug("VALID REQUEST {}", request);
-      //*DEBUG*/ log.debug("EXP RESPONSE {}", validResponses[i]);
+      // *DEBUG*/ log.debug("VALID REQUEST {}", request);
+      // *DEBUG*/ log.debug("EXP RESPONSE {}", validResponses[i]);
 
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
-      //*DEBUG*/ log.debug("RESPONSE {}", result);
+      // *DEBUG*/ log.debug("RESPONSE {}", result);
 
       if (validResponses[i].equals(SKIP_VERIFY)) {
         // TODO: we need some verification
@@ -88,7 +84,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequests finishes");
+    /* DEBUG */ log.debug("testValidRequests finishes");
   }
 
   private static boolean serverStarted = false;
@@ -102,7 +98,7 @@ public abstract class CommandBase {
     if (System.getProperty("surefire") != null) return;
     // Start server
     // Connect client
-    /*DEBUG*/ log.debug("testValidRequestsNetworkMode starts");
+    /* DEBUG */ log.debug("testValidRequestsNetworkMode starts");
 
     if (!serverStarted) {
       RedisServer.start();
@@ -141,7 +137,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequestsNetworkMode finishes");
+    /* DEBUG */ log.debug("testValidRequestsNetworkMode finishes");
   }
 
   private String[] addFlushallRequest(String[] requests) {
@@ -160,7 +156,7 @@ public abstract class CommandBase {
 
   @Test
   public void testValidRequestsInline() {
-    /*DEBUG*/ log.debug("testValidRequestsInline starts");
+    /* DEBUG */ log.debug("testValidRequestsInline starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -169,16 +165,13 @@ public abstract class CommandBase {
       out.clear();
       String inline = validRequests[i];
       String request = inline;
-      
-     
-      
+
       strToByteBuffer(request, in);
       CommandProcessor.process(map, in, out);
       String result = byteBufferToString(out);
-      log.info ("INLINE REQUEST: {}", request);
-      log.info ("INLINE RESPONSE: {}", result);
-      log.info ("EXPECTED RESPONSE: {}", validResponses[i]);
-
+      log.info("INLINE REQUEST: {}", request);
+      log.info("INLINE RESPONSE: {}", result);
+      log.info("EXPECTED RESPONSE: {}", validResponses[i]);
 
       if (validResponses[i].equals(SKIP_VERIFY)) {
         log.debug(result);
@@ -186,12 +179,12 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequestsInline finishes");
+    /* DEBUG */ log.debug("testValidRequestsInline finishes");
   }
 
   @Test
   public void testValidRequestsDirectBuffer() {
-    /*DEBUG*/ log.debug("testValidRequestsDirectBuffer starts");
+    /* DEBUG */ log.debug("testValidRequestsDirectBuffer starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -209,12 +202,12 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequestsDirectBuffer finishes");
+    /* DEBUG */ log.debug("testValidRequestsDirectBuffer finishes");
   }
 
   @Test
   public void testValidRequestsInlineDirectBuffer() {
-    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer starts");
+    /* DEBUG */ log.debug("testValidRequestsInlineDirectBuffer starts");
 
     String[] validRequests = getValidRequests();
     String[] validResponses = getValidResponses();
@@ -232,7 +225,7 @@ public abstract class CommandBase {
         assertEquals(validResponses[i], result);
       }
     }
-    /*DEBUG*/ log.debug("testValidRequestsInlineDirectBuffer finishes");
+    /* DEBUG */ log.debug("testValidRequestsInlineDirectBuffer finishes");
   }
   // INVALID REQUESTS
 

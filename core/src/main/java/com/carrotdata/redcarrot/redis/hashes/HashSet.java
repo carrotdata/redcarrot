@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -38,21 +34,19 @@ import com.carrotdata.redcarrot.util.Utils;
  */
 public class HashSet extends Operation {
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   private long fieldValueAddress;
 
@@ -61,9 +55,9 @@ public class HashSet extends Operation {
   private MutationOptions opts;
 
   private int added = 0;
+
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -78,7 +72,6 @@ public class HashSet extends Operation {
 
   /**
    * Build key for Set. It uses thread local key arena TODO: data type prefix
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param elPtr element address
@@ -105,7 +98,6 @@ public class HashSet extends Operation {
 
   /**
    * Get number of added fields
-   *
    * @return number of added fields
    */
   public int getAdded() {
@@ -124,7 +116,6 @@ public class HashSet extends Operation {
 
   /**
    * Sets field's value address
-   *
    * @param address value address
    * @param size value size
    */
@@ -176,10 +167,8 @@ public class HashSet extends Operation {
     // found
     int fieldSizeSize = Utils.sizeUVInt(fieldSize);
     int fieldValueSizeSize = Utils.sizeUVInt(fieldValueSize);
-    int toAdd =
-        !exists
-            ? fieldSizeSize + fieldSize + fieldValueSize + fieldValueSizeSize
-            : fieldValueSize + fieldValueSizeSize - Hashes.getFulValueSize(addr);
+    int toAdd = !exists ? fieldSizeSize + fieldSize + fieldValueSize + fieldValueSizeSize
+        : fieldValueSize + fieldValueSizeSize - Hashes.getFulValueSize(addr);
 
     int newValueSize = valueSize + toAdd;
 
@@ -248,7 +237,6 @@ public class HashSet extends Operation {
 
   /**
    * Insert new K-V with a given field-value pair
-   *
    * @param fieldPtr field address
    * @param fieldSize field size
    */
@@ -273,10 +261,8 @@ public class HashSet extends Operation {
     // Copy field
     UnsafeAccess.copy(fieldPtr, vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize, fieldSize);
     // Copy value
-    UnsafeAccess.copy(
-        fieldValueAddress,
-        vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize + fieldSize,
-        fieldValueSize);
+    UnsafeAccess.copy(fieldValueAddress, vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize + fieldSize,
+      fieldValueSize);
 
     // set number of updates to 1
     this.updatesCount = 1;
@@ -288,7 +274,6 @@ public class HashSet extends Operation {
 
   /**
    * Insert new K-V with a given field-value pair
-   *
    * @param fieldPtr field address
    * @param fieldSize field size
    */
@@ -296,7 +281,7 @@ public class HashSet extends Operation {
     added = 1;
     // Get real keySize
     int kSize = keySize(keyAddress);
-    checkKeyArena(kSize + KEY_SIZE + Utils.SIZEOF_BYTE + 1 /*ZERO*/);
+    checkKeyArena(kSize + KEY_SIZE + Utils.SIZEOF_BYTE + 1 /* ZERO */);
     // Build first key for the new set
     int totalKeySize = buildKey(keyAddress + KEY_SIZE + Utils.SIZEOF_BYTE, kSize, Commons.ZERO, 1);
     long kPtr = keyArena.get();
@@ -312,10 +297,8 @@ public class HashSet extends Operation {
     // Copy field
     UnsafeAccess.copy(fieldPtr, vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize, fieldSize);
     // Copy value
-    UnsafeAccess.copy(
-        fieldValueAddress,
-        vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize + fieldSize,
-        fieldValueSize);
+    UnsafeAccess.copy(fieldValueAddress, vPtr + NUM_ELEM_SIZE + fSizeSize + vSizeSize + fieldSize,
+      fieldValueSize);
 
     // set number of updates to 1
     this.updatesCount = 1;
@@ -324,18 +307,18 @@ public class HashSet extends Operation {
     values[0] = vPtr;
     valueSizes[0] = fieldSize + fSizeSize + fieldValueSize + vSizeSize + NUM_ELEM_SIZE;
   }
+
   /**
    * Insert field-value into value (valueAddress, valueSize) insertion point is addr.
    * Hashes.valueArena is used
-   *
    * @param valueAddress value address
    * @param valueSize current value size
    * @param addr insertion point
    * @param fieldPtr field pointer
    * @param fieldSize field size
    */
-  private void insertFieldValue(
-      long valueAddress, int valueSize, long addr, long fieldPtr, int fieldSize) {
+  private void insertFieldValue(long valueAddress, int valueSize, long addr, long fieldPtr,
+      int fieldSize) {
     // increment number of elements in this value
     boolean update = false;
     int existRecLen = 0;

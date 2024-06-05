@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import com.carrotdata.redcarrot.BigSortedMap;
@@ -35,11 +31,8 @@ public class INFO implements RedisCommand {
     inDataPtr += Utils.SIZEOF_INT;
     if (Utils.compareTo(MEMORY_FLAG, MEMORY_LENGTH, inDataPtr, size) != 0
         && Utils.compareTo(MEMORY_LOWER_CASE_FLAG, MEMORY_LENGTH, inDataPtr, size) != 0) {
-      Errors.write(
-          outBufferPtr,
-          Errors.TYPE_GENERIC,
-          Errors.ERR_UNSUPPORTED_COMMAND,
-          ": INFO " + Utils.toString(inDataPtr, size));
+      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_UNSUPPORTED_COMMAND,
+        ": INFO " + Utils.toString(inDataPtr, size));
       return;
     }
 
@@ -50,45 +43,27 @@ public class INFO implements RedisCommand {
 
     info[2] = "used_memory:" + BigSortedMap.getGlobalAllocatedMemory();
     info[3] = "used_memory_dataset:" + BigSortedMap.getGlobalDataSize();
-    info[4] =
-        "used_memory_dataset_perc:"
-            + Utils.toString(
-                ((double) BigSortedMap.getGlobalDataSize() * 100)
-                    / BigSortedMap.getGlobalAllocatedMemory(),
-                2)
-            + "%";
+    info[4] = "used_memory_dataset_perc:" + Utils.toString(
+      ((double) BigSortedMap.getGlobalDataSize() * 100) / BigSortedMap.getGlobalAllocatedMemory(),
+      2) + "%";
     info[5] = "used_memory_index:" + BigSortedMap.getGlobalIndexSize();
-    info[6] =
-        "used_memory_index_perc:"
-            + Utils.toString(
-                ((double) BigSortedMap.getGlobalIndexSize() * 100)
-                    / BigSortedMap.getGlobalAllocatedMemory(),
-                2)
-            + "%";
+    info[6] = "used_memory_index_perc:" + Utils.toString(
+      ((double) BigSortedMap.getGlobalIndexSize() * 100) / BigSortedMap.getGlobalAllocatedMemory(),
+      2) + "%";
     info[7] = "used_memory_ext:" + BigSortedMap.getGlobalExternalDataSize();
-    info[8] =
-        "used_memory_ext_perc:"
-            + Utils.toString(
-                ((double) BigSortedMap.getGlobalExternalDataSize() * 100)
-                    / BigSortedMap.getGlobalAllocatedMemory(),
-                2)
-            + "%";
+    info[8] = "used_memory_ext_perc:"
+        + Utils.toString(((double) BigSortedMap.getGlobalExternalDataSize() * 100)
+            / BigSortedMap.getGlobalAllocatedMemory(),
+          2)
+        + "%";
 
     info[9] = "used_memory_compressed:" + BigSortedMap.getGlobalCompressedDataSize();
-    info[10] =
-        "mem_fragmentation_ratio:"
-            + Utils.toString(
-                ((double) BigSortedMap.getGlobalAllocatedMemory())
-                    / BigSortedMap.getGlobalDataSize(),
-                2);
-    info[11] =
-        "compression_ratio:"
-            + (BigSortedMap.getGlobalCompressedDataSize() > 0
-                ? Utils.toString(
-                    ((double) BigSortedMap.getGlobalDataSize())
-                        / BigSortedMap.getGlobalAllocatedMemory(),
-                    2)
-                : "0.0");
+    info[10] = "mem_fragmentation_ratio:" + Utils.toString(
+      ((double) BigSortedMap.getGlobalAllocatedMemory()) / BigSortedMap.getGlobalDataSize(), 2);
+    info[11] = "compression_ratio:" + (BigSortedMap.getGlobalCompressedDataSize() > 0
+        ? Utils.toString(
+          ((double) BigSortedMap.getGlobalDataSize()) / BigSortedMap.getGlobalAllocatedMemory(), 2)
+        : "0.0");
     info[12] = "";
     ARRAY_REPLY(outBufferPtr, info);
   }

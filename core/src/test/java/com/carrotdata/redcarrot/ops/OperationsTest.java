@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.ops;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +36,7 @@ public class OperationsTest {
     map = new BigSortedMap(100000000L);
     totalLoaded = 0;
     long start = System.currentTimeMillis();
-    byte[] LONG_ZERO = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
+    byte[] LONG_ZERO = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
     while (true) {
       totalLoaded++;
       byte[] key = ("KEY" + (totalLoaded)).getBytes();
@@ -160,7 +156,7 @@ public class OperationsTest {
     map = new BigSortedMap(1000000000L);
     totalLoaded = 0;
     long start = System.currentTimeMillis();
-    byte[] LONG_ZERO = new byte[] {0, 0, 0, 0, 0, 0, 0, 0};
+    byte[] LONG_ZERO = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
     int count = 0;
     while (count++ < 2000000) {
       totalLoaded++;

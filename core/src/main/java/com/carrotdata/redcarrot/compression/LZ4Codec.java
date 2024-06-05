@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.compression;
 
 import java.io.IOException;
@@ -45,7 +41,8 @@ public class LZ4Codec implements Codec {
     minCompSize = Integer.parseInt(System.getProperty(COMPRESSION_THRESHOLD, "100"));
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#compress(java.nio.ByteBuffer, java.nio.ByteBuffer)
    */
   @Override
@@ -57,7 +54,8 @@ public class LZ4Codec implements Codec {
     return total;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#decompress(java.nio.ByteBuffer, java.nio.ByteBuffer)
    */
   @Override
@@ -77,7 +75,8 @@ public class LZ4Codec implements Codec {
     return LZ4.decompressDirectAddress(src, compressedSize, dst, dstCapacity);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#getCompressionThreshold()
    */
   @Override
@@ -86,7 +85,8 @@ public class LZ4Codec implements Codec {
     return minCompSize;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#getType()
    */
   @Override
@@ -94,7 +94,8 @@ public class LZ4Codec implements Codec {
     return CodecType.LZ4;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#setCompressionThreshold(int)
    */
   @Override
@@ -102,7 +103,8 @@ public class LZ4Codec implements Codec {
     minCompSize = val;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#getAvgCompressionRatio()
    */
   @Override
@@ -114,7 +116,8 @@ public class LZ4Codec implements Codec {
     }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#getLevel()
    */
   @Override
@@ -123,7 +126,8 @@ public class LZ4Codec implements Codec {
     return level;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see com.koda.compression.Codec#setLevel(int)
    */
   @Override

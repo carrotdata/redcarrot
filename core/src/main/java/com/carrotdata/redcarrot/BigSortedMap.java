@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import java.io.File;
@@ -56,7 +52,6 @@ public class BigSortedMap {
 
   /**
    * Is compression enabled
-   *
    * @return true, if - yes, false otherwise
    */
   public static boolean isCompressionEnabled() {
@@ -65,7 +60,6 @@ public class BigSortedMap {
 
   /**
    * Sets compression codec
-   *
    * @param codec compression codec
    */
   public static void setCompressionCodec(Codec codec) {
@@ -74,7 +68,6 @@ public class BigSortedMap {
 
   /**
    * Get compression codec
-   *
    * @return compression codec
    */
   public static Codec getCompressionCodec() {
@@ -82,8 +75,7 @@ public class BigSortedMap {
   }
 
   /*
-   * Thread local storage for index blocks used as a key in a
-   * Map<IndexBlock,IndexBlock> operations
+   * Thread local storage for index blocks used as a key in a Map<IndexBlock,IndexBlock> operations
    */
   private static ThreadLocal<IndexBlock> keyBlock = new ThreadLocal<IndexBlock>();
 
@@ -102,20 +94,19 @@ public class BigSortedMap {
   private static AtomicLong globalBlockDataSize = new AtomicLong(0);
 
   /*
-   * This tracks global data size in data blocks (data can be allocated outside
-   * data blocks)
+   * This tracks global data size in data blocks (data can be allocated outside data blocks)
    */
   private static AtomicLong globalDataInDataBlocksSize = new AtomicLong(0);
 
   /*
-   * This tracks global compressed data size in data blocks (data can be allocated outside
-   * data blocks)
+   * This tracks global compressed data size in data blocks (data can be allocated outside data
+   * blocks)
    */
 
   private static AtomicLong globalCompressedDataInDataBlocksSize = new AtomicLong(0);
 
   /*
-   * This tracks global data size  allocated externally (not in data blocks)
+   * This tracks global data size allocated externally (not in data blocks)
    */
   private static AtomicLong globalExternalDataSize = new AtomicLong(0);
 
@@ -125,13 +116,12 @@ public class BigSortedMap {
   private static AtomicLong globalBlockIndexSize = new AtomicLong(0);
 
   /*
-   * This tracks global data size in index blocks (data can be allocated outside
-   * index blocks)
+   * This tracks global data size in index blocks (data can be allocated outside index blocks)
    */
-  //private static AtomicLong globalDataInIndexBlocksSize = new AtomicLong(0);
+  // private static AtomicLong globalDataInIndexBlocksSize = new AtomicLong(0);
 
   /*
-   * This tracks global index size (total index size >= total data in index blocks  size)
+   * This tracks global index size (total index size >= total data in index blocks size)
    */
   private static AtomicLong globalIndexSize = new AtomicLong(0);
 
@@ -150,49 +140,43 @@ public class BigSortedMap {
   /*
    * We need this buffer to keep keys during execute update
    */
-  static ThreadLocal<Long> keyBuffer1 =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(256);
-        }
-      };
+  static ThreadLocal<Long> keyBuffer1 = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(256);
+    }
+  };
 
-  static ThreadLocal<Integer> keyBufferSize1 =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 256;
-        }
-      };
+  static ThreadLocal<Integer> keyBufferSize1 = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 256;
+    }
+  };
 
-  static ThreadLocal<Long> keyBuffer2 =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(256);
-        }
-      };
+  static ThreadLocal<Long> keyBuffer2 = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(256);
+    }
+  };
 
-  static ThreadLocal<Integer> keyBufferSize2 =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 256;
-        }
-      };
+  static ThreadLocal<Integer> keyBufferSize2 = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 256;
+    }
+  };
 
-  static ThreadLocal<Long> incrBuffer =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(Utils.SIZEOF_LONG);
-        }
-      };
+  static ThreadLocal<Long> incrBuffer = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(Utils.SIZEOF_LONG);
+    }
+  };
 
   /**
    * Set global memory limit
-   *
    * @param limit memory limit
    */
   public static void setGlobalMemoryLimit(long limit) {
@@ -206,7 +190,6 @@ public class BigSortedMap {
 
   /**
    * Checks that key buffer is not less than 'require'
-   *
    * @param key key
    * @param size key size
    * @param required required size
@@ -220,7 +203,6 @@ public class BigSortedMap {
 
   /**
    * TODO: remove this code To support Tx and snapshots
-   *
    * @return earliest active Tx/snapshot sequenceId or -1
    */
   public static long getMostRecentActiveTxSeqId() {
@@ -229,7 +211,6 @@ public class BigSortedMap {
 
   /**
    * TODO: remove this code To support Tx and snapshot based scanners
-   *
    * @return oldest active tx/snapshot id
    */
   public static long getMostOldestActiveTxSeqId() {
@@ -238,7 +219,6 @@ public class BigSortedMap {
 
   /**
    * Gets max block size (data)
-   *
    * @return size
    */
   public static int getMaxBlockSize() {
@@ -247,7 +227,6 @@ public class BigSortedMap {
 
   /**
    * Sets maximum data block size
-   *
    * @param size
    */
   public static void setMaxBlockSize(int size) {
@@ -256,7 +235,6 @@ public class BigSortedMap {
 
   /**
    * Gets maximum index block size
-   *
    * @return size
    */
   public static int getMaxIndexBlockSize() {
@@ -265,7 +243,6 @@ public class BigSortedMap {
 
   /**
    * Get global allocated memory
-   *
    * @return total allocated memory
    */
   public static long getGlobalAllocatedMemory() {
@@ -274,7 +251,6 @@ public class BigSortedMap {
 
   /**
    * Increment global allocated memory
-   *
    * @return global allocated memory after increment
    */
   public static long incrGlobalAllocatedMemory(long incr) {
@@ -284,7 +260,6 @@ public class BigSortedMap {
 
   /**
    * Get global memory allocated for data blocks
-   *
    * @return global memory allocated for data blocks
    */
   public static long getGlobalBlockDataSize() {
@@ -293,7 +268,6 @@ public class BigSortedMap {
 
   /**
    * Increment global block data size - memory allocated for data blocks
-   *
    * @return global block data size after increment
    */
   public static long incrGlobalBlockDataSize(long incr) {
@@ -303,7 +277,6 @@ public class BigSortedMap {
 
   /**
    * Get global memory which data occupies in data blocks
-   *
    * @return memory
    */
   public static long getGlobalDataInDataBlockSize() {
@@ -312,7 +285,6 @@ public class BigSortedMap {
 
   /**
    * Increment global data in data block size
-   *
    * @return global data in data block size after increment
    */
   public static long incrGlobalDataInDataBlockSize(long incr) {
@@ -322,7 +294,6 @@ public class BigSortedMap {
 
   /**
    * Get global memory allocated for index blocks
-   *
    * @return memory
    */
   public static long getGlobalBlockIndexSize() {
@@ -331,7 +302,6 @@ public class BigSortedMap {
 
   /**
    * Increment global memory allocated for index blocks
-   *
    * @param incr increment value
    * @return memory after increment
    */
@@ -344,7 +314,6 @@ public class BigSortedMap {
 
   /**
    * Get global data size (uncompressed)
-   *
    * @return global data size
    */
   public static long getGlobalDataSize() {
@@ -353,7 +322,6 @@ public class BigSortedMap {
 
   /**
    * Get global compressed data size
-   *
    * @return global size of a compressed data
    */
   public static long getGlobalCompressedDataSize() {
@@ -362,7 +330,6 @@ public class BigSortedMap {
 
   /**
    * Increment global compressed data size
-   *
    * @param incr increment value
    * @return global size of a compressed data after an increment
    */
@@ -373,7 +340,6 @@ public class BigSortedMap {
 
   /**
    * Get global external data size
-   *
    * @return global size of a compressed data
    */
   public static long getGlobalExternalDataSize() {
@@ -382,7 +348,6 @@ public class BigSortedMap {
 
   /**
    * Increment global external data size. This is external data + external index data
-   *
    * @param incr increment value
    * @return global size of a compressed data after an increment
    */
@@ -394,7 +359,6 @@ public class BigSortedMap {
   /**
    * Get global index size, which is globalBlockIndexSize + external index allocations (for large
    * keys)
-   *
    * @return global index size
    */
   public static long getGlobalIndexSize() {
@@ -403,7 +367,6 @@ public class BigSortedMap {
 
   /**
    * Increment global index size
-   *
    * @param incr increment value
    * @return global index size after an increment
    */
@@ -414,23 +377,21 @@ public class BigSortedMap {
 
   /**
    * Get global memory which index occupies in index blocks
-   *
    * @return global index size
    */
-//  public static long getGlobalDataInIndexBlocksSize() {
-//    return globalDataInIndexBlocksSize.get();
-//  }
+  // public static long getGlobalDataInIndexBlocksSize() {
+  // return globalDataInIndexBlocksSize.get();
+  // }
 
   /**
    * Increment global memory which index occupies in index blocks
-   *
    * @param incr increment value
    * @return global index size after an increment
    */
-//  public static long incrGlobalDataInIndexBlocksSize(long incr) {
-//    // if (isStatsUpdatesDisabled()) return 0;
-//    return globalDataInIndexBlocksSize.addAndGet(incr);
-//  }
+  // public static long incrGlobalDataInIndexBlocksSize(long incr) {
+  // // if (isStatsUpdatesDisabled()) return 0;
+  // return globalDataInIndexBlocksSize.addAndGet(incr);
+  // }
 
   /** Prints global memory statistics */
   public static void printGlobalMemoryAllocationStats() {
@@ -438,21 +399,19 @@ public class BigSortedMap {
     log.debug("Total memory               :{}", getGlobalAllocatedMemory());
     log.debug("Total data blocks          :{}", getGlobalBlockDataSize());
     log.debug("Total data size            :{}", getGlobalDataSize());
-    log.debug(
-        "Total data block usage     :{}", (double) getGlobalDataSize() / getGlobalBlockDataSize());
+    log.debug("Total data block usage     :{}",
+      (double) getGlobalDataSize() / getGlobalBlockDataSize());
     log.debug("Total block index size     :{}", getGlobalBlockIndexSize());
-    //log.debug("Total data index size      :{}", getGlobalDataInIndexBlocksSize());
+    // log.debug("Total data index size :{}", getGlobalDataInIndexBlocksSize());
     log.debug("Total index size           :{}", getGlobalIndexSize());
     log.debug("Total compressed data size :{}", getGlobalCompressedDataSize());
     log.debug("Total external data size   :{}", getGlobalExternalDataSize());
-    log.debug(
-        "Compression ratio         :{}",
-        (double) getGlobalDataSize() / getGlobalAllocatedMemory());
+    log.debug("Compression ratio         :{}",
+      (double) getGlobalDataSize() / getGlobalAllocatedMemory());
   }
 
   /**
    * Disable/ enable memory statistics updates
-   *
    * @param b
    */
   public static void setStatsUpdatesDisabled(boolean b) {
@@ -471,13 +430,13 @@ public class BigSortedMap {
     globalBlockIndexSize.set(0);
     globalCompressedDataInDataBlocksSize.set(0);
     globalDataInDataBlocksSize.set(0);
-    //globalDataInIndexBlocksSize.set(0);
+    // globalDataInIndexBlocksSize.set(0);
     globalExternalDataSize.set(0);
     globalIndexSize.set(0);
   }
+
   /**
    * Checks if stats updates disabled
-   *
    * @return true if - yes, false - otherwise
    */
   public static boolean isStatsUpdatesDisabled() {
@@ -489,13 +448,11 @@ public class BigSortedMap {
   /**************** INSTANCE SECTION *******************************/
 
   /** Major store data structure */
-//  private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
-//      new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
-  private final TreeMap<IndexBlock, IndexBlock> map =
-      new TreeMap<IndexBlock, IndexBlock>();
+  // private final ConcurrentSkipListMap<IndexBlock, IndexBlock> map =
+  // new ConcurrentSkipListMap<IndexBlock, IndexBlock>();
+  private final TreeMap<IndexBlock, IndexBlock> map = new TreeMap<IndexBlock, IndexBlock>();
   /*
-   * Read-Write Lock TODO: StampedLock (Java 8), decrease # of locks
-   * too high
+   * Read-Write Lock TODO: StampedLock (Java 8), decrease # of locks too high
    */
   ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[11113];
 
@@ -513,14 +470,13 @@ public class BigSortedMap {
   AtomicLong blockDataSize = new AtomicLong(0);
 
   /*
-   * This tracks instance data size in data blocks (data can be allocated outside
-   * data blocks)
+   * This tracks instance data size in data blocks (data can be allocated outside data blocks)
    */
   AtomicLong dataInDataBlocksSize = new AtomicLong(0);
 
   /*
-   * This tracks instance compressed data size in data blocks (data can be allocated outside
-   * data blocks)
+   * This tracks instance compressed data size in data blocks (data can be allocated outside data
+   * blocks)
    */
 
   AtomicLong compressedDataInDataBlocksSize = new AtomicLong(0);
@@ -536,13 +492,12 @@ public class BigSortedMap {
   AtomicLong blockIndexSize = new AtomicLong(0);
 
   /*
-   * This tracks instance data size in index blocks (data can be allocated outside
-   * index blocks)
+   * This tracks instance data size in index blocks (data can be allocated outside index blocks)
    */
-  //AtomicLong dataInIndexBlocksSize = new AtomicLong(0);
+  // AtomicLong dataInIndexBlocksSize = new AtomicLong(0);
 
   /*
-   * This tracks instance index size (total index size >= total data in index blocks  size)
+   * This tracks instance index size (total index size >= total data in index blocks size)
    */
   AtomicLong indexSize = new AtomicLong(0);
 
@@ -557,9 +512,9 @@ public class BigSortedMap {
 
   /** One more */
   private long dataBlockSizeBeforeSnapshot;
+
   /**
    * Legacy constructor of a big sorted map (single instance)
-   *
    * @param maxMemory - memory limit in bytes
    */
   public BigSortedMap(long maxMemory) {
@@ -568,7 +523,6 @@ public class BigSortedMap {
 
   /**
    * Legacy constructor of a big sorted map (single instance)
-   *
    * @param maxMemory - memory limit in bytes
    * @param init - initialize
    */
@@ -579,7 +533,6 @@ public class BigSortedMap {
 
   /**
    * Constructor of a big sorted map (multiple instances)
-   *
    * @param init
    */
   public BigSortedMap(boolean init) {
@@ -602,7 +555,6 @@ public class BigSortedMap {
 
   /**
    * Get index locks
-   *
    * @return index lock array
    */
   ReentrantReadWriteLock[] getIndexLocks() {
@@ -621,7 +573,6 @@ public class BigSortedMap {
 
   /**
    * Returns last snapshot time-stamp
-   *
    * @return last snapshot time-stamp
    */
   public long getLastSnapshotTimestamp() {
@@ -630,7 +581,6 @@ public class BigSortedMap {
 
   /**
    * Sets last snapshot time-stamp
-   *
    * @param timestamp
    */
   public void setLastSnapshotTimestamp(long timestamp) {
@@ -639,7 +589,6 @@ public class BigSortedMap {
 
   /**
    * Get snapshot directory for this store
-   *
    * @return directory
    */
   public String getSnapshotDir() {
@@ -648,7 +597,6 @@ public class BigSortedMap {
 
   /**
    * Set snapshot directory for the store
-   *
    * @param dir snapshot directory path
    */
   public void setSnapshotDir(String dir) {
@@ -661,22 +609,19 @@ public class BigSortedMap {
     log.debug("Total allocated memory     :{}", getInstanceAllocatedMemory());
     log.debug("Total data block size      :{}", getInstanceBlockDataSize());
     log.debug("Total data size            :{}", getInstanceDataSize());
-    log.debug(
-        "Total data block usage     :{}",
-        (double) getInstanceDataSize() / getInstanceBlockDataSize());
+    log.debug("Total data block usage     :{}",
+      (double) getInstanceDataSize() / getInstanceBlockDataSize());
     log.debug("Total block index size     :{}", getInstanceBlockIndexSize());
-    //log.debug("Total data index size      :{}", getInstanceDataInIndexBlocksSize());
+    // log.debug("Total data index size :{}", getInstanceDataInIndexBlocksSize());
     log.debug("Total index size           :{}", getInstanceIndexSize());
     log.debug("Total compressed data size :{}", getInstanceCompressedDataSize());
     log.debug("Total external data size   :{}", getInstanceExternalDataSize());
-    log.debug(
-        "Compression ratio         :{}",
-        (double) getInstanceDataSize() / getInstanceAllocatedMemory());
+    log.debug("Compression ratio         :{}",
+      (double) getInstanceDataSize() / getInstanceAllocatedMemory());
   }
 
   /**
    * Get instance allocated memory
-   *
    * @return instance allocated memory
    */
   public long getInstanceAllocatedMemory() {
@@ -685,7 +630,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance allocated memory
-   *
    * @return allocated memory after increment
    */
   public long incrInstanceAllocatedMemory(long incr) {
@@ -698,7 +642,6 @@ public class BigSortedMap {
 
   /**
    * Get instance memory allocated for data blocks
-   *
    * @return memory allocated for data blocks
    */
   public long getInstanceBlockDataSize() {
@@ -707,7 +650,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance block data size - memory allocated for data blocks
-   *
    * @return block data size after increment
    */
   public long incrInstanceBlockDataSize(long incr) {
@@ -720,7 +662,6 @@ public class BigSortedMap {
 
   /**
    * Get instance memory which data occupies in data blocks
-   *
    * @return memory
    */
   public long getInstanceDataInDataBlockSize() {
@@ -729,7 +670,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance data in data block size
-   *
    * @return data size in data block size after increment
    */
   public long incrInstanceDataInDataBlockSize(long incr) {
@@ -741,7 +681,6 @@ public class BigSortedMap {
 
   /**
    * Get instance memory allocated for index blocks
-   *
    * @return memory
    */
   public long getInstanceBlockIndexSize() {
@@ -750,7 +689,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance memory allocated for index blocks
-   *
    * @param incr increment value
    * @return memory after increment
    */
@@ -764,7 +702,6 @@ public class BigSortedMap {
 
   /**
    * Get instance data size (uncompressed)
-   *
    * @return data size
    */
   public long getInstanceDataSize() {
@@ -773,7 +710,6 @@ public class BigSortedMap {
 
   /**
    * Get instance compressed data size
-   *
    * @return size of a compressed data
    */
   public long getInstanceCompressedDataSize() {
@@ -782,7 +718,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance compressed data size
-   *
    * @param incr increment value
    * @return size of a compressed data after an increment
    */
@@ -796,7 +731,6 @@ public class BigSortedMap {
 
   /**
    * Get instance external data size
-   *
    * @return size of a compressed data
    */
   public long getInstanceExternalDataSize() {
@@ -805,7 +739,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance external data size
-   *
    * @param incr increment value
    * @return size of a external data after an increment
    */
@@ -819,7 +752,6 @@ public class BigSortedMap {
 
   /**
    * Get instance index size
-   *
    * @return global index size
    */
   public long getInstanceIndexSize() {
@@ -828,7 +760,6 @@ public class BigSortedMap {
 
   /**
    * Increment instance index size
-   *
    * @param incr increment value
    * @return index size after an increment
    */
@@ -842,26 +773,24 @@ public class BigSortedMap {
 
   /**
    * Get memory which index occupies in index blocks
-   *
    * @return real index size
    */
-//  public long getInstanceDataInIndexBlocksSize() {
-//    return dataInIndexBlocksSize.get();
-//  }
+  // public long getInstanceDataInIndexBlocksSize() {
+  // return dataInIndexBlocksSize.get();
+  // }
 
   /**
    * Increment instance memory which index occupies in index blocks
-   *
    * @param incr increment value
    * @return index size after an increment
    */
-//  public long incrInstanceDataInIndexBlocksSize(long incr) {
-//    // if (isStatsUpdatesDisabled()) return 0;
-//    // Increment global
-//    incrGlobalDataInIndexBlocksSize(incr);
-//    // Increment instance
-//    return dataInIndexBlocksSize.addAndGet(incr);
-//  }
+  // public long incrInstanceDataInIndexBlocksSize(long incr) {
+  // // if (isStatsUpdatesDisabled()) return 0;
+  // // Increment global
+  // incrGlobalDataInIndexBlocksSize(incr);
+  // // Increment instance
+  // return dataInIndexBlocksSize.addAndGet(incr);
+  // }
 
   private void adjustCountersAfterLoad() {
     long loaded = blockIndexSize.get();
@@ -875,7 +804,6 @@ public class BigSortedMap {
 
   /**
    * For testing ONLY
-   *
    * @return dumps records in a HEX form and returns number of records
    */
   public long dumpRecords() {
@@ -905,7 +833,6 @@ public class BigSortedMap {
 
   /**
    * Counts number of K-V records in a store
-   *
    * @return number of records
    */
   public long countRecords() {
@@ -966,7 +893,6 @@ public class BigSortedMap {
    * Locking support. We have 2 - level locking: Level 1: BSM locks on index block to get correct
    * index block for read / write operations Level 2: Index block internal locking to prevent
    * concurrent access disaster
-   *
    * @param b index block
    */
   public void readLock(IndexBlock b) {
@@ -984,7 +910,6 @@ public class BigSortedMap {
 
   /**
    * Write lock
-   *
    * @throws RetryOperationException
    * @throws InterruptedException
    */
@@ -1013,7 +938,6 @@ public class BigSortedMap {
 
   /**
    * Returns native map
-   *
    * @return map
    */
   public TreeMap<IndexBlock, IndexBlock> getMap() {
@@ -1026,7 +950,6 @@ public class BigSortedMap {
 
   /**
    * Put index block into map
-   *
    * @param b index block
    */
   private void putBlock(IndexBlock b) {
@@ -1043,7 +966,6 @@ public class BigSortedMap {
   /**
    * Execute generic read - modify - write operation in a single update If Update is in place or no
    * updates - set Operation.setReadOnlyOrUpdateInPlace
-   *
    * @param op - update operation
    * @return true if operation succeeds, false otherwise
    */
@@ -1091,8 +1013,7 @@ public class BigSortedMap {
         // When map is empty, recordAddress is always 0
         // This call ONLY decompresses data
         long recordAddress =
-            lowerKey == false
-                ? b.get(op.getKeyAddress(), op.getKeySize(), version, op.isFloorKey())
+            lowerKey == false ? b.get(op.getKeyAddress(), op.getKeySize(), version, op.isFloorKey())
                 : b.lastRecordAddress();
         if (recordAddress < 0 && op.isFloorKey() && lowerKey == false && !firstBlock) {
           lowerKey = true;
@@ -1200,7 +1121,6 @@ public class BigSortedMap {
 
   /**
    * Put key-value (for testing only)
-   *
    * @param key key byte array
    * @param off key offset in a byte array
    * @param len key's length
@@ -1210,8 +1130,8 @@ public class BigSortedMap {
    * @param expire expire
    * @return true - success, false - otherwise (OOM)
    */
-  public boolean put(
-      byte[] key, int off, int len, byte[] value, int valoff, int vallen, long expire) {
+  public boolean put(byte[] key, int off, int len, byte[] value, int valoff, int vallen,
+      long expire) {
     long keyPtr = UnsafeAccess.allocAndCopy(key, off, len);
     long valuePtr = UnsafeAccess.allocAndCopy(value, valoff, vallen);
     int keySize = len;
@@ -1224,7 +1144,6 @@ public class BigSortedMap {
 
   /**
    * Put key-value operation
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param valuePtr value address
@@ -1238,7 +1157,6 @@ public class BigSortedMap {
 
   /**
    * Put key-value operation
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param valuePtr value address
@@ -1247,8 +1165,8 @@ public class BigSortedMap {
    * @param reuseValue reuse value allocation if possible, otherwise free it
    * @return true, if success, false otherwise
    */
-  public boolean put(
-      long keyPtr, int keyLength, long valuePtr, int valueLength, long expire, boolean reuseValue) {
+  public boolean put(long keyPtr, int keyLength, long valuePtr, int valueLength, long expire,
+      boolean reuseValue) {
 
     long version = getSequenceId();
     IndexBlock kvBlock = getThreadLocalBlock();
@@ -1300,16 +1218,15 @@ public class BigSortedMap {
   }
 
   /** To keep list of empty blocks */
-  static ThreadLocal<List<IndexBlock>> emptyBlocks =
-      new ThreadLocal<List<IndexBlock>>() {
-        @Override
-        protected List<IndexBlock> initialValue() {
-          return new ArrayList<IndexBlock>();
-        }
-      };
+  static ThreadLocal<List<IndexBlock>> emptyBlocks = new ThreadLocal<List<IndexBlock>>() {
+    @Override
+    protected List<IndexBlock> initialValue() {
+      return new ArrayList<IndexBlock>();
+    }
+  };
 
-      
-  private List<IndexBlock> lockRange(long startKeyPtr, int startKeyLength, long endKeyPtr, int endKeyLength){
+  private List<IndexBlock> lockRange(long startKeyPtr, int startKeyLength, long endKeyPtr,
+      int endKeyLength) {
     IndexBlock kvBlock = getThreadLocalBlock();
     long version = getSequenceId();
     kvBlock.putForSearch(startKeyPtr, startKeyLength, version);
@@ -1341,18 +1258,17 @@ public class BigSortedMap {
     }
     return blocks;
   }
-  
+
   /**
    * TODO: How to safely delete empty index blocks?
-   *
-   * <p>TODO: TEST delete empty index blocks Delete key range operation
-   *
+   * <p>
+   * TODO: TEST delete empty index blocks Delete key range operation
    * @param startKeyPtr key address
    * @param startKeyLength key length
    * @return number of deleted keys
    */
   public long deleteRange(long startKeyPtr, int startKeyLength, long endKeyPtr, int endKeyLength) {
-    
+
     List<IndexBlock> blocks = lockRange(startKeyPtr, startKeyLength, endKeyPtr, endKeyLength);
     IndexBlock b = null;
     boolean firstBlock = true;
@@ -1383,10 +1299,9 @@ public class BigSortedMap {
     }
     return deleted;
   }
-  
+
   /**
    * Delete key operation
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @return true if success, false otherwise
@@ -1445,14 +1360,13 @@ public class BigSortedMap {
 
   /**
    * Get value by key
-   *
    * @param keyPtr address to look for
    * @param keyLength key length
    * @param valueBuf value buffer address
    * @param valueBufLength value buffer length
    * @param version version
    * @return value length if found, or NOT_FOUND. if value length > valueBufLength no copy will be
-   *     made - one must repeat call with new value buffer
+   *         made - one must repeat call with new value buffer
    */
   public long get(long keyPtr, int keyLength, long valueBuf, int valueBufLength, long version) {
     IndexBlock kvBlock = getThreadLocalBlock();
@@ -1496,7 +1410,6 @@ public class BigSortedMap {
 
   /**
    * Returns the greatest key, which is less or equals to a given key
-   *
    * @param keyPtr key
    * @param keyLength key length
    * @param buf key buffer
@@ -1545,7 +1458,6 @@ public class BigSortedMap {
 
   /**
    * TODO: test TODO: update in place for compressed data Increment value (Long) by key
-   *
    * @param keyPtr address to look for
    * @param keyLength key length
    * @return value after increment.
@@ -1602,13 +1514,12 @@ public class BigSortedMap {
     }
   }
 
-  private static ThreadLocal<Key> key =
-      new ThreadLocal<Key>() {
-        @Override
-        protected Key initialValue() {
-          return new Key(0, 0);
-        }
-      };
+  private static ThreadLocal<Key> key = new ThreadLocal<Key>() {
+    @Override
+    protected Key initialValue() {
+      return new Key(0, 0);
+    }
+  };
 
   private static Key getKey(long ptr, int size) {
     Key k = key.get();
@@ -1617,18 +1528,16 @@ public class BigSortedMap {
     return k;
   }
 
-  private static ThreadLocal<IncrementLong> incrLong =
-      new ThreadLocal<IncrementLong>() {
+  private static ThreadLocal<IncrementLong> incrLong = new ThreadLocal<IncrementLong>() {
 
-        @Override
-        protected IncrementLong initialValue() {
-          return new IncrementLong();
-        }
-      };
+    @Override
+    protected IncrementLong initialValue() {
+      return new IncrementLong();
+    }
+  };
 
   /**
    * Optimized for speed and multi-threading
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param incr increment value
@@ -1656,16 +1565,15 @@ public class BigSortedMap {
     }
   }
 
-  private static ThreadLocal<IncrementInt> incrInt =
-      new ThreadLocal<IncrementInt>() {
-        @Override
-        protected IncrementInt initialValue() {
-          return new IncrementInt();
-        }
-      };
+  private static ThreadLocal<IncrementInt> incrInt = new ThreadLocal<IncrementInt>() {
+    @Override
+    protected IncrementInt initialValue() {
+      return new IncrementInt();
+    }
+  };
+
   /**
    * Optimized for speed and multi-threading
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param incr increment value
@@ -1692,16 +1600,15 @@ public class BigSortedMap {
     }
   }
 
-  private static ThreadLocal<IncrementDouble> incrDouble =
-      new ThreadLocal<IncrementDouble>() {
-        @Override
-        protected IncrementDouble initialValue() {
-          return new IncrementDouble();
-        }
-      };
+  private static ThreadLocal<IncrementDouble> incrDouble = new ThreadLocal<IncrementDouble>() {
+    @Override
+    protected IncrementDouble initialValue() {
+      return new IncrementDouble();
+    }
+  };
+
   /**
    * Optimized for speed and multi-threading
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param incr increment value
@@ -1730,16 +1637,15 @@ public class BigSortedMap {
     }
   }
 
-  private static ThreadLocal<IncrementFloat> incrFloat =
-      new ThreadLocal<IncrementFloat>() {
-        @Override
-        protected IncrementFloat initialValue() {
-          return new IncrementFloat();
-        }
-      };
+  private static ThreadLocal<IncrementFloat> incrFloat = new ThreadLocal<IncrementFloat>() {
+    @Override
+    protected IncrementFloat initialValue() {
+      return new IncrementFloat();
+    }
+  };
+
   /**
    * Optimized for speed and multi-threading
-   *
    * @param keyPtr key address
    * @param keyLength key length
    * @param incr increment value
@@ -1766,9 +1672,9 @@ public class BigSortedMap {
       KeysLocker.writeUnlock(k);
     }
   }
+
   /**
    * TODO: test TODO: update in place for compressed data Increment value (Integer) by key
-   *
    * @param keyPtr address to look for
    * @param keyLength key length
    * @return value after increment.
@@ -1823,7 +1729,6 @@ public class BigSortedMap {
 
   /**
    * TODO: test Increment value (Float) by key
-   *
    * @param keyPtr address to look for
    * @param keyLength key length
    * @return value after increment.
@@ -1881,7 +1786,6 @@ public class BigSortedMap {
 
   /**
    * TODO: test Increment value (Double) by key
-   *
    * @param keyPtr address to look for
    * @param keyLength key length
    * @return value after increment.
@@ -1941,7 +1845,6 @@ public class BigSortedMap {
 
   /**
    * Checks if key exists in a map
-   *
    * @param key key address
    * @param len key length
    * @return true if exists, false - false otherwise
@@ -1952,7 +1855,6 @@ public class BigSortedMap {
 
   /**
    * TODO: this can have race conditions Get first key in a map
-   *
    * @return first key
    * @throws IOException
    */
@@ -1992,20 +1894,19 @@ public class BigSortedMap {
 
   /**
    * Get scanner (single instance per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength start row length
    * @param stopRowPtr stop row address
    * @param stopRowLength stop row length
    * @return scanner
    */
-  public BigSortedMapScanner getScanner(
-      long startRowPtr, int startRowLength, long stopRowPtr, int stopRowLength) {
+  public BigSortedMapScanner getScanner(long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength) {
     long snapshotId = getSequenceId();
     while (true) {
       try {
-        return new BigSortedMapScanner(
-            this, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId);
+        return new BigSortedMapScanner(this, startRowPtr, startRowLength, stopRowPtr, stopRowLength,
+            snapshotId);
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException | IllegalArgumentException e) {
@@ -2017,7 +1918,6 @@ public class BigSortedMap {
 
   /**
    * Get scanner (single instance per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength start row length
    * @param stopRowPtr stop row address
@@ -2025,20 +1925,13 @@ public class BigSortedMap {
    * @param reverse is reverse scanner
    * @return scanner
    */
-  public BigSortedMapScanner getScanner(
-      long startRowPtr, int startRowLength, long stopRowPtr, int stopRowLength, boolean reverse) {
+  public BigSortedMapScanner getScanner(long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength, boolean reverse) {
     long snapshotId = getSequenceId();
     while (true) {
       try {
-        return new BigSortedMapScanner(
-            this,
-            startRowPtr,
-            startRowLength,
-            stopRowPtr,
-            stopRowLength,
-            snapshotId,
-            false,
-            reverse);
+        return new BigSortedMapScanner(this, startRowPtr, startRowLength, stopRowPtr, stopRowLength,
+            snapshotId, false, reverse);
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException | IllegalArgumentException ee) {
@@ -2049,20 +1942,19 @@ public class BigSortedMap {
 
   /**
    * Get safe scanner (multiple instances per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength start row length
    * @param stopRowPtr stop row address
    * @param stopRowLength stop row length
    * @return scanner
    */
-  public BigSortedMapScanner getSafeScanner(
-      long startRowPtr, int startRowLength, long stopRowPtr, int stopRowLength) {
+  public BigSortedMapScanner getSafeScanner(long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength) {
     long snapshotId = getSequenceId();
     while (true) {
       try {
-        return new BigSortedMapScanner(
-            this, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId, true, false);
+        return new BigSortedMapScanner(this, startRowPtr, startRowLength, stopRowPtr, stopRowLength,
+            snapshotId, true, false);
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException | IllegalArgumentException ee) {
@@ -2073,7 +1965,6 @@ public class BigSortedMap {
 
   /**
    * Get safe scanner (multiple instances per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength start row length
    * @param stopRowPtr stop row address
@@ -2081,20 +1972,13 @@ public class BigSortedMap {
    * @param reverse is reverse scanner
    * @return scanner
    */
-  public BigSortedMapScanner getSafeScanner(
-      long startRowPtr, int startRowLength, long stopRowPtr, int stopRowLength, boolean reverse) {
+  public BigSortedMapScanner getSafeScanner(long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength, boolean reverse) {
     long snapshotId = getSequenceId();
     while (true) {
       try {
-        return new BigSortedMapScanner(
-            this,
-            startRowPtr,
-            startRowLength,
-            stopRowPtr,
-            stopRowLength,
-            snapshotId,
-            true,
-            reverse);
+        return new BigSortedMapScanner(this, startRowPtr, startRowLength, stopRowPtr, stopRowLength,
+            snapshotId, true, reverse);
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException | IllegalArgumentException ee) {
@@ -2105,7 +1989,6 @@ public class BigSortedMap {
 
   /**
    * Get prefix scanner (single instance per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength stop row address
    * @return scanner
@@ -2125,14 +2008,13 @@ public class BigSortedMap {
 
   /**
    * Get prefix scanner (single instance per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength stop row address
    * @param reverse is reverse scanner
    * @return scanner
    */
-  public BigSortedMapScanner getPrefixScanner(
-      long startRowPtr, int startRowLength, boolean reverse) {
+  public BigSortedMapScanner getPrefixScanner(long startRowPtr, int startRowLength,
+      boolean reverse) {
     long endRowPtr = Utils.prefixKeyEnd(startRowPtr, startRowLength);
 
     int endRowLength = endRowPtr == 0 ? 0 : startRowLength;
@@ -2150,7 +2032,6 @@ public class BigSortedMap {
 
   /**
    * Get safe prefix scanner (multiple instances per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength stop row address
    * @return scanner
@@ -2167,14 +2048,13 @@ public class BigSortedMap {
 
   /**
    * Get safe prefix scanner (multiple instances per thread)
-   *
    * @param startRowPtr start row address
    * @param startRowLength stop row address
    * @param reverse is reverse scanner
    * @return scanner
    */
-  public BigSortedMapScanner getSafePrefixScanner(
-      long startRowPtr, int startRowLength, boolean reverse) {
+  public BigSortedMapScanner getSafePrefixScanner(long startRowPtr, int startRowLength,
+      boolean reverse) {
     long endRowPtr = Utils.prefixKeyEnd(startRowPtr, startRowLength);
     int endRowLength = startRowLength;
     if (endRowPtr == 0) {
@@ -2184,6 +2064,7 @@ public class BigSortedMap {
 
     return getSafeScanner(startRowPtr, startRowLength, endRowPtr, endRowLength, reverse);
   }
+
   /** Disposes map, deallocate all the memory */
   public void dispose() {
     synchronized (map) {
@@ -2249,9 +2130,7 @@ public class BigSortedMap {
   }
 
   /******************************************************************************************************
-   *
    * Persistence API - data store disk snapshot READ-WRITE
-   *
    */
 
   private static int BUFFER_SIZE = 256 * 1024;
@@ -2281,7 +2160,8 @@ public class BigSortedMap {
       // Save store meta data
       saveStoreMeta(fc);
     } catch (IOException e) {
-      log.error("Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
+      log.error("Snapshot failed. Can not create snapshot file: {}",
+        snapshotFile.getAbsolutePath());
       log.error("StackTrace: ", e);
       return;
     }
@@ -2289,10 +2169,10 @@ public class BigSortedMap {
     log.debug("Snapshot file opened: {}", snapshotFile.getAbsolutePath());
 
     // main loop over all index blocks
-    // We readLock two consecutive index blocks to prevent index block 
+    // We readLock two consecutive index blocks to prevent index block
     // "split-in-the-middle" issue
     IndexBlock prev = null, cur = null;
-    ByteBuffer buf = ByteBuffer.allocateDirect(BUFFER_SIZE); 
+    ByteBuffer buf = ByteBuffer.allocateDirect(BUFFER_SIZE);
     buf.clear();
     while (true) {
       try {
@@ -2308,7 +2188,7 @@ public class BigSortedMap {
           continue;
         }
         // Lock current index block
-        cur.readLock(); 
+        cur.readLock();
         // Unlock previous one
         if (prev != null) {
           prev.readUnlock();
@@ -2321,8 +2201,8 @@ public class BigSortedMap {
       } catch (RetryOperationException e) {
         continue;
       } catch (IOException e) {
-        log.error(
-            "Snapshot failed. Can not create snapshot file: {}", snapshotFile.getAbsolutePath());
+        log.error("Snapshot failed. Can not create snapshot file: {}",
+          snapshotFile.getAbsolutePath());
         log.error("StackTrace: ", e);
         return;
       }
@@ -2355,10 +2235,8 @@ public class BigSortedMap {
     }
     boolean result = snapshotFile.renameTo(oldSnapshotFile);
     if (!result) {
-      log.error(
-          "ERROR! Can not rename new snapshot file: {} to {}",
-              snapshotFile.getAbsolutePath(),
-              oldSnapshotFile.getAbsolutePath());
+      log.error("ERROR! Can not rename new snapshot file: {} to {}", snapshotFile.getAbsolutePath(),
+        oldSnapshotFile.getAbsolutePath());
     } else {
       log.debug("Snapshot file created: {}", oldSnapshotFile.getAbsolutePath());
     }
@@ -2417,10 +2295,8 @@ public class BigSortedMap {
 
     RandomAccessFile raf = null;
     FileChannel fc = null;
-    log.debug(
-        "Started loading store data from: {} at {}",
-        snapshotFile.getAbsolutePath(),
-        LocalDateTime.now());
+    log.debug("Started loading store data from: {} at {}", snapshotFile.getAbsolutePath(),
+      LocalDateTime.now());
 
     try {
       raf = new RandomAccessFile(snapshotFile, "r");
@@ -2428,8 +2304,8 @@ public class BigSortedMap {
       // Save store meta data
       map = loadStoreMeta(fc);
     } catch (IOException e) {
-      log.error(
-          "Loading store failed. Can not open snapshot file: {}", snapshotFile.getAbsolutePath());
+      log.error("Loading store failed. Can not open snapshot file: {}",
+        snapshotFile.getAbsolutePath());
       return null;
     }
 
@@ -2471,8 +2347,8 @@ public class BigSortedMap {
       map.printMemoryAllocationStats();
       return map;
     } catch (IOException e) {
-      log.error(
-          "Loading store failed. Corrupted (?) snapshot file: {}", snapshotFile.getAbsolutePath());
+      log.error("Loading store failed. Corrupted (?) snapshot file: {}",
+        snapshotFile.getAbsolutePath());
       log.error("StackTrace: ", e);
     } finally {
       // Close file

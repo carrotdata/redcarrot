@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import java.io.IOException;
@@ -49,18 +45,16 @@ public final class BigSortedMapScanner extends Scanner {
   private boolean isPrefixScanner = false;
 
   /** Multi - instance SAFE (can be used in multiple instances in context of a one thread) */
-  static ThreadLocal<IndexBlock> tlKey =
-      new ThreadLocal<IndexBlock>() {
-        @Override
-        protected IndexBlock initialValue() {
-          // TODO: is it safe?
-          return new IndexBlock(null, IndexBlock.MAX_BLOCK_SIZE);
-        }
-      };
+  static ThreadLocal<IndexBlock> tlKey = new ThreadLocal<IndexBlock>() {
+    @Override
+    protected IndexBlock initialValue() {
+      // TODO: is it safe?
+      return new IndexBlock(null, IndexBlock.MAX_BLOCK_SIZE);
+    }
+  };
 
   /**
    * Constructor in non safe mode
-   *
    * @param map ordered map
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -69,19 +63,13 @@ public final class BigSortedMapScanner extends Scanner {
    * @param snapshotId snapshot id
    * @throws IOException
    */
-  BigSortedMapScanner(
-      BigSortedMap map,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId)
-      throws IOException {
+  BigSortedMapScanner(BigSortedMap map, long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength, long snapshotId) throws IOException {
     this(map, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId, false, false);
   }
+
   /**
    * Constructor in a safe mode
-   *
    * @param map ordered map
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -92,16 +80,8 @@ public final class BigSortedMapScanner extends Scanner {
    * @param reverse - is reverse scanner
    * @throws IOException
    */
-  BigSortedMapScanner(
-      BigSortedMap map,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId,
-      boolean isMultiSafe,
-      boolean reverse)
-      throws IOException {
+  BigSortedMapScanner(BigSortedMap map, long startRowPtr, int startRowLength, long stopRowPtr,
+      int stopRowLength, long snapshotId, boolean isMultiSafe, boolean reverse) throws IOException {
     checkArgs(startRowPtr, startRowLength, stopRowPtr, stopRowLength);
     this.map = map;
     this.startRowPtr = startRowPtr;
@@ -154,44 +134,26 @@ public final class BigSortedMapScanner extends Scanner {
     }
     while (true) {
       try {
-        currentIndexBlock =
-            key != null
-                ? reverse ? cmap.lowerKey(key) : cmap.floorKey(key)
-                : reverse ? cmap.lastKey() : cmap.firstKey();
+        currentIndexBlock = key != null ? reverse ? cmap.lowerKey(key) : cmap.floorKey(key)
+            : reverse ? cmap.lastKey() : cmap.firstKey();
 
         currentIndexBlock.readLock();
         // TODO: Fix the code
         if (currentIndexBlock.hasRecentUnsafeModification()) {
-          IndexBlock tmp =
-              key != null
-                  ? reverse ? cmap.lowerKey(key) : cmap.floorKey(key)
-                  : reverse ? cmap.lastKey() : cmap.firstKey();
+          IndexBlock tmp = key != null ? reverse ? cmap.lowerKey(key) : cmap.floorKey(key)
+              : reverse ? cmap.lastKey() : cmap.firstKey();
           if (tmp != currentIndexBlock) {
             continue;
           }
         }
 
         if (!isMultiSafe) {
-          indexScanner =
-              IndexBlockScanner.getScanner(
-                  currentIndexBlock,
-                  this.startRowPtr,
-                  this.startRowLength,
-                  this.stopRowPtr,
-                  this.stopRowLength,
-                  snapshotId,
-                  reverse);
+          indexScanner = IndexBlockScanner.getScanner(currentIndexBlock, this.startRowPtr,
+            this.startRowLength, this.stopRowPtr, this.stopRowLength, snapshotId, reverse);
         } else {
           indexScanner =
-              IndexBlockScanner.getScanner(
-                  currentIndexBlock,
-                  this.startRowPtr,
-                  this.startRowLength,
-                  this.stopRowPtr,
-                  this.stopRowLength,
-                  snapshotId,
-                  indexScanner,
-                  reverse);
+              IndexBlockScanner.getScanner(currentIndexBlock, this.startRowPtr, this.startRowLength,
+                this.stopRowPtr, this.stopRowLength, snapshotId, indexScanner, reverse);
         }
         if (indexScanner != null) {
           blockScanner =
@@ -220,7 +182,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get start row pointer
-   *
    * @return start row pointer
    */
   public long getStartRowPtr() {
@@ -229,7 +190,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get start row length
-   *
    * @return start row length
    */
   public long getStartRowLength() {
@@ -238,7 +198,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get stop row pointer
-   *
    * @return stop row pointer
    */
   public long getStopRowPtr() {
@@ -247,7 +206,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get stop row length
-   *
    * @return stop row pointer
    */
   public long getStopRowLength() {
@@ -255,31 +213,31 @@ public final class BigSortedMapScanner extends Scanner {
   }
 
   // TODO : is it safe? TODO: delete
-  //  private void updateNextFirstKey() {
-  //    if (reverse) {
-  //      return;
-  //    }
-  //    if (this.toFree > 0) {
-  //      UnsafeAccess.free(toFree);
-  //    }
-  //    this.toFree = this.nextBlockFirstKey;
-  //    IndexBlock next = map.getMap().higherKey(this.currentIndexBlock);
-  //    if (next != null) {
-  //      byte[] firstKey = next.getFirstKey();
-  //      this.nextBlockFirstKey = UnsafeAccess.allocAndCopy(firstKey, 0, firstKey.length);
-  //      this.nextBlockFirstKeySize = firstKey.length;
-  //    }
-  //    long address = this.currentIndexBlock.lastRecordAddress();
-  //    long ptr = DataBlock.keyAddress(address);
-  //    int size = DataBlock.keyLength(address);
-  //    this.nextBlockFirstKey = UnsafeAccess.allocAndCopy(ptr, size);
-  //    this.nextBlockFirstKeySize = size;
-  //  }
+  // private void updateNextFirstKey() {
+  // if (reverse) {
+  // return;
+  // }
+  // if (this.toFree > 0) {
+  // UnsafeAccess.free(toFree);
+  // }
+  // this.toFree = this.nextBlockFirstKey;
+  // IndexBlock next = map.getMap().higherKey(this.currentIndexBlock);
+  // if (next != null) {
+  // byte[] firstKey = next.getFirstKey();
+  // this.nextBlockFirstKey = UnsafeAccess.allocAndCopy(firstKey, 0, firstKey.length);
+  // this.nextBlockFirstKeySize = firstKey.length;
+  // }
+  // long address = this.currentIndexBlock.lastRecordAddress();
+  // long ptr = DataBlock.keyAddress(address);
+  // int size = DataBlock.keyLength(address);
+  // this.nextBlockFirstKey = UnsafeAccess.allocAndCopy(ptr, size);
+  // this.nextBlockFirstKeySize = size;
+  // }
 
   public boolean hasNext() throws IOException {
-    /*if (reverse) {
-      throw new UnsupportedOperationException("hasNext");
-    }*/
+    /*
+     * if (reverse) { throw new UnsupportedOperationException("hasNext"); }
+     */
     if (blockScanner == null) {
       return false;
     }
@@ -295,9 +253,9 @@ public final class BigSortedMapScanner extends Scanner {
   }
 
   public boolean next() {
-    /*if (reverse) {
-      throw new UnsupportedOperationException("next");
-    } */
+    /*
+     * if (reverse) { throw new UnsupportedOperationException("next"); }
+     */
     if (blockScanner == null) {
       return false;
     }
@@ -306,7 +264,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Scanner can duplicate rows if split happens and skip some rows when merge happens
-   *
    * @return
    * @throws IOException
    */
@@ -347,25 +304,12 @@ public final class BigSortedMapScanner extends Scanner {
             version = tmp.getSeqNumberSplitOrMerge();
             continue;
           }
-           if (!isMultiSafe) {
-            this.indexScanner =
-                IndexBlockScanner.getScanner(
-                    tmp,
-                    0 /*nextBlockFirstKey*/,
-                    /*nextBlockFirstKeySize*/ 0,
-                    stopRowPtr,
-                    stopRowLength,
-                    snapshotId);
+          if (!isMultiSafe) {
+            this.indexScanner = IndexBlockScanner.getScanner(tmp, 0 /* nextBlockFirstKey */,
+              /* nextBlockFirstKeySize */ 0, stopRowPtr, stopRowLength, snapshotId);
           } else {
-            this.indexScanner =
-                IndexBlockScanner.getScanner(
-                    tmp,
-                    0 /*nextBlockFirstKey*/,
-                    /*nextBlockFirstKeySize*/ 0,
-                    stopRowPtr,
-                    stopRowLength,
-                    snapshotId,
-                    indexScanner);
+            this.indexScanner = IndexBlockScanner.getScanner(tmp, 0 /* nextBlockFirstKey */,
+              /* nextBlockFirstKeySize */ 0, stopRowPtr, stopRowLength, snapshotId, indexScanner);
           }
 
           if (this.indexScanner == null) {
@@ -396,7 +340,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * For reverse scanner we move backwards
-   *
    * @return scanner or null
    * @throws IOException
    */
@@ -429,26 +372,11 @@ public final class BigSortedMapScanner extends Scanner {
           }
           // Check startRow and index block
           if (!isMultiSafe) {
-            this.indexScanner =
-                IndexBlockScanner.getScanner(
-                    tmp,
-                    startRowPtr,
-                    startRowLength,
-                    stopRowPtr,
-                    stopRowLength,
-                    snapshotId,
-                    reverse);
+            this.indexScanner = IndexBlockScanner.getScanner(tmp, startRowPtr, startRowLength,
+              stopRowPtr, stopRowLength, snapshotId, reverse);
           } else {
-            this.indexScanner =
-                IndexBlockScanner.getScanner(
-                    tmp,
-                    startRowPtr,
-                    startRowLength,
-                    stopRowPtr,
-                    stopRowLength,
-                    snapshotId,
-                    indexScanner,
-                    reverse);
+            this.indexScanner = IndexBlockScanner.getScanner(tmp, startRowPtr, startRowLength,
+              stopRowPtr, stopRowLength, snapshotId, indexScanner, reverse);
           }
 
           if (this.indexScanner == null) {
@@ -474,15 +402,14 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get current key size. Make sure, that hasNext() returned true
-   *
    * @return current key size (-1 if invalid)
    */
   public int keySize() {
     return blockScanner.keySize();
   }
+
   /**
    * Returns key address
-   *
    * @return key address
    */
   public long keyAddress() {
@@ -499,7 +426,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get current value size. Make sure, that hasNext() returned true
-   *
    * @return value size (-1 if scanner is invalid)
    */
   public int valueSize() {
@@ -508,15 +434,14 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Returns value address
-   *
    * @return value address
    */
   public long valueAddress() {
     return blockScanner.valueAddress();
   }
+
   /**
    * Get key into buffer.
-   *
    * @param buffer buffer where to store
    * @param offset offset in this buffer
    * @return size of a key or -1. Make sure you have enough space in a buffer
@@ -527,7 +452,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get key into buffer
-   *
    * @param addr buffer address
    * @param len available space
    * @return size of a key or -1. Make sure you have enough space in a buffer
@@ -538,7 +462,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get value into buffer
-   *
    * @param buffer
    * @param offset
    * @return size of a value or -1. Make sure you have enough space in a buffer
@@ -549,7 +472,6 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get value into buffer
-   *
    * @param addr
    * @param len available space
    * @return size of a value or -1. Make sure you have enough space in a buffer
@@ -560,11 +482,10 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get current key - value into buffer
-   *
    * @param buffer buffer
    * @param offset offset
    * @return combined size of a key+value or -1. Make sure you have enough space and know sizes of a
-   *     key and value
+   *         key and value
    */
   public int keyValue(byte[] buffer, int offset) {
     return blockScanner.keyValue(buffer, offset);
@@ -572,11 +493,10 @@ public final class BigSortedMapScanner extends Scanner {
 
   /**
    * Get current key-value into buffer
-   *
    * @param addr address
    * @param len available space
    * @return combined size of a key+value or -1. Make sure you have enough space and know sizes of a
-   *     key and value
+   *         key and value
    */
   public int keyValue(long addr, int len) {
     return blockScanner.keyValue(addr, len);
@@ -624,16 +544,15 @@ public final class BigSortedMapScanner extends Scanner {
   /**
    * For reverse scanner, patter hasPrevious() , previous() is expensive. The better approach is to
    * use: do{
-   *
-   * <p>} while(scanner.previous());
-   *
+   * <p>
+   * } while(scanner.previous());
    * @throws IOException
    */
   @Override
   public boolean previous() throws IOException {
-    /* if (!reverse) {
-      throw new UnsupportedOperationException("previous");
-    }*/
+    /*
+     * if (!reverse) { throw new UnsupportedOperationException("previous"); }
+     */
     boolean result = blockScanner.previous();
     if (result) {
       return result;
@@ -649,20 +568,20 @@ public final class BigSortedMapScanner extends Scanner {
 
   @Override
   public boolean hasPrevious() throws IOException {
-    /* if (!reverse) {
-      throw new UnsupportedOperationException("previous");
-    }*/
+    /*
+     * if (!reverse) { throw new UnsupportedOperationException("previous"); }
+     */
 
     boolean result = blockScanner.hasPrevious();
     if (result) {
       return result;
     } else {
       return previousBlockAndScanner();
-      //      result = previousBlockAndScanner();
-      //      if (!result) {
-      //        return false;
-      //      }
+      // result = previousBlockAndScanner();
+      // if (!result) {
+      // return false;
+      // }
     }
-    //    return this.blockScanner.hasPrevious();
+    // return this.blockScanner.hasPrevious();
   }
 }

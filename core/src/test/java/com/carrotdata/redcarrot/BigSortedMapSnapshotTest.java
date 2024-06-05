@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -64,15 +60,15 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
     log.debug("\nTotal memory       ={}", BigSortedMap.getGlobalAllocatedMemory());
     log.debug("Total   data       ={}", BigSortedMap.getGlobalDataSize());
     log.debug("Compressed size    ={}", BigSortedMap.getGlobalCompressedDataSize());
-    log.debug(
-            "Compression  ratio ={}",
-            (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Compression  ratio ={}",
+      (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
     log.debug("");
     assertEquals(totalLoaded, scanned);
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+  }
 
   private long countRecords() throws IOException {
     BigSortedMapScanner scanner = map.getScanner(0, 0, 0, 0);
@@ -104,7 +100,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   /**
    * Verify records with external value allocations
-   *
    * @param n number of records to verify
    */
   private void verifyExtValueRecords(int n) {
@@ -127,7 +122,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   /**
    * Verify records with external key-value allocations
-   *
    * @param n number of records to verify
    */
   private void verifyExtKeyValueRecords(int n) {
@@ -150,7 +144,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   /**
    * Load regular record
-   *
    * @param totalLoaded
    * @return
    */
@@ -169,7 +162,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   /**
    * Load records with external key-value allocations
-   *
    * @param num number of records to load
    */
   private void loadExtKeyValueRecords(int num) {
@@ -193,7 +185,6 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
 
   /**
    * Load records with external value allocations
-   *
    * @param num number of records to load
    */
   private void loadExtValueRecords(int num) {
@@ -265,8 +256,8 @@ public class BigSortedMapSnapshotTest extends CarrotCoreBase {
   public void testSnapshotWithExternalNoCustomAllocations() throws IOException {
 
     int extValueLoaded = Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows are with external value
-    int extKeyValueLoaded =
-        Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows with external key-value
+    int extKeyValueLoaded = Math.max(1, (int) (MAX_ROWS / 100)); // 1% of rows with external
+                                                                 // key-value
     // Load records with external values
     loadExtValueRecords(extValueLoaded);
     // Load records with external key-values

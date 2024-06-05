@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.basic;
 
 import java.io.IOException;
@@ -33,46 +29,43 @@ import com.carrotdata.redcarrot.util.Utils;
  * This example shows how to use Carrot Hashes to store user Address objects This example
  * demonstrate how compression works with a real data set Data set is the random sample of a
  * openaddress.org data set for US-WEST region
- *
- * <p>File: all-clean-sub-shuffle.csv
- *
- * <p>User Address structure:
- *
- * <p>"LON" - Address longitude (skip) "LAT" - Address latitude (skip) "NUMBER" - House number
- * "STREET" - Street "UNIT" - Unit number "CITY" - City "DISTRICT" - Region "REGION" - Region
- * (State)
- *
- * <p>Test description: <br>
+ * <p>
+ * File: all-clean-sub-shuffle.csv
+ * <p>
+ * User Address structure:
+ * <p>
+ * "LON" - Address longitude (skip) "LAT" - Address latitude (skip) "NUMBER" - House number "STREET"
+ * - Street "UNIT" - Unit number "CITY" - City "DISTRICT" - Region "REGION" - Region (State)
+ * <p>
+ * Test description: <br>
  * Address object has up to 6 fields (some of them can be missing) Key is synthetic:
  * "address:user:number" <- format of a key
- *
- * <p>Average key + address object size is 86 bytes. We load 413689 user address objects
- *
- * <p>Results: 
- * 0. Average user address data size = 86 bytes 
- * 1. No compression. Used RAM per address object is 124 bytes (COMPRESSION= 0.7) 
- * 2. LZ4 compression. Used RAM per address object is 66 bytes (COMPRESSION = 1.3) 
- * 3. LZ4HC compression. Used RAM per address object is 63.6 bytes (COMPRESSION = 1.35)
- * 4. ZSTD compression. Used RAM per object is 40 bytes. (COMPRESSION = 2.15)
- * <p>Redis using Hashes with ziplist encodings (most efficient) is 192 (exact)
- *
- * <p>RAM usage (Redis-to-Carrot)
- *
  * <p>
- * 1) No compression 192/124 = 1.5x 
- * 2) LZ4 compression 192/66 = 2.9x 
- * 4) ZSTD compression 192/40 = 4.8x
- *
- * <p>Effect of a compression:
- *
- * <p>LZ4 - 1.3/0.7 = 1.86x (to no compression) LZ4HC - 1.35/0.7 = 1.93x (to no compression), ZSTD 2.15/ 0.7 = 3.0
+ * Average key + address object size is 86 bytes. We load 413689 user address objects
+ * <p>
+ * Results: 0. Average user address data size = 86 bytes 1. No compression. Used RAM per address
+ * object is 124 bytes (COMPRESSION= 0.7) 2. LZ4 compression. Used RAM per address object is 66
+ * bytes (COMPRESSION = 1.3) 3. LZ4HC compression. Used RAM per address object is 63.6 bytes
+ * (COMPRESSION = 1.35) 4. ZSTD compression. Used RAM per object is 40 bytes. (COMPRESSION = 2.15)
+ * <p>
+ * Redis using Hashes with ziplist encodings (most efficient) is 192 (exact)
+ * <p>
+ * RAM usage (Redis-to-Carrot)
+ * <p>
+ * 1) No compression 192/124 = 1.5x 2) LZ4 compression 192/66 = 2.9x 4) ZSTD compression 192/40 =
+ * 4.8x
+ * <p>
+ * Effect of a compression:
+ * <p>
+ * LZ4 - 1.3/0.7 = 1.86x (to no compression) LZ4HC - 1.35/0.7 = 1.93x (to no compression), ZSTD
+ * 2.15/ 0.7 = 3.0
  */
 public class HashesAddresses {
 
   private static final Logger log = LogManager.getLogger(HashesAddresses.class);
 
   static {
-    //UnsafeAccess.setMallocDebugEnabled(true);
+    // UnsafeAccess.setMallocDebugEnabled(true);
   }
 
   static long keyBuf = UnsafeAccess.malloc(64);
@@ -95,7 +88,7 @@ public class HashesAddresses {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     runTest();
     log.debug("RUN compression = ZSTD");
-    
+
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     runTest();
   }
@@ -110,7 +103,7 @@ public class HashesAddresses {
     int count = 0;
     int n = 1;
     for (int i = 0; i < n; i++) {
-      
+
       for (Address us : addressList) {
         count++;
         String skey = Address.getUserId(count);
@@ -138,13 +131,9 @@ public class HashesAddresses {
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded {} user address objects, total size={} in {}ms. RAM usage={} COMPRESSION={}",
-        addressList.size(),
-        totalDataSize,
-        endTime - startTime,
-        UnsafeAccess.getAllocatedMemory(),
-        (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
+    log.debug("Loaded {} user address objects, total size={} in {}ms. RAM usage={} COMPRESSION={}",
+      addressList.size(), totalDataSize, endTime - startTime, UnsafeAccess.getAllocatedMemory(),
+      (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 

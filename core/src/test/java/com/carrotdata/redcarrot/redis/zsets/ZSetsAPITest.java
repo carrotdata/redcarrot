@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.zsets;
 
 import static org.junit.Assert.assertEquals;
@@ -54,7 +50,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+  }
 
   /*
    * Loads data and sort it my field
@@ -67,7 +64,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       double sc = rnd.nextDouble() * rnd.nextInt();
       String score = Double.toString(sc);
       list.add(new Pair<>(m, score));
-      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
+      long res = ZSets.ZADD(map, key, new String[] { m }, new double[] { sc }, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
@@ -142,7 +139,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       double sc = 1.08E8D; // some score
       String score = Double.toString(sc);
       list.add(new Pair<String>(m, score));
-      long res = ZSets.ZADD(map, key, new String[] {m}, new double[] {sc}, false);
+      long res = ZSets.ZADD(map, key, new String[] { m }, new double[] { sc }, false);
       assertEquals(1, (int) res);
       if ((i + 1) % 100000 == 0) {
         log.debug("Loaded {}", i);
@@ -274,19 +271,13 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  private int scan(
-      BigSortedMap map,
-      String key,
-      double lastScore,
-      String lastSeenMember,
-      int count,
-      int bufferSize,
-      String regex) {
+  private int scan(BigSortedMap map, String key, double lastScore, String lastSeenMember, int count,
+      int bufferSize, String regex) {
     int total = 0;
     List<Pair<String>> result;
     // Check overall functionality - full scan
-    while ((result = ZSets.ZSCAN(map, key, lastScore, lastSeenMember, count, bufferSize, regex))
-        != null) {
+    while ((result =
+        ZSets.ZSCAN(map, key, lastScore, lastSeenMember, count, bufferSize, regex)) != null) {
       total += result.size() - 1;
       lastScore = Double.parseDouble(result.get(result.size() - 1).getSecond());
       lastSeenMember = result.get(result.size() - 1).getFirst();
@@ -362,7 +353,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       assertEquals(expected, total);
       total = scan(map, key, max, after, count, 100, regex);
       assertEquals(0, total);
-      
+
       Sets.DELETE(map, key);
     }
   }
@@ -789,7 +780,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       assertEquals(expected, count);
       count = ZSets.ZCOUNT(map, key, min, true, max, false);
       assertEquals(expected, count);
-      
+
       ZSets.DELETE(map, key);
     }
   }
@@ -990,7 +981,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       assertEquals(expected, count);
       count = ZSets.ZLEXCOUNT(map, key, null, true, null, false);
       assertEquals(expected, count);
-      
+
       ZSets.DELETE(map, key);
     }
   }
@@ -1307,7 +1298,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       }
 
       // end is larger than cardinality
-      
+
       start = -25;
       end = size + 100;
       expectedNum = -start;
@@ -1324,13 +1315,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  
   @Ignore
-  void testZREVRANGEBYLEX_core(
-      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
+  void testZREVRANGEBYLEX_core(List<Pair<String>> data, String key, boolean startInclusive,
+      boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -1426,7 +1416,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 200;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -1444,12 +1434,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  
-  private void testZRANGEBYLEX_core(
-      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
+  private void testZRANGEBYLEX_core(List<Pair<String>> data, String key, boolean startInclusive,
+      boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -1545,7 +1534,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 200;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -1579,20 +1568,15 @@ public class ZSetsAPITest extends CarrotCoreBase {
     return true;
   }
 
-  private void testZREVRANGEBYLEX_wol_core(
-      List<Pair<String>> data,
-      String key,
-      boolean startInclusive,
-      boolean endInclusive,
-      int offset,
-      int limit) {
+  private void testZREVRANGEBYLEX_wol_core(List<Pair<String>> data, String key,
+      boolean startInclusive, boolean endInclusive, int offset, int limit) {
 
     Random r = new Random();
     long seed = r.nextLong();
     r.setSeed(seed);
-    //log.debug("seed2={}", seed);
+    // log.debug("seed2={}", seed);
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
     for (int i = 0; i < numIterations; i++) {
       int i1 = r.nextInt(data.size());
@@ -1613,18 +1597,20 @@ public class ZSetsAPITest extends CarrotCoreBase {
         endIdx = i1;
       }
 
-      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
+      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
 
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopStart - loopEnd + 1;
       }
-      //log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      // log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd,
+      // startIdx, endIdx);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -1645,20 +1631,20 @@ public class ZSetsAPITest extends CarrotCoreBase {
       String end = null;
       int startIdx = -1, endIdx = -1;
       int expectedNum = 0;
-      int loopStart =
-          getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      int loopEnd =
-          getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
+      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopStart - loopEnd + 1;
       }
-      //log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
+      // log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd,
+      // startIdx, endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -1679,21 +1665,21 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int startIdx = -1;
       int endIdx = r.nextInt(data.size());
       end = data.get(endIdx).getFirst();
-      int loopStart =
-          getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      int loopEnd =
-          getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
+      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
       int expectedNum = 0;
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopStart - loopEnd + 1;
       }
-      //log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
+      // log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd,
+      // startIdx, endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -1715,20 +1701,19 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int endIdx = -1;
       start = data.get(startIdx).getFirst();
 
-      int loopStart =
-          getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      int loopEnd =
-          getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
+      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
       int expectedNum = 0;
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopStart - loopEnd + 1;
       }
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
-      
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
+
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -1749,19 +1734,18 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int endIdx = startIdx;
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
-      int loopStart =
-          getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      int loopEnd =
-          getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart = getRangeStartRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
+      int loopEnd = getRangeStopRev(data.size(), startIdx, startInclusive, endIdx, endInclusive,
+        offset, limit);
       int expectedNum = 0;
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopStart - loopEnd + 1;
       }
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -1787,9 +1771,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
       int expectedNum = 0;
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -1805,8 +1788,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-    int[] offsets = new int[] {/*-10, -100,*/ 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[] {/*-100, 100,*/ 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] { /*-10, -100,*/ 0, 20, 30, 50, 500, 999, 1000, 1001 };
+    int[] limits = new int[] { /*-100, 100,*/ 200, 300, -100, 200, 200, 500, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       log.debug("offset={} limit={}", offsets[i], limits[i]);
@@ -1824,14 +1807,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[] {/*-10, -100,*/ 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[] {/*-100, 50,*/ 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] { /*-10, -100,*/ 0, 20, 30, 50, 250, 499, 500, 501 };
+    limits = new int[] { /*-100, 50,*/ 100, 150, -50, 100, 100, 250, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -1848,24 +1831,20 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  private void testZRANGEBYLEX_wol_core(
-      List<Pair<String>> data,
-      String key,
-      boolean startInclusive,
-      boolean endInclusive,
-      int offset,
-      int limit) {
+  private void testZRANGEBYLEX_wol_core(List<Pair<String>> data, String key, boolean startInclusive,
+      boolean endInclusive, int offset, int limit) {
 
     Random r = new Random();
-    long  seed = System.currentTimeMillis();
-    r.setSeed(seed);;
-    //log.debug("seed2={}", seed);
+    long seed = System.currentTimeMillis();
+    r.setSeed(seed);
+    ;
+    // log.debug("seed2={}", seed);
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
-      //log.debug("num iter={}", i);
+      // log.debug("num iter={}", i);
       int i1 = r.nextInt(data.size());
       int i2 = r.nextInt(data.size());
       String start;
@@ -1883,7 +1862,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         startIdx = i2;
         endIdx = i1;
       }
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       if (loopStart < 0 || loopEnd < 0) {
@@ -1891,10 +1871,9 @@ public class ZSetsAPITest extends CarrotCoreBase {
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      //log.debug("i={} loopStart={} loopEnd={}", i, loopStart, loopEnd);
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      // log.debug("i={} loopStart={} loopEnd={}", i, loopStart, loopEnd);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1911,17 +1890,17 @@ public class ZSetsAPITest extends CarrotCoreBase {
       String start = null;
       String end = null;
       int startIdx = -1;
-      int endIdx = -1; 
+      int endIdx = -1;
       int loopStart =
           getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      //log.debug("null, null, i={} loopStart={} loopEnd={} endIdx={}", i, loopStart, loopEnd, endIdx);
+      // log.debug("null, null, i={} loopStart={} loopEnd={} endIdx={}", i, loopStart, loopEnd,
+      // endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1944,10 +1923,9 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      //log.debug("i={} loopStart={} loopEnd={} endIdx={}", i, loopStart, loopEnd, endIdx);
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      // log.debug("i={} loopStart={} loopEnd={} endIdx={}", i, loopStart, loopEnd, endIdx);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1966,15 +1944,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int endIdx = -1;
       start = data.get(startIdx).getFirst();
 
-      int loopStart = getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
+      int loopStart =
+          getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      //log.debug("!=null, null i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
+      // log.debug("!=null, null i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart,
+      // loopEnd, startIdx, endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -1997,11 +1976,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      //log.debug("equals i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
+      // log.debug("equals i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart,
+      // loopEnd, startIdx, endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2024,16 +2003,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
       start = data.get(startIdx).getFirst();
       end = data.get(endIdx).getFirst();
       int expectedNum = 0;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYLEX(
-              map, key, start, startInclusive, end, endInclusive, offset, limit, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYLEX(map, key, start, startInclusive, end,
+        endInclusive, offset, limit, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
 
   /**
    * Inclusive
-   *
    * @param dataSize
    * @param startIndex
    * @param startInclusive
@@ -2043,23 +2020,17 @@ public class ZSetsAPITest extends CarrotCoreBase {
    * @param limit
    * @return start offset or -1
    */
-  private int getRangeStopRev(
-      int dataSize,
-      int startIndex,
-      boolean startInclusive,
-      int stopIndex,
-      boolean stopInclusive,
-      int offset,
-      int limit) {
+  private int getRangeStopRev(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
+      boolean stopInclusive, int offset, int limit) {
     if (offset < 0) {
       return 0;
     }
-//    if (stopIndex == 0) {
-//      return 0;
-//    }
-    
+    // if (stopIndex == 0) {
+    // return 0;
+    // }
+
     if (!stopInclusive && stopIndex >= 0) {
-      stopIndex --;
+      stopIndex--;
       if (stopIndex < 0) {
         return -1;
       }
@@ -2074,21 +2045,20 @@ public class ZSetsAPITest extends CarrotCoreBase {
     if (startIndex < 0) {
       startIndex = 0;
     }
-    
+
     if (stopIndex - offset < startIndex) {
       return -1;
     }
-    
+
     if (limit >= 0) {
       return Math.max(startIndex, stopIndex - offset - limit + 1);
     } else {
       return startIndex;
     }
   }
-  
+
   /**
    * Inclusive
-   *
    * @param dataSize
    * @param startIndex
    * @param startInclusive
@@ -2098,46 +2068,39 @@ public class ZSetsAPITest extends CarrotCoreBase {
    * @param limit
    * @return start offset or -1
    */
-  private int getRangeStartRev(
-      int dataSize,
-      int startIndex,
-      boolean startInclusive,
-      int stopIndex,
-      boolean stopInclusive,
-      int offset,
-      int limit) {
+  private int getRangeStartRev(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
+      boolean stopInclusive, int offset, int limit) {
     if (offset < 0) {
       return 0;
     }
-//    if (stopIndex == 0) {
-//      return 0;
-//    }
-    
+    // if (stopIndex == 0) {
+    // return 0;
+    // }
+
     if (!stopInclusive && stopIndex >= 0) {
-      stopIndex --;
+      stopIndex--;
       if (stopIndex < 0) {
         return -1;
       }
     }
-    
+
     if (stopIndex < 0) {
       stopIndex = dataSize - 1;
     }
- 
+
     if (startIndex < 0) {
       startIndex = 0;
-    } else if(!startInclusive && startIndex >= 0){
+    } else if (!startInclusive && startIndex >= 0) {
       startIndex++;
     }
-    if(stopIndex - offset < startIndex) {
+    if (stopIndex - offset < startIndex) {
       return -1;
     }
     return stopIndex - offset;
   }
-  
+
   /**
    * Inclusive
-   *
    * @param dataSize
    * @param startIndex
    * @param startInclusive
@@ -2147,14 +2110,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
    * @param limit
    * @return start offset or -1
    */
-  private int getRangeStart(
-      int dataSize,
-      int startIndex,
-      boolean startInclusive,
-      int stopIndex,
-      boolean stopInclusive,
-      int offset,
-      int limit) {
+  private int getRangeStart(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
+      boolean stopInclusive, int offset, int limit) {
     if (offset < 0) {
       return 0;
     }
@@ -2179,7 +2136,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       stopIndex++;
     }
 
-    int start = startIndex + offset;//offset > startIndex ? offset : startIndex;
+    int start = startIndex + offset;// offset > startIndex ? offset : startIndex;
     if (start >= dataSize) {
       start = dataSize;
     }
@@ -2188,7 +2145,6 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   /**
    * Exclusive
-   *
    * @param dataSize
    * @param startIndex
    * @param startInclusive
@@ -2198,14 +2154,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
    * @param limit
    * @return stop offset or -1
    */
-  private int getRangeStop(
-      int dataSize,
-      int startIndex,
-      boolean startInclusive,
-      int stopIndex,
-      boolean stopInclusive,
-      int offset,
-      int limit) {
+  private int getRangeStop(int dataSize, int startIndex, boolean startInclusive, int stopIndex,
+      boolean stopInclusive, int offset, int limit) {
     if (offset < 0) {
       return 0;
     }
@@ -2253,13 +2203,13 @@ public class ZSetsAPITest extends CarrotCoreBase {
       }
     }
 
-    startIndex = startIndex < 0? 0: startIndex;
+    startIndex = startIndex < 0 ? 0 : startIndex;
     int stop = (startIndex + offset + limit) >= stopIndex ? stopIndex : startIndex + offset + limit;
     if (stop >= dataSize) {
       stop = dataSize;
     }
-    if (stop > (startIndex >= 0? startIndex + offset + limit: offset + limit)) {
-      stop = (startIndex >= 0? startIndex + offset + limit: offset + limit);
+    if (stop > (startIndex >= 0 ? startIndex + offset + limit : offset + limit)) {
+      stop = (startIndex >= 0 ? startIndex + offset + limit : offset + limit);
     }
     return stop;
   }
@@ -2275,8 +2225,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     List<Pair<String>> data = loadDataSameScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-    int[] offsets = new int[] {10, 100, 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[] {-100, 100, 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] { 10, 100, 0, 20, 30, 50, 500, 999, 1000, 1001 };
+    int[] limits = new int[] { -100, 100, 200, 300, -100, 200, 200, 500, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2293,14 +2243,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSameScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[] {10, 100, 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[] {-100, 50, 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] { 10, 100, 0, 20, 30, 50, 250, 499, 500, 501 };
+    limits = new int[] { -100, 50, 100, 150, -50, 100, 100, 250, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2370,11 +2320,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
     }
   }
 
-  private void testZRANGEBYSCORE_core(
-      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
+  private void testZRANGEBYSCORE_core(List<Pair<String>> data, String key, boolean startInclusive,
+      boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2418,8 +2368,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, false, bufSize);
@@ -2451,10 +2401,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
-      assertEquals(
-          Double.parseDouble(data.get(1).getSecond()),
-          Double.parseDouble(list.get(0).getSecond()),
-          0.0);
+      assertEquals(Double.parseDouble(data.get(1).getSecond()),
+        Double.parseDouble(list.get(0).getSecond()), 0.0);
     }
 
     // start > end
@@ -2487,7 +2435,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2505,21 +2453,15 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  
-  private void testZRANGEBYSCORE_wol_core(
-      List<Pair<String>> data,
-      String key,
-      boolean startInclusive,
-      boolean endInclusive,
-      int offset,
-      int limit) {
+  private void testZRANGEBYSCORE_wol_core(List<Pair<String>> data, String key,
+      boolean startInclusive, boolean endInclusive, int offset, int limit) {
 
     Random r = new Random();
     long seed = System.currentTimeMillis();
     r.setSeed(seed);
-    //log.debug("seed2={}", seed);
+    // log.debug("seed2={}", seed);
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -2548,24 +2490,23 @@ public class ZSetsAPITest extends CarrotCoreBase {
       } else {
         expectedNum = loopEnd - loopStart;
       }
-      //log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd, startIdx, endIdx);
+      // log.debug("i={} loopStart={} loopEnd={} startIdx={} endIdx={}", i, loopStart, loopEnd,
+      // startIdx, endIdx);
 
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
 
-      list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, false, bufSize);
+      list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, offset, limit,
+        false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
@@ -2588,17 +2529,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2615,17 +2555,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2643,17 +2582,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
     // 3. start = end
@@ -2669,17 +2607,16 @@ public class ZSetsAPITest extends CarrotCoreBase {
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int expectedNum = loopEnd - loopStart;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k < loopEnd; k++) {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -2694,9 +2631,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());
       int expectedNum = 0;
-      List<Pair<String>> list =
-          ZSets.ZRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -2713,8 +2649,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    int[] offsets = new int[] {/*-10, -100,*/ 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[] {/*-100, 100,*/ 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] { /*-10, -100,*/ 0, 20, 30, 50, 500, 999, 1000, 1001 };
+    int[] limits = new int[] { /*-100, 100,*/ 200, 300, -100, 200, 200, 500, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2731,14 +2667,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[] {/*-10, -100,*/ 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[] {/*-100, 50,*/ 100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] { /*-10, -100,*/ 0, 20, 30, 50, 250, 499, 500, 501 };
+    limits = new int[] { /*-100, 50,*/ 100, 150, -50, 100, 100, 250, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2755,11 +2691,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  private void testZREVRANGEBYSCORE_core(
-      List<Pair<String>> data, String key, boolean startInclusive, boolean endInclusive) {
+  private void testZREVRANGEBYSCORE_core(List<Pair<String>> data, String key,
+      boolean startInclusive, boolean endInclusive) {
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     // Test with normal ranges startInclusive = false, endInclusive = false
@@ -2802,8 +2738,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(loopEnd + loopStart - k - 1);
         Pair<String> result = list.get(k - loopStart);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
 
       list =
@@ -2837,10 +2773,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(expectedNum, list.size());
     if (expectedNum == 1) {
       assertEquals(data.get(1).getFirst(), list.get(0).getFirst());
-      assertEquals(
-          Double.parseDouble(data.get(1).getSecond()),
-          Double.parseDouble(list.get(0).getSecond()),
-          0.0);
+      assertEquals(Double.parseDouble(data.get(1).getSecond()),
+        Double.parseDouble(list.get(0).getSecond()), 0.0);
     }
 
     // start > end
@@ -2876,7 +2810,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
@@ -2895,17 +2829,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
   }
 
   @SuppressWarnings("unused")
-  private void testZREVRANGEBYSCORE_wol_core(
-      List<Pair<String>> data,
-      String key,
-      boolean startInclusive,
-      boolean endInclusive,
-      int offset,
-      int limit) {
+  private void testZREVRANGEBYSCORE_wol_core(List<Pair<String>> data, String key,
+      boolean startInclusive, boolean endInclusive, int offset, int limit) {
 
     Random r = new Random();
     int numMembers = data.size();
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
     int bufSize = numMembers * 100; // to make sure that the whole set will fit in.
 
     for (int i = 0; i < numIterations; i++) {
@@ -2934,9 +2863,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       } else {
         expectedNum = loopEnd - loopStart + 1;
       }
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -2946,13 +2874,12 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(loopStart - k);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
 
-      list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, false, bufSize);
+      list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive, offset, limit,
+        false, bufSize);
       assertEquals(expectedNum, list.size());
       // Verify that we are correct
       for (int k = loopStart; k >= loopEnd; k--) {
@@ -2974,15 +2901,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
           getRangeStart(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
       int loopEnd =
           getRangeStop(data.size(), startIdx, startInclusive, endIdx, endInclusive, offset, limit);
-      
+
       if (loopStart < 0 || loopEnd < 0) {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart + 1;
-      }      
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      }
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -2992,8 +2918,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(loopStart - 1);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -3014,10 +2940,9 @@ public class ZSetsAPITest extends CarrotCoreBase {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart + 1;
-      }      
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      }
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -3027,8 +2952,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(loopStart - k);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -3050,10 +2975,9 @@ public class ZSetsAPITest extends CarrotCoreBase {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart + 1;
-      }      
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      }
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -3063,8 +2987,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(loopStart - k);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
     // 3. start = end
@@ -3084,10 +3008,9 @@ public class ZSetsAPITest extends CarrotCoreBase {
         expectedNum = 0;
       } else {
         expectedNum = loopEnd - loopStart + 1;
-      }  
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      }
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
       if (expectedNum == 0) {
         continue;
@@ -3097,8 +3020,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         Pair<String> expected = data.get(k);
         Pair<String> result = list.get(loopStart - k);
         assertEquals(expected.getFirst(), result.getFirst());
-        assertEquals(
-            Double.parseDouble(expected.getSecond()), Double.parseDouble(result.getSecond()), 0.0);
+        assertEquals(Double.parseDouble(expected.getSecond()),
+          Double.parseDouble(result.getSecond()), 0.0);
       }
     }
 
@@ -3113,9 +3036,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       min = Double.parseDouble(data.get(startIdx).getSecond());
       max = Double.parseDouble(data.get(endIdx).getSecond());
       int expectedNum = 0;
-      List<Pair<String>> list =
-          ZSets.ZREVRANGEBYSCORE(
-              map, key, min, startInclusive, max, endInclusive, offset, limit, true, bufSize);
+      List<Pair<String>> list = ZSets.ZREVRANGEBYSCORE(map, key, min, startInclusive, max,
+        endInclusive, offset, limit, true, bufSize);
       assertEquals(expectedNum, list.size());
     }
   }
@@ -3128,8 +3050,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
     List<Pair<String>> data = loadDataSortByScore(key, numMembers);
     long card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
-    int[] offsets = new int[] { 0, 20, 30, 50, 500, 999, 1000, 1001};
-    int[] limits = new int[] { 200, 300, -100, 200, 200, 500, -1, 10};
+    int[] offsets = new int[] { 0, 20, 30, 50, 500, 999, 1000, 1001 };
+    int[] limits = new int[] { 200, 300, -100, 200, 200, 500, -1, 10 };
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
       testZRANGEBYSCORE_wol_core(data, key, false, false, offsets[i], limits[i]);
@@ -3144,14 +3066,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
     boolean res = ZSets.DELETE(map, key);
     assertTrue(res);
     assertEquals(0L, map.countRecords());
-    
+
     numMembers = 500;
     data = loadDataSortByScore(key, numMembers);
     card = ZSets.ZCARD(map, key);
     assertEquals(numMembers, (int) card);
 
-    offsets = new int[] { 0, 20, 30, 50, 250, 499, 500, 501};
-    limits = new int[] {100, 150, -50, 100, 100, 250, -1, 10};
+    offsets = new int[] { 0, 20, 30, 50, 250, 499, 500, 501 };
+    limits = new int[] { 100, 150, -50, 100, 100, 250, -1, 10 };
 
     for (int i = 0; i < offsets.length; i++) {
       // Test with normal ranges startInclusive = false, endInclusive = false
@@ -3168,14 +3090,14 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  private void testZREMRANGEBYSCORE_core(
-      String key, int numMembers, boolean startInclusive, boolean endInclusive) {
+  private void testZREMRANGEBYSCORE_core(String key, int numMembers, boolean startInclusive,
+      boolean endInclusive) {
     Random r = new Random();
-    /*DEBUG*/
+    /* DEBUG */
     long seed = r.nextLong();
     r.setSeed(seed);
     List<Pair<String>> data;
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
 
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {
@@ -3213,15 +3135,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       long total = ZSets.ZREMRANGEBYSCORE(map, key, min, startInclusive, max, endInclusive);
       if (total != expectedNum) {
         log.debug(
-            "min={} max={} startIdx={} endIdx={} minInclusive={} maxInclusive={} test seed={} data seed={}",
-            min,
-            max,
-            startIdx,
-            endIdx,
-            startInclusive,
-            endInclusive,
-            seed,
-            dataSeed);
+          "min={} max={} startIdx={} endIdx={} minInclusive={} maxInclusive={} test seed={} data seed={}",
+          min, max, startIdx, endIdx, startInclusive, endInclusive, seed, dataSeed);
         log.debug("START: score={} field={}", min, data.get(startIdx).getFirst());
         log.debug("STOP : score{} field={}", max, data.get(endIdx).getFirst());
 
@@ -3236,11 +3151,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
         String member = expected.getFirst();
         long rank = ZSets.ZRANK(map, key, member);
         if (rank >= 0) {
-          log.debug(
-              "FOUND #{} expected score={} field={}",
-              k - loopStart,
-              expected.getSecond(),
-              expected.getFirst());
+          log.debug("FOUND #{} expected score={} field={}", k - loopStart, expected.getSecond(),
+            expected.getFirst());
           log.debug("Actual score={}", ZSets.ZSCORE(map, key, member));
         }
         assertEquals(-1, (int) rank);
@@ -3248,7 +3160,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       // Delete set
       ZSets.DELETE(map, key);
       if (i > 0 && i % 100 == 0) {
-        /*DEBUG*/ log.debug(i);
+        /* DEBUG */ log.debug(i);
       }
     }
     // Test some edge cases
@@ -3316,11 +3228,11 @@ public class ZSetsAPITest extends CarrotCoreBase {
 
   private void testZREMRANGEBYRANK_core(String key, int numMembers) {
     Random r = new Random();
-    /*DEBUG*/
+    /* DEBUG */
     long seed = r.nextLong();
     r.setSeed(seed);
     List<Pair<String>> data;
-    int numIterations =  memoryDebug? 10: 100;
+    int numIterations = memoryDebug ? 10 : 100;
 
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {
@@ -3342,8 +3254,8 @@ public class ZSetsAPITest extends CarrotCoreBase {
       expectedNum = endIdx - startIdx + 1;
       long total = ZSets.ZREMRANGEBYRANK(map, key, startIdx, endIdx);
       if (total != expectedNum) {
-        log.debug(
-            " startIdx={} endIdx={} test seed={} data seed={}", startIdx, endIdx, seed, dataSeed);
+        log.debug(" startIdx={} endIdx={} test seed={} data seed={}", startIdx, endIdx, seed,
+          dataSeed);
       }
       assertEquals(expectedNum, (int) total);
       // Verify that we are correct
@@ -3358,7 +3270,7 @@ public class ZSetsAPITest extends CarrotCoreBase {
       // Delete set
       ZSets.DELETE(map, key);
       if (i > 0 && i % 100 == 0) {
-        /*DEBUG*/ log.debug(i);
+        /* DEBUG */ log.debug(i);
       }
     }
 
@@ -3409,20 +3321,17 @@ public class ZSetsAPITest extends CarrotCoreBase {
     assertEquals(0L, map.countRecords());
   }
 
-  private void testZREMRANGEBYLEX_core(
-      String key, int numMembers, boolean startInclusive, boolean endInclusive) {
+  private void testZREMRANGEBYLEX_core(String key, int numMembers, boolean startInclusive,
+      boolean endInclusive) {
 
-    log.debug(
-        "numMembers={} startInclusive={} endInclusive={}",
-        numMembers,
-        startInclusive,
-        endInclusive);
+    log.debug("numMembers={} startInclusive={} endInclusive={}", numMembers, startInclusive,
+      endInclusive);
 
     Random r = new Random();
-    long seed = /*276634853598895472L;*/ r.nextLong();
+    long seed = /* 276634853598895472L; */ r.nextLong();
     r.setSeed(seed);
-    //log.debug("Test seed={}", seed);
-    int numIterations =  memoryDebug? 10: 100;
+    // log.debug("Test seed={}", seed);
+    int numIterations = memoryDebug ? 10 : 100;
     List<Pair<String>> data;
     // Test with normal ranges startInclusive = false, endInclusive = false
     for (int i = 0; i < numIterations; i++) {

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -33,185 +29,164 @@ import com.carrotdata.redcarrot.util.Utils;
 /** Supports String operations, found in Redis */
 public class Strings {
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
-  static ThreadLocal<Long> valueArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  static ThreadLocal<Long> valueArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  static ThreadLocal<Integer> valueArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  static ThreadLocal<Integer> valueArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   static final int INCR_ARENA_SIZE = 64;
 
-  static ThreadLocal<Long> incrArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(INCR_ARENA_SIZE);
-        }
-      };
+  static ThreadLocal<Long> incrArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(INCR_ARENA_SIZE);
+    }
+  };
 
-  static ThreadLocal<Key> key =
-      new ThreadLocal<Key>() {
-        @Override
-        protected Key initialValue() {
-          return new Key(0, 0);
-        }
-      };
+  static ThreadLocal<Key> key = new ThreadLocal<Key>() {
+    @Override
+    protected Key initialValue() {
+      return new Key(0, 0);
+    }
+  };
 
   /** Thread local updates String Append */
-  private static ThreadLocal<StringAppend> stringAppend =
-      new ThreadLocal<StringAppend>() {
-        @Override
-        protected StringAppend initialValue() {
-          return new StringAppend();
-        }
-      };
+  private static ThreadLocal<StringAppend> stringAppend = new ThreadLocal<StringAppend>() {
+    @Override
+    protected StringAppend initialValue() {
+      return new StringAppend();
+    }
+  };
 
   /** Thread local updates String Bitcount */
-  private static ThreadLocal<StringBitCount> stringBitcount =
-      new ThreadLocal<StringBitCount>() {
-        @Override
-        protected StringBitCount initialValue() {
-          return new StringBitCount();
-        }
-      };
+  private static ThreadLocal<StringBitCount> stringBitcount = new ThreadLocal<StringBitCount>() {
+    @Override
+    protected StringBitCount initialValue() {
+      return new StringBitCount();
+    }
+  };
 
   /** Thread local updates String Getbit */
-  private static ThreadLocal<StringGetBit> stringGetbit =
-      new ThreadLocal<StringGetBit>() {
-        @Override
-        protected StringGetBit initialValue() {
-          return new StringGetBit();
-        }
-      };
+  private static ThreadLocal<StringGetBit> stringGetbit = new ThreadLocal<StringGetBit>() {
+    @Override
+    protected StringGetBit initialValue() {
+      return new StringGetBit();
+    }
+  };
 
   /** Thread local updates String SetBit */
-  private static ThreadLocal<StringSetBit> stringSetbit =
-      new ThreadLocal<StringSetBit>() {
-        @Override
-        protected StringSetBit initialValue() {
-          return new StringSetBit();
-        }
-      };
+  private static ThreadLocal<StringSetBit> stringSetbit = new ThreadLocal<StringSetBit>() {
+    @Override
+    protected StringSetBit initialValue() {
+      return new StringSetBit();
+    }
+  };
 
   /** Thread local updates String Length */
-  private static ThreadLocal<StringLength> stringLength =
-      new ThreadLocal<StringLength>() {
-        @Override
-        protected StringLength initialValue() {
-          return new StringLength();
-        }
-      };
+  private static ThreadLocal<StringLength> stringLength = new ThreadLocal<StringLength>() {
+    @Override
+    protected StringLength initialValue() {
+      return new StringLength();
+    }
+  };
 
   /** Thread local updates String GetRange */
-  private static ThreadLocal<StringGetRange> stringGetrange =
-      new ThreadLocal<StringGetRange>() {
-        @Override
-        protected StringGetRange initialValue() {
-          return new StringGetRange();
-        }
-      };
+  private static ThreadLocal<StringGetRange> stringGetrange = new ThreadLocal<StringGetRange>() {
+    @Override
+    protected StringGetRange initialValue() {
+      return new StringGetRange();
+    }
+  };
 
   /** Thread local updates String GetSet */
-  private static ThreadLocal<StringGetSet> stringGetset =
-      new ThreadLocal<StringGetSet>() {
-        @Override
-        protected StringGetSet initialValue() {
-          return new StringGetSet();
-        }
-      };
+  private static ThreadLocal<StringGetSet> stringGetset = new ThreadLocal<StringGetSet>() {
+    @Override
+    protected StringGetSet initialValue() {
+      return new StringGetSet();
+    }
+  };
 
   /** Thread local updates String SetGet */
-  private static ThreadLocal<StringSetGet> stringSetget =
-      new ThreadLocal<StringSetGet>() {
-        @Override
-        protected StringSetGet initialValue() {
-          return new StringSetGet();
-        }
-      };
+  private static ThreadLocal<StringSetGet> stringSetget = new ThreadLocal<StringSetGet>() {
+    @Override
+    protected StringSetGet initialValue() {
+      return new StringSetGet();
+    }
+  };
 
   /** Thread local updates String GetSet */
-  private static ThreadLocal<StringGetDelete> stringGetdel =
-      new ThreadLocal<StringGetDelete>() {
-        @Override
-        protected StringGetDelete initialValue() {
-          return new StringGetDelete();
-        }
-      };
+  private static ThreadLocal<StringGetDelete> stringGetdel = new ThreadLocal<StringGetDelete>() {
+    @Override
+    protected StringGetDelete initialValue() {
+      return new StringGetDelete();
+    }
+  };
 
   /** Thread local updates String Set */
-  private static ThreadLocal<StringSet> stringSet =
-      new ThreadLocal<StringSet>() {
-        @Override
-        protected StringSet initialValue() {
-          return new StringSet();
-        }
-      };
+  private static ThreadLocal<StringSet> stringSet = new ThreadLocal<StringSet>() {
+    @Override
+    protected StringSet initialValue() {
+      return new StringSet();
+    }
+  };
 
   /** Thread local updates String SetRange */
-  private static ThreadLocal<StringSetRange> stringSetrange =
-      new ThreadLocal<StringSetRange>() {
-        @Override
-        protected StringSetRange initialValue() {
-          return new StringSetRange();
-        }
-      };
+  private static ThreadLocal<StringSetRange> stringSetrange = new ThreadLocal<StringSetRange>() {
+    @Override
+    protected StringSetRange initialValue() {
+      return new StringSetRange();
+    }
+  };
 
   /** Thread local updates String BitPos */
-  private static ThreadLocal<StringBitPos> stringBitpos =
-      new ThreadLocal<StringBitPos>() {
-        @Override
-        protected StringBitPos initialValue() {
-          return new StringBitPos();
-        }
-      };
+  private static ThreadLocal<StringBitPos> stringBitpos = new ThreadLocal<StringBitPos>() {
+    @Override
+    protected StringBitPos initialValue() {
+      return new StringBitPos();
+    }
+  };
 
   /** Thread local updates String GETEX */
-  private static ThreadLocal<StringGetEx> stringGetex =
-      new ThreadLocal<StringGetEx>() {
-        @Override
-        protected StringGetEx initialValue() {
-          return new StringGetEx();
-        }
-      };
+  private static ThreadLocal<StringGetEx> stringGetex = new ThreadLocal<StringGetEx>() {
+    @Override
+    protected StringGetEx initialValue() {
+      return new StringGetEx();
+    }
+  };
 
   /** Thread local updates String GETEXPIRE */
-  private static ThreadLocal<StringGetExpire> stringGetexpire =
-      new ThreadLocal<StringGetExpire>() {
-        @Override
-        protected StringGetExpire initialValue() {
-          return new StringGetExpire();
-        }
-      };
+  private static ThreadLocal<StringGetExpire> stringGetexpire = new ThreadLocal<StringGetExpire>() {
+    @Override
+    protected StringGetExpire initialValue() {
+      return new StringGetExpire();
+    }
+  };
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -226,7 +201,6 @@ public class Strings {
 
   /**
    * Checks value arena size
-   *
    * @param required size
    */
   static void checkValueArena(int required) {
@@ -238,9 +212,9 @@ public class Strings {
     valueArena.set(ptr);
     valueArenaSize.set(required);
   }
+
   /**
    * Build key for String. It uses thread local key arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param fieldPtr field address
@@ -259,7 +233,6 @@ public class Strings {
 
   /**
    * Gets and initializes Key
-   *
    * @param ptr key address
    * @param size key size
    * @return key instance
@@ -273,7 +246,6 @@ public class Strings {
 
   /**
    * Checks if key exists
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -286,7 +258,6 @@ public class Strings {
 
   /**
    * Gets key's expiration time
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -310,11 +281,11 @@ public class Strings {
       KeysLocker.readUnlock(kk);
     }
   }
+
   /**
    * If key already exists and is a string, this command appends the value at the end of the string.
    * If key does not exist it is created and set as an empty string, so APPEND will be similar to
    * SET in this special case.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -322,8 +293,8 @@ public class Strings {
    * @param valueSize value size
    * @return the length of the string after the append operation (Integer).
    */
-  public static int APPEND(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize) {
+  public static int APPEND(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize) {
 
     Key kk = getKey(keyPtr, keySize);
 
@@ -354,7 +325,6 @@ public class Strings {
    * and end can contain negative values in order to index bytes starting from the end of the
    * string, where -1 is the last byte, -2 is the penultimate, and so forth. Non-existent keys are
    * treated as empty strings, so the command will return zero.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -385,7 +355,6 @@ public class Strings {
    * at key by increment. If the key does not exist, it is set to 0 before performing the operation.
    * An error is returned if the key contains a value of the wrong type or contains a string that
    * can not be represented as integer. This operation is limited to 64 bit signed integers.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -431,7 +400,6 @@ public class Strings {
    * execute the operation. Redis stores integers in their integer representation, so for string
    * values that actually hold an integer, there is no overhead for storing the string
    * representation of the integer.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -442,12 +410,12 @@ public class Strings {
       throws OperationFailedException {
     return INCRBY(map, keyPtr, keySize, 1);
   }
+
   /**
    * Decrements the number stored at key by one. If the key does not exist, it is set to 0 before
    * performing the operation. An error is returned if the key contains a value of the wrong type or
    * contains a string that can not be represented as integer. This operation is limited to 64 bit
    * signed integers.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -464,7 +432,6 @@ public class Strings {
    * before performing the operation. An error is returned if the key contains a value of the wrong
    * type or contains a string that can not be represented as integer. This operation is limited to
    * 64 bit signed integers.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -479,8 +446,8 @@ public class Strings {
 
   /**
    * TODO: optimize into single read-modify-write atomic call
-   *
-   * <p>Increment the string representing a floating point number stored at key by the specified
+   * <p>
+   * Increment the string representing a floating point number stored at key by the specified
    * increment. By using a negative increment value, the result is that the value stored at the key
    * is decremented (by the obvious properties of addition). If the key does not exist, it is set to
    * 0 before performing the operation. An error is returned if one of the following conditions
@@ -494,7 +461,6 @@ public class Strings {
    * number of digits representing the decimal part of the number. Trailing zeroes are always
    * removed. The precision of the output is fixed at 17 digits after the decimal point regardless
    * of the actual internal precision of the computation.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -526,18 +492,18 @@ public class Strings {
       map.put(keyArena.get(), kSize, incrArena.get(), size, 0);
 
       return value;
-      //      StringSet set = stringSet.get();
-      //      set.reset();
-      //      set.setKeyAddress(keyArena.get());
-      //      set.setKeySize(kSize);
-      //      set.setValue(incrArena.get(), size);
-      //      set.setMutationOptions(MutationOptions.NONE);
-      //      // version?
-      //      if(map.execute(set)) {
-      //        return value;
-      //      } else {
-      //        throw new OperationFailedException();
-      //      }
+      // StringSet set = stringSet.get();
+      // set.reset();
+      // set.setKeyAddress(keyArena.get());
+      // set.setKeySize(kSize);
+      // set.setValue(incrArena.get(), size);
+      // set.setMutationOptions(MutationOptions.NONE);
+      // // version?
+      // if(map.execute(set)) {
+      // return value;
+      // } else {
+      // throw new OperationFailedException();
+      // }
     } finally {
       writeUnlock(k);
     }
@@ -546,17 +512,16 @@ public class Strings {
   /**
    * Get the value of key. If the key does not exist the special value nil is returned. An error is
    * returned if the value stored at key is not a string, because GET only handles string values.
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keyLength key length
    * @param valueBuf value buffer
    * @param valueBufLength value buffer size
    * @return size of a value, or -1 if not found. if size is greater than valueBufLength, the call
-   *     must be repeated with appropriately sized value buffer
+   *         must be repeated with appropriately sized value buffer
    */
-  public static long GET(
-      BigSortedMap map, long keyPtr, int keyLength, long valueBuf, int valueBufLength) {
+  public static long GET(BigSortedMap map, long keyPtr, int keyLength, long valueBuf,
+      int valueBufLength) {
 
     Key kk = getKey(keyPtr, keyLength);
     try {
@@ -573,21 +538,21 @@ public class Strings {
    * Available since 1.0.0. Time complexity: O(N) where N is the number of keys to retrieve. Returns
    * the values of all specified keys. For every key that does not hold a string value or does not
    * exist, the special value nil is returned. Because of this, the operation never fails.
-   *
-   * <p>Return value Array reply: list of values at the specified keys.
-   *
+   * <p>
+   * Return value Array reply: list of values at the specified keys.
    * @param map sorted map
    * @param keyPtrs array of key pointers
    * @param keySizes array of key sizes
    * @param valueBuf value buffer
    * @param valueBufLength value buffer size
    * @return total serialized size of the response. If size is greater than bufferSize, the call
-   *     must be repeated with appropriately sized value buffer buffer output format: INT - total
-   *     entries ENTRY+
-   *     <p>ENTRY: INT - size (NULL == -1) BYTES
+   *         must be repeated with appropriately sized value buffer buffer output format: INT -
+   *         total entries ENTRY+
+   *         <p>
+   *         ENTRY: INT - size (NULL == -1) BYTES
    */
-  public static long MGET(
-      BigSortedMap map, long[] keyPtrs, int[] keySizes, long buffer, int bufferSize) {
+  public static long MGET(BigSortedMap map, long[] keyPtrs, int[] keySizes, long buffer,
+      int bufferSize) {
 
     long ptr = buffer + Utils.SIZEOF_INT;
 
@@ -611,11 +576,11 @@ public class Strings {
   /**
    * BITFIELD key [GET type offset] [SET type offset value] [INCRBY type offset increment] [OVERFLOW
    * WRAP|SAT|FAIL]
-   *
-   * <p>Available since 3.2.0. Time complexity: O(1) for each subcommand specified The command
-   * treats a Redis string as a array of bits, and is capable of addressing specific integer fields
-   * of varying bit widths and arbitrary non (necessary) aligned offset. In practical terms using
-   * this command you can set, for example, a signed 5 bits integer at bit offset 1234 to a specific
+   * <p>
+   * Available since 3.2.0. Time complexity: O(1) for each subcommand specified The command treats a
+   * Redis string as a array of bits, and is capable of addressing specific integer fields of
+   * varying bit widths and arbitrary non (necessary) aligned offset. In practical terms using this
+   * command you can set, for example, a signed 5 bits integer at bit offset 1234 to a specific
    * value, retrieve a 31 bit unsigned integer from offset 4567. Similarly the command handles
    * increments and decrements of the specified integers, providing guaranteed and well specified
    * overflow and underflow behavior that the user can configure. BITFIELD is able to operate with
@@ -624,52 +589,52 @@ public class Strings {
    * of arguments. For example the following command increments an 5 bit signed integer at bit
    * offset 100, and gets the value of the 4 bit unsigned integer at bit offset 0: > BITFIELD mykey
    * INCRBY i5 100 1 GET u4 0 1) (integer) 1 2) (integer) 0
-   *
-   * <p>Note that:
-   *
-   * <p>Addressing with GET bits outside the current string length (including the case the key does
-   * not exist at all), results in the operation to be performed like the missing part all consists
-   * of bits set to 0. Addressing with SET or INCRBY bits outside the current string length will
+   * <p>
+   * Note that:
+   * <p>
+   * Addressing with GET bits outside the current string length (including the case the key does not
+   * exist at all), results in the operation to be performed like the missing part all consists of
+   * bits set to 0. Addressing with SET or INCRBY bits outside the current string length will
    * enlarge the string, zero-padding it, as needed, for the minimal length needed, according to the
    * most far bit touched.
-   *
-   * <p>Supported subcommands and integer types
-   *
-   * <p>The following is the list of supported commands. GET <type> <offset> -- Returns the
-   * specified bit field. SET <type> <offset> <value> -- Set the specified bit field and returns its
-   * old value. INCRBY <type> <offset> <increment> -- Increments or decrements (if a negative
-   * increment is given) the specified bit field and returns the new value. There is another
-   * subcommand that only changes the behavior of successive INCRBY subcommand calls by setting the
-   * overflow behavior:
-   *
-   * <p>OVERFLOW [WRAP|SAT|FAIL]
-   *
-   * <p>Where an integer type is expected, it can be composed by prefixing with i for signed
-   * integers and u for unsigned integers with the number of bits of our integer type. So for
-   * example u8 is an unsigned integer of 8 bits and i16 is a signed integer of 16 bits. The
-   * supported types are up to 64 bits for signed integers, and up to 63 bits for unsigned integers.
-   * This limitation with unsigned integers is due to the fact that currently the Redis protocol is
-   * unable to return 64 bit unsigned integers as replies.
-   *
-   * <p>Bits and positional offsets
-   *
-   * <p>There are two ways in order to specify offsets in the bitfield command. If a number without
-   * any prefix is specified, it is used just as a zero based bit offset inside the string. However
-   * if the offset is prefixed with a # character, the specified offset is multiplied by the integer
+   * <p>
+   * Supported subcommands and integer types
+   * <p>
+   * The following is the list of supported commands. GET <type> <offset> -- Returns the specified
+   * bit field. SET <type> <offset> <value> -- Set the specified bit field and returns its old
+   * value. INCRBY <type> <offset> <increment> -- Increments or decrements (if a negative increment
+   * is given) the specified bit field and returns the new value. There is another subcommand that
+   * only changes the behavior of successive INCRBY subcommand calls by setting the overflow
+   * behavior:
+   * <p>
+   * OVERFLOW [WRAP|SAT|FAIL]
+   * <p>
+   * Where an integer type is expected, it can be composed by prefixing with i for signed integers
+   * and u for unsigned integers with the number of bits of our integer type. So for example u8 is
+   * an unsigned integer of 8 bits and i16 is a signed integer of 16 bits. The supported types are
+   * up to 64 bits for signed integers, and up to 63 bits for unsigned integers. This limitation
+   * with unsigned integers is due to the fact that currently the Redis protocol is unable to return
+   * 64 bit unsigned integers as replies.
+   * <p>
+   * Bits and positional offsets
+   * <p>
+   * There are two ways in order to specify offsets in the bitfield command. If a number without any
+   * prefix is specified, it is used just as a zero based bit offset inside the string. However if
+   * the offset is prefixed with a # character, the specified offset is multiplied by the integer
    * type width, so for example:
-   *
-   * <p>BITFIELD mystring SET i8 #0 100 SET i8 #1 200
-   *
-   * <p>Will set the first i8 integer at offset 0 and the second at offset 8. This way you don't
-   * have to do the math yourself inside your client if what you want is a plain array of integers
-   * of a given size.
-   *
-   * <p>Overflow control
-   *
-   * <p>Using the OVERFLOW command the user is able to fine-tune the behavior of the increment or
+   * <p>
+   * BITFIELD mystring SET i8 #0 100 SET i8 #1 200
+   * <p>
+   * Will set the first i8 integer at offset 0 and the second at offset 8. This way you don't have
+   * to do the math yourself inside your client if what you want is a plain array of integers of a
+   * given size.
+   * <p>
+   * Overflow control
+   * <p>
+   * Using the OVERFLOW command the user is able to fine-tune the behavior of the increment or
    * decrement overflow (or underflow) by specifying one of the following behaviors:
-   *
-   * <p>WRAP: wrap around, both with signed and unsigned integers. In the case of unsigned integers,
+   * <p>
+   * WRAP: wrap around, both with signed and unsigned integers. In the case of unsigned integers,
    * wrapping is like performing the operation modulo the maximum value the integer can contain (the
    * C standard behavior). With signed integers instead wrapping means that overflows restart
    * towards the most negative value and underflows towards the most positive ones, so for example
@@ -681,32 +646,32 @@ public class Strings {
    * blocked at the most negative value. FAIL: in this mode no operation is performed on overflows
    * or underflows detected. The corresponding return value is set to NULL to signal the condition
    * to the caller.
-   *
-   * <p>Note that each OVERFLOW statement only affects the INCRBY commands that follow it in the
-   * list of subcommands, up to the next OVERFLOW statement.
-   *
-   * <p>By default, WRAP is used if not otherwise specified. > BITFIELD mykey incrby u2 100 1
-   * OVERFLOW SAT incrby u2 102 1 1) (integer) 1 2) (integer) 1 > BITFIELD mykey incrby u2 100 1
-   * OVERFLOW SAT incrby u2 102 1 1) (integer) 2 2) (integer) 2 > BITFIELD mykey incrby u2 100 1
-   * OVERFLOW SAT incrby u2 102 1 1) (integer) 3 2) (integer) 3 > BITFIELD mykey incrby u2 100 1
-   * OVERFLOW SAT incrby u2 102 1 1) (integer) 0 2) (integer) 3
-   *
-   * <p>Return value The command returns an array with each entry being the corresponding result of
-   * the sub command given at the same position. OVERFLOW subcommands don't count as generating a
-   * reply. The following is an example of OVERFLOW FAIL returning NULL. > BITFIELD mykey OVERFLOW
-   * FAIL incrby u2 102 1 1) (nil)
-   *
-   * <p>Motivations
-   *
-   * <p>The motivation for this command is that the ability to store many small integers as a single
+   * <p>
+   * Note that each OVERFLOW statement only affects the INCRBY commands that follow it in the list
+   * of subcommands, up to the next OVERFLOW statement.
+   * <p>
+   * By default, WRAP is used if not otherwise specified. > BITFIELD mykey incrby u2 100 1 OVERFLOW
+   * SAT incrby u2 102 1 1) (integer) 1 2) (integer) 1 > BITFIELD mykey incrby u2 100 1 OVERFLOW SAT
+   * incrby u2 102 1 1) (integer) 2 2) (integer) 2 > BITFIELD mykey incrby u2 100 1 OVERFLOW SAT
+   * incrby u2 102 1 1) (integer) 3 2) (integer) 3 > BITFIELD mykey incrby u2 100 1 OVERFLOW SAT
+   * incrby u2 102 1 1) (integer) 0 2) (integer) 3
+   * <p>
+   * Return value The command returns an array with each entry being the corresponding result of the
+   * sub command given at the same position. OVERFLOW subcommands don't count as generating a reply.
+   * The following is an example of OVERFLOW FAIL returning NULL. > BITFIELD mykey OVERFLOW FAIL
+   * incrby u2 102 1 1) (nil)
+   * <p>
+   * Motivations
+   * <p>
+   * The motivation for this command is that the ability to store many small integers as a single
    * large bitmap (or segmented over a few keys to avoid having huge keys) is extremely memory
    * efficient, and opens new use cases for Redis to be applied, especially in the field of real
    * time analytics. This use cases are supported by the ability to specify the overflow in a
    * controlled way. Fun fact: Reddit's 2017 April fools' project r/place was built using the Redis
    * BITFIELD command in order to take an in-memory representation of the collaborative canvas.
-   *
-   * <p>Performance considerations Usually BITFIELD is a fast command, however note that addressing
-   * far bits of currently short strings will trigger an allocation that may be more costly than
+   * <p>
+   * Performance considerations Usually BITFIELD is a fast command, however note that addressing far
+   * bits of currently short strings will trigger an allocation that may be more costly than
    * executing the command on bits already existing. Orders of bits The representation used by
    * BITFIELD considers the bitmap as having the bit number 0 to be the most s ignificant bit of the
    * first byte, and so forth, so for example setting a 5 bits unsigned integer to value 23 at
@@ -714,7 +679,6 @@ public class Strings {
    * +--------+--------+ |00000001|01110000| +--------+--------+ When offsets and integer sizes are
    * aligned to bytes boundaries, this is the same as big endian, however when such alignment does
    * not exist, its important to also understand how the bits inside a byte are ordered.
-   *
    * @param map
    * @param keyPtr
    * @param keySize
@@ -729,7 +693,6 @@ public class Strings {
    * string length, the string is assumed to be a contiguous space with 0 bits. When key does not
    * exist it is assumed to be an empty string, so offset is always out of range and the value is
    * also assumed to be a contiguous space with 0 bits.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key length
@@ -761,7 +724,6 @@ public class Strings {
    * argument is required to be greater than or equal to 0, and smaller than 232 (this limits
    * bitmaps to 512MB). When the string at key is grown, added bits are set to 0. Actually we have
    * higher limit - 2GB per value
-   *
    * @param map sorted map
    * @param keyPtr key address
    * @param keySize key size
@@ -791,7 +753,6 @@ public class Strings {
   /**
    * Returns the length of the string value stored at key. An error is returned when key holds a
    * non-string value.
-   *
    * @param map sorted map
    * @param keyPtr key
    * @param keySize
@@ -813,29 +774,23 @@ public class Strings {
       KeysLocker.readUnlock(kk);
     }
   }
+
   /**
    * Returns the substring of the string value stored at key, determined by the offsets start and
    * end (both are inclusive). Negative offsets can be used in order to provide an offset starting
    * from the end of the string. So -1 means the last character, -2 the penultimate and so forth.
    * The function handles out of range requests by limiting the resulting range to the actual length
    * of the string.
-   *
    * @param map
    * @param keyPtr
    * @param keySize
    * @param start
    * @param end
    * @return size of a range, or -1, if key does not exists or limits out of a value range if size >
-   *     buferSize, the call must be repeated with appropriately sized buffer
+   *         buferSize, the call must be repeated with appropriately sized buffer
    */
-  public static int GETRANGE(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long start,
-      long end,
-      long bufferPtr,
-      int bufferSize) {
+  public static int GETRANGE(BigSortedMap map, long keyPtr, int keySize, long start, long end,
+      long bufferPtr, int bufferSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -857,7 +812,6 @@ public class Strings {
   /**
    * Atomically sets key to value and returns the old value stored at key. Returns an error when key
    * exists but does not hold a string value.
-   *
    * @param map ordered map
    * @param keyPtr key address
    * @param keySize key size
@@ -866,16 +820,10 @@ public class Strings {
    * @param bufferPtr buffer address to copy old version to
    * @param bufferSize buffer size
    * @return size of an old value, -1 if did not existed. If size > bufferSize, the call must be
-   *     repeated with appropriately sized buffer
+   *         repeated with appropriately sized buffer
    */
-  public static int GETSET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long valuePtr,
-      int valueSize,
-      long bufferPtr,
-      int bufferSize) {
+  public static int GETSET(BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize,
+      long bufferPtr, int bufferSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -897,17 +845,16 @@ public class Strings {
   /**
    * Available since 6.2.0. Time complexity: O(1) Get the value of key and optionally set its
    * expiration. GETEX is similar to GET, but is a write command with additional options.
-   *
-   * <p>Options:
-   *
-   * <p>The GETEX command supports a set of options that modify its behavior: EX seconds -- Set the
+   * <p>
+   * Options:
+   * <p>
+   * The GETEX command supports a set of options that modify its behavior: EX seconds -- Set the
    * specified expire time, in seconds. PX milliseconds -- Set the specified expire time, in
    * milliseconds. EXAT timestamp-seconds -- Set the specified Unix time at which the key will
    * expire, in seconds. PXAT timestamp-milliseconds -- Set the specified Unix time at which the key
    * will expire, in milliseconds. PERSIST -- Remove the time to live associated with the key.
-   *
-   * <p>Return value: Bulk string reply: the value of key, or nil when key does not exist.
-   *
+   * <p>
+   * Return value: Bulk string reply: the value of key, or nil when key does not exist.
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size in bytes
@@ -916,8 +863,8 @@ public class Strings {
    * @param bufferSize buffer size
    * @return size of a value or -1
    */
-  public static int GETEX(
-      BigSortedMap map, long keyPtr, int keySize, long expireAt, long bufferPtr, int bufferSize) {
+  public static int GETEX(BigSortedMap map, long keyPtr, int keySize, long expireAt, long bufferPtr,
+      int bufferSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -944,7 +891,6 @@ public class Strings {
    * command is similar to GET, except for the fact that it also deletes the key on success (if and
    * only if the key's value type is a string). Return value: Bulk string reply: the value of key,
    * nil when key does not exist, or an error if the key's value type isn't a string.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -952,8 +898,8 @@ public class Strings {
    * @param bufferSize buffer size
    * @return size of a value or -1 if does not exists
    */
-  public static int GETDEL(
-      BigSortedMap map, long keyPtr, int keySize, long bufferPtr, int bufferSize) {
+  public static int GETDEL(BigSortedMap map, long keyPtr, int keySize, long bufferPtr,
+      int bufferSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -976,7 +922,6 @@ public class Strings {
    * is overwritten, regardless of its type. Any previous time to live associated with the key is
    * discarded on successful SET operation (if keepTTL == false). This call covers the following
    * commands: SET, SETNX, SETEX, PSETEX with GET option
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -987,17 +932,8 @@ public class Strings {
    * @param keepTTL keep current TTL
    * @return length of an old value
    */
-  public static long SETGET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long valuePtr,
-      int valueSize,
-      long expire,
-      MutationOptions opts,
-      boolean keepTTL,
-      long bufPtr,
-      int bufSize) {
+  public static long SETGET(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire, MutationOptions opts, boolean keepTTL, long bufPtr, int bufSize) {
 
     Key kk = getKey(keyPtr, keySize);
 
@@ -1025,7 +961,6 @@ public class Strings {
    * of its type. Any previous time to live associated with the key is discarded on successful SET
    * operation (if keepTTL == false). This call covers the following commands: SET, SETNX, SETEX,
    * PSETEX
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1036,15 +971,8 @@ public class Strings {
    * @param keepTTL keep current TTL
    * @return true on success, false - otherwise
    */
-  public static boolean SET(
-      BigSortedMap map,
-      long keyPtr,
-      int keySize,
-      long valuePtr,
-      int valueSize,
-      long expire,
-      MutationOptions opts,
-      boolean keepTTL) {
+  public static boolean SET(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire, MutationOptions opts, boolean keepTTL) {
 
     if (expire == 0 && opts == MutationOptions.NONE && keepTTL == false) {
       return SET_DIRECT(map, keyPtr, keySize, valuePtr, valueSize);
@@ -1067,9 +995,9 @@ public class Strings {
       KeysLocker.writeUnlock(kk);
     }
   }
+
   /**
    * This optimized version is used for MSET (no expire, no mutation options)
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1077,8 +1005,8 @@ public class Strings {
    * @param valueSize value size
    * @return true - success, false - OOM
    */
-  public static boolean SET_DIRECT(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize) {
+  public static boolean SET_DIRECT(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -1093,7 +1021,6 @@ public class Strings {
 
   /**
    * DELETE key
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1114,7 +1041,6 @@ public class Strings {
    * Set key to hold string value if key does not exist. In that case, it is equal to SET. When key
    * already holds a value, no operation is performed. SETNX is short for "SET if Not eXists".
    * Return value Integer reply, specifically: 1 if the key was set 0 if the key was not set
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1123,8 +1049,8 @@ public class Strings {
    * @param expire expiration time (0 - no expire)
    * @return true on success, false - otherwise
    */
-  public static boolean SETNX(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize, long expire) {
+  public static boolean SETNX(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire) {
     return SET(map, keyPtr, keySize, valuePtr, valueSize, expire, MutationOptions.NX, false);
   }
 
@@ -1132,7 +1058,6 @@ public class Strings {
    * Set key to hold string value if key exist only. In that case, it is equal to SET. When key does
    * not exist, no operation is performed. SETXX is short for "SET if eXXists". Return value Integer
    * reply, specifically: 1 if the key was set 0 if the key was not set
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1141,8 +1066,8 @@ public class Strings {
    * @param expire expiration time (0 - no expire)
    * @return true on success, false - otherwise
    */
-  public static boolean SETXX(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize, long expire) {
+  public static boolean SETXX(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire) {
     return SET(map, keyPtr, keySize, valuePtr, valueSize, expire, MutationOptions.XX, false);
   }
 
@@ -1153,7 +1078,6 @@ public class Strings {
    * EXEC block. It is provided as a faster alternative to the given sequence of operations, because
    * this operation is very common when Redis is used as a cache. An error is returned when seconds
    * is invalid.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1162,8 +1086,8 @@ public class Strings {
    * @param expire expiration time
    * @return true, false
    */
-  public static boolean SETEX(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize, long expire) {
+  public static boolean SETEX(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire) {
     return SET(map, keyPtr, keySize, valuePtr, valueSize, expire, MutationOptions.NONE, false);
   }
 
@@ -1174,7 +1098,6 @@ public class Strings {
    * MULTI / EXEC block. It is provided as a faster alternative to the given sequence of operations,
    * because this operation is very common when Redis is used as a cache. An error is returned when
    * seconds is invalid.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1183,8 +1106,8 @@ public class Strings {
    * @param expire expiration time
    * @return true, false
    */
-  public static boolean PSETEX(
-      BigSortedMap map, long keyPtr, int keySize, long valuePtr, int valueSize, long expire) {
+  public static boolean PSETEX(BigSortedMap map, long keyPtr, int keySize, long valuePtr,
+      int valueSize, long expire) {
     return SET(map, keyPtr, keySize, valuePtr, valueSize, expire, MutationOptions.NONE, false);
   }
 
@@ -1196,7 +1119,6 @@ public class Strings {
    * at offset. Note that the maximum offset that you can set is 229 -1 (536870911), as Redis
    * Strings are limited to 512 megabytes. If you need to grow beyond this size, you can use
    * multiple keys.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1205,8 +1127,8 @@ public class Strings {
    * @param valueSize value size
    * @return new size of key's value (-1 if operation was not performed)
    */
-  public static long SETRANGE(
-      BigSortedMap map, long keyPtr, int keySize, long offset, long valuePtr, int valueSize) {
+  public static long SETRANGE(BigSortedMap map, long keyPtr, int keySize, long offset,
+      long valuePtr, int valueSize) {
     // Sanity check
     if (offset < 0) return -1;
     Key kk = getKey(keyPtr, keySize);
@@ -1240,7 +1162,6 @@ public class Strings {
    * are used to specify a range. Like for the GETRANGE command start and end can contain negative
    * values in order to index bytes starting from the end of the string, where -1 is the last byte,
    * -2 is the penultimate, and so forth. Non-existent keys are treated as empty strings.
-   *
    * @param map sorted map storage
    * @param keyPtr key address
    * @param keySize key size
@@ -1248,19 +1169,19 @@ public class Strings {
    * @param start start offset (in bytes) inclusive
    * @param end end position (in bytes) inclusive, if Commons.NULL_LONG - means unspecified
    * @return The command returns the position of the first bit set to 1 or 0 according to the
-   *     request. If we look for set bits (the bit argument is 1) and the string is empty or
-   *     composed of just zero bytes, -1 is returned. If we look for clear bits (the bit argument is
-   *     0) and the string only contains bit set to 1, the function returns the first bit not part
-   *     of the string on the right. So if the string is three bytes set to the value 0xff the
-   *     command BITPOS key 0 will return 24, since up to bit 23 all the bits are 1. Basically, the
-   *     function considers the right of the string as padded with zeros if you look for clear bits
-   *     and specify no range or the start argument only. However, this behavior changes if you are
-   *     looking for clear bits and specify a range with both start and end. If no clear bit is
-   *     found in the specified range, the function returns -1 as the user specified a clear range
-   *     and there are no 0 bits in that range.
+   *         request. If we look for set bits (the bit argument is 1) and the string is empty or
+   *         composed of just zero bytes, -1 is returned. If we look for clear bits (the bit
+   *         argument is 0) and the string only contains bit set to 1, the function returns the
+   *         first bit not part of the string on the right. So if the string is three bytes set to
+   *         the value 0xff the command BITPOS key 0 will return 24, since up to bit 23 all the bits
+   *         are 1. Basically, the function considers the right of the string as padded with zeros
+   *         if you look for clear bits and specify no range or the start argument only. However,
+   *         this behavior changes if you are looking for clear bits and specify a range with both
+   *         start and end. If no clear bit is found in the specified range, the function returns -1
+   *         as the user specified a clear range and there are no 0 bits in that range.
    */
-  public static long BITPOS(
-      BigSortedMap map, long keyPtr, int keySize, int bit, long start, long end) {
+  public static long BITPOS(BigSortedMap map, long keyPtr, int keySize, int bit, long start,
+      long end) {
 
     Key kk = getKey(keyPtr, keySize);
     try {
@@ -1282,12 +1203,11 @@ public class Strings {
   /**
    * TODO: this is not atomic unfortunately, b/c scan SCAN operation can get access to K-Vs during
    * this operation We would say - its partially atomic
-   *
-   * <p>Sets the given keys to their respective values. MSET replaces existing values with new
-   * values, just as regular SET. See MSETNX if you don't want to overwrite existing values. MSET is
-   * atomic, so all given keys are set at once. It is not possible for clients to see that some of
-   * the keys were updated while others are unchanged.
-   *
+   * <p>
+   * Sets the given keys to their respective values. MSET replaces existing values with new values,
+   * just as regular SET. See MSETNX if you don't want to overwrite existing values. MSET is atomic,
+   * so all given keys are set at once. It is not possible for clients to see that some of the keys
+   * were updated while others are unchanged.
    * @param map sorted map storage
    * @param kvs list of key-values to set
    */
@@ -1318,7 +1238,6 @@ public class Strings {
    * clients to see that some of the keys were updated while others are unchanged. Return value
    * Integer reply, specifically: 1 if the all the keys were set. 0 if no key was set (at least one
    * key already existed).
-   *
    * @param map sorted map storage
    * @param kvs list of key-values to set
    * @return true on success, false - otherwise
@@ -1348,42 +1267,40 @@ public class Strings {
    * (containing string values) and store the result in the destination key. The BITOP command
    * supports four bitwise operations: AND, OR, XOR and NOT, thus the valid forms to call the
    * command are:
-   *
-   * <p>BITOP AND destkey srckey1 srckey2 srckey3 ... srckeyN BITOP OR destkey srckey1 srckey2
-   * srckey3 ... srckeyN BITOP XOR destkey srckey1 srckey2 srckey3 ... srckeyN BITOP NOT destkey
-   * srckey
-   *
-   * <p>As you can see NOT is special as it only takes an input key, because it performs inversion
-   * of bits so it only makes sense as an unary operator. The result of the operation is always
-   * stored at destkey.
-   *
-   * <p>Handling of strings with different lengths
-   *
-   * <p>When an operation is performed between strings having different lengths, all the strings
+   * <p>
+   * BITOP AND destkey srckey1 srckey2 srckey3 ... srckeyN BITOP OR destkey srckey1 srckey2 srckey3
+   * ... srckeyN BITOP XOR destkey srckey1 srckey2 srckey3 ... srckeyN BITOP NOT destkey srckey
+   * <p>
+   * As you can see NOT is special as it only takes an input key, because it performs inversion of
+   * bits so it only makes sense as an unary operator. The result of the operation is always stored
+   * at destkey.
+   * <p>
+   * Handling of strings with different lengths
+   * <p>
+   * When an operation is performed between strings having different lengths, all the strings
    * shorter than the longest string in the set are treated as if they were zero-padded up to the
    * length of the longest string. The same holds true for non-existent keys, that are considered as
    * a stream of zero bytes up to the length of the longest string.
-   *
-   * <p>Return value Integer reply The size of the string stored in the destination key, that is
-   * equal to the size of the longest input string.
-   *
-   * <p>Examples:
-   *
-   * <p>redis> SET key1 "foobar" "OK" redis> SET key2 "abcdef" "OK" redis> BITOP AND dest key1 key2
+   * <p>
+   * Return value Integer reply The size of the string stored in the destination key, that is equal
+   * to the size of the longest input string.
+   * <p>
+   * Examples:
+   * <p>
+   * redis> SET key1 "foobar" "OK" redis> SET key2 "abcdef" "OK" redis> BITOP AND dest key1 key2
    * (integer) 6 redis> GET dest "`bc`ab" redis>
-   *
-   * <p>Pattern: real time metrics using bitmaps
-   *
-   * <p>BITOP is a good complement to the pattern documented in the BITCOUNT command documentation.
+   * <p>
+   * Pattern: real time metrics using bitmaps
+   * <p>
+   * BITOP is a good complement to the pattern documented in the BITCOUNT command documentation.
    * Different bitmaps can be combined in order to obtain a target bitmap where the population
    * counting operation is performed. See the article called "Fast easy realtime metrics using Redis
    * bitmaps" for a interesting use cases.
-   *
-   * <p>Performance considerations BITOP is a potentially slow command as it runs in O(N) time. Care
+   * <p>
+   * Performance considerations BITOP is a potentially slow command as it runs in O(N) time. Care
    * should be taken when running it against long input strings. For real-time metrics and
    * statistics involving large inputs a good approach is to use a replica (with read-only option
    * disabled) where the bit-wise operations are performed to avoid blocking the master instance.
-   *
    * @param map sorted map storage
    * @param op bitwise operation (AND, XOR, OR, NOT)
    * @param keyPtrs array of key pointers (first key is the destination key)

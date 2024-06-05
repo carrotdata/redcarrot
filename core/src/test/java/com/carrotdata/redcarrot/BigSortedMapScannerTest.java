@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -64,14 +60,14 @@ public class BigSortedMapScannerTest extends CarrotCoreBase {
     log.debug("Scanned={} in {}ms", countRecords(), end - start);
     log.debug("Total memory      ={}", BigSortedMap.getGlobalAllocatedMemory());
     log.debug("Total   data      ={}", BigSortedMap.getGlobalDataSize());
-    log.debug(
-        "Compression ratio ={}\n",
-        (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
+    log.debug("Compression ratio ={}\n",
+      (float) BigSortedMap.getGlobalDataSize() / BigSortedMap.getGlobalAllocatedMemory());
     assertEquals(totalLoaded, scanned);
   }
 
   @Override
-  public void extTearDown() {}
+  public void extTearDown() {
+  }
 
   private void load(long totalLoaded) {
     byte[] key = ("KEY" + (totalLoaded)).getBytes();

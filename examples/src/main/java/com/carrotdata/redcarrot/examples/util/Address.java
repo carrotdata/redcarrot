@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.util;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,20 +27,8 @@ public class Address extends KeyValues {
     super(p);
   }
 
-  static String[] ATTRIBUTES =
-      new String[] {
-        "LON",
-        "LAT",
-        "NUMBER",
-        "STREET",
-        "UNIT",
-        "CITY",
-        "DISTRICT",
-        "REGION",
-        "POSTCODE",
-        "ID",
-        "HASH"
-      };
+  static String[] ATTRIBUTES = new String[] { "LON", "LAT", "NUMBER", "STREET", "UNIT", "CITY",
+      "DISTRICT", "REGION", "POSTCODE", "ID", "HASH" };
 
   @SuppressWarnings("deprecation")
   public static List<Address> loadFromFile(String name) throws IOException {
@@ -64,9 +48,7 @@ public class Address extends KeyValues {
       if (arr.length != ATTRIBUTES.length) {
         continue;
       }
-      if (arr[3].length() == 0
-          || arr[5].length() == 0
-          || arr[7].length() == 0
+      if (arr[3].length() == 0 || arr[5].length() == 0 || arr[7].length() == 0
           || arr[8].length() == 0) {
         continue;
       }
@@ -84,12 +66,8 @@ public class Address extends KeyValues {
       }
     }
     dis.close();
-    log.debug(
-        "Parsed file: {}\nTotal records={}\nValid records={}\nTotalSize={}",
-        name,
-        total,
-        valid,
-        totalSize);
+    log.debug("Parsed file: {}\nTotal records={}\nValid records={}\nTotalSize={}", name, total,
+      valid, totalSize);
     return list;
   }
 

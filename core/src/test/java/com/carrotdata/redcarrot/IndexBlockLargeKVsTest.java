@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +34,8 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
 
   @Ignore
   @Test
-  public void testAutomaticDataBlockMerge() {}
+  public void testAutomaticDataBlockMerge() {
+  }
 
   /**
    * 1. K & V are both in data block - we do not test this 2. K & V both external, reducing value
@@ -82,6 +79,7 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
       freeKeys(keys);
     }
   }
+
   /**
    * 1. K & V are both in data block and > 12 - push V out of data block 2. K & V both external,
    * increasing value size should keep them both external 3. K is in data block , V is external,
@@ -149,11 +147,8 @@ public class IndexBlockLargeKVsTest extends IndexBlockTest {
         UnsafeAccess.free(ptr);
       }
     }
-    log.debug(
-        "Number of data blocks={} index block data size ={} num records={}",
-        b.getNumberOfDataBlock(),
-        b.getDataInBlockSize(),
-        keys.size());
+    log.debug("Number of data blocks={} index block data size ={} num records={}",
+      b.getNumberOfDataBlock(), b.getDataInBlockSize(), keys.size());
     return keys;
   }
 }

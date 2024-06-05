@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.db;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -28,25 +24,22 @@ public class DBSystem {
   private static long DEFAULT_CURSOR_EXPIRATION = 3600000; // in ms
 
   private static AtomicLong seqId = new AtomicLong(0);
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -61,7 +54,6 @@ public class DBSystem {
 
   /**
    * Build key for System. It uses thread local key arena TODO: data type prefix
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @return address of a system key
@@ -77,7 +69,6 @@ public class DBSystem {
 
   /**
    * Get system key size
-   *
    * @param keySize
    * @return system key size
    */
@@ -87,7 +78,6 @@ public class DBSystem {
 
   /**
    * Build key for System. It uses provided arena
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @return new key size
@@ -101,7 +91,6 @@ public class DBSystem {
 
   /**
    * Returns next id
-   *
    * @return id
    */
   public static long nextId() {
@@ -116,7 +105,6 @@ public class DBSystem {
 
   /**
    * Saves cursor id with associated value (last seen key)
-   *
    * @param map sorted map storage
    * @param cursorId cursor id
    * @param valPtr value address
@@ -128,20 +116,14 @@ public class DBSystem {
     UnsafeAccess.putLong(ptr, cursorId);
     long keyPtr = buildKey(ptr, Utils.SIZEOF_LONG);
     int keySize = getSystemKeySize(Utils.SIZEOF_LONG);
-    boolean result =
-        map.put(
-            keyPtr,
-            keySize,
-            valPtr,
-            valSize,
-            DEFAULT_CURSOR_EXPIRATION + java.lang.System.currentTimeMillis());
+    boolean result = map.put(keyPtr, keySize, valPtr, valSize,
+      DEFAULT_CURSOR_EXPIRATION + java.lang.System.currentTimeMillis());
     UnsafeAccess.free(ptr);
     return result;
   }
 
   /**
    * Get last seen key by a given cursor
-   *
    * @param map sorted map storage
    * @param cursorId cursor id
    * @param bufferPtr buffer address
@@ -160,7 +142,6 @@ public class DBSystem {
 
   /**
    * Deletes obsolete cursor
-   *
    * @param map sorted map storage
    * @param cursorId cursor id
    * @return true on success, false - otherwise

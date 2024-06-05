@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sets;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
@@ -41,23 +37,21 @@ public class SetAdd extends Operation {
    * Thread local key arena storage
    */
 
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
   /*
    * Size of a key arena
    */
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   /** Constructor */
   public SetAdd() {
@@ -72,7 +66,6 @@ public class SetAdd extends Operation {
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -87,7 +80,6 @@ public class SetAdd extends Operation {
 
   /**
    * Build key for Set. It uses thread local key arena TODO: data type prefix
-   *
    * @param keyPtr original key address
    * @param keySize original key size
    * @param elPtr element address
@@ -225,7 +217,6 @@ public class SetAdd extends Operation {
 
   /**
    * Insert new Key-Value with a given element
-   *
    * @param elKeyPtr element address
    * @param elKeySize element size
    */
@@ -255,7 +246,6 @@ public class SetAdd extends Operation {
 
   /**
    * Insert first Key-Value with a given element
-   *
    * @param elKeyPtr element address
    * @param elKeySize element size
    */
@@ -281,18 +271,18 @@ public class SetAdd extends Operation {
     values[0] = vPtr;
     valueSizes[0] = eSize + eSizeSize + NUM_ELEM_SIZE;
   }
+
   /**
    * Insert element(elementPtr, elementSize) into value (valueAddress, valueSize) insertion point is
    * addr. Sets.valueArena is used
-   *
    * @param valueAddress value address
    * @param valueSize current value size
    * @param addr insertion point
    * @param elementPtr element pointer
    * @param elementSize element size
    */
-  private void insertElement(
-      long valueAddress, int valueSize, long addr, long elementPtr, int elementSize) {
+  private void insertElement(long valueAddress, int valueSize, long addr, long elementPtr,
+      int elementSize) {
     // increment number of elements in this value
     addNumElements(valueAddress, 1);
     long ptr = Sets.valueArena.get();

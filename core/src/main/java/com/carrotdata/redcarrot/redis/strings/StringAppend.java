@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -38,14 +34,12 @@ public class StringAppend extends Operation {
   int sizeAfterAppend;
 
   /*
-   * Thread local buffer
-   * Optimized syntax for java 8
+   * Thread local buffer Optimized syntax for java 8
    */
   static ThreadLocal<Long> buffer = ThreadLocal.withInitial(() -> UnsafeAccess.malloc(4096));
 
   /*
-   * Thread local buffer size
-   * Optimized syntax for java 8
+   * Thread local buffer size Optimized syntax for java 8
    */
   static ThreadLocal<Integer> bufferSize = ThreadLocal.withInitial(() -> 4096);
 
@@ -61,9 +55,9 @@ public class StringAppend extends Operation {
     appendValueSize = 0;
     sizeAfterAppend = 0;
   }
+
   /**
    * Sets append value address and size
-   *
    * @param ptr append value address
    * @param size append value size
    */
@@ -74,7 +68,6 @@ public class StringAppend extends Operation {
 
   /**
    * Gets value size after append
-   *
    * @return value size after append operation
    */
   public int getSizeAfterAppend() {
@@ -83,7 +76,6 @@ public class StringAppend extends Operation {
 
   /**
    * Ensure enough space in a thread local buffer
-   *
    * @param required required size
    */
   private void checkBuffer(int required) {

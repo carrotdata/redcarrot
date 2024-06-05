@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.compression;
 
 // TODO: Auto-generated Javadoc
@@ -27,12 +23,12 @@ public enum CodecType {
   BITMAP(3),
   /** ZSTD */
   ZSTD(4);
+
   /** The id. */
   private int id;
 
   /**
    * Instantiates a new codec type.
-   *
    * @param id the id
    */
   private CodecType(int id) {
@@ -41,7 +37,6 @@ public enum CodecType {
 
   /**
    * Id.
-   *
    * @return the int
    */
   public int id() {
@@ -50,7 +45,6 @@ public enum CodecType {
 
   /**
    * Gets the codec.
-   *
    * @return the codec
    */
   public Codec getCodec() {
@@ -63,7 +57,7 @@ public enum CodecType {
         return CodecFactory.getInstance().getCodec(CodecType.LZ4HC);
       case 4:
         return CodecFactory.getInstance().getCodec(CodecType.ZSTD);
-            
+
     }
     return null;
   }

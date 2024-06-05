@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.util;
 
 import java.io.ByteArrayOutputStream;
@@ -35,7 +31,7 @@ public class TestBitmapCompression {
   public void testBitmapCodecs() throws IOException {
 
     String[] names =
-        new String[] {"Roaring", "16bit", "16bit diff", "8bit", "8bit diff", "4bit", "2bit"};
+        new String[] { "Roaring", "16bit", "16bit diff", "8bit", "8bit diff", "4bit", "2bit" };
     double[][] results = new double[names.length][];
     results[0] = mainLoop(TestBitmapCompression::calculateRoaring, "\nROARING BITMAP\n");
     results[1] = mainLoop(TestBitmapCompression::calculateSize16, "\n16-bit codec\n");
@@ -51,32 +47,20 @@ public class TestBitmapCompression {
     for (; i < n; i++) {
       int index = maxIndex(results, i);
       if (index >= 0) {
-        System.out.printf(
-            "%-20f%-20f%-20s%-20f\n",
-            ((double) (i + 1) / 1000),
-            results[index][i],
-            names[index],
-            results[index][i] / results[0][i]);
+        System.out.printf("%-20f%-20f%-20s%-20f\n", ((double) (i + 1) / 1000), results[index][i],
+          names[index], results[index][i] / results[0][i]);
       } else {
         break;
       }
     }
 
-    System.out.printf(
-        "\n%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s\n\n",
-        "Density", names[0], names[1], names[2], names[3], names[4], names[5], names[6]);
+    System.out.printf("\n%-15s%-15s%-15s%-15s%-15s%-15s%-15s%-15s\n\n", "Density", names[0],
+      names[1], names[2], names[3], names[4], names[5], names[6]);
 
     for (int k = 0; k < i; k++) {
-      System.out.printf(
-          "%-15f%-15f%-15f%-15f%-15f%-15f%-15f%-15f\n",
-          ((double) (k + 1) / 1000),
-          results[0][k],
-          results[1][k],
-          results[2][k],
-          results[3][k],
-          results[4][k],
-          results[5][k],
-          results[6][k]);
+      System.out.printf("%-15f%-15f%-15f%-15f%-15f%-15f%-15f%-15f\n", ((double) (k + 1) / 1000),
+        results[0][k], results[1][k], results[2][k], results[3][k], results[4][k], results[5][k],
+        results[6][k]);
     }
   }
 
@@ -160,7 +144,7 @@ public class TestBitmapCompression {
       // 01 - 2 bits set
       // 10 - 3 bits set
       // 11 - raw 16 bits chunk
-      int sz = bitCount * 4 + (bitCount == 0 ? 1 : 3); /* to keep # bits*/
+      int sz = bitCount * 4 + (bitCount == 0 ? 1 : 3); /* to keep # bits */
       ;
       if (sz >= 16 + 3) {
         size += 16 + 3;
@@ -173,7 +157,6 @@ public class TestBitmapCompression {
 
   /**
    * For testing only array size = 64K
-   *
    * @param arr array represents bits: 0, 1
    * @return compressed size
    */
@@ -186,12 +169,11 @@ public class TestBitmapCompression {
       if (bitCount > maxBitCount) {
         maxBitCount = bitCount;
       }
-      int sz =
-          bitCount * 8
-              + (bitCount == 0
-                  ? 1
-                  : 6) /* we need only 5 bits to keep max elements in a compressed
-                       256 bits chunk - 31; first bit is always 1, total 5+1 = 6 bits*/;
+      int sz = bitCount * 8
+          + (bitCount == 0 ? 1 : 6) /*
+                                     * we need only 5 bits to keep max elements in a compressed 256
+                                     * bits chunk - 31; first bit is always 1, total 5+1 = 6 bits
+                                     */;
       if (sz >= 256 + 6) {
         size += 256 + 6;
       } else {
@@ -203,7 +185,6 @@ public class TestBitmapCompression {
 
   /**
    * For testing only array size = 64K
-   *
    * @param arr array represents bits: 0, 1
    * @return compressed size
    */
@@ -231,14 +212,12 @@ public class TestBitmapCompression {
           maxBitCount = numBits;
         }
         if (numBits >= 4) {
-          // 7 bits - is 1xxxxxx, last 6 bits  are total bit count (bits set)
+          // 7 bits - is 1xxxxxx, last 6 bits are total bit count (bits set)
           // in a 256 bit block set
           // first bit == 1, when bit count > 0
 
-          sz =
-              7
-                  + 3 /*keeps bits, max = 8 */ /*+ Utils.sizeUVInt(diffArray[0])*/
-                  + (diffArray.length) * bits;
+          sz = 7 + 3 /* keeps bits, max = 8 */ /* + Utils.sizeUVInt(diffArray[0]) */
+              + (diffArray.length) * bits;
         } else {
           sz = 7 + diffArray.length * 8; //
         }
@@ -255,7 +234,6 @@ public class TestBitmapCompression {
 
   /**
    * For testing only array size = 64K
-   *
    * @param arr array represents bits: 0, 1
    * @return compressed size in bits
    */
@@ -283,11 +261,10 @@ public class TestBitmapCompression {
     int max = max(diffArray);
     int lead = Integer.numberOfLeadingZeros(max);
     int bits = 32 - lead;
-    int size =
-        14 /*number of elements*/
-            +
-            /* first element*/ +4 /* bits number */
-            + (diffArray.length) * bits;
+    int size = 14 /* number of elements */
+        +
+        /* first element */ +4 /* bits number */
+        + (diffArray.length) * bits;
     if (size > arr.length) {
       return arr.length;
     }
@@ -325,7 +302,6 @@ public class TestBitmapCompression {
 
   /**
    * Populates byte array for a given bit fraction
-   *
    * @param arr array to populate
    * @param bitFraction fraction of 1's
    */

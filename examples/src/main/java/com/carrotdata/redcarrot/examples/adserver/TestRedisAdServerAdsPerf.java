@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.adserver;
 
 import java.io.IOException;
@@ -24,23 +20,23 @@ import redis.clients.jedis.Jedis;
 
 /**
  * ----- Data structures to keep ads performance:
- *
- * <p>11. AdSitePerf: HASH key = adId, {member1= siteId%'-V' value1 = views}, {member2= siteId%'-A'
+ * <p>
+ * 11. AdSitePerf: HASH key = adId, {member1= siteId%'-V' value1 = views}, {member2= siteId%'-A'
  * value2 = actions}
- *
- * <p>For every Ad and every site, this data keeps total number of views and actions
- *
- * <p>12. AdSitesRank : ZSET key = adID, member = siteID, score = CTR (click-through-rate)
- *
- * <p>This data set allows to estimate performance of a given ad on a different sites.
- *
- * <p>Results:
- *
- * <p>Redis 6.0.10 = Carrot no compression = Carrot LZ4 compression = Carrot LZ4HC compression =
- *
- * <p>Notes:
- *
- * <p>The test uses synthetic data, which is mostly random and not compressible
+ * <p>
+ * For every Ad and every site, this data keeps total number of views and actions
+ * <p>
+ * 12. AdSitesRank : ZSET key = adID, member = siteID, score = CTR (click-through-rate)
+ * <p>
+ * This data set allows to estimate performance of a given ad on a different sites.
+ * <p>
+ * Results:
+ * <p>
+ * Redis 6.0.10 = Carrot no compression = Carrot LZ4 compression = Carrot LZ4HC compression =
+ * <p>
+ * Notes:
+ * <p>
+ * The test uses synthetic data, which is mostly random and not compressible
  */
 public class TestRedisAdServerAdsPerf {
 

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.twitter;
 
 import java.util.ArrayList;
@@ -62,7 +58,6 @@ public class Timeline {
 
   /**
    * On average, user posts 2 statuses per day
-   *
    * @param registered user's registration time
    * @return user's timeline
    */
@@ -83,17 +78,16 @@ public class Timeline {
 
   /**
    * Saves timeline to Carrot store, using Set SADD command
-   *
    * @param map sorted map store
    */
   void saveToCarrot(BigSortedMap map) {
     String key = getKey();
     items.stream().forEach(x -> x.saveToCarrot(map, key));
   }
+
   /**
    * Saves timeline to Redis store, using ZSet ZADD command Redis SET does not support ordering of
    * members
-   *
    * @param client Redis client
    */
   void saveToRedis(Jedis client) {

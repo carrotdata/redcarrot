@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.NUM_ELEM_SIZE;
@@ -27,19 +23,17 @@ import com.carrotdata.redcarrot.util.Utils;
 public final class HashScanner extends Scanner {
 
   /*
-   * This is used to speed up reverse scanner.
-   * during initialization process of a next Value blob,
-   * when we seek last element, we calculate all offsets along the way
-   * from the beginning of a Value blob till the last element
+   * This is used to speed up reverse scanner. during initialization process of a next Value blob,
+   * when we seek last element, we calculate all offsets along the way from the beginning of a Value
+   * blob till the last element
    */
-  static ThreadLocal<Long> offsetBuffer =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(4096); // More than enough to keep reverse scanner offsets
-          return ptr;
-        }
-      };
+  static ThreadLocal<Long> offsetBuffer = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      long ptr = UnsafeAccess.malloc(4096); // More than enough to keep reverse scanner offsets
+      return ptr;
+    }
+  };
 
   /*
    * Keeps index for offsetBuffer
@@ -113,13 +107,12 @@ public final class HashScanner extends Scanner {
   boolean reverse;
 
   /*
-   *
    * Delete start/stop keys on close()
    */
   boolean disposeKeysOnClose;
+
   /**
    * Constructor
-   *
    * @param scanner base scanner
    * @throws IOException
    */
@@ -129,7 +122,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Constructor
-   *
    * @param scanner base scanner
    * @param reverse true, if reverse scanner, false - otherwise
    * @throws IOException
@@ -140,7 +132,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Constructor for a range scanner
-   *
    * @param scanner base scanner
    * @param start start field address
    * @param startSize start field size
@@ -148,15 +139,13 @@ public final class HashScanner extends Scanner {
    * @param stopSize stop field size
    * @throws IOException
    */
-  public HashScanner(
-      BigSortedMapScanner scanner, long start, int startSize, long stop, int stopSize)
-      throws IOException {
+  public HashScanner(BigSortedMapScanner scanner, long start, int startSize, long stop,
+      int stopSize) throws IOException {
     this(scanner, start, startSize, stop, stopSize, false);
   }
 
   /**
    * Constructor for a range scanner
-   *
    * @param scanner base scanner
    * @param start start field address
    * @param startSize start field size
@@ -165,14 +154,8 @@ public final class HashScanner extends Scanner {
    * @param reverse reverse scanner
    * @throws IOException
    */
-  public HashScanner(
-      BigSortedMapScanner scanner,
-      long start,
-      int startSize,
-      long stop,
-      int stopSize,
-      boolean reverse)
-      throws IOException {
+  public HashScanner(BigSortedMapScanner scanner, long start, int startSize, long stop,
+      int stopSize, boolean reverse) throws IOException {
     this.mapScanner = scanner;
     this.startFieldPtr = start;
     this.startFieldSize = startSize;
@@ -184,7 +167,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get hash field address from a key
-   *
    * @param ptr key address
    * @return address of a start of a field
    */
@@ -195,7 +177,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get hash field size from a key and key size
-   *
    * @param ptr address of a key
    * @param size key size
    * @return size of a field
@@ -207,7 +188,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Set dispose start/stop keys on close()
-   *
    * @param b dispose if true
    */
   public void setDisposeKeysOnClose(boolean b) {
@@ -216,7 +196,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get value number (number elements in a current value)
-   *
    * @return value number
    */
   public int getValueNumber() {
@@ -292,7 +271,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Search last field in a current Value
-   *
    * @return true on success, false - otherwise
    */
   private boolean searchLastMember() {
@@ -360,7 +338,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Checks if scanner has next element
-   *
    * @return true, false
    * @throws IOException
    */
@@ -376,9 +353,8 @@ public final class HashScanner extends Scanner {
         return true;
       } else {
 
-        if (Utils.compareTo(
-                this.fieldAddress, this.fieldSize, this.stopFieldPtr, this.stopFieldSize)
-            >= 0) {
+        if (Utils.compareTo(this.fieldAddress, this.fieldSize, this.stopFieldPtr,
+          this.stopFieldSize) >= 0) {
           return false;
         } else {
           return true;
@@ -405,7 +381,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Advance scanner by one element MUST BE USED IN COMBINATION with hasNext()
-   *
    * @return true if operation succeeded , false - end of scanner
    * @throws IOException
    */
@@ -448,9 +423,8 @@ public final class HashScanner extends Scanner {
 
       updateFields();
       if (this.stopFieldPtr > 0) {
-        if (Utils.compareTo(
-                this.fieldAddress, this.fieldSize, this.stopFieldPtr, this.stopFieldSize)
-            >= 0) {
+        if (Utils.compareTo(this.fieldAddress, this.fieldSize, this.stopFieldPtr,
+          this.stopFieldSize) >= 0) {
           this.offset = 0;
           return false;
         } else {
@@ -470,7 +444,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get current field address
-   *
    * @return field address
    */
   public long fieldAddress() {
@@ -479,7 +452,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Gets current field size
-   *
    * @return field size
    */
   public int fieldSize() {
@@ -488,7 +460,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get current field-value address
-   *
    * @return field value address
    */
   public long fieldValueAddress() {
@@ -497,7 +468,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Gets current field value size
-   *
    * @return field value size
    */
   public int fieldValueSize() {
@@ -506,7 +476,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get current position of a scanner (in field-values)
-   *
    * @return position
    */
   public long getPosition() {
@@ -515,7 +484,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Get local (in current value) position
-   *
    * @return position
    */
   public int getPos() {
@@ -524,7 +492,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Skips to position - works only forward
-   *
    * @param pos position to skip (always less than cardinality)
    * @return current position (can be less than pos)
    */
@@ -564,7 +531,6 @@ public final class HashScanner extends Scanner {
   /**
    * We do not check stop limit to improve performance because: 1. We now in advance cardinality of
    * the set 2. We use this API only in direct scanner w/o start and stop
-   *
    * @param pos position to search
    * @return number of skipped elements
    */
@@ -593,7 +559,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Delete current Element
-   *
    * @return true if success, false - otherwise
    */
   public boolean delete() {
@@ -603,7 +568,6 @@ public final class HashScanner extends Scanner {
 
   /**
    * Delete all Elements in this scanner
-   *
    * @return true on success, false?
    */
   public boolean deleteAll() {
@@ -632,9 +596,8 @@ public final class HashScanner extends Scanner {
       this.offset = getOffsetByIndex(this.offsetIndex);
       updateFields();
       if (this.startFieldPtr > 0) {
-        int result =
-            Utils.compareTo(
-                this.fieldAddress, this.fieldSize, this.startFieldPtr, this.startFieldSize);
+        int result = Utils.compareTo(this.fieldAddress, this.fieldSize, this.startFieldPtr,
+          this.startFieldSize);
         if (result < 0) {
           return false;
         }

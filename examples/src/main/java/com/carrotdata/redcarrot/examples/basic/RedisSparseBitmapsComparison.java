@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.basic;
 
 import java.io.IOException;
@@ -22,23 +18,23 @@ import redis.clients.jedis.Jedis;
 
 /**
  * The Test runs sparse bitmap tests in Redis with different population count = 0.01
- *
- * <p>Results (Carrot sparse bitmaps with LZ4HC compression vs. Redis bitmaps):
- *
- * <p>Bitmap size = 100,000,000 sizeUncompressedBitmap = 12,500,000 bytes Test_consumed_RAM ~
+ * <p>
+ * Results (Carrot sparse bitmaps with LZ4HC compression vs. Redis bitmaps):
+ * <p>
+ * Bitmap size = 100,000,000 sizeUncompressedBitmap = 12,500,000 bytes Test_consumed_RAM ~
  * 13,311,264 (Redis)
- *
- * <p>COMPRESSION
- *
- * <p>population CARROT LZ4HC REDIS count (dencity)
- *
- * <p>dencity=0.01 4.2 0.94
- *
- * <p>Carrot/Redis = 4.5
- *
- * <p>Notes: COMPRESSION = sizeUncompressedBitmap/Test_consumed_RAM
- *
- * <p>sizeUncompressedBitmap - size of an uncompressed bitmap, which can hold all the bits
+ * <p>
+ * COMPRESSION
+ * <p>
+ * population CARROT LZ4HC REDIS count (dencity)
+ * <p>
+ * dencity=0.01 4.2 0.94
+ * <p>
+ * Carrot/Redis = 4.5
+ * <p>
+ * Notes: COMPRESSION = sizeUncompressedBitmap/Test_consumed_RAM
+ * <p>
+ * sizeUncompressedBitmap - size of an uncompressed bitmap, which can hold all the bits
  * Test_consumed_RAM - RAM consumed by test.
  */
 public class RedisSparseBitmapsComparison {
@@ -51,7 +47,7 @@ public class RedisSparseBitmapsComparison {
   static int delta = 100;
   static double dencity = 0.01;
 
-  static double[] dencities = new double[] {0.01};
+  static double[] dencities = new double[] { 0.01 };
 
   private static void testPerformance() throws IOException {
     Jedis client = new Jedis("localhost");
@@ -71,12 +67,8 @@ public class RedisSparseBitmapsComparison {
     }
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Time for {} population dencity={} bitmap size={} new SetBit={}ms",
-        N,
-        dencity,
-        MAX,
-        end - start);
+    log.debug("Time for {} population dencity={} bitmap size={} new SetBit={}ms", N, dencity, MAX,
+      end - start);
 
     log.debug("Press any button ...");
     System.in.read();

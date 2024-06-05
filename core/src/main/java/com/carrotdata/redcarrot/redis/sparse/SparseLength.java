@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sparse;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -42,28 +38,22 @@ public class SparseLength extends Operation {
     long foundValuePtr = DataBlock.valueAddress(foundRecordAddress);
     int foundValueSize = DataBlock.valueLength(foundRecordAddress);
 
-    if (Utils.compareTo(
-            foundKeyPtr, foundKeySize - Utils.SIZEOF_LONG, keyAddress, keySize - Utils.SIZEOF_LONG)
-        != 0) {
+    if (Utils.compareTo(foundKeyPtr, foundKeySize - Utils.SIZEOF_LONG, keyAddress,
+      keySize - Utils.SIZEOF_LONG) != 0) {
       // Key not found - this is not a sparse bitmap key
       return true;
     }
     long offset = SparseBitmaps.getChunkOffsetFromKey(foundKeyPtr, foundKeySize);
     boolean isCompressed = SparseBitmaps.isCompressed(foundValuePtr);
-    foundValuePtr =
-        isCompressed
-            ? SparseBitmaps.decompress(foundValuePtr, foundValueSize - SparseBitmaps.HEADER_SIZE)
-            : foundValuePtr;
+    foundValuePtr = isCompressed
+        ? SparseBitmaps.decompress(foundValuePtr, foundValueSize - SparseBitmaps.HEADER_SIZE)
+        : foundValuePtr;
     if (isCompressed) {
       foundValueSize = SparseBitmaps.CHUNK_SIZE;
     }
-    this.strlen =
-        offset / Utils.BITS_PER_BYTE
-            + (Utils.lastBitOffset(
-                        foundValuePtr + SparseBitmaps.HEADER_SIZE,
-                        foundValueSize - SparseBitmaps.HEADER_SIZE)
-                    / Utils.BITS_PER_BYTE
-                + 1);
+    this.strlen = offset / Utils.BITS_PER_BYTE
+        + (Utils.lastBitOffset(foundValuePtr + SparseBitmaps.HEADER_SIZE,
+          foundValueSize - SparseBitmaps.HEADER_SIZE) / Utils.BITS_PER_BYTE + 1);
     return true;
   }
 
@@ -77,7 +67,6 @@ public class SparseLength extends Operation {
 
   /**
    * Returns string value
-   *
    * @return value length or 0 , if not found
    */
   public long getLength() {

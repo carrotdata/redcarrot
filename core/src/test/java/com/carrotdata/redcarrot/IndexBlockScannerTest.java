@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -35,13 +31,12 @@ public class IndexBlockScannerTest {
 
   private static final Logger log = LogManager.getLogger(IndexBlockScannerTest.class);
 
-
   @AfterClass
   public static void tearDown() {
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats();
   }
-  
+
   @Test
   public void testFullScan() throws IOException {
     log.debug("testFullScan");
@@ -166,9 +161,8 @@ public class IndexBlockScannerTest {
     log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(0, stopRowIndex);
     log.debug("Selected {} kvs", newkeys.size());
-    IndexBlockScanner scanner =
-        IndexBlockScanner.getScanner(
-            ib, 0, 0, stopRow.address, stopRow.length, Long.MAX_VALUE, null, true);
+    IndexBlockScanner scanner = IndexBlockScanner.getScanner(ib, 0, 0, stopRow.address,
+      stopRow.length, Long.MAX_VALUE, null, true);
     verifyScannerReverse(scanner, newkeys);
     if (scanner != null) {
       scanner.close();
@@ -245,9 +239,8 @@ public class IndexBlockScannerTest {
     log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, keys.size());
     log.debug("Selected {} kvs", newkeys.size());
-    IndexBlockScanner scanner =
-        IndexBlockScanner.getScanner(
-            ib, startRow.address, startRow.length, 0, 0, Long.MAX_VALUE, null, true);
+    IndexBlockScanner scanner = IndexBlockScanner.getScanner(ib, startRow.address, startRow.length,
+      0, 0, Long.MAX_VALUE, null, true);
     verifyScannerReverse(scanner, newkeys);
     if (scanner != null) {
       scanner.close();
@@ -291,9 +284,8 @@ public class IndexBlockScannerTest {
     log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, stopRowIndex);
     log.debug("Selected {} kvs", newkeys.size());
-    IndexBlockScanner scanner =
-        IndexBlockScanner.getScanner(
-            ib, startRow.address, startRow.length, stopRow.address, stopRow.length, Long.MAX_VALUE);
+    IndexBlockScanner scanner = IndexBlockScanner.getScanner(ib, startRow.address, startRow.length,
+      stopRow.address, stopRow.length, Long.MAX_VALUE);
     verifyScanner(scanner, newkeys);
     scanner.close();
     dispose(keys);
@@ -341,16 +333,8 @@ public class IndexBlockScannerTest {
     log.debug("Loaded {} kvs", keys.size());
     List<Key> newkeys = keys.subList(startRowIndex, stopRowIndex);
     log.debug("Selected {} kvs", keys.size());
-    IndexBlockScanner scanner =
-        IndexBlockScanner.getScanner(
-            ib,
-            startRow.address,
-            startRow.length,
-            stopRow.address,
-            stopRow.length,
-            Long.MAX_VALUE,
-            null,
-            true);
+    IndexBlockScanner scanner = IndexBlockScanner.getScanner(ib, startRow.address, startRow.length,
+      stopRow.address, stopRow.length, Long.MAX_VALUE, null, true);
     verifyScannerReverse(scanner, newkeys);
     if (scanner != null) {
       scanner.close();
@@ -385,7 +369,7 @@ public class IndexBlockScannerTest {
         Key key = keys.get(count - 1);
         int keySize = dbscn.keySize();
         int valSize = dbscn.valueSize();
-        //         log.debug("expected size={} actual={}",key.length, keySize);
+        // log.debug("expected size={} actual={}",key.length, keySize);
         assertEquals(key.length, keySize);
         assertEquals(key.length, valSize);
         byte[] buf = new byte[keySize];
@@ -457,11 +441,8 @@ public class IndexBlockScannerTest {
         UnsafeAccess.free(ptr);
       }
     }
-    log.debug(
-        "Number of data blocks={} index block data size ={} num records{}",
-        b.getNumberOfDataBlock(),
-        b.getDataInBlockSize(),
-        keys.size());
+    log.debug("Number of data blocks={} index block data size ={} num records{}",
+      b.getNumberOfDataBlock(), b.getDataInBlockSize(), keys.size());
     return keys;
   }
 }

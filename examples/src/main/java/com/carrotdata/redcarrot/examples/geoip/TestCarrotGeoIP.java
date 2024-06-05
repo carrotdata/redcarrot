@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.geoip;
 
 import java.io.IOException;
@@ -27,40 +23,37 @@ import com.carrotdata.redcarrot.util.UnsafeAccess;
  * Test Carrot GeoIp GeoIP application as described in Redis Book chapter 5.3 "IP-to-city and
  * country lookup":
  * https://redislabs.com/ebook/part-2-core-concepts/chapter-5-using-redis-for-application-support/5-3-ip-to-city-and-country-lookup/
- *
- * <p>We implemented application in both: Carrot and Redis.
- *
- * <p>Carrot implementation details:
- *
- * <p>Carrot uses SET data type to store combined NetworkAddress, City ID pair. Carrot's SETs are
- * ordered, so they can be used to answer the following questions:
- *
- * <p>Give me the greatest member which is less or equals to a given search key, therefore it can be
- * used to locate network which a given IP address belongs to.
- *
- * <p>Carrot uses STRING data type (plain key-value) to keep association between CityID and City
- * location, name and other data.
- *
- * <p>key = CityId value = {comma separated string of a city data}
- *
- * <p>We used Ip-Geo database free version from www.maxmind.com
- *
- * <p>Redis implementation details:
- *
- * <p>Redis uses ZSET (ordered set) to keep NetworkAddress -> city ID association.
- *
- * <p>Memory usage:
- *
  * <p>
- * 1. No compression - 79,707,904 
- * 2. LZ4 compression - 38,663,616 
- * 3. ZSTD compression - 32,765,568
- *
- * <p>Redis usage - 406,372,784
- *
- * <p>Redis/Carrot:
- *
- * <p>No compression 406/80 = 5.1 LZ4 406/38 = 10.7 ZSTD 406/33 = 12.3
+ * We implemented application in both: Carrot and Redis.
+ * <p>
+ * Carrot implementation details:
+ * <p>
+ * Carrot uses SET data type to store combined NetworkAddress, City ID pair. Carrot's SETs are
+ * ordered, so they can be used to answer the following questions:
+ * <p>
+ * Give me the greatest member which is less or equals to a given search key, therefore it can be
+ * used to locate network which a given IP address belongs to.
+ * <p>
+ * Carrot uses STRING data type (plain key-value) to keep association between CityID and City
+ * location, name and other data.
+ * <p>
+ * key = CityId value = {comma separated string of a city data}
+ * <p>
+ * We used Ip-Geo database free version from www.maxmind.com
+ * <p>
+ * Redis implementation details:
+ * <p>
+ * Redis uses ZSET (ordered set) to keep NetworkAddress -> city ID association.
+ * <p>
+ * Memory usage:
+ * <p>
+ * 1. No compression - 79,707,904 2. LZ4 compression - 38,663,616 3. ZSTD compression - 32,765,568
+ * <p>
+ * Redis usage - 406,372,784
+ * <p>
+ * Redis/Carrot:
+ * <p>
+ * No compression 406/80 = 5.1 LZ4 406/38 = 10.7 ZSTD 406/33 = 12.3
  */
 public class TestCarrotGeoIP {
 

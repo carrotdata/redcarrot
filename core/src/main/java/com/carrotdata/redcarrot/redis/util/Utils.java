@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.util;
 
 import java.nio.ByteBuffer;
@@ -52,7 +48,6 @@ public class Utils {
   /**
    * Converts Redis request (raw) to an internal Carrot representation. Provided memory buffer MUST
    * be sufficient to keep all converted data
-   *
    * @param buf request data
    * @return true if success, false - otherwise (not a full request)
    */
@@ -64,11 +59,8 @@ public class Utils {
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      log.error(
-          "PANIC!!! - wrong message format: pos = '{}{}{}'",
-          buf.position(),
-          " remaining=",
-          buf.remaining());
+      log.error("PANIC!!! - wrong message format: pos = '{}{}{}'", buf.position(), " remaining=",
+        buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;
@@ -84,7 +76,7 @@ public class Utils {
       return false;
     }
     // Read array length
-    len = (int) strToLong(buf, 1, lsize - 3 /*less first byte and last two */);
+    len = (int) strToLong(buf, 1, lsize - 3 /* less first byte and last two */);
     if (len <= 0) {
       return false;
     }
@@ -129,11 +121,8 @@ public class Utils {
     // Check first byte
     if (ARR_TYPE != buf.get(0)) {
       buf.rewind();
-      log.error(
-          "PANIC!!! - wrong message format: pos = '{}{}{}'",
-          buf.position(),
-          " remaining=",
-          buf.remaining());
+      log.error("PANIC!!! - wrong message format: pos = '{}{}{}'", buf.position(), " remaining=",
+        buf.remaining());
       int limit = buf.limit();
       if (limit < 2) {
         return false;
@@ -149,7 +138,7 @@ public class Utils {
       return false;
     }
     // Read array length
-    len = (int) strToLong(buf, 1, lsize - 3 /*less first byte and last two */);
+    len = (int) strToLong(buf, 1, lsize - 3 /* less first byte and last two */);
     if (len <= 0) {
       return false;
     }
@@ -191,7 +180,6 @@ public class Utils {
   /**
    * Converts Redis request (raw) to an internal Carrot representation. Provided memory buffer MUST
    * be sufficient to keep all converted data
-   *
    * @param buf request data
    * @param ptr memory pointer, for Carrot representation
    * @param size memory size
@@ -214,7 +202,7 @@ public class Utils {
       return false;
     }
     // Read array length
-    len = (int) strToLong(buf, 1, lsize - 3 /*less first byte and last two */);
+    len = (int) strToLong(buf, 1, lsize - 3 /* less first byte and last two */);
     if (len <= 0) {
       return false;
     }
@@ -258,7 +246,6 @@ public class Utils {
 
   /**
    * Scans byte buffer till next CR/LF combo
-   *
    * @param buf
    * @return
    */
@@ -281,7 +268,6 @@ public class Utils {
   /**
    * Converts Redis request (inline, telnet mode) to an internal Carrot representation. Provided
    * memory buffer MUST be sufficient to keep all converted data
-   *
    * @param buf request data
    * @param ptr memory pointer, for Carrot representation
    * @param size memory size
@@ -317,7 +303,6 @@ public class Utils {
 
   /**
    * Converts inline request to a Redis RESP2 array
-   *
    * @param request inline request
    * @return Redis RESP2 array as a String
    */
@@ -338,20 +323,19 @@ public class Utils {
 
   /**
    * Skips white spaces
-   *
    * @param buf byte buffer
    */
   private static void skipWhiteSpaces(ByteBuffer buf) {
     int skipped = 0;
     int pos = buf.position();
     int remaining = buf.remaining();
-    while (skipped < remaining && buf.get() == (byte) ' ') skipped++;
+    while (skipped < remaining && buf.get() == (byte) ' ')
+      skipped++;
     buf.position(pos + skipped);
   }
 
   /**
    * Counts consecutive non-white space characters
-   *
    * @param buf byte buffer
    * @return length of a continuous non-white space symbols
    */
@@ -359,14 +343,14 @@ public class Utils {
     int skipped = 0;
     int pos = buf.position();
     int remaining = buf.remaining();
-    while (skipped < remaining && buf.get() != (byte) ' ') skipped++;
+    while (skipped < remaining && buf.get() != (byte) ' ')
+      skipped++;
     buf.position(pos);
     return skipped;
   }
 
   /**
    * Converts internal Carrot message to a Redis response format
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -453,7 +437,6 @@ public class Utils {
 
   /**
    * Converts ZARRAY1 Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -483,7 +466,6 @@ public class Utils {
 
   /**
    * Converts ZARRAY Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -494,7 +476,7 @@ public class Utils {
     ptr += SIZEOF_INT;
     int len = UnsafeAccess.toInt(ptr);
     ptr += SIZEOF_INT;
-    longToStr(2 * len /* score+field*/, buf, buf.position());
+    longToStr(2 * len /* score+field */, buf, buf.position());
     buf.put(CRLF);
 
     for (int i = 0; i < len; i++) {
@@ -525,7 +507,6 @@ public class Utils {
 
   /**
    * Converts VARRAY Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -553,9 +534,9 @@ public class Utils {
       }
     }
   }
+
   /**
    * Converts ERROR Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -571,7 +552,6 @@ public class Utils {
 
   /**
    * Converts TYPED_ARRAY Carrot type to a Redis response TODO: currently we support only INT types
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -596,7 +576,6 @@ public class Utils {
 
   /**
    * Converts simple ARRAY Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -626,7 +605,6 @@ public class Utils {
 
   /**
    * This call is used for CLUSTER SLOTS
-   *
    * @param data array objects
    * @param buf buffer to serialize to
    */
@@ -673,7 +651,6 @@ public class Utils {
 
   /**
    * Converts BULK_STRING Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -692,7 +669,6 @@ public class Utils {
 
   /**
    * Converts INTEGER Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
@@ -706,14 +682,13 @@ public class Utils {
 
   /**
    * Converts OK Carrot type to a Redis response
-   *
    * @param ptr memory address of a serialized Carrot response
    * @param buf Redis response buffer
    */
   private static void okResponse(long ptr, ByteBuffer buf) {
     buf.put(OK_RESP);
   }
-  
+
   /**
    * Convert Redis glob-style pattern into Java regular expression
    * @param globPattern Redis regex pattern
@@ -722,153 +697,142 @@ public class Utils {
   public static String globToRegex(String globPattern) {
     StringBuilder regex = new StringBuilder("^");
     for (int i = 0; i < globPattern.length(); i++) {
-        char c = globPattern.charAt(i);
-        switch (c) {
-            case '*':
-                regex.append(".*");
-                break;
-            case '?':
-                regex.append('.');
-                break;
-            case '.':
-            case '(':
-            case ')':
-            case '+':
-            case '|':
-            case '^':
-            case '$':
-            case '@':
-            case '%':
-                regex.append('\\').append(c); // Escape special regex characters
-                break;
-            case '\\':
-                if (i + 1 < globPattern.length()) {
-                    char nextChar = globPattern.charAt(i + 1);
-                    if (nextChar == '*' || nextChar == '?') {
-                        regex.append(nextChar);
-                        i++; // Skip next character as it's escaped
-                    } else {
-                        regex.append('\\').append(nextChar);
-                        i++; // Standard regex escaping
-                    }
-                }
-                break;
-            default:
-                regex.append(c);
-        }
+      char c = globPattern.charAt(i);
+      switch (c) {
+        case '*':
+          regex.append(".*");
+          break;
+        case '?':
+          regex.append('.');
+          break;
+        case '.':
+        case '(':
+        case ')':
+        case '+':
+        case '|':
+        case '^':
+        case '$':
+        case '@':
+        case '%':
+          regex.append('\\').append(c); // Escape special regex characters
+          break;
+        case '\\':
+          if (i + 1 < globPattern.length()) {
+            char nextChar = globPattern.charAt(i + 1);
+            if (nextChar == '*' || nextChar == '?') {
+              regex.append(nextChar);
+              i++; // Skip next character as it's escaped
+            } else {
+              regex.append('\\').append(nextChar);
+              i++; // Standard regex escaping
+            }
+          }
+          break;
+        default:
+          regex.append(c);
+      }
     }
     regex.append('$');
     return regex.toString();
-}
+  }
+
   /**
-   * Converts a standard POSIX Shell globbing pattern into a regular expression
-   * pattern. The result can be used with the standard {@link java.util.regex} API to
-   * recognize strings which match the glob pattern.
+   * Converts a standard POSIX Shell globbing pattern into a regular expression pattern. The result
+   * can be used with the standard {@link java.util.regex} API to recognize strings which match the
+   * glob pattern.
    * <p/>
    * See also, the POSIX Shell language:
    * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01
-   * 
    * @param pattern A glob pattern.
    * @return A regex pattern to recognize the given glob pattern.
    */
-  
+
   public static final String convertGlobToRegex(String pattern) {
-      StringBuilder sb = new StringBuilder(pattern.length());
-      int inGroup = 0;
-      int inClass = 0;
-      int firstIndexInClass = -1;
-      sb.append("^");
-      char[] arr = pattern.toCharArray();
-      for (int i = 0; i < arr.length; i++) {
-          char ch = arr[i];
-          switch (ch) {
-              case '\\':
-                  if (++i >= arr.length) {
-                    // If last one - append single backslash?
-                      sb.append('\\');
-                  } else {
-                      char next = arr[i];
-                      switch (next) {
-                          case ',':
-                              // escape not needed
-                              break;
-                          case 'Q':
-                          case 'E':
-                              // extra escape needed
-                              sb.append('\\');
-                          default:
-                              sb.append('\\');
-                      }
-                      sb.append(next);
-                  }
-                  break;
-              case '*':
-                  if (inClass == 0)
-                      sb.append(".*");
-                  else
-                      sb.append('*');
-                  break;
-              case '?':
-                  if (inClass == 0)
-                      sb.append('.');
-                  else
-                      sb.append('?');
-                  break;
-              case '[':
-                  inClass++;
-                  firstIndexInClass = i + 1;
-                  sb.append('[');
-                  break;
-              case ']':
-                  inClass--;
-                  sb.append(']');
-                  break;
-              case '.':
-              case '(':
-              case ')':
-              case '+':
-              case '|':
-              case '^':
-              case '$':
-              case '@':
-              case '%':
-                  if (inClass == 0 || (firstIndexInClass != i && ch == '^'))
-                      sb.append('\\');
-                  sb.append(ch);
-                  break;
-              case '!':
-                  if (firstIndexInClass == i)
-                      sb.append('^');
-                  else
-                      sb.append('!');
-                  break;
-              case '{':
-                  inGroup++;
-                  sb.append('(');
-                  break;
-              case '}':
-                  inGroup--;
-                  sb.append(')');
-                  break;
+    StringBuilder sb = new StringBuilder(pattern.length());
+    int inGroup = 0;
+    int inClass = 0;
+    int firstIndexInClass = -1;
+    sb.append("^");
+    char[] arr = pattern.toCharArray();
+    for (int i = 0; i < arr.length; i++) {
+      char ch = arr[i];
+      switch (ch) {
+        case '\\':
+          if (++i >= arr.length) {
+            // If last one - append single backslash?
+            sb.append('\\');
+          } else {
+            char next = arr[i];
+            switch (next) {
               case ',':
-                  if (inGroup > 0)
-                      sb.append('|');
-                  else
-                      sb.append(',');
-                  break;
+                // escape not needed
+                break;
+              case 'Q':
+              case 'E':
+                // extra escape needed
+                sb.append('\\');
               default:
-                  sb.append(ch);
+                sb.append('\\');
+            }
+            sb.append(next);
           }
+          break;
+        case '*':
+          if (inClass == 0) sb.append(".*");
+          else sb.append('*');
+          break;
+        case '?':
+          if (inClass == 0) sb.append('.');
+          else sb.append('?');
+          break;
+        case '[':
+          inClass++;
+          firstIndexInClass = i + 1;
+          sb.append('[');
+          break;
+        case ']':
+          inClass--;
+          sb.append(']');
+          break;
+        case '.':
+        case '(':
+        case ')':
+        case '+':
+        case '|':
+        case '^':
+        case '$':
+        case '@':
+        case '%':
+          if (inClass == 0 || (firstIndexInClass != i && ch == '^')) sb.append('\\');
+          sb.append(ch);
+          break;
+        case '!':
+          if (firstIndexInClass == i) sb.append('^');
+          else sb.append('!');
+          break;
+        case '{':
+          inGroup++;
+          sb.append('(');
+          break;
+        case '}':
+          inGroup--;
+          sb.append(')');
+          break;
+        case ',':
+          if (inGroup > 0) sb.append('|');
+          else sb.append(',');
+          break;
+        default:
+          sb.append(ch);
       }
-      sb.append("$");
-      return sb.toString();
+    }
+    sb.append("$");
+    return sb.toString();
   }
-  
+
   /**
-   * Limitation for range patterns
-   * These characters are not allowed in the pattern
-   * except '-' which is allowed inside bracket
-   * We do not do correct unescaping yet
+   * Limitation for range patterns These characters are not allowed in the pattern except '-' which
+   * is allowed inside bracket We do not do correct unescaping yet
    */
   final static char star = '*';
   final static char rbracket = ']';
@@ -877,45 +841,39 @@ public class Utils {
   final static char question = '?';
   final static char backslash = '\\';
   final static char minus = '-';
-  
+
   private static boolean isSpecialChar(char c) {
-    return (c - star) * (c - rbracket)  * (c - hren) * (c - question) * (c - backslash) == 0;
+    return (c - star) * (c - rbracket) * (c - hren) * (c - question) * (c - backslash) == 0;
   }
-  
+
   /**
-   * For testing only
-   * Identifies if Redis glob pattern matches range operation:
-   * Example: 'H*' and 'H[a-b]' are range operations, 
-   *    H*B, H[ac] - not 
-   *    
-   * Valid combinations:
-   * 1 single '*' at the end
-   * 2. single bracket group [] at the end
-   * 3. single bracket group [] followed by star at the end
+   * For testing only Identifies if Redis glob pattern matches range operation: Example: 'H*' and
+   * 'H[a-b]' are range operations, H*B, H[ac] - not Valid combinations: 1 single '*' at the end 2.
+   * single bracket group [] at the end 3. single bracket group [] followed by star at the end
    * @param pattern
-   * @return range boundaries low - inclusive, high - exclusive (both of them can be null), 
-   *  null - not range 
+   * @return range boundaries low - inclusive, high - exclusive (both of them can be null), null -
+   *         not range
    */
-  
+
   public static String[] globToRange(String pattern) {
-    
+
     final int plen = pattern.length();
     if (plen == 0) return null;
     boolean endStar = false;
     boolean endBracket = false;
-    
-    int c = pattern.charAt(pattern.length() -1);
+
+    int c = pattern.charAt(pattern.length() - 1);
     if (c != star && c != rbracket) {
       return null;
     }
-    
+
     endStar = c == star;
     endBracket = c == rbracket;
-    
+
     if (endStar && plen > 1 && pattern.charAt(pattern.length() - 2) == rbracket) {
       endStar = false;
     }
-    
+
     if (endStar) {
       return globToRangeEndStar(pattern);
     } else if (endBracket) {
@@ -924,9 +882,9 @@ public class Utils {
       return globToRangeEndBracketStar(pattern);
     }
   }
-  
+
   private static String[] globToRangeEndBracketStar(String pattern) {
-    final int len  = pattern.length() - 1; // without last star
+    final int len = pattern.length() - 1; // without last star
     final int lbpos = pattern.lastIndexOf(lbracket);
     if (lbpos < 0) {
       return null;
@@ -947,7 +905,7 @@ public class Utils {
         if (minpos > 0) {
           // only one minus is allowed inside brackets
           return null;
-        } 
+        }
         minpos = i;
       }
     }
@@ -956,20 +914,20 @@ public class Utils {
       return null;
     }
     String[] range = new String[2];
-    range[0] = lbpos > 0? pattern.substring(0, lbpos): "";
-    range[1] = lbpos > 0? pattern.substring(0, lbpos): "";
+    range[0] = lbpos > 0 ? pattern.substring(0, lbpos) : "";
+    range[1] = lbpos > 0 ? pattern.substring(0, lbpos) : "";
     if (minpos > lbpos + 1) {
       range[0] += pattern.substring(lbpos + 1, minpos);
     }
     char[] chars = new char[len - minpos - 2];
     pattern.getChars(minpos + 1, len - 1, chars, 0);
-    chars[chars.length - 1] += 1;  
+    chars[chars.length - 1] += 1;
     range[1] += new String(chars);
     return range;
   }
 
   private static String[] globToRangeEndBracket(String pattern) {
-    final int len  = pattern.length();
+    final int len = pattern.length();
     final int lbpos = pattern.lastIndexOf(lbracket);
     if (lbpos < 0) {
       return null;
@@ -990,7 +948,7 @@ public class Utils {
         if (minpos > 0) {
           // only one minus is allowed inside brackets
           return null;
-        } 
+        }
         minpos = i;
       }
     }
@@ -999,18 +957,17 @@ public class Utils {
       return null;
     }
     String[] range = new String[2];
-    range[0] = lbpos > 0? pattern.substring(0, lbpos): "";
-    range[1] = lbpos > 0? pattern.substring(0, lbpos): "";
+    range[0] = lbpos > 0 ? pattern.substring(0, lbpos) : "";
+    range[1] = lbpos > 0 ? pattern.substring(0, lbpos) : "";
     if (minpos > lbpos + 1) {
       range[0] += pattern.substring(lbpos + 1, minpos);
     }
     char[] chars = new char[len - minpos - 1];
     pattern.getChars(minpos + 1, len - 1, chars, 0);
-    chars[chars.length - 1] = 0;  
+    chars[chars.length - 1] = 0;
     range[1] += new String(chars);
     return range;
   }
-
 
   private static String[] globToRangeEndStar(String pattern) {
     String[] range = new String[2];
@@ -1025,7 +982,7 @@ public class Utils {
         return null;
       }
     }
-    
+
     range[0] = pattern.substring(0, len - 1);
     char[] chars = new char[len - 1];
     range[0].getChars(0, len - 1, chars, 0);
@@ -1034,5 +991,5 @@ public class Utils {
     range[1] = new String(chars);
     return range;
   }
-  
+
 }

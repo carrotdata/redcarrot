@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.zsets;
 
 import static org.junit.Assert.assertEquals;
@@ -89,7 +85,7 @@ public class ZSetsTest extends CarrotCoreBase {
   private List<Value> getFields(long n) {
     List<Value> keys = new ArrayList<>();
     Random r = new Random();
-    long seed = 4956743814979146301L;//r.nextLong();
+    long seed = 4956743814979146301L;// r.nextLong();
     r.setSeed(seed);
     log.debug("KEYS SEED={}", seed);
     byte[] buf = new byte[fieldSize / 2];
@@ -117,7 +113,7 @@ public class ZSetsTest extends CarrotCoreBase {
     long ptr = UnsafeAccess.malloc(fieldSize);
     byte[] buf = new byte[fieldSize];
     Random r = new Random();
-    long seed = -423467470051038643L;//r.nextLong();
+    long seed = -423467470051038643L;// r.nextLong();
     r.setSeed(seed);
     log.debug("SEED={}", seed);
     r.nextBytes(buf);
@@ -209,13 +205,11 @@ public class ZSetsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n
-            - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, 2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n
+          - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
+      end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -256,13 +250,11 @@ public class ZSetsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n
-            - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, 2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n
+          - (2 * (fieldSize + Utils.SIZEOF_DOUBLE) + 3),
+      end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -303,22 +295,15 @@ public class ZSetsTest extends CarrotCoreBase {
         log.debug(i + 1);
       }
     }
-    int setSize =
-        DataBlock.RECORD_TOTAL_OVERHEAD
-            + fieldSize /*part of a key*/
-            + 6 /*4 + 1 + 1 - additional key overhead */
-            + Utils.SIZEOF_DOUBLE
-            + fieldSize
-            + 3;
+    int setSize = DataBlock.RECORD_TOTAL_OVERHEAD + fieldSize /* part of a key */
+        + 6 /* 4 + 1 + 1 - additional key overhead */
+        + Utils.SIZEOF_DOUBLE + fieldSize + 3;
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        setSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize,
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, setSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - setSize, end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import java.io.Closeable;
@@ -77,21 +73,18 @@ public final class IndexBlockScanner implements Closeable {
    */
   private boolean reverse = false;
   /*
-   * Thread local for scanner instance.
-   * Multiple instances UNSAFE (can not be used in multiple
+   * Thread local for scanner instance. Multiple instances UNSAFE (can not be used in multiple
    * instances in context of a one thread)
    */
-  static ThreadLocal<IndexBlockScanner> scanner =
-      new ThreadLocal<IndexBlockScanner>() {
-        @Override
-        protected IndexBlockScanner initialValue() {
-          return new IndexBlockScanner();
-        }
-      };
+  static ThreadLocal<IndexBlockScanner> scanner = new ThreadLocal<IndexBlockScanner>() {
+    @Override
+    protected IndexBlockScanner initialValue() {
+      return new IndexBlockScanner();
+    }
+  };
 
   /**
    * Get or create new scanner
-   *
    * @param b data block
    * @param snapshotId snapshot Id
    * @return scanner
@@ -108,7 +101,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Get scanner instance
-   *
    * @param b data block
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -118,20 +110,13 @@ public final class IndexBlockScanner implements Closeable {
    * @return scanner
    * @throws RetryOperationException
    */
-  public static IndexBlockScanner getScanner(
-      IndexBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId)
-      throws RetryOperationException {
+  public static IndexBlockScanner getScanner(IndexBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId) throws RetryOperationException {
     return getScanner(b, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId, false);
   }
 
   /**
    * Get scanner instance
-   *
    * @param b data block
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -142,14 +127,8 @@ public final class IndexBlockScanner implements Closeable {
    * @return scanner
    * @throws RetryOperationException
    */
-  public static IndexBlockScanner getScanner(
-      IndexBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId,
-      boolean reverse)
+  public static IndexBlockScanner getScanner(IndexBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId, boolean reverse)
       throws RetryOperationException {
     // FIXME: move this code under lock
     if (stopRowPtr != 0) {
@@ -169,14 +148,13 @@ public final class IndexBlockScanner implements Closeable {
     } catch (RetryOperationException e) {
       b.readUnlock();
       throw e;
-    } /*catch (RuntimeException ee) {
-        b.readUnlock();
-        return null;
-      }*/
+    } /*
+       * catch (RuntimeException ee) { b.readUnlock(); return null; }
+       */
   }
+
   /**
    * Get new scanner instance
-   *
    * @param b data block
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -186,15 +164,8 @@ public final class IndexBlockScanner implements Closeable {
    * @return scanner
    * @throws RetryOperationException
    */
-  public static IndexBlockScanner getScanner(
-      IndexBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId,
-      IndexBlockScanner bs,
-      boolean reverse)
+  public static IndexBlockScanner getScanner(IndexBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId, IndexBlockScanner bs, boolean reverse)
       throws RetryOperationException {
     if (stopRowPtr != 0) {
       byte[] firstKey = b.getFirstKey();
@@ -223,7 +194,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Get new scanner instance
-   *
    * @param b data block
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -234,19 +204,15 @@ public final class IndexBlockScanner implements Closeable {
    * @return scanner
    * @throws RetryOperationException
    */
-  public static IndexBlockScanner getScanner(
-      IndexBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId,
-      IndexBlockScanner bs) {
-    return getScanner(
-        b, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId, bs, false);
+  public static IndexBlockScanner getScanner(IndexBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId, IndexBlockScanner bs) {
+    return getScanner(b, startRowPtr, startRowLength, stopRowPtr, stopRowLength, snapshotId, bs,
+      false);
   }
+
   /** Private ctor */
-  private IndexBlockScanner() {}
+  private IndexBlockScanner() {
+  }
 
   private void reset() {
     this.startRowPtr = 0;
@@ -273,21 +239,17 @@ public final class IndexBlockScanner implements Closeable {
     long ptr = reverse ? stopRowPtr : startRowPtr;
     int len = reverse ? stopRowLength : startRowLength;
     if (!isMultiSafe) {
-      b =
-          ptr != 0
-              ? reverse
-                  ? indexBlock.searchLowerBlock(ptr, len, snapshotId, Op.DELETE)
-                  : indexBlock.searchBlock(ptr, len, snapshotId, Op.PUT)
-              : reverse ? indexBlock.lastBlock() : indexBlock.firstBlock();
+      b = ptr != 0
+          ? reverse ? indexBlock.searchLowerBlock(ptr, len, snapshotId, Op.DELETE)
+              : indexBlock.searchBlock(ptr, len, snapshotId, Op.PUT)
+          : reverse ? indexBlock.lastBlock() : indexBlock.firstBlock();
 
     } else {
       b = new DataBlock();
-      b =
-          ptr != 0
-              ? reverse
-                  ? indexBlock.searchLowerBlock(ptr, len, snapshotId, Op.DELETE, b)
-                  : indexBlock.searchBlock(ptr, len, snapshotId, Op.PUT, b)
-              : reverse ? indexBlock.lastBlock(b) : indexBlock.firstBlock(b);
+      b = ptr != 0
+          ? reverse ? indexBlock.searchLowerBlock(ptr, len, snapshotId, Op.DELETE, b)
+              : indexBlock.searchBlock(ptr, len, snapshotId, Op.PUT, b)
+          : reverse ? indexBlock.lastBlock(b) : indexBlock.firstBlock(b);
     }
 
     if (b == null) {
@@ -307,7 +269,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Is this scanner safe to use in multiple instances in the context of a single thread?
-   *
    * @return
    */
   boolean isMultiInstanceSafe() {
@@ -316,7 +277,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Set multiple instances safe
-   *
    * @param b
    */
   void setMultiInstanceSafe(boolean b) {
@@ -325,15 +285,14 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Is reverse scanner
-   *
    * @return true, if - yes
    */
   public final boolean isReverse() {
     return this.reverse;
   }
+
   /**
    * Set reverse scanner
-   *
    * @param b
    */
   public void setReverse(boolean b) {
@@ -342,7 +301,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Set scanner with new block
-   *
    * @param b block
    * @throws RetryOperationException
    */
@@ -352,7 +310,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Advance scanner by one data block
-   *
    * @return data block scanner or null
    */
   public final DataBlockScanner nextBlockScanner() {
@@ -412,50 +369,24 @@ public final class IndexBlockScanner implements Closeable {
       }
 
       if (!isMultiSafe) {
-        this.curDataBlockScanner =
-            DataBlockScanner.getScanner(
-                this.currentDataBlock,
-                this.startRowPtr,
-                this.startRowLength,
-                this.stopRowPtr,
-                this.stopRowLength,
-                snapshotId);
+        this.curDataBlockScanner = DataBlockScanner.getScanner(this.currentDataBlock,
+          this.startRowPtr, this.startRowLength, this.stopRowPtr, this.stopRowLength, snapshotId);
       } else {
-        this.curDataBlockScanner =
-            DataBlockScanner.getScanner(
-                this.currentDataBlock,
-                this.startRowPtr,
-                this.startRowLength,
-                this.stopRowPtr,
-                this.stopRowLength,
-                snapshotId,
-                this.curDataBlockScanner);
+        this.curDataBlockScanner = DataBlockScanner.getScanner(this.currentDataBlock,
+          this.startRowPtr, this.startRowLength, this.stopRowPtr, this.stopRowLength, snapshotId,
+          this.curDataBlockScanner);
       }
     } else if (!closed) {
       if (!isMultiSafe) {
-        this.curDataBlockScanner =
-            DataBlockScanner.getScanner(
-                this.currentDataBlock,
-                this.startRowPtr,
-                this.startRowLength,
-                this.stopRowPtr,
-                this.stopRowLength,
-                snapshotId);
+        this.curDataBlockScanner = DataBlockScanner.getScanner(this.currentDataBlock,
+          this.startRowPtr, this.startRowLength, this.stopRowPtr, this.stopRowLength, snapshotId);
       } else {
-        this.curDataBlockScanner =
-            DataBlockScanner.getScanner(
-                this.currentDataBlock,
-                this.startRowPtr,
-                this.startRowLength,
-                this.stopRowPtr,
-                this.stopRowLength,
-                snapshotId,
-                this.curDataBlockScanner);
+        this.curDataBlockScanner = DataBlockScanner.getScanner(this.currentDataBlock,
+          this.startRowPtr, this.startRowLength, this.stopRowPtr, this.stopRowLength, snapshotId,
+          this.curDataBlockScanner);
       }
-      if (this.indexBlock.isFirstIndexBlock()
-          && this.startRowPtr == 0
-          && this.curDataBlockScanner != null
-          && !reverse) {
+      if (this.indexBlock.isFirstIndexBlock() && this.startRowPtr == 0
+          && this.curDataBlockScanner != null && !reverse) {
         // skip system first entry : {0}{0}
         this.curDataBlockScanner.next();
       }
@@ -470,9 +401,9 @@ public final class IndexBlockScanner implements Closeable {
     }
     return this.curDataBlockScanner;
   }
+
   /**
    * Get last block scanner
-   *
    * @return last block scanner
    */
   DataBlockScanner lastBlockScanner() {
@@ -496,7 +427,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Gets first block scanner
-   *
    * @return first block scanner
    */
   DataBlockScanner firstBlockScanner() {
@@ -516,7 +446,6 @@ public final class IndexBlockScanner implements Closeable {
 
   /**
    * Gets previous block scanner
-   *
    * @return previous block scanner
    */
   DataBlockScanner previousBlockScanner() {

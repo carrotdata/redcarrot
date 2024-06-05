@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.appcomps;
 
 import java.util.ArrayList;
@@ -30,25 +26,21 @@ import com.carrotdata.redcarrot.util.Utils;
 /**
  * Inverted index implemented accordingly to the Redis Book:
  * https://redislabs.com/ebook/part-2-core-concepts/chapter-7-search-based-applications/7-1-searching-in-redis/7-1-1-basic-search-theory/
- *
- * <p>We emulate 1000 words and some set of docs. Maximum occurrence of a single word is 5000 docs
+ * <p>
+ * We emulate 1000 words and some set of docs. Maximum occurrence of a single word is 5000 docs
  * (random number between 1 and 5000). Each doc is coded by 4-byte integer. Each word is a random 8
  * byte string.
- *
- * <p>Format of an inverted index:
- *
- * <p>word -> {id1, id2, ..idk}, idn - 4 - byte integer
- *
  * <p>
- * Redis 7.2.4 takes 39.5 bytes per one doc id (which is 4 byte long) 
- * Carrot takes 5.5 bytes ( no compression and LZ4) and 4.9 for ZSTD
- *
+ * Format of an inverted index:
  * <p>
- * Redis - to - Carrot memory usage:
- *  39.5/5.5 = 7.2 (no compression and LZ4)
- *  39.5/ 4.9 = 8.0 for ZSTD
- * Notes: the data is synthetic and random therefore is not compressible,
- * in a real applications the performance numbers for Carrot will be much better 
+ * word -> {id1, id2, ..idk}, idn - 4 - byte integer
+ * <p>
+ * Redis 7.2.4 takes 39.5 bytes per one doc id (which is 4 byte long) Carrot takes 5.5 bytes ( no
+ * compression and LZ4) and 4.9 for ZSTD
+ * <p>
+ * Redis - to - Carrot memory usage: 39.5/5.5 = 7.2 (no compression and LZ4) 39.5/ 4.9 = 8.0 for
+ * ZSTD Notes: the data is synthetic and random therefore is not compressible, in a real
+ * applications the performance numbers for Carrot will be much better
  */
 public class TestCarrotInvertedIndex {
 
@@ -58,7 +50,7 @@ public class TestCarrotInvertedIndex {
   static int maxDocs = 5000;
 
   public static void main(String[] args) {
-    
+
     runTestNoCompression();
     runTestCompressionLZ4();
     runTestCompressionZSTD();

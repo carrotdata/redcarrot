@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.ops;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -21,25 +17,23 @@ public class Append extends Operation {
   long appendValuePtr;
   int appendValueSize;
 
-  static ThreadLocal<Long> buffer =
-      new ThreadLocal<Long>() {
+  static ThreadLocal<Long> buffer = new ThreadLocal<Long>() {
 
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(4096);
-          return ptr;
-        }
-      };
+    @Override
+    protected Long initialValue() {
+      long ptr = UnsafeAccess.malloc(4096);
+      return ptr;
+    }
+  };
 
-  static ThreadLocal<Integer> bufferSize =
-      new ThreadLocal<Integer>() {
+  static ThreadLocal<Integer> bufferSize = new ThreadLocal<Integer>() {
 
-        @Override
-        protected Integer initialValue() {
-          return 4096;
-        }
-      };
-  
+    @Override
+    protected Integer initialValue() {
+      return 4096;
+    }
+  };
+
   public Append() {
     updateInPlace = false;
     readOnly = false;

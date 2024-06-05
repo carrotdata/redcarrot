@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import com.carrotdata.redcarrot.BigSortedMap;
@@ -61,10 +57,8 @@ public class ZRANDMEMBER implements RedisCommand {
         }
       }
       int off = Utils.SIZEOF_BYTE + Utils.SIZEOF_INT;
-      int size =
-          (int)
-              ZSets.ZRANDMEMBER(
-                  map, keyPtr, keySize, count, withScores, outBufferPtr + off, outBufferSize - off);
+      int size = (int) ZSets.ZRANDMEMBER(map, keyPtr, keySize, count, withScores,
+        outBufferPtr + off, outBufferSize - off);
       if (!countSpecified) {
         // WITHSCORES = false if count is not specified
         UnsafeAccess.putByte(outBufferPtr, (byte) ReplyType.BULK_STRING.ordinal());
@@ -72,10 +66,8 @@ public class ZRANDMEMBER implements RedisCommand {
         int len = Utils.readUVInt(outBufferPtr + off + Utils.SIZEOF_INT);
         int lenSize = Utils.sizeUVInt(len);
         // Copy field
-        UnsafeAccess.copy(
-            outBufferPtr + off + Utils.SIZEOF_INT + lenSize + Utils.SIZEOF_DOUBLE,
-            outBufferPtr + off,
-            len - Utils.SIZEOF_DOUBLE);
+        UnsafeAccess.copy(outBufferPtr + off + Utils.SIZEOF_INT + lenSize + Utils.SIZEOF_DOUBLE,
+          outBufferPtr + off, len - Utils.SIZEOF_DOUBLE);
         UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, len - Utils.SIZEOF_DOUBLE);
         return;
       } else if (withScores) {
@@ -86,14 +78,11 @@ public class ZRANDMEMBER implements RedisCommand {
       UnsafeAccess.putInt(outBufferPtr + Utils.SIZEOF_BYTE, size + off);
 
     } catch (NumberFormatException e) {
-      Errors.write(
-          outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT, ": " + e.getMessage());
+      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT,
+        ": " + e.getMessage());
     } catch (IllegalArgumentException ee) {
-      Errors.write(
-          outBufferPtr,
-          Errors.TYPE_GENERIC,
-          Errors.ERR_WRONG_COMMAND_FORMAT,
-          ": " + ee.getMessage());
+      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
+        ": " + ee.getMessage());
     }
   }
 }

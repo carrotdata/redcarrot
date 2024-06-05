@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import java.nio.ByteBuffer;
@@ -22,8 +18,8 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /**
  * Supported cluster commands:
- *
- * <p>1. CLUSTER SLOTS
+ * <p>
+ * 1. CLUSTER SLOTS
  */
 public class CLUSTER implements RedisCommand {
 
@@ -54,11 +50,8 @@ public class CLUSTER implements RedisCommand {
 
     if (Utils.compareTo(SLOTS_FLAG, SLOTS_LENGTH, inDataPtr, size) != 0
         && Utils.compareTo(SLOTS_FLAG_LOWER, SLOTS_LENGTH, inDataPtr, size) != 0) {
-      Errors.write(
-          outBufferPtr,
-          Errors.TYPE_GENERIC,
-          Errors.ERR_UNSUPPORTED_COMMAND,
-          ": CLUSTER " + Utils.toString(inDataPtr, size));
+      Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_UNSUPPORTED_COMMAND,
+        ": CLUSTER " + Utils.toString(inDataPtr, size));
       autoConvert = true;
       return;
     }

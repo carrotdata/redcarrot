@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.util;
 
 import java.io.IOException;
@@ -42,9 +38,9 @@ public class Commons {
    * Key prefix size (5 bytes)
    */
   public static final int KEY_PREFIX_SIZE = KEY_SIZE + Utils.SIZEOF_BYTE;
+
   /**
    * Length (size) of a Key
-   *
    * @param key address
    * @return length of key
    */
@@ -54,17 +50,16 @@ public class Commons {
 
   /**
    * Length of a Key with prefix
-   *
    * @param keyAddress key address
    * @return length with prefix
    */
   public static int keySizeWithPrefix(long keyAddress) {
     return UnsafeAccess.toInt(keyAddress + Utils.SIZEOF_BYTE) + KEY_SIZE + Utils.SIZEOF_BYTE;
   }
+
   /**
    * Checks if a given Key is the first one in a type (set, hash, etc) First key has the following
    * format: [KEY_SIZE]Key'0' - zero at the end
-   *
    * @param ptr key address
    * @param size key size
    * @return true or false
@@ -75,9 +70,9 @@ public class Commons {
     }
     return UnsafeAccess.toByte(ptr + size - 1) == 0;
   }
+
   /**
    * Gets element (field) address from mutation key
-   *
    * @param keyAddress key address
    * @return address of element
    */
@@ -86,9 +81,9 @@ public class Commons {
     int setKeySize = keySize(keyAddress);
     return keyAddress + KEY_SIZE + setKeySize + Utils.SIZEOF_BYTE;
   }
+
   /**
    * Gets element (field) size from a mutation key
-   *
    * @param keyAddress key address
    * @param keySize size of a key
    * @return size of an element
@@ -101,7 +96,6 @@ public class Commons {
 
   /**
    * Number of elements(field-value pairs) in a Value object
-   *
    * @param valuePtr address
    * @return number of elements
    */
@@ -111,7 +105,6 @@ public class Commons {
 
   /**
    * Increase number of elements (fields-values) in a Value object
-   *
    * @param valuePtr value address
    * @param v value to increase
    * @return total new number of elements
@@ -122,9 +115,9 @@ public class Commons {
     UnsafeAccess.putShort(valuePtr, (short) (value + v));
     return value + v;
   }
+
   /**
    * Set number of elements (field-values) in a Value object
-   *
    * @param valuePtr value address
    * @param v value to set to
    * @return v new number of elements
@@ -136,7 +129,6 @@ public class Commons {
 
   /**
    * This method checks if next K-V exists in the set/hash/list
-   *
    * @param ptr current key address
    * @return true if exists, false - otherwise
    */
@@ -154,9 +146,9 @@ public class Commons {
       }
     }
   }
+
   /**
    * Checks if Value object can be split. (number of element is greater than 1)
-   *
    * @param valuePtr address
    * @return true, if - yes, false otherwise
    */
@@ -166,12 +158,8 @@ public class Commons {
 
   public static boolean isFirstKey(long foundKeyAddress, int foundKeySize, int keySize) {
     /*
-     * First key has the following format
-     * data type (1 byte)
-     * original key size (4 bytes)
-     * original key
-     * '\0' - ZERO suffix
-     *
+     * First key has the following format data type (1 byte) original key size (4 bytes) original
+     * key '\0' - ZERO suffix
      */
     int firstKeySize = keySize + 2 * Utils.SIZEOF_BYTE + Utils.SIZEOF_INT;
     if (foundKeySize > firstKeySize || foundKeySize < firstKeySize) {

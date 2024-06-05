@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.io.IOException;
@@ -56,6 +52,7 @@ public class RequestHandlers {
       accessTime = System.nanoTime() - epochStartNanos;
     }
   }
+
   /*
    * Request handlers
    */
@@ -79,7 +76,6 @@ public class RequestHandlers {
 
   /**
    * Submit next socket channel for processing
-   *
    * @param key selection key for socket channel
    */
   public void submit(SelectionKey key) {
@@ -112,24 +108,22 @@ class WorkThread extends Thread {
   /*
    * Input buffer
    */
-  static ThreadLocal<ByteBuffer> inBuf =
-      new ThreadLocal<ByteBuffer>() {
-        @Override
-        protected ByteBuffer initialValue() {
-          return ByteBuffer.allocateDirect(bufferSize);
-        }
-      };
+  static ThreadLocal<ByteBuffer> inBuf = new ThreadLocal<ByteBuffer>() {
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocateDirect(bufferSize);
+    }
+  };
 
   /*
    * Output buffer
    */
-  static ThreadLocal<ByteBuffer> outBuf =
-      new ThreadLocal<ByteBuffer>() {
-        @Override
-        protected ByteBuffer initialValue() {
-          return ByteBuffer.allocateDirect(bufferSize);
-        }
-      };
+  static ThreadLocal<ByteBuffer> outBuf = new ThreadLocal<ByteBuffer>() {
+    @Override
+    protected ByteBuffer initialValue() {
+      return ByteBuffer.allocateDirect(bufferSize);
+    }
+  };
 
   /*
    * Data store
@@ -146,7 +140,6 @@ class WorkThread extends Thread {
 
   /**
    * Default constructor
-   *
    * @param store data store
    */
   WorkThread(BigSortedMap store) {
@@ -155,7 +148,6 @@ class WorkThread extends Thread {
 
   /**
    * Is thread busy working?
-   *
    * @return busy
    */
   boolean isBusy() {
@@ -164,7 +156,6 @@ class WorkThread extends Thread {
 
   /**
    * Submits next selection key for processing
-   *
    * @param key selection key
    */
   void nextKey(SelectionKey key) {
@@ -176,7 +167,6 @@ class WorkThread extends Thread {
 
   /**
    * Release key - mark it not in use
-   *
    * @param key
    */
   void release(SelectionKey key) {
@@ -206,6 +196,7 @@ class WorkThread extends Thread {
     }
     return key;
   }
+
   /*
    * Main loop
    */

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sparse;
 
 import static org.junit.Assert.assertEquals;
@@ -60,7 +56,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
   public void setUp() throws IOException {
     super.setUp();
 
-    //FIXME test with debug failed with lower than 1M bit. However, run long time with 1M bit.
+    // FIXME test with debug failed with lower than 1M bit. However, run long time with 1M bit.
     nBits = memoryDebug ? 5000 : 100000;
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     key = getKey();
@@ -115,10 +111,10 @@ public class SparseBitmapsTest extends CarrotCoreBase {
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(totalCount, (int) count);
 
-    /*DEBUG*/ log.debug("totalCount={} N={}", totalCount, nBits);
-    /*DEBUG*/ log.debug("Total RAM={}", UnsafeAccess.getAllocatedMemory());
+    /* DEBUG */ log.debug("totalCount={} N={}", totalCount, nBits);
+    /* DEBUG */ log.debug("Total RAM={}", UnsafeAccess.getAllocatedMemory());
 
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
 
     long end = System.currentTimeMillis();
 
@@ -233,8 +229,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/ log.debug("Total RAM    ={}", memory);
-    /*DEBUG*/ log.debug("Total loaded ={}", expected);
+    /* DEBUG */ log.debug("Total RAM    ={}", memory);
+    /* DEBUG */ log.debug("Total loaded ={}", expected);
 
     long count =
         SparseBitmaps.SBITCOUNT(map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG);
@@ -264,9 +260,9 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/
+    /* DEBUG */
     log.debug("Total RAM    ={}", memory);
-    /*DEBUG*/
+    /* DEBUG */
     log.debug("Total loaded ={}", bits.size());
     int size = bits.size();
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
@@ -363,9 +359,9 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     long memory = UnsafeAccess.getAllocatedMemory();
-    /*DEBUG*/
+    /* DEBUG */
     log.debug("Total RAM    ={}", memory);
-    /*DEBUG*/
+    /* DEBUG */
     log.debug("Total loaded ={}", bits.size());
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
@@ -374,48 +370,42 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     // Test 1: no start, end limits bit = 1
     // bit == 1
     int bit = 1;
-    long pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Commons.NULL_LONG, Commons.NULL_LONG);
+    long pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Commons.NULL_LONG,
+      Commons.NULL_LONG);
     int expected = expectedPositionSet(bits, Commons.NULL_LONG, Commons.NULL_LONG);
     assertEquals(expected, (int) pos);
 
     // bit == 0
     bit = 0;
     expected = expectedPositionUnSet(bits, Commons.NULL_LONG, Commons.NULL_LONG);
-    pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Commons.NULL_LONG, Commons.NULL_LONG);
+    pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Commons.NULL_LONG,
+      Commons.NULL_LONG);
     assertEquals(expected, (int) pos);
 
     // Test 2: no end limit
 
     bit = 1;
-    pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Long.MIN_VALUE + 1, Commons.NULL_LONG);
+    pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Long.MIN_VALUE + 1,
+      Commons.NULL_LONG);
     expected = expectedPositionSet(bits, Long.MIN_VALUE + 1, Commons.NULL_LONG);
     assertEquals(expected, (int) pos);
 
     bit = 0;
-    pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Long.MIN_VALUE + 1, Commons.NULL_LONG);
+    pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Long.MIN_VALUE + 1,
+      Commons.NULL_LONG);
     expected = expectedPositionUnSet(bits, Long.MIN_VALUE + 1, Commons.NULL_LONG);
     assertEquals(expected, (int) pos);
 
     // Test 3: no start limit
     bit = 1;
-    pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Commons.NULL_LONG, Long.MAX_VALUE >>> 4);
+    pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Commons.NULL_LONG,
+      Long.MAX_VALUE >>> 4);
     expected = expectedPositionSet(bits, Commons.NULL_LONG, Long.MAX_VALUE >>> 4);
     assertEquals(expected, (int) pos);
 
     bit = 0;
-    pos =
-        SparseBitmaps.SBITPOS(
-            map, key.address, key.length, bit, Commons.NULL_LONG, Long.MAX_VALUE >>> 4);
+    pos = SparseBitmaps.SBITPOS(map, key.address, key.length, bit, Commons.NULL_LONG,
+      Long.MAX_VALUE >>> 4);
     expected = expectedPositionUnSet(bits, Commons.NULL_LONG, Long.MAX_VALUE >>> 4);
     assertEquals(expected, (int) pos);
 
@@ -536,10 +526,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       }
     }
     long endTime = System.currentTimeMillis();
-    log.debug(
-        "SBITCOUNT for bitmap={} long ={} RPS",
-        strlen,
-        (double) 1000 * 1000 / (endTime - startTime));
+    log.debug("SBITCOUNT for bitmap={} long ={} RPS", strlen,
+      (double) 1000 * 1000 / (endTime - startTime));
 
     SparseBitmaps.DELETE(map, key.address, key.length);
     assertFalse(SparseBitmaps.EXISTS(map, key.address, key.length));
@@ -548,7 +536,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   /**
    * Get expected number of bits
-   *
    * @param set set
    * @param start from offset (inclusive)
    * @param end to offset (inclusive)
@@ -603,7 +590,6 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
   /**
    * Get expected position for set bit
-   *
    * @param set set
    * @param start from offset (inclusive)
    * @param end to offset (inclusive)
@@ -703,7 +689,7 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
     long offset = 0;
     Random r = new Random();
-    long seed = -1081710646965816284L;//r.nextLong();
+    long seed = -1081710646965816284L;// r.nextLong();
     r.setSeed(seed);
     log.debug("Test seed={}", seed);
     TreeSet<Integer> bits = new TreeSet<>();
@@ -723,20 +709,16 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     int strlen = bits.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen, (int) SparseBitmaps.SSTRLEN(map, key.address, key.length));
     // Check bit counts
-    assertEquals(
-        bits.size(),
-        (int)
-            SparseBitmaps.SBITCOUNT(
-                map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG));
+    assertEquals(bits.size(), (int) SparseBitmaps.SBITCOUNT(map, key.address, key.length,
+      Commons.NULL_LONG, Commons.NULL_LONG));
     long buffer = UnsafeAccess.malloc(strlen); // buffer size to fit all bitmap
     int bufferSize = strlen;
 
     log.debug("Edge cases ");
     // Test 1: no start, end limits bit = 1
     int expected = expectedNumber(bits, Commons.NULL_LONG, Commons.NULL_LONG);
-    long range =
-        SparseBitmaps.SGETRANGE(
-            map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG, buffer, bufferSize);
+    long range = SparseBitmaps.SGETRANGE(map, key.address, key.length, Commons.NULL_LONG,
+      Commons.NULL_LONG, buffer, bufferSize);
     assertEquals(strlen, (int) range);
     long count = Utils.bitcount(buffer, (int) range);
     assertEquals(expected, (int) count);
@@ -747,15 +729,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     // Test 2: no end limit
 
     expected = expectedNumber(bits, Long.MIN_VALUE + 1, Commons.NULL_LONG);
-    range =
-        SparseBitmaps.SGETRANGE(
-            map,
-            key.address,
-            key.length,
-            Long.MIN_VALUE + 1,
-            Commons.NULL_LONG,
-            buffer,
-            bufferSize);
+    range = SparseBitmaps.SGETRANGE(map, key.address, key.length, Long.MIN_VALUE + 1,
+      Commons.NULL_LONG, buffer, bufferSize);
     assertEquals(strlen, (int) range);
     count = Utils.bitcount(buffer, (int) range);
     assertEquals(expected, (int) count);
@@ -764,15 +739,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
     // Test 3: no start limit
     expected = expectedNumber(bits, Commons.NULL_LONG, Long.MAX_VALUE >>> 4);
-    range =
-        SparseBitmaps.SGETRANGE(
-            map,
-            key.address,
-            key.length,
-            Commons.NULL_LONG,
-            Long.MAX_VALUE >>> 4,
-            buffer,
-            bufferSize);
+    range = SparseBitmaps.SGETRANGE(map, key.address, key.length, Commons.NULL_LONG,
+      Long.MAX_VALUE >>> 4, buffer, bufferSize);
     assertEquals(strlen, (int) range);
     count = Utils.bitcount(buffer, (int) range);
     assertEquals(expected, (int) count);
@@ -794,9 +762,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
     // Test 6: start and end cover all
     expected = expectedNumber(bits, -2 * strlen, 2 * strlen);
-    range =
-        SparseBitmaps.SGETRANGE(
-            map, key.address, key.length, -2 * strlen, 2 * strlen, buffer, bufferSize);
+    range = SparseBitmaps.SGETRANGE(map, key.address, key.length, -2 * strlen, 2 * strlen, buffer,
+      bufferSize);
     assertEquals(strlen, (int) range);
     count = Utils.bitcount(buffer, (int) range);
     assertEquals(expected, (int) count);
@@ -872,9 +839,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     long bcount = 0;
 
     while (off < strlen) {
-      long rr =
-          SparseBitmaps.SGETRANGE(
-              map, key.address, key.length, off, off + batchSize - 1, buffer, bufferSize);
+      long rr = SparseBitmaps.SGETRANGE(map, key.address, key.length, off, off + batchSize - 1,
+        buffer, bufferSize);
       bcount += Utils.bitcount(buffer, (int) rr);
       off += batchSize;
     }
@@ -970,16 +936,10 @@ public class SparseBitmapsTest extends CarrotCoreBase {
     assertEquals(strlen1, SparseBitmaps.SSTRLEN(map, key.address, key.length));
     long strlen2 = bits2.last() / Utils.BITS_PER_BYTE + 1;
     assertEquals(strlen2, SparseBitmaps.SSTRLEN(map, key2.address, key2.length));
-    assertEquals(
-        bits.size(),
-        (int)
-            SparseBitmaps.SBITCOUNT(
-                map, key.address, key.length, Commons.NULL_LONG, Commons.NULL_LONG));
-    assertEquals(
-        bits2.size(),
-        (int)
-            SparseBitmaps.SBITCOUNT(
-                map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG));
+    assertEquals(bits.size(), (int) SparseBitmaps.SBITCOUNT(map, key.address, key.length,
+      Commons.NULL_LONG, Commons.NULL_LONG));
+    assertEquals(bits2.size(), (int) SparseBitmaps.SBITCOUNT(map, key2.address, key2.length,
+      Commons.NULL_LONG, Commons.NULL_LONG));
 
     // Test 1: small overwrites <= BYTES_PER_CHUNK
     int bufferSize = (int) Math.max(strlen1, strlen2);
@@ -988,9 +948,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
 
     int strlen = (int) Math.min(strlen1, strlen2);
     // Original bit count for key2 sparse
-    long bc =
-        SparseBitmaps.SBITCOUNT(
-            map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG);
+    long bc = SparseBitmaps.SBITCOUNT(map, key2.address, key2.length, Commons.NULL_LONG,
+      Commons.NULL_LONG);
 
     log.debug("Running small overwrites sub-test");
     for (int i = 0; i < 100; i++) {
@@ -1001,32 +960,29 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       // Clear first len bytes of buffer
       UnsafeAccess.setMemory(buffer, len, (byte) 0);
 
-      int rangeSize =
-          (int)
-              SparseBitmaps.SGETRANGE(
-                  map, key.address, key.length, off, off + len - 1, buffer, bufferSize);
+      int rangeSize = (int) SparseBitmaps.SGETRANGE(map, key.address, key.length, off,
+        off + len - 1, buffer, bufferSize);
       assertEquals(len, rangeSize);
-      //log.debug("Bit count in range="+ Utils.bitcount(buffer, rangeSize));
-      //log.debug("before setrange="+ SparseBitmaps.SBITCOUNT(
-      //        map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG));
+      // log.debug("Bit count in range="+ Utils.bitcount(buffer, rangeSize));
+      // log.debug("before setrange="+ SparseBitmaps.SBITCOUNT(
+      // map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG));
       long size = SparseBitmaps.SSETRANGE(map, key2.address, key2.length, off, buffer, rangeSize);
-      //log.debug("after setrange="+ SparseBitmaps.SBITCOUNT(
-      //  map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG));
+      // log.debug("after setrange="+ SparseBitmaps.SBITCOUNT(
+      // map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG));
       assertEquals(strlen2, size);
       // Clear first len bytes of buffer
       UnsafeAccess.setMemory(buffer2, len, (byte) 0);
-      SparseBitmaps.SGETRANGE(
-          map, key.address, key.length, off, off + len - 1, buffer2, bufferSize);
-      
+      SparseBitmaps.SGETRANGE(map, key.address, key.length, off, off + len - 1, buffer2,
+        bufferSize);
+
       assertEquals(0, Utils.compareTo(buffer, len, buffer2, len));
 
-      long newbc =
-          SparseBitmaps.SBITCOUNT(
-              map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG);
+      long newbc = SparseBitmaps.SBITCOUNT(map, key2.address, key2.length, Commons.NULL_LONG,
+        Commons.NULL_LONG);
       if (newbc != bc + rbc1 - rbc2) {
         log.debug("");
       }
-      //log.debug("i={} bc={} rbc1={} rbc2={} newbc={}", i, bc, rbc1, rbc2, newbc);
+      // log.debug("i={} bc={} rbc1={} rbc2={} newbc={}", i, bc, rbc1, rbc2, newbc);
       assertEquals(bc + rbc1 - rbc2, newbc);
       bc = newbc;
       if ((i + 1) % 1000 == 0) {
@@ -1044,21 +1000,18 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       long rbc2 = SparseBitmaps.SBITCOUNT(map, key2.address, key2.length, off, off + len - 1);
       // Clear first len bytes of buffer
       UnsafeAccess.setMemory(buffer, len, (byte) 0);
-      int rangeSize =
-          (int)
-              SparseBitmaps.SGETRANGE(
-                  map, key.address, key.length, off, off + len - 1, buffer, bufferSize);
+      int rangeSize = (int) SparseBitmaps.SGETRANGE(map, key.address, key.length, off,
+        off + len - 1, buffer, bufferSize);
       long size = SparseBitmaps.SSETRANGE(map, key2.address, key2.length, off, buffer, rangeSize);
       assertEquals(strlen2, size);
       // Clear first len bytes of buffer
       UnsafeAccess.setMemory(buffer2, len, (byte) 0);
-      SparseBitmaps.SGETRANGE(
-          map, key.address, key.length, off, off + len - 1, buffer2, bufferSize);
+      SparseBitmaps.SGETRANGE(map, key.address, key.length, off, off + len - 1, buffer2,
+        bufferSize);
 
       assertEquals(0, Utils.compareTo(buffer, len, buffer2, len));
-      long newbc =
-          SparseBitmaps.SBITCOUNT(
-              map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG);
+      long newbc = SparseBitmaps.SBITCOUNT(map, key2.address, key2.length, Commons.NULL_LONG,
+        Commons.NULL_LONG);
       assertEquals(bc + rbc1 - rbc2, newbc);
       bc = newbc;
       if ((i + 1) % 1000 == 0) {
@@ -1080,18 +1033,15 @@ public class SparseBitmapsTest extends CarrotCoreBase {
       // Clear first len bytes of buffer
       UnsafeAccess.setMemory(buffer, len, (byte) 0);
 
-      int rangeSize =
-          (int)
-              SparseBitmaps.SGETRANGE(
-                  map, key.address, key.length, off, off + len - 1, buffer, bufferSize);
+      int rangeSize = (int) SparseBitmaps.SGETRANGE(map, key.address, key.length, off,
+        off + len - 1, buffer, bufferSize);
       assertEquals(len, rangeSize);
       long size = SparseBitmaps.SSETRANGE(map, key2.address, key2.length, off2, buffer, rangeSize);
       // Clear first len bytes of buffer2
       UnsafeAccess.setMemory(buffer2, len, (byte) 0);
 
-      long rangeSize2 =
-          SparseBitmaps.SGETRANGE(
-              map, key2.address, key2.length, off2, off2 + rangeSize - 1, buffer2, bufferSize);
+      long rangeSize2 = SparseBitmaps.SGETRANGE(map, key2.address, key2.length, off2,
+        off2 + rangeSize - 1, buffer2, bufferSize);
       if (rangeSize2 < rangeSize) {
         // Requested range can be smaller than original b/c of a trailing zeros
         // Clear last rangeSize - size2 bytes in buffer2
@@ -1113,9 +1063,8 @@ public class SparseBitmapsTest extends CarrotCoreBase {
         log.error("  after={}", size);
       }
       assertEquals(0, res);
-      long newbc =
-          SparseBitmaps.SBITCOUNT(
-              map, key2.address, key2.length, Commons.NULL_LONG, Commons.NULL_LONG);
+      long newbc = SparseBitmaps.SBITCOUNT(map, key2.address, key2.length, Commons.NULL_LONG,
+        Commons.NULL_LONG);
       if (newbc != bc + rbc1 - rbc2) {
         log.error(i);
       }

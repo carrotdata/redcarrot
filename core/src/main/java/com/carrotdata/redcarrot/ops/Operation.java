@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.ops;
 
 /**
@@ -45,9 +41,8 @@ public abstract class Operation {
   protected long foundRecordAddress;
 
   /*
-   * These are result of update operation
-   * There can be 1 or 2 K_V pairs to insert
-   * Result key addresses
+   * These are result of update operation There can be 1 or 2 K_V pairs to insert Result key
+   * addresses
    */
   protected long[] keys = new long[2];
   /*
@@ -65,41 +60,40 @@ public abstract class Operation {
   /*
    * Update types for updates: false - PUT, true - Delete
    */
-  protected boolean[] updateTypes = new boolean[] {false, false};
+  protected boolean[] updateTypes = new boolean[] { false, false };
 
   /*
    * Reuse values for updates if possible
-   *
    */
-  protected boolean[] reuseValues = new boolean[] {false, false};
+  protected boolean[] reuseValues = new boolean[] { false, false };
 
   /*
-   * Number of results (0, 1,  2 updates/puts/ deletes)
+   * Number of results (0, 1, 2 updates/puts/ deletes)
    */
   protected int updatesCount; // 1 or 2
 
   /*
-   * If true, look for the largest key which LESS or equals to
-   * this operation key.
+   * If true, look for the largest key which LESS or equals to this operation key.
    */
   protected boolean floorKey = false;
 
   /*
-   * Read - only or update in place operation
-   * WARNING: updates in place with compression enabled do not work yet
+   * Read - only or update in place operation WARNING: updates in place with compression enabled do
+   * not work yet
    */
   protected boolean readOnly = false;
 
   /** Update in place (do not execute PUT but compress block if needed) */
   protected boolean updateInPlace = false;
+
   /*
    * Constructor
    */
-  public Operation() {}
+  public Operation() {
+  }
 
   /**
    * Sets expire time
-   *
    * @param expire expire time
    */
   public final void setExpire(long expire) {
@@ -108,7 +102,6 @@ public abstract class Operation {
 
   /**
    * Gets expire time
-   *
    * @return expire time
    */
   public final long getExpire() {
@@ -117,7 +110,6 @@ public abstract class Operation {
 
   /**
    * Sets key address to look for
-   *
    * @param address key address
    */
   public final void setKeyAddress(long address) {
@@ -126,7 +118,6 @@ public abstract class Operation {
 
   /**
    * Gets key address
-   *
    * @return key address
    */
   public final long getKeyAddress() {
@@ -135,7 +126,6 @@ public abstract class Operation {
 
   /**
    * Sets key size
-   *
    * @param size key size
    */
   public final void setKeySize(int size) {
@@ -144,7 +134,6 @@ public abstract class Operation {
 
   /**
    * Gets key size
-   *
    * @return key size
    */
   public final int getKeySize() {
@@ -153,7 +142,6 @@ public abstract class Operation {
 
   /**
    * Sets version (not used anymore)
-   *
    * @param version version
    * @deprecated
    */
@@ -163,7 +151,6 @@ public abstract class Operation {
 
   /**
    * Get the vesrion
-   *
    * @return version (deprectaed)
    * @deprecated
    */
@@ -173,7 +160,6 @@ public abstract class Operation {
 
   /**
    * This operation is read-only
-   *
    * @param b
    */
   public final void setReadOnly(boolean b) {
@@ -182,7 +168,6 @@ public abstract class Operation {
 
   /**
    * Is operation read-only
-   *
    * @return read only
    */
   public boolean isReadOnly() {
@@ -191,7 +176,6 @@ public abstract class Operation {
 
   /**
    * This operation is update in place
-   *
    * @param b
    */
   public final void setUpdateInPlace(boolean b) {
@@ -200,7 +184,6 @@ public abstract class Operation {
 
   /**
    * Is operation update in place
-   *
    * @return read only
    */
   public boolean isUpdateInPlace() {
@@ -231,7 +214,6 @@ public abstract class Operation {
 
   /**
    * Sets floor key (look for greatest key which are less or equals to)
-   *
    * @param b
    */
   public final void setFloorKey(boolean b) {
@@ -240,7 +222,6 @@ public abstract class Operation {
 
   /**
    * Is floor key
-   *
    * @return true/false
    */
   public final boolean isFloorKey() {
@@ -249,7 +230,6 @@ public abstract class Operation {
 
   /**
    * Set found record address before execution update Must handle NOT_FOUND
-   *
    * @param address
    */
   public final void setFoundRecordAddress(long address) {
@@ -258,7 +238,6 @@ public abstract class Operation {
 
   /**
    * Execute update operation on a found K-V record
-   *
    * @return true, if success, false - to abort
    */
   public abstract boolean execute();
@@ -266,7 +245,6 @@ public abstract class Operation {
   /**
    * Gets total update result count (zero, one or two puts) 0 - means update in place was done 1 -
    * update for current key 2 - split of a current Key Value into two consecutive key values
-   *
    * @return number of updates required
    */
   public final int getUpdatesCount() {
@@ -275,7 +253,6 @@ public abstract class Operation {
 
   /**
    * Gets result key addresses
-   *
    * @return key addresses
    */
   public final long[] keys() {
@@ -284,7 +261,6 @@ public abstract class Operation {
 
   /**
    * Gets result key sizes
-   *
    * @return key sizes
    */
   public final int[] keySizes() {
@@ -293,7 +269,6 @@ public abstract class Operation {
 
   /**
    * Get result value addresses
-   *
    * @return value addresses
    */
   public final long[] values() {
@@ -302,23 +277,22 @@ public abstract class Operation {
 
   /**
    * Get result value sizes
-   *
    * @return value sizes
    */
   public final int[] valueSizes() {
     return valueSizes;
   }
+
   /**
    * Get update types for update operations
-   *
    * @return
    */
   public final boolean[] updateTypes() {
     return updateTypes;
   }
+
   /**
    * Get reuse values
-   *
    * @return reuse values
    */
   public final boolean[] reuseValues() {

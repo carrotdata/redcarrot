@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +33,7 @@ public class BigSortedMapPerfTest {
     log.debug("Set up: block = 4096; Mem={}", 10000000);
 
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
-    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+    // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
 
     BigSortedMap.setMaxBlockSize(4096);
 
@@ -57,29 +53,23 @@ public class BigSortedMapPerfTest {
       }
       totalLoaded++;
       if (totalLoaded % 100000 == 0) {
-        log.debug(
-            "Loaded {} RAM alocated={}", totalLoaded, BigSortedMap.getGlobalAllocatedMemory());
+        log.debug("Loaded {} RAM alocated={}", totalLoaded,
+          BigSortedMap.getGlobalAllocatedMemory());
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        "Time to load="
-            + totalLoaded
-            + " ="
-            + (end - start)
-            + "ms"
-            + " RPS="
-            + (totalLoaded * 1000) / (end - start));
+    log.debug("Time to load=" + totalLoaded + " =" + (end - start) + "ms" + " RPS="
+        + (totalLoaded * 1000) / (end - start));
     log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
     return totalLoaded;
   }
-  
+
   @Test
   public void testCountRecords() throws IOException {
     log.debug("testCountRecords");
     int n = 10;
     int c = 0;
-    while(c++ < 1) {
+    while (c++ < 1) {
       long totalTime = 0;
       totalScanned = 0;
       loadData();
@@ -90,11 +80,11 @@ public class BigSortedMapPerfTest {
         totalTime += System.currentTimeMillis() - start;
         log.debug("Scan Run finished {}", i);
       }
-     
-    log.debug("{} RPS", totalScanned * 1000 / totalTime);
-    BigSortedMap.printGlobalMemoryAllocationStats();
-    assertEquals(n * totalLoaded, totalScanned);
-    map.dispose();
+
+      log.debug("{} RPS", totalScanned * 1000 / totalTime);
+      BigSortedMap.printGlobalMemoryAllocationStats();
+      assertEquals(n * totalLoaded, totalScanned);
+      map.dispose();
     }
   }
 

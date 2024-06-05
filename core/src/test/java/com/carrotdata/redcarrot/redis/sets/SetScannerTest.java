@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sets;
 
 import java.io.IOException;
@@ -39,10 +35,10 @@ public class SetScannerTest extends CarrotCoreBase {
   long n = 100000L;
   Key key;
   List<Value> values;
-  
+
   public SetScannerTest(Object c) {
     super(c);
-    n = memoryDebug? 10000: 100000;
+    n = memoryDebug ? 10000 : 100000;
   }
 
   @Before
@@ -57,7 +53,7 @@ public class SetScannerTest extends CarrotCoreBase {
       UnsafeAccess.free(key.address);
     }
     if (values != null) {
-      values.forEach( x -> UnsafeAccess.free(x.address));
+      values.forEach(x -> UnsafeAccess.free(x.address));
     }
   }
 
@@ -117,12 +113,9 @@ public class SetScannerTest extends CarrotCoreBase {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize), end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -158,41 +151,22 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
   public void testEdgeConditions() throws IOException {
 
-    byte[] zero1 = new byte[] {0};
-    byte[] zero2 = new byte[] {0, 0};
-    byte[] max1 =
-        new byte[] {
-          (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-          (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0
-        };
-    byte[] max2 =
-        new byte[] {
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff,
-          (byte) 0xff
-        };
+    byte[] zero1 = new byte[] { 0 };
+    byte[] zero2 = new byte[] { 0, 0 };
+    byte[] max1 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        (byte) 0xff, (byte) 0xff, (byte) 0 };
+    byte[] max2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
     long zptr1 = UnsafeAccess.allocAndCopy(zero1, 0, zero1.length);
     int zptrSize1 = zero1.length;
     long zptr2 = UnsafeAccess.allocAndCopy(zero2, 0, zero2.length);
@@ -212,40 +186,33 @@ public class SetScannerTest extends CarrotCoreBase {
     Utils.sortKeys(values);
 
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize), end - start);
 
     // Direct
-    SetScanner scanner =
-        Sets.getScanner(
-            map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, false);
+    SetScanner scanner = Sets.getScanner(map, key.address, key.length, zptr1, zptrSize1, zptr2,
+      zptrSize2, false, false);
     assertNotNull(scanner);
     assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2, false, true);
+    scanner = Sets.getScanner(map, key.address, key.length, zptr1, zptrSize1, zptr2, zptrSize2,
+      false, true);
     assertNull(scanner);
 
     // Direct
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, false);
+    scanner = Sets.getScanner(map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2,
+      false, false);
 
     assertNotNull(scanner);
     assertFalse(scanner.hasNext());
     scanner.close();
 
     // Reverse
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2, false, true);
+    scanner = Sets.getScanner(map, key.address, key.length, mptr1, mptrSize1, mptr2, mptrSize2,
+      false, true);
     assertNull(scanner);
 
     Random r = new Random();
@@ -258,9 +225,8 @@ public class SetScannerTest extends CarrotCoreBase {
     Value v = values.get(index);
 
     // Direct
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, zptr1, zptrSize1, v.address, v.length, false, false);
+    scanner = Sets.getScanner(map, key.address, key.length, zptr1, zptrSize1, v.address, v.length,
+      false, false);
 
     if (expected == 0) {
       assertNotNull(scanner);
@@ -272,9 +238,8 @@ public class SetScannerTest extends CarrotCoreBase {
     scanner.close();
 
     // Reverse
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, zptr1, zptrSize1, v.address, v.length, false, true);
+    scanner = Sets.getScanner(map, key.address, key.length, zptr1, zptrSize1, v.address, v.length,
+      false, true);
 
     if (expected == 0) {
       assertNull(scanner);
@@ -289,9 +254,8 @@ public class SetScannerTest extends CarrotCoreBase {
     expected = values.size() - index;
     v = values.get(index);
     // Direct
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, v.address, v.length, mptr2, mptrSize2, false, false);
+    scanner = Sets.getScanner(map, key.address, key.length, v.address, v.length, mptr2, mptrSize2,
+      false, false);
 
     if (expected == 0) {
       assertNotNull(scanner);
@@ -304,9 +268,8 @@ public class SetScannerTest extends CarrotCoreBase {
     scanner.close();
 
     // Reverse
-    scanner =
-        Sets.getScanner(
-            map, key.address, key.length, v.address, v.length, mptr2, mptrSize2, false, true);
+    scanner = Sets.getScanner(map, key.address, key.length, v.address, v.length, mptr2, mptrSize2,
+      false, true);
 
     if (expected == 0) {
       assertNull(scanner);
@@ -318,10 +281,10 @@ public class SetScannerTest extends CarrotCoreBase {
 
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -335,12 +298,9 @@ public class SetScannerTest extends CarrotCoreBase {
     loadData(key, values);
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize), end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -354,7 +314,7 @@ public class SetScannerTest extends CarrotCoreBase {
     long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size={}", copy.size());
+      /* DEBUG */ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       SetScanner scanner = Sets.getScanner(map, key.address, key.length, false, true);
       int expected = copy.size();
@@ -378,10 +338,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -396,12 +356,9 @@ public class SetScannerTest extends CarrotCoreBase {
     List<Value> copy = copy(values);
 
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize), end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -415,7 +372,7 @@ public class SetScannerTest extends CarrotCoreBase {
     long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size={}", copy.size());
+      /* DEBUG */ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -427,9 +384,8 @@ public class SetScannerTest extends CarrotCoreBase {
       int endSize = copy.get(endIndex).length;
 
       int expected = endIndex - startIndex;
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -448,10 +404,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -466,12 +422,9 @@ public class SetScannerTest extends CarrotCoreBase {
     List<Value> copy = copy(values);
 
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize), end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -491,15 +444,14 @@ public class SetScannerTest extends CarrotCoreBase {
       int startIndex = 0; // r.nextInt(copy.size());
       int endIndex = r.nextInt(copy.size() - startIndex) + startIndex;
 
-      long startPtr = 0; 
-      int startSize = 0; 
+      long startPtr = 0;
+      int startSize = 0;
       long endPtr = copy.get(endIndex).address;
       int endSize = copy.get(endIndex).length;
 
       int expected = endIndex - startIndex;
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -518,10 +470,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -535,18 +487,10 @@ public class SetScannerTest extends CarrotCoreBase {
     Utils.sortKeys(values);
     List<Value> copy = copy(values);
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -572,9 +516,8 @@ public class SetScannerTest extends CarrotCoreBase {
       int endSize = 0; // copy.get(endIndex).length;
 
       int expected = endIndex - startIndex;
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -593,10 +536,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -610,18 +553,10 @@ public class SetScannerTest extends CarrotCoreBase {
     Utils.sortKeys(values);
     List<Value> copy = copy(values);
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -635,7 +570,7 @@ public class SetScannerTest extends CarrotCoreBase {
     long card;
     while ((card = Sets.SCARD(map, key.address, key.length)) > 0) {
       assertEquals(copy.size(), (int) card);
-      /*DEBUG*/ log.debug("Set size={}", copy.size());
+      /* DEBUG */ log.debug("Set size={}", copy.size());
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
@@ -648,9 +583,8 @@ public class SetScannerTest extends CarrotCoreBase {
 
       int expected = endIndex - startIndex;
 
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false, true);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false, true);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -668,10 +602,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -685,18 +619,10 @@ public class SetScannerTest extends CarrotCoreBase {
     Utils.sortKeys(values);
     List<Value> copy = copy(values);
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -723,9 +649,8 @@ public class SetScannerTest extends CarrotCoreBase {
 
       int expected = endIndex - startIndex;
 
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false, true);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false, true);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -743,10 +668,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -760,18 +685,10 @@ public class SetScannerTest extends CarrotCoreBase {
     Utils.sortKeys(values);
     List<Value> copy = copy(values);
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 
@@ -789,17 +706,16 @@ public class SetScannerTest extends CarrotCoreBase {
       deleteRandom(map, key.address, key.length, copy, r);
       if (copy.size() == 0) break;
       int startIndex = r.nextInt(copy.size());
-      int endIndex = copy.size(); 
+      int endIndex = copy.size();
 
       long startPtr = copy.get(startIndex).address;
       int startSize = copy.get(startIndex).length;
-      long endPtr = 0; 
-      int endSize = 0; 
+      long endPtr = 0;
+      int endSize = 0;
       int expected = endIndex - startIndex;
 
-      SetScanner scanner =
-          Sets.getScanner(
-              map, key.address, key.length, startPtr, startSize, endPtr, endSize, false, true);
+      SetScanner scanner = Sets.getScanner(map, key.address, key.length, startPtr, startSize,
+        endPtr, endSize, false, true);
       if (scanner == null && expected == 0) {
         continue;
       } else if (scanner == null) {
@@ -817,10 +733,10 @@ public class SetScannerTest extends CarrotCoreBase {
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
     Sets.DELETE(map, key.address, key.length);
     assertEquals(0, (int) Sets.SCARD(map, key.address, key.length));
-    //BigSortedMap.printGlobalMemoryAllocationStats();
+    // BigSortedMap.printGlobalMemoryAllocationStats();
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -833,18 +749,10 @@ public class SetScannerTest extends CarrotCoreBase {
     loadData(key, values);
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     SetScanner scanner = Sets.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, false);
 
@@ -860,8 +768,8 @@ public class SetScannerTest extends CarrotCoreBase {
     end = System.currentTimeMillis();
     log.debug("Scanned {} elements in {}ms", n, end - start);
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   @Test
@@ -874,18 +782,10 @@ public class SetScannerTest extends CarrotCoreBase {
     loadData(key, values);
     long end = System.currentTimeMillis();
 
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     SetScanner scanner = Sets.getScanner(map, key.address, key.length, 0, 0, 0, 0, false, true);
 
@@ -901,16 +801,16 @@ public class SetScannerTest extends CarrotCoreBase {
     end = System.currentTimeMillis();
     log.debug("Scanned (reversed) {} elements in {}ms", n, end - start);
     // Free memory
-    //UnsafeAccess.free(key.address);
-    //values.forEach(x -> UnsafeAccess.free(x.address));
+    // UnsafeAccess.free(key.address);
+    // values.forEach(x -> UnsafeAccess.free(x.address));
   }
 
   private <T> List<T> copy(List<T> src) {
     return new ArrayList<>(src);
   }
 
-  private void deleteRandom(
-      BigSortedMap map, long keyPtr, int keySize, List<Value> copy, Random r) {
+  private void deleteRandom(BigSortedMap map, long keyPtr, int keySize, List<Value> copy,
+      Random r) {
     int toDelete = copy.size() < 10 ? copy.size() : r.nextInt(copy.size() / 2);
     for (int i = 0; i < toDelete; i++) {
       int n = r.nextInt(copy.size());

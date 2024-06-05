@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.util;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -19,14 +15,7 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /** Data types of Key-Values */
 public enum DataType {
-  SYSTEM,
-  STRING,
-  LIST,
-  SET,
-  ZSET,
-  HASH,
-  SBITMAP,
-  BTREE;
+  SYSTEM, STRING, LIST, SET, ZSET, HASH, SBITMAP, BTREE;
 
   public static DataType getDataType(long keyPtr) {
     int ordinal = UnsafeAccess.toByte(keyPtr);
@@ -39,7 +28,6 @@ public enum DataType {
 
   /**
    * Translate internal key address to external key address
-   *
    * @param ptr internal key address
    * @return external key address
    */
@@ -49,7 +37,6 @@ public enum DataType {
 
   /**
    * Returns size of an external key
-   *
    * @param ptr internal key address
    * @return size
    */
@@ -59,7 +46,6 @@ public enum DataType {
 
   /**
    * Is it record of a given type
-   *
    * @param recordAddress
    * @param type data type
    * @return true - if its List type, false - otherwise
@@ -76,7 +62,6 @@ public enum DataType {
 
   /**
    * Is it key of a given type?
-   *
    * @param keyAddress key address
    * @param keySize key size
    * @param type data type

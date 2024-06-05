@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sparse;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -43,9 +39,8 @@ public class SparseGetBit extends Operation {
     }
     long foundKeyPtr = DataBlock.keyAddress(foundRecordAddress);
     int foundKeySize = DataBlock.keyLength(foundRecordAddress);
-    if (Utils.compareTo(
-            foundKeyPtr, foundKeySize - Utils.SIZEOF_LONG, keyAddress, keySize - Utils.SIZEOF_LONG)
-        != 0) {
+    if (Utils.compareTo(foundKeyPtr, foundKeySize - Utils.SIZEOF_LONG, keyAddress,
+      keySize - Utils.SIZEOF_LONG) != 0) {
       // sparse bitmap Key not found
       return true;
     }
@@ -85,15 +80,14 @@ public class SparseGetBit extends Operation {
 
   /**
    * Set offset for this operation
-   *
    * @param offset offset in bits
    */
   public void setOffset(long offset) {
     this.offset = offset;
   }
+
   /**
    * Returns bit value at offset
-   *
    * @return bit value: 0 or 1
    */
   public int getBit() {

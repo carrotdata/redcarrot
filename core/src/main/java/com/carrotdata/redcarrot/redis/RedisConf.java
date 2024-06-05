@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.io.File;
@@ -56,10 +52,10 @@ public class RedisConf {
   public static final int DEFAULT_THREAD_POOL_SIZE =
       Math.max(1, Runtime.getRuntime().availableProcessors() / 4);
   public static final int DEFAULT_ZSET_MAX_COMPACT_SIZE = 100;
-  public static final boolean DEFAULT_SERVER_TEST_MODE = false; 
+  public static final boolean DEFAULT_SERVER_TEST_MODE = false;
 
   /* Data block configuration section */
-  /* Comma separated list of data block sizes*/
+  /* Comma separated list of data block sizes */
   public static final String DATA_BLOCK_SIZES_KEY = "datablock.sizes";
 
   private static RedisConf conf;
@@ -127,22 +123,21 @@ public class RedisConf {
 
   /**
    * Get list of nodes: {address:port}
-   *
    * @return list of nodes (and ports)
    */
   public String[] getNodes() {
     String value = props.getProperty(CONF_REDIS_NODES);
     if (value == null) {
-      // single  node on a default port
-      return new String[] {"127.0.0.1:" + DEFAULT_SERVER_PORT};
+      // single node on a default port
+      return new String[] { "127.0.0.1:" + DEFAULT_SERVER_PORT };
     } else {
       // TODO: improve possible errors handling
       return value.split(",");
     }
   }
+
   /**
    * Maximum size of ZSet in a compact representation
-   *
    * @return maximum size
    */
   public int getMaxZSetCompactSize() {
@@ -151,7 +146,6 @@ public class RedisConf {
 
   /**
    * Returns number of supported commands
-   *
    * @return number of supported
    */
   public int getCommandsCount() {
@@ -160,7 +154,6 @@ public class RedisConf {
 
   /**
    * Returns server port
-   *
    * @return server port number
    */
   public int getServerPort() {
@@ -174,7 +167,6 @@ public class RedisConf {
 
   /**
    * Get maximum data store size
-   *
    * @return maximum data store size
    */
   public long getMaxMemoryLimit() {
@@ -183,7 +175,6 @@ public class RedisConf {
 
   /**
    * Get compression codec
-   *
    * @return codec
    */
   public Codec getCompressionCodec() {
@@ -201,7 +192,6 @@ public class RedisConf {
 
   /**
    * Get snapshot directory (global)
-   *
    * @return snapshot directory
    */
   public String getDataDir() {
@@ -210,7 +200,6 @@ public class RedisConf {
 
   /**
    * Get snapshot directory for the store ID
-   *
    * @param storeId store ID
    * @return path as a string
    */
@@ -220,7 +209,6 @@ public class RedisConf {
 
   /**
    * Get data directory (for snapshots) for the node
-   *
    * @param port node's server port
    * @return
    */
@@ -232,7 +220,6 @@ public class RedisConf {
 
   /**
    * Get snapshot interval in seconds
-   *
    * @return snapshot interval
    */
   public int getSnapshotInterval() {
@@ -245,7 +232,6 @@ public class RedisConf {
 
   /**
    * Get log directory
-   *
    * @return log directory
    */
   public String getLogsDir() {
@@ -254,7 +240,6 @@ public class RedisConf {
 
   /**
    * Get WAL directory
-   *
    * @return WAL directory
    */
   public String getWALDir() {
@@ -266,10 +251,11 @@ public class RedisConf {
    * @return test mode
    */
   public boolean getTestMode() {
-    String mode = props.getProperty(CONF_SERVER_TEST_MODE, Boolean.toString(DEFAULT_SERVER_TEST_MODE));
+    String mode =
+        props.getProperty(CONF_SERVER_TEST_MODE, Boolean.toString(DEFAULT_SERVER_TEST_MODE));
     return Boolean.parseBoolean(mode);
   }
-  
+
   /**
    * Set test property
    * @param b
@@ -277,10 +263,9 @@ public class RedisConf {
   public void setTestMode(boolean b) {
     props.setProperty(CONF_SERVER_TEST_MODE, Boolean.toString(b));
   }
-  
+
   /**
    * Return cluster slots
-   *
    * @return cluster slots
    */
   public Object[] getClusterSlots() {
@@ -313,6 +298,7 @@ public class RedisConf {
     }
     return slots;
   }
+
   /** Get data block sizes */
   public int[] getDataBlockSizes() {
     String value = props.getProperty(DATA_BLOCK_SIZES_KEY);

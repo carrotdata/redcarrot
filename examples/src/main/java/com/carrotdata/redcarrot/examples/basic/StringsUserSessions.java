@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.basic;
 
 import java.io.IOException;
@@ -32,8 +28,8 @@ import com.carrotdata.redcarrot.util.UnsafeAccess;
 
 /**
  * This example shows how to use Carrot Strings to store user sessions objects
- *
- * <p>User Session structure: "SessionID" - A unique, universal identifier for the session data
+ * <p>
+ * User Session structure: "SessionID" - A unique, universal identifier for the session data
  * structure (16 bytes). "Host" - host name or IP Address The location from which the client
  * (browser) is making the request. "UserID" - Set to the user's distinguished name (DN) or the
  * application's principal name. "Type" - USER or APPLICATION "State" - session state: VALID,
@@ -43,34 +39,34 @@ import com.carrotdata.redcarrot.util.UnsafeAccess;
  * no activity) before the session expires and the user must reauthenticate. "MaxCachingTime" -
  * Maximum number of minutes before the client contacts OpenSSO Enterprise to refresh cached session
  * information.
- *
- * <p>Test description: <br>
+ * <p>
+ * Test description: <br>
  * UserSession object has 8 fields, one field (UserId) is used as a String key
- *
- * <p>Average key + session object size is 222 bytes. We load 100K user session objects
- *
- * <p>Results: 0. Average user session data size = 222 bytes (includes key size) 1. No compression.
+ * <p>
+ * Average key + session object size is 222 bytes. We load 100K user session objects
+ * <p>
+ * Results: 0. Average user session data size = 222 bytes (includes key size) 1. No compression.
  * Used RAM per session object is 300 bytes (COMPRESSION= 0.8) 2. LZ4 compression. Used RAM per
- * session object is 115 bytes (COMPRESSION = 2.37) 3. LZ4HC compression. Used RAM per session object
- * is 108 bytes (COMPRESSION = 2.5), ZSTD - 65 bytes
- *
- * <p>Redis using String encoding is ~314 bytes per session
- *
- * <p>RAM usage (Redis-to-Carrot)
- *
- * <p>1) No compression 314/300 ~ 1.07x 2) LZ4 compression 314/115 ~ 2.8x 3) LZ4HC compression 314/108
+ * session object is 115 bytes (COMPRESSION = 2.37) 3. LZ4HC compression. Used RAM per session
+ * object is 108 bytes (COMPRESSION = 2.5), ZSTD - 65 bytes
+ * <p>
+ * Redis using String encoding is ~314 bytes per session
+ * <p>
+ * RAM usage (Redis-to-Carrot)
+ * <p>
+ * 1) No compression 314/300 ~ 1.07x 2) LZ4 compression 314/115 ~ 2.8x 3) LZ4HC compression 314/108
  * ~ 2.96x, ZSTD compression 314/65 ~ 4.8x
- *
- * <p>Effect of a compression:
- *
- * <p>LZ4 - 2.37/0.8 = 2.96 (to no compression) LZ4HC - 2.5/0.8 = 3.13 (to no compression)
+ * <p>
+ * Effect of a compression:
+ * <p>
+ * LZ4 - 2.37/0.8 = 2.96 (to no compression) LZ4HC - 2.5/0.8 = 3.13 (to no compression)
  */
 public class StringsUserSessions {
 
   private static final Logger log = LogManager.getLogger(StringsUserSessions.class);
 
   static {
-    //UnsafeAccess.debug = true;
+    // UnsafeAccess.debug = true;
   }
 
   static long keyBuf = UnsafeAccess.malloc(64);
@@ -123,9 +119,8 @@ public class StringsUserSessions {
       UnsafeAccess.copy(bkey, 0, keyBuf, bkey.length);
       UnsafeAccess.copy(bvalue, 0, valBuf, bvalue.length);
 
-      boolean result =
-          Strings.SET(
-              map, keyBuf, bkey.length, valBuf, bvalue.length, 0, MutationOptions.NONE, true);
+      boolean result = Strings.SET(map, keyBuf, bkey.length, valBuf, bvalue.length, 0,
+        MutationOptions.NONE, true);
       if (!result) {
         log.fatal("ERROR in SET");
         System.exit(-1);
@@ -137,13 +132,9 @@ public class StringsUserSessions {
     }
     long endTime = System.currentTimeMillis();
 
-    log.debug(
-        "Loaded {} user sessions, total size={} in {}ms. RAM usage={} COMPRESSION={}",
-        userSessions.size(),
-        totalDataSize,
-        endTime - startTime,
-        UnsafeAccess.getAllocatedMemory(),
-        (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
+    log.debug("Loaded {} user sessions, total size={} in {}ms. RAM usage={} COMPRESSION={}",
+      userSessions.size(), totalDataSize, endTime - startTime, UnsafeAccess.getAllocatedMemory(),
+      (double) totalDataSize / UnsafeAccess.getAllocatedMemory());
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.dispose();

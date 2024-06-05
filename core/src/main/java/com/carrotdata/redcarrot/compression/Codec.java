@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.compression;
 
 import java.io.IOException;
@@ -24,14 +20,14 @@ public interface Codec {
   public static final String COMPRESSION_THRESHOLD = "compression.threshold";
 
   public static final String COMPRESSION_LEVEL = "compression.level";
-  
+
   public static final String COMPRESSION_DICTIONARY_SIZE = "compression.dictionary.size";
+
   /**
    * Compress the content in the given input buffer. After the compression, you can retrieve the
    * compressed data from the output buffer [pos() ... limit()) (compressed data size = limit() -
    * pos() = remaining()) uncompressed - buffer[pos() ... limit()) containing the input data
    * compressed - output of the compressed data. Uses range [pos()..limit()].
-   *
    * @param src the src
    * @param dst the dst
    * @return byte size of the compressed data.
@@ -45,7 +41,6 @@ public interface Codec {
    * uncompressed, your JVM might crash due to the access violation exception issued in the native
    * code written in C++. To avoid this type of crash, use isValidCompressedBuffer(ByteBuffer)
    * first.
-   *
    * @param src - buffer[pos() ... limit()) containing the input data
    * @param dst - output of the the uncompressed data. It uses buffer[pot()..]
    * @return uncompressed data size
@@ -55,7 +50,6 @@ public interface Codec {
 
   /**
    * Compress memory directly
-   *
    * @param src source address
    * @param srcSize source size
    * @param dst destination address
@@ -66,7 +60,6 @@ public interface Codec {
 
   /**
    * Decompress memory directly
-   *
    * @param src source address
    * @param srcSize source size
    * @param dst destination address
@@ -77,28 +70,24 @@ public interface Codec {
 
   /**
    * Gets the compression threshold.
-   *
    * @return the compression threshold
    */
   public int getCompressionThreshold();
 
   /**
    * Sets the compression threshold.
-   *
    * @param val the new compression threshold
    */
   public void setCompressionThreshold(int val);
 
   /**
    * Gets the type.
-   *
    * @return the type
    */
   public CodecType getType();
 
   /**
    * Gets the avg compression ratio.
-   *
    * @return the avg compression ratio
    */
   public double getAvgCompressionRatio();
@@ -111,18 +100,16 @@ public interface Codec {
 
   /**
    * Sets the level.
-   *
    * @param level the new level
    */
   public void setLevel(int level);
 
   /**
    * Gets the level.
-   *
    * @return the level
    */
   public int getLevel();
-  
+
   /**
    * Is dictionary compression supported
    * @return true or false
@@ -130,7 +117,7 @@ public interface Codec {
   public default boolean isDictionarySupported() {
     return false;
   }
-  
+
   /**
    * Get dictionary size
    * @return dictionary size

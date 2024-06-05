@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.compression;
 
 // TODO: Auto-generated Javadoc
@@ -30,11 +26,10 @@ public class CodecFactory {
   /** Boolean array with TRUE value for each codec if supported, FALSE otherwise */
   private static boolean[] supportedCodecs = new boolean[CodecType.values().length];
 
-  private static Codec[] codecs = {new LZ4Codec(), new LZ4HCCodec(), null, new ZstdCodec()};
+  private static Codec[] codecs = { new LZ4Codec(), new LZ4HCCodec(), null, new ZstdCodec() };
 
   /**
    * Gets the single instance of CodecFactory.
-   *
    * @return single instance of CodecFactory
    */
   public static synchronized CodecFactory getInstance() {
@@ -76,7 +71,6 @@ public class CodecFactory {
 
   /**
    * Gets the codec.
-   *
    * @param type the type
    * @return the codec
    */
@@ -87,10 +81,9 @@ public class CodecFactory {
     int id = type.ordinal();
     return getCodec(id);
   }
-  
+
   /**
    * Gets the codec.
-   *
    * @param type the type
    * @return the codec
    */
@@ -105,7 +98,7 @@ public class CodecFactory {
         return codecs[2];
       case 4:
         return codecs[3];
-        // No codec
+      // No codec
       case 0:
         return null;
     }

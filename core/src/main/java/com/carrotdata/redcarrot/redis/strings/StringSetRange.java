@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -37,13 +33,13 @@ public class StringSetRange extends Operation {
   public boolean execute() {
     boolean keyExists = foundRecordAddress > 0;
     // TODO remove after testing
-    //    if (foundRecordAddress < 0) {
-    //      return false;
-    //    }
-    //    long kPtr = DataBlock.keyAddress(foundRecordAddress);
-    //    int kSize = DataBlock.keyLength(foundRecordAddress);
-    //    // compare keys
-    //    boolean keyExists = Utils.compareTo(keyAddress, keySize, kPtr, kSize) ==0;
+    // if (foundRecordAddress < 0) {
+    // return false;
+    // }
+    // long kPtr = DataBlock.keyAddress(foundRecordAddress);
+    // int kSize = DataBlock.keyLength(foundRecordAddress);
+    // // compare keys
+    // boolean keyExists = Utils.compareTo(keyAddress, keySize, kPtr, kSize) ==0;
     long newPtr = 0;
     boolean reuseValue = false;
     if (keyExists) {
@@ -84,7 +80,6 @@ public class StringSetRange extends Operation {
 
   /**
    * Set value
-   *
    * @param ptr value address
    * @param size value size
    */

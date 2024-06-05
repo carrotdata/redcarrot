@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.adserver;
 
 import java.io.IOException;
@@ -25,24 +21,24 @@ import redis.clients.jedis.Jedis;
 
 /**
  * ----- Data structures to keep site performance
- *
- * <p>13. SiteAdsRank: ZSET - ordered set. key = siteId, member = adId, score = CTR (click through
+ * <p>
+ * 13. SiteAdsRank: ZSET - ordered set. key = siteId, member = adId, score = CTR (click through
  * rate). This data allows us to estimate how does the ad perform on a particular site relative to
  * other ads.
- *
- * <p>14. SiteWordsRank: ZSET - ordered set. key = siteId, member = word, score - word's value. This
+ * <p>
+ * 14. SiteWordsRank: ZSET - ordered set. key = siteId, member = word, score - word's value. This
  * data store keeps keywords with corresponding scores. Every time someone acts on ads on the site,
  * all keywords from the ad are added to the site's ordered set with a some score value. The more a
  * keyword appears in the ads - the higher it is going to be in the site's list. This data allows us
  * to estimate the most important keywords for the site as well as targeting attributes.
- *
- * <p>Results:
- *
- * <p>Redis 6.0.10 = Carrot no compression = Carrot LZ4 compression = Carrot LZ4HC compression =
- *
- * <p>Notes:
- *
- * <p>1. The test uses synthetic data, which is mostly random and not compressible
+ * <p>
+ * Results:
+ * <p>
+ * Redis 6.0.10 = Carrot no compression = Carrot LZ4 compression = Carrot LZ4HC compression =
+ * <p>
+ * Notes:
+ * <p>
+ * 1. The test uses synthetic data, which is mostly random and not compressible
  */
 public class TestRedisAdServerSitePerf {
 

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.lists;
 
 import java.io.IOException;
@@ -25,10 +21,10 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /**
  * Linked list segment (memory area). Each segment has:
- *
- * <p>1. Previous segment address (8 bytes) 2. Next segment address (8 bytes) - 0 means NULL 3.
- * Segment size in bytes - 2 bytes 4. Segment data size in bytes - 2 bytes 5. Number of elements in
- * the segment - 2 bytes 6. Compression type (codec) - 1 byte
+ * <p>
+ * 1. Previous segment address (8 bytes) 2. Next segment address (8 bytes) - 0 means NULL 3. Segment
+ * size in bytes - 2 bytes 4. Segment data size in bytes - 2 bytes 5. Number of elements in the
+ * segment - 2 bytes 6. Compression type (codec) - 1 byte
  */
 public final class Segment {
 
@@ -37,43 +33,30 @@ public final class Segment {
   public static final int SEGMENT_DATA_SIZE = Utils.SIZEOF_SHORT; // size of a segment
   public static final int ELEMENT_NUMBER_SIZE = Utils.SIZEOF_SHORT;
   public static final int COMPRESSION_TYPE_SIZE = Utils.SIZEOF_BYTE;
-  public static final int SEGMENT_OVERHEAD =
-      2 * ADDRESS_SIZE
-          + SEGMENT_SIZE
-          + +SEGMENT_DATA_SIZE
-          + COMPRESSION_TYPE_SIZE
-          + ELEMENT_NUMBER_SIZE;
+  public static final int SEGMENT_OVERHEAD = 2 * ADDRESS_SIZE + SEGMENT_SIZE + +SEGMENT_DATA_SIZE
+      + COMPRESSION_TYPE_SIZE + ELEMENT_NUMBER_SIZE;
   public static final int MAXIMUM_SEGMENT_SIZE = 4096;
   public static final int EXTERNAL_ALLOC_THRESHOLD = 512;
 
-  static ThreadLocal<Segment> segment =
-      new ThreadLocal<Segment>() {
-        @Override
-        protected Segment initialValue() {
-          return new Segment();
-        }
-      };
+  static ThreadLocal<Segment> segment = new ThreadLocal<Segment>() {
+    @Override
+    protected Segment initialValue() {
+      return new Segment();
+    }
+  };
 
   /*
-   * TODO: make this configurable
-   * TODO: Optimal block ratios (check jemalloc sizes)
-   * 128-256 - step 64
-   * 256-4096 with step 256 - this is jemalloc specific
-   * sizes of allocation
-   * 256 * 2, 3, 4, ... 16
+   * TODO: make this configurable TODO: Optimal block ratios (check jemalloc sizes) 128-256 - step
+   * 64 256-4096 with step 256 - this is jemalloc specific sizes of allocation 256 * 2, 3, 4, ... 16
    * The minimum allocation is 128, maximum - 4096
    */
-  static int[] BASE_SIZES =
-      new int[] {
-        64, 64, 256, 256, 256, 256, 256, 256, 256,
-        256, 256, 256, 256, 256, 256, 256, 256, 256
-      };
+  static int[] BASE_SIZES = new int[] { 64, 64, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256,
+      256, 256, 256, 256, 256, 256 };
   static int[] BASE_MULTIPLIERS =
-      new int[] {2, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+      new int[] { 2, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
   /**
    * Get min size greater than current
-   *
    * @param max - max size
    * @param current current size
    * @return min size or -1;
@@ -88,7 +71,6 @@ public final class Segment {
 
   /**
    * Get min size greater than current
-   *
    * @param max - max size
    * @param current current size
    * @return min size or -1;
@@ -107,7 +89,8 @@ public final class Segment {
   /** Not a cool thing */
   private BigSortedMap map;
 
-  Segment() {}
+  Segment() {
+  }
 
   private Segment(BigSortedMap map, long ptr, int size) {
     this.dataPtr = ptr;
@@ -143,9 +126,9 @@ public final class Segment {
     this.dataPtr = 0;
     this.map = null;
   }
+
   /**
    * Sets data pointer
-   *
    * @param ptr
    */
   public Segment setDataPointerAndParentMap(BigSortedMap map, long ptr) {
@@ -156,7 +139,6 @@ public final class Segment {
 
   /**
    * Gets data pointer
-   *
    * @return
    */
   public long getDataPtr() {
@@ -165,7 +147,6 @@ public final class Segment {
 
   /**
    * Sets segment size
-   *
    * @param ptr segment data pointer
    * @param size size
    */
@@ -175,7 +156,6 @@ public final class Segment {
 
   /**
    * Gets segment size
-   *
    * @return segment size
    */
   public static int getSegmentSize(long ptr) {
@@ -184,7 +164,6 @@ public final class Segment {
 
   /**
    * Sets segment data size
-   *
    * @param ptr segment data pointer
    * @param size size
    */
@@ -194,7 +173,6 @@ public final class Segment {
 
   /**
    * Gets segment data size
-   *
    * @param ptr segment data pointer
    * @return segment data size
    */
@@ -204,7 +182,6 @@ public final class Segment {
 
   /**
    * Sets previous segment address
-   *
    * @param ptr segment data pointer
    * @param address previous segment address
    */
@@ -214,7 +191,6 @@ public final class Segment {
 
   /**
    * Gets previous segment address
-   *
    * @return previous segment address
    */
   public static long getPreviousSegmentAddress(long ptr) {
@@ -223,7 +199,6 @@ public final class Segment {
 
   /**
    * Sets next segment address
-   *
    * @param ptr segment data pointer
    * @param address next segment address
    */
@@ -233,7 +208,6 @@ public final class Segment {
 
   /**
    * Gets next segment address
-   *
    * @return next segment address
    */
   public static long getNextSegmentAddress(long ptr) {
@@ -242,32 +216,28 @@ public final class Segment {
 
   /**
    * Sets compression type
-   *
    * @param ptr segment data pointer
    * @param type compression type
    */
   public static void setSegmentCompressionType(long ptr, CodecType type) {
     UnsafeAccess.putByte(
-        ptr + 2 * ADDRESS_SIZE + SEGMENT_SIZE + SEGMENT_DATA_SIZE + ELEMENT_NUMBER_SIZE,
-        (byte) type.ordinal());
+      ptr + 2 * ADDRESS_SIZE + SEGMENT_SIZE + SEGMENT_DATA_SIZE + ELEMENT_NUMBER_SIZE,
+      (byte) type.ordinal());
   }
 
   /**
    * Gets compression type
-   *
    * @param ptr segment data pointer
    * @return compression type
    */
   public static CodecType getSegmentCompressionType(long ptr) {
-    int ordinal =
-        UnsafeAccess.toByte(
-            ptr + 2 * ADDRESS_SIZE + SEGMENT_SIZE + SEGMENT_DATA_SIZE + ELEMENT_NUMBER_SIZE);
+    int ordinal = UnsafeAccess
+        .toByte(ptr + 2 * ADDRESS_SIZE + SEGMENT_SIZE + SEGMENT_DATA_SIZE + ELEMENT_NUMBER_SIZE);
     return CodecType.values()[ordinal];
   }
 
   /**
    * Gets number of elements in this segment
-   *
    * @param ptr segment data pointer
    * @return
    */
@@ -277,7 +247,6 @@ public final class Segment {
 
   /**
    * Sets number of elements
-   *
    * @param ptr segment data pointer
    * @param n number of elements
    */
@@ -287,7 +256,6 @@ public final class Segment {
 
   /**
    * Sets segment size
-   *
    * @param size size
    */
   public void setSize(int size) {
@@ -296,7 +264,6 @@ public final class Segment {
 
   /**
    * Get segment size
-   *
    * @return segment size
    */
   public int getSize() {
@@ -305,7 +272,6 @@ public final class Segment {
 
   /**
    * Sets data size
-   *
    * @param size data size
    */
   public void setDataSize(int size) {
@@ -314,7 +280,6 @@ public final class Segment {
 
   /**
    * Gets data size
-   *
    * @return data size
    */
   public int getDataSize() {
@@ -323,7 +288,6 @@ public final class Segment {
 
   /**
    * Increment data size
-   *
    * @param incr value
    * @return new data size
    */
@@ -335,7 +299,6 @@ public final class Segment {
 
   /**
    * Increment number of elements
-   *
    * @param incr value
    * @return new number of elements
    */
@@ -347,7 +310,6 @@ public final class Segment {
 
   /**
    * Sets previous segment address
-   *
    * @param address previous segment address
    */
   public void setPreviousAddress(long address) {
@@ -356,7 +318,6 @@ public final class Segment {
 
   /**
    * Gets previous segment address
-   *
    * @return previous segment address
    */
   public long getPreviousAddress() {
@@ -365,7 +326,6 @@ public final class Segment {
 
   /**
    * Sets next segment address
-   *
    * @param address next segment address
    */
   public void setNextAddress(long address) {
@@ -374,7 +334,6 @@ public final class Segment {
 
   /**
    * Gets next segment address
-   *
    * @return next segment address
    */
   public long getNextAddress() {
@@ -383,7 +342,6 @@ public final class Segment {
 
   /**
    * Sets number of elements
-   *
    * @param n number of elements
    */
   public void setNumberOfElements(int n) {
@@ -392,7 +350,6 @@ public final class Segment {
 
   /**
    * Gets number of elements
-   *
    * @return number of elements
    */
   public int getNumberOfElements() {
@@ -401,7 +358,6 @@ public final class Segment {
 
   /**
    * Sets compression type
-   *
    * @param type compression type
    */
   public void setCompressionType(CodecType type) {
@@ -410,7 +366,6 @@ public final class Segment {
 
   /**
    * Gets compression type
-   *
    * @return compression type
    */
   public CodecType getCompressionType() {
@@ -436,7 +391,6 @@ public final class Segment {
 
   /**
    * Expand the segment
-   *
    * @param requiredSize (exclude overhead)
    * @return true, if success, false - otherwise
    */
@@ -467,9 +421,9 @@ public final class Segment {
       setPreviousSegmentAddress(nextSegment, this.dataPtr);
     }
   }
+
   /**
    * Get element by index (0- based)
-   *
    * @param index index of an element
    * @param buffer buffer for the result
    * @param bufferSize buffer size
@@ -499,7 +453,6 @@ public final class Segment {
 
   /**
    * Search position for insert
-   *
    * @param elemPtr element to search pointer
    * @param elemSize element to search size
    * @param after true - position after
@@ -521,9 +474,9 @@ public final class Segment {
     }
     return -1;
   }
+
   /**
    * Insert element at the specified position
-   *
    * @param offset offset from beginning to insert
    * @param elemPtr element pointer
    * @param elemSize element size
@@ -541,10 +494,8 @@ public final class Segment {
     if (requiredSize <= segmentSize || expand(requiredSize)) {
       dataSize = getDataSize();
       segmentSize = getSize();
-      UnsafeAccess.copy(
-          this.dataPtr + offset,
-          this.dataPtr + offset + toMove,
-          dataSize + SEGMENT_OVERHEAD - offset);
+      UnsafeAccess.copy(this.dataPtr + offset, this.dataPtr + offset + toMove,
+        dataSize + SEGMENT_OVERHEAD - offset);
       if (extAlloc) {
         long ptr = UnsafeAccess.allocAndCopy(elemPtr, elemSize);
 
@@ -569,7 +520,7 @@ public final class Segment {
 
     dataSize = getDataSize();
     if (offset <= dataSize + SEGMENT_OVERHEAD) {
-      //  repeat call
+      // repeat call
       return insert(offset, elemPtr, elemSize);
     } else {
       // insert into next segment
@@ -586,7 +537,6 @@ public final class Segment {
 
   /**
    * Insert element at the beginning
-   *
    * @param ptr element pointer
    * @param size element size
    * @return pointer to this segment after this operation
@@ -595,9 +545,9 @@ public final class Segment {
     // TODO do not split - add new segment
     return insert(SEGMENT_OVERHEAD, ptr, size);
   }
+
   /**
    * Append element at the end
-   *
    * @param ptr element pointer
    * @param size element size
    * @return pointer to this segment after this operation
@@ -609,7 +559,6 @@ public final class Segment {
 
   /**
    * Is the segment empty?
-   *
    * @return true, if - yes, false - otherwise
    */
   public boolean isEmpty() {
@@ -618,11 +567,10 @@ public final class Segment {
 
   /**
    * Pops element from the left
-   *
    * @param buffer buffer
    * @param bufferSize buffer size
    * @return serialized size of the element or -1, if size is greater then bufferSize, the call must
-   *     be repeated with the appropriately sized buffer
+   *         be repeated with the appropriately sized buffer
    */
   public long popLeft(long buffer, int bufferSize) {
     if (isEmpty()) return -1;
@@ -639,10 +587,8 @@ public final class Segment {
     }
     int bSize = elementBlockFullSize(this.dataPtr + SEGMENT_OVERHEAD);
     int dataSize = getDataSize();
-    UnsafeAccess.copy(
-        this.dataPtr + +SEGMENT_OVERHEAD + bSize,
-        this.dataPtr + SEGMENT_OVERHEAD,
-        dataSize - bSize);
+    UnsafeAccess.copy(this.dataPtr + +SEGMENT_OVERHEAD + bSize, this.dataPtr + SEGMENT_OVERHEAD,
+      dataSize - bSize);
     incrementDataSize(-bSize);
     incrementNumberOfElements(-1);
     return size;
@@ -650,7 +596,6 @@ public final class Segment {
 
   /**
    * Address of the last element
-   *
    * @return address of the last element
    */
   public long lastElementBlockAddress() {
@@ -667,11 +612,10 @@ public final class Segment {
 
   /**
    * Pops element from the right
-   *
    * @param buffer buffer
    * @param bufferSize buffer size
    * @return serialized size of the element or -1, if size is greater then bufferSize, the call must
-   *     be repeated with the appropriately sized buffer
+   *         be repeated with the appropriately sized buffer
    */
   public long popRight(long buffer, int bufferSize) {
     if (isEmpty()) return -1;
@@ -692,9 +636,9 @@ public final class Segment {
     incrementNumberOfElements(-1);
     return size;
   }
+
   /**
    * Insert element before or after a given element
-   *
    * @param pivotPtr given element pointer
    * @param pivotSize given element size
    * @param ptr element pointer
@@ -710,7 +654,6 @@ public final class Segment {
 
   /**
    * Is first segment in the linked list
-   *
    * @return true if - yes, false - otherwise
    */
   public boolean isFirst() {
@@ -719,7 +662,6 @@ public final class Segment {
 
   /**
    * Is last segment in the linked list
-   *
    * @return true, if - yes, false -otherwise
    */
   public boolean isLast() {
@@ -728,7 +670,6 @@ public final class Segment {
 
   /**
    * Is first segment
-   *
    * @param ptr address of the segment
    * @return true, if - yes, false - otherwise
    */
@@ -739,7 +680,6 @@ public final class Segment {
 
   /**
    * Is last segment in the linked list
-   *
    * @param ptr segment address
    * @return true, if - yes, false - otherwise
    */
@@ -785,13 +725,12 @@ public final class Segment {
     setDataSize(newDataSize);
     setNumberOfElements(newElementNumber);
     shrink();
-    // Update new segment previous address,  do this after shrink
+    // Update new segment previous address, do this after shrink
     setPreviousSegmentAddress(ptr, this.dataPtr);
   }
 
   /**
    * Gets element address
-   *
    * @param ptr current pointer in a segment
    * @return address of an element
    */
@@ -807,7 +746,6 @@ public final class Segment {
 
   /**
    * Gets element address
-   *
    * @param ptr current pointer in a segment
    * @return address of an element
    */
@@ -823,7 +761,6 @@ public final class Segment {
 
   /**
    * Size in block
-   *
    * @param ptr current element pointer in this segment
    * @return size of an element in the segment block
    */
@@ -837,7 +774,6 @@ public final class Segment {
 
   /**
    * Full size in block for searching/skipping
-   *
    * @param ptr element address
    * @return size
    */
@@ -848,9 +784,9 @@ public final class Segment {
     }
     return size + Utils.sizeUVInt(size);
   }
+
   /**
    * Is current element externally allocated
-   *
    * @param ptr element address
    * @return true, if - yes, false -otherwise
    */
@@ -878,7 +814,6 @@ public final class Segment {
 
   /**
    * Has next segment
-   *
    * @return true, if - yes
    */
   public boolean hasNext() {
@@ -887,7 +822,6 @@ public final class Segment {
 
   /**
    * Has previous segment
-   *
    * @return true, if - yes
    */
   public boolean hasPrevious() {
@@ -896,7 +830,6 @@ public final class Segment {
 
   /**
    * Get next segment
-   *
    * @param s segment to reuse (this)
    * @return next segment or null
    */
@@ -909,7 +842,6 @@ public final class Segment {
 
   /**
    * Get previous segment
-   *
    * @param s segment to reuse (this)
    * @return previous segment or null
    */
@@ -922,18 +854,17 @@ public final class Segment {
 
   /**
    * Gets last segment starting from a given segment
-   *
    * @param s segment to start from
    * @return last segment in a linked list
    */
   public Segment last(Segment s) {
-    while (s.next(s) != null) {}
+    while (s.next(s) != null) {
+    }
     return s;
   }
 
   /**
    * Removes element if present
-   *
    * @param elPtr element address
    * @param elSize element size
    * @return number of elements removed (0 or 1)
@@ -965,7 +896,6 @@ public final class Segment {
 
   /**
    * Remove up to max occurrences of a given element
-   *
    * @param chunkPtr element pointer
    * @param size element size
    * @param m maximum occurrences to remove
@@ -1004,7 +934,6 @@ public final class Segment {
 
   /**
    * Removes element from the tail
-   *
    * @param elPtr element pointer
    * @param elSize element size
    * @return number of element removed
@@ -1045,7 +974,6 @@ public final class Segment {
 
   /**
    * Removes element by index
-   *
    * @param index index to remove
    * @return offset in bytes of an element being removed or -1
    */
@@ -1079,7 +1007,6 @@ public final class Segment {
 
   /**
    * Gets element by index
-   *
    * @param index index to remove
    * @return total serialized size of the element
    */
@@ -1109,7 +1036,6 @@ public final class Segment {
 
   /**
    * TODO: fix it, the method MUST return overall size of a data Get range of elements into a buffer
-   *
    * @param from from index
    * @param max maximum number of elements to get
    * @param buffer buffer address
@@ -1153,7 +1079,6 @@ public final class Segment {
 
   /**
    * Calculates number of elements in a given buffer
-   *
    * @param buffer buffer start address
    * @param bufferSize buffer size
    * @return number of elements
@@ -1174,7 +1099,6 @@ public final class Segment {
 
   /**
    * Save segment data to
-   *
    * @param fc file channel to write data to
    * @param buf byte buffer to use
    * @throws IOException
@@ -1232,7 +1156,6 @@ public final class Segment {
 
   /**
    * Returns address of a deserialized segment
-   *
    * @param fc file channel to read data from
    * @param buf byte buffer to use
    * @return address of a segment

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import com.carrotdata.redcarrot.BigSortedMap;
@@ -45,15 +41,12 @@ public class LINSERT implements RedisCommand {
       after = false;
     } else if (Utils.compareTo(AFTER_FLAG, AFTER_LENGTH, flagPtr, flagSize) == 0
         || Utils.compareTo(AFTER_FLAG_LOWER, AFTER_LENGTH, flagPtr, flagSize) == 0) {
-      after = true;
-    } else {
-      Errors.write(
-          outBufferPtr,
-          Errors.TYPE_GENERIC,
-          Errors.ERR_WRONG_COMMAND_FORMAT,
-          ": " + Utils.toString(flagPtr, flagSize));
-      return;
-    }
+          after = true;
+        } else {
+          Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
+            ": " + Utils.toString(flagPtr, flagSize));
+          return;
+        }
     inDataPtr += flagSize;
     // read pivot
     int pivotSize = UnsafeAccess.toInt(inDataPtr);

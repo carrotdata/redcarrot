@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -34,17 +30,17 @@ public class StringSetBit extends Operation {
   @Override
   public boolean execute() {
     this.updatesCount = 0;
-    //    if (foundRecordAddress < 0) {
-    //      // Yes we return true
-    //      return true;
-    //    }
-    //    long foundKeyPtr = DataBlock.keyAddress(foundRecordAddress);
-    //    int foundKeySize = DataBlock.keyLength(foundRecordAddress);
-    //    boolean existKey = true;
-    //    if (Utils.compareTo(foundKeyPtr, foundKeySize, keyAddress, keySize) != 0) {
-    //      // Key not found
-    //      existKey = false;
-    //    }
+    // if (foundRecordAddress < 0) {
+    // // Yes we return true
+    // return true;
+    // }
+    // long foundKeyPtr = DataBlock.keyAddress(foundRecordAddress);
+    // int foundKeySize = DataBlock.keyLength(foundRecordAddress);
+    // boolean existKey = true;
+    // if (Utils.compareTo(foundKeyPtr, foundKeySize, keyAddress, keySize) != 0) {
+    // // Key not found
+    // existKey = false;
+    // }
     long valuePtr = 0;
     int valueSize = 0;
     if (foundRecordAddress > 0) {
@@ -53,7 +49,7 @@ public class StringSetBit extends Operation {
       if (offset >= ((long) valueSize) * Utils.BITS_PER_BYTE) {
         int newSize = (int) (offset / Utils.BITS_PER_BYTE) + 1;
         long oldValuePtr = valuePtr;
-        //FIXME: memory leak
+        // FIXME: memory leak
         valuePtr = UnsafeAccess.mallocZeroed(newSize);
         UnsafeAccess.copy(oldValuePtr, valuePtr, valueSize);
         valueSize = newSize;
@@ -68,7 +64,7 @@ public class StringSetBit extends Operation {
     } else {
       // new K-V
       valueSize = (int) (offset / Utils.BITS_PER_BYTE) + 1;
-      //FIXME: memory leak;
+      // FIXME: memory leak;
       valuePtr = UnsafeAccess.mallocZeroed(valueSize);
       this.updatesCount = 1;
       this.keys[0] = keyAddress;
@@ -108,7 +104,6 @@ public class StringSetBit extends Operation {
 
   /**
    * Set offset for this operation
-   *
    * @param offset offset in bits
    */
   public void setOffset(long offset) {
@@ -118,15 +113,14 @@ public class StringSetBit extends Operation {
 
   /**
    * Sets new bit
-   *
    * @param bit value
    */
   public void setBit(int bit) {
     this.bit = bit;
   }
+
   /**
    * Returns old bit value at offset
-   *
    * @return bit value: 0 or 1
    */
   public int getOldBit() {

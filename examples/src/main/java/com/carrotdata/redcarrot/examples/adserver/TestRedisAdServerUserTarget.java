@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.adserver;
 
 import java.io.IOException;
@@ -25,23 +21,23 @@ import redis.clients.jedis.Jedis;
 
 /**
  * ----- Data structures to keep user targeting:
- *
- * <p>7. UserActionWords: ZSET keeps user behavior userId -> {word,score} We record user actions for
+ * <p>
+ * 7. UserActionWords: ZSET keeps user behavior userId -> {word,score} We record user actions for
  * every ad he/she acts on in the following way: if user acts on ad, we get the list of words
  * targeted by this ad and increment score for every word in the user's ordered set. 8.
  * UserViewWords: ZSET - the same as above but only for views (this data set is much bigger than in
  * 7.) 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours,
  * days. 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours,
  * days.
- *
- * <p>Results:
- *
- * <p>Redis 6.0.10 = 992,291,824 Carrot no compression = 254,331,520 Carrot LZ4 compression =
+ * <p>
+ * Results:
+ * <p>
+ * Redis 6.0.10 = 992,291,824 Carrot no compression = 254,331,520 Carrot LZ4 compression =
  * 234,738,048 Carrot LZ4HC compression = 227,527,936
- *
- * <p>Notes:
- *
- * <p>The test uses synthetic data, which is mostly random and not compressible
+ * <p>
+ * Notes:
+ * <p>
+ * The test uses synthetic data, which is mostly random and not compressible
  */
 public class TestRedisAdServerUserTarget {
 

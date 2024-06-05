@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.adserver;
 
 import java.util.Random;
@@ -28,36 +24,24 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /**
  * ----- Data structures to keep user targeting:
- *
  * <p>
- * 7. UserActionWords: 
- * ZSET keeps user behavior userId -> {word,score} We record user actions for
+ * 7. UserActionWords: ZSET keeps user behavior userId -> {word,score} We record user actions for
  * every ad he/she acts on in the following way: if user acts on ad, we get the list of words
- * targeted by this ad and increment score for every word in the user's ordered set.
- * 8. UserViewWords: 
- * ZSET - the same as above but only for views (this data set is much bigger than in 7.) 
- * 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours,
- * days. 
- * 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours,
+ * targeted by this ad and increment score for every word in the user's ordered set. 8.
+ * UserViewWords: ZSET - the same as above but only for views (this data set is much bigger than in
+ * 7.) 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours,
+ * days. 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours,
  * days.
- *
- * <p>Results:
- *
  * <p>
- * 1. Redis 7.2.4 = 994,670,544 
- * 2. Carrot no compression = 255,629,376 
- * 3. Carrot LZ4 compression = 223,004,224 
- * 4. Carrot ZSTD compression = 203,970,624
- * 
- *     Memory ratio Redis/Carrot:
- *  
- *   1. Carrot no compression ~ 3.9x
- *   2. Carrot LZ4            ~ 4.5x
- *   3. Carrot ZSTD           ~ 4.9x  
- *
- * <p>Notes:
- *
- * <p>The test uses synthetic data, which is mostly random and not compressible
+ * Results:
+ * <p>
+ * 1. Redis 7.2.4 = 994,670,544 2. Carrot no compression = 255,629,376 3. Carrot LZ4 compression =
+ * 223,004,224 4. Carrot ZSTD compression = 203,970,624 Memory ratio Redis/Carrot: 1. Carrot no
+ * compression ~ 3.9x 2. Carrot LZ4 ~ 4.5x 3. Carrot ZSTD ~ 4.9x
+ * <p>
+ * Notes:
+ * <p>
+ * The test uses synthetic data, which is mostly random and not compressible
  */
 public class TestCarrotAdServerUserTarget {
 
@@ -120,14 +104,8 @@ public class TestCarrotAdServerUserTarget {
         String word = Utils.getRandomStr(r, 8);
         long mPtr = UnsafeAccess.allocAndCopy(word, 0, word.length());
         int mSize = word.length();
-        ZSets.ZADD(
-            map,
-            keyPtr,
-            keySize,
-            new double[] {r.nextDouble()},
-            new long[] {mPtr},
-            new int[] {mSize},
-            true);
+        ZSets.ZADD(map, keyPtr, keySize, new double[] { r.nextDouble() }, new long[] { mPtr },
+          new int[] { mSize }, true);
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {
@@ -156,14 +134,8 @@ public class TestCarrotAdServerUserTarget {
         String word = Utils.getRandomStr(r, 8);
         long mPtr = UnsafeAccess.allocAndCopy(word, 0, word.length());
         int mSize = word.length();
-        ZSets.ZADD(
-            map,
-            keyPtr,
-            keySize,
-            new double[] {r.nextDouble()},
-            new long[] {mPtr},
-            new int[] {mSize},
-            true);
+        ZSets.ZADD(map, keyPtr, keySize, new double[] { r.nextDouble() }, new long[] { mPtr },
+          new int[] { mSize }, true);
         UnsafeAccess.free(mPtr);
         count++;
         if (count % 100000 == 0) {

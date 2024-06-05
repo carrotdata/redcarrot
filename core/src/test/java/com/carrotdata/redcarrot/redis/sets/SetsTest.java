@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sets;
 
 import java.io.ByteArrayOutputStream;
@@ -53,7 +49,7 @@ public class SetsTest extends CarrotCoreBase {
 
   public SetsTest(Object c) {
     super(c);
-    n = memoryDebug? 10000: 100000;
+    n = memoryDebug ? 10000 : 100000;
   }
 
   private List<Value> getValues(long n) {
@@ -108,7 +104,6 @@ public class SetsTest extends CarrotCoreBase {
     buffer = UnsafeAccess.mallocZeroed(bufferSize);
     values = getValues(n);
   }
-  
 
   @Ignore
   @Test
@@ -163,16 +158,15 @@ public class SetsTest extends CarrotCoreBase {
     log.debug("{} items: load={} RPS", n, (double) n * 1000 / (end - start));
     assertEquals(n, (int) Sets.SCARD(map, key.address, key.length));
 
-    Runnable run =
-        () -> {
-          Random r1 = new Random();
-          for (int i = 0; i < toQuery; i++) {
-            int index = r1.nextInt(values.size());
-            Value v = values.get(index);
-            int res = Sets.SISMEMBER(map, key.address, key.length, v.address, v.length);
-            assertEquals(1, res);
-          }
-        };
+    Runnable run = () -> {
+      Random r1 = new Random();
+      for (int i = 0; i < toQuery; i++) {
+        int index = r1.nextInt(values.size());
+        Value v = values.get(index);
+        int res = Sets.SISMEMBER(map, key.address, key.length, v.address, v.length);
+        assertEquals(1, res);
+      }
+    };
     // runRead(1, run, toQuery);
     // runRead(2, run, toQuery);
     // runRead(4, run, toQuery);
@@ -200,10 +194,8 @@ public class SetsTest extends CarrotCoreBase {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        "{} threads READ perf={} RPS",
-        numThreads,
-        (double) numThreads * toQuery * 1000 / (end - start));
+    log.debug("{} threads READ perf={} RPS", numThreads,
+      (double) numThreads * toQuery * 1000 / (end - start));
   }
 
   @Test
@@ -225,12 +217,9 @@ public class SetsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize, end - start);
 
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -267,12 +256,9 @@ public class SetsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory = {} for {} {}  byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize,
-        end - start);
+      "Total allocated memory = {} for {} {}  byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize, end - start);
 
     log.debug("Deleting keys ...");
     count = 0;
@@ -311,18 +297,10 @@ public class SetsTest extends CarrotCoreBase {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        "Total allocated memory ="
-            + BigSortedMap.getGlobalAllocatedMemory()
-            + " for "
-            + n
-            + " "
-            + valSize
-            + " byte values. Overhead="
-            + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
-            + " bytes per value. Time to load: "
-            + (end - start)
-            + "ms");
+    log.debug("Total allocated memory =" + BigSortedMap.getGlobalAllocatedMemory() + " for " + n
+        + " " + valSize + " byte values. Overhead="
+        + ((double) BigSortedMap.getGlobalAllocatedMemory() / n - valSize)
+        + " bytes per value. Time to load: " + (end - start) + "ms");
 
     assertEquals(n, Sets.SCARD(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -364,11 +342,8 @@ public class SetsTest extends CarrotCoreBase {
       }
     }
     long end = System.currentTimeMillis();
-    log.debug(
-        "Loaded in {}ms. Mem usage for 1 int={} dups={}",
-        end - start,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n,
-        duplicates);
+    log.debug("Loaded in {}ms. Mem usage for 1 int={} dups={}", end - start,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n, duplicates);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
     map.dumpStats();

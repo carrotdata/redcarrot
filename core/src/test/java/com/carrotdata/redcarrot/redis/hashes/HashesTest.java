@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.hashes;
 
 import static org.junit.Assert.assertEquals;
@@ -146,11 +142,10 @@ public class HashesTest extends CarrotCoreBase {
     map.dispose();
     UnsafeAccess.free(buffer);
     UnsafeAccess.free(key.address);
-    list.forEach(
-        x -> {
-          UnsafeAccess.free(x.keyPtr);
-          UnsafeAccess.free(x.valuePtr);
-        });
+    list.forEach(x -> {
+      UnsafeAccess.free(x.keyPtr);
+      UnsafeAccess.free(x.valuePtr);
+    });
   }
 
   @Test
@@ -168,12 +163,9 @@ public class HashesTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        keySize + valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - keySize - valSize,
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, keySize + valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - keySize - valSize, end - start);
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -194,8 +186,8 @@ public class HashesTest extends CarrotCoreBase {
 
     Key key = getKey();
     long NULL = UnsafeAccess.malloc(1);
-    String[] fields = new String[] {"f1", "f2", "f3", "f4"};
-    String[] values = new String[] {"v1", null, "v3", null};
+    String[] fields = new String[] { "f1", "f2", "f3", "f4" };
+    String[] values = new String[] { "v1", null, "v3", null };
 
     for (int i = 0; i < fields.length; i++) {
       String f = fields[i];
@@ -257,12 +249,9 @@ public class HashesTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        keySize + valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, keySize + valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize), end - start);
 
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
     start = System.currentTimeMillis();
@@ -270,15 +259,8 @@ public class HashesTest extends CarrotCoreBase {
     int bufferSize = 2 * valSize;
 
     for (int i = 0; i < n; i++) {
-      int size =
-          Hashes.HGET(
-              map,
-              key.address,
-              key.length,
-              values.get(i).address,
-              values.get(i).length,
-              buffer,
-              bufferSize);
+      int size = Hashes.HGET(map, key.address, key.length, values.get(i).address,
+        values.get(i).length, buffer, bufferSize);
       assertEquals(values.get(i).length, size);
       assertEquals(0, Utils.compareTo(values.get(i).address, values.get(i).length, buffer, size));
     }
@@ -309,12 +291,9 @@ public class HashesTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        keySize + valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, keySize + valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize), end - start);
     assertEquals(n, Hashes.HLEN(map, key.address, key.length));
 
     BigSortedMap.printGlobalMemoryAllocationStats();
@@ -347,12 +326,9 @@ public class HashesTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        n,
-        keySize + valSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize),
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), n, keySize + valSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / n - (keySize + valSize), end - start);
 
     BigSortedMap.printGlobalMemoryAllocationStats();
 

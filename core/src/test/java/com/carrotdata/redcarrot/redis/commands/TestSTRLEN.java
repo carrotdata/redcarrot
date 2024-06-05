@@ -1,47 +1,35 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 public class TestSTRLEN extends CommandBase {
 
-  protected String[] validRequests =
-      new String[] {
-        "SET key1 1000", /* OK */
-        "SET key2 10000", /* OK */
-        "SET key3 100000", /* OK */
-        "STRLEN key1", /* 4 */
-        "STRLEN key2", /* 5 */
-        "STRLEN key3", /* 6 */
-        "strlen key4" /* -1 */
-      };
+  protected String[] validRequests = new String[] { "SET key1 1000", /* OK */
+      "SET key2 10000", /* OK */
+      "SET key3 100000", /* OK */
+      "STRLEN key1", /* 4 */
+      "STRLEN key2", /* 5 */
+      "STRLEN key3", /* 6 */
+      "strlen key4" /* -1 */
+  };
 
   protected String[] validResponses =
-      new String[] {"+OK\r\n", "+OK\r\n", "+OK\r\n", ":4\r\n", ":5\r\n", ":6\r\n", ":0\r\n"};
+      new String[] { "+OK\r\n", "+OK\r\n", "+OK\r\n", ":4\r\n", ":5\r\n", ":6\r\n", ":0\r\n" };
 
-  protected String[] invalidRequests =
-      new String[] {
-        "strle x", /* unsupported command */
-        "STRLEN", /* wrong number of arguments*/
-        "STRLEN x y" /* wrong number of arguments*/
-      };
+  protected String[] invalidRequests = new String[] { "strle x", /* unsupported command */
+      "STRLEN", /* wrong number of arguments */
+      "STRLEN x y" /* wrong number of arguments */
+  };
 
-  protected String[] invalidResponses =
-      new String[] {
-        "-ERR: Unsupported command: STRLE\r\n",
-        "-ERR: Wrong number of arguments\r\n",
-        "-ERR: Wrong number of arguments\r\n",
-      };
+  protected String[] invalidResponses = new String[] { "-ERR: Unsupported command: STRLE\r\n",
+      "-ERR: Wrong number of arguments\r\n", "-ERR: Wrong number of arguments\r\n", };
 
   /** Subclasses must override */
   protected String[] getValidRequests() {

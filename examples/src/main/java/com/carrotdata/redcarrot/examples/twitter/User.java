@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.twitter;
 
 import java.util.ArrayList;
@@ -30,12 +26,12 @@ import com.carrotdata.redcarrot.util.Utils;
 
 /**
  * Twitter user object (simple)
- *
- * <p>login id name followers following posts sign-up
- *
- * <p>Followers distribution (2013):
- *
- * <p>Percentile Followers 10 3 20 9 30 19 40 36 50 61 60 98 70 154 80 246 90 458 95 819 96 978 97
+ * <p>
+ * login id name followers following posts sign-up
+ * <p>
+ * Followers distribution (2013):
+ * <p>
+ * Percentile Followers 10 3 20 9 30 19 40 36 50 61 60 98 70 154 80 246 90 458 95 819 96 978 97
  * 1,211 98 1,675 99 2,991 99.9 24,964
  */
 public class User extends KeyValues {
@@ -59,9 +55,9 @@ public class User extends KeyValues {
   }
 
   static int[] perc =
-      new int[] {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 960, 970, 980, 990, 999};
+      new int[] { 0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 960, 970, 980, 990, 999 };
   static int[] nums =
-      new int[] {0, 3, 9, 19, 36, 61, 98, 154, 246, 458, 819, 978, 1211, 1675, 2991, 24964};
+      new int[] { 0, 3, 9, 19, 36, 61, 98, 154, 246, 458, 819, 978, 1211, 1675, 2991, 24964 };
 
   User(Properties p) {
     super(p);
@@ -228,9 +224,8 @@ public class User extends KeyValues {
         break;
       }
     }
-    val =
-        (int) ((double) ((perc[i + 1] - n) * nums[i] + (n - perc[i]) * nums[i + 1]))
-            / (perc[i + 1] - perc[i]);
+    val = (int) ((double) ((perc[i + 1] - n) * nums[i] + (n - perc[i]) * nums[i + 1]))
+        / (perc[i + 1] - perc[i]);
     return Integer.toString(val);
   }
 
@@ -240,7 +235,6 @@ public class User extends KeyValues {
 
   /**
    * Posts twice a day
-   *
    * @return number of posts as a String
    */
   private static String newPosts(long signup) {

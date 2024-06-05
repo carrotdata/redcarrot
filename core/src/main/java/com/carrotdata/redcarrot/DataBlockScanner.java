@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import java.io.IOException;
@@ -37,7 +33,7 @@ public final class DataBlockScanner extends Scanner {
   long stopRowPtr = 0; // EXCLUSIVE
 
   /*
-   *  Stop row length
+   * Stop row length
    */
   int stopRowLength;
 
@@ -63,8 +59,7 @@ public final class DataBlockScanner extends Scanner {
   int numRecords;
 
   /*
-   * Maximum sequenceId (snapshotId)
-   * We consider only records with sequenceId < snapshotId
+   * Maximum sequenceId (snapshotId) We consider only records with sequenceId < snapshotId
    */
   long snapshotId;
 
@@ -74,21 +69,18 @@ public final class DataBlockScanner extends Scanner {
   boolean isFirst;
 
   /*
-   * Thread local for scanner instance.
-   * Multiple instances UNSAFE (can not be used in multiple
+   * Thread local for scanner instance. Multiple instances UNSAFE (can not be used in multiple
    * instances in context of a one thread)
    */
-  static ThreadLocal<DataBlockScanner> scanner =
-      new ThreadLocal<DataBlockScanner>() {
-        @Override
-        protected DataBlockScanner initialValue() {
-          return new DataBlockScanner();
-        }
-      };
+  static ThreadLocal<DataBlockScanner> scanner = new ThreadLocal<DataBlockScanner>() {
+    @Override
+    protected DataBlockScanner initialValue() {
+      return new DataBlockScanner();
+    }
+  };
 
   /**
    * Call this method when single instance is expected inside one thread operation
-   *
    * @param b data block decompressed
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -98,14 +90,8 @@ public final class DataBlockScanner extends Scanner {
    * @return new instance of a scanner
    * @throws RetryOperationException
    */
-  public static DataBlockScanner getScanner(
-      DataBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId)
-      throws RetryOperationException {
+  public static DataBlockScanner getScanner(DataBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId) throws RetryOperationException {
 
     DataBlockScanner bs = scanner.get();
     bs.reset();
@@ -135,7 +121,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Call this method when multiple instances are expected inside one thread operation
-   *
    * @param b data block - decompressed
    * @param startRowPtr start row address
    * @param startRowLength start row length
@@ -146,20 +131,14 @@ public final class DataBlockScanner extends Scanner {
    * @return new instance of a scanner
    * @throws RetryOperationException
    */
-  public static DataBlockScanner getScanner(
-      DataBlock b,
-      long startRowPtr,
-      int startRowLength,
-      long stopRowPtr,
-      int stopRowLength,
-      long snapshotId,
-      DataBlockScanner bs)
+  public static DataBlockScanner getScanner(DataBlock b, long startRowPtr, int startRowLength,
+      long stopRowPtr, int stopRowLength, long snapshotId, DataBlockScanner bs)
       throws RetryOperationException {
 
     if (bs == null) {
       bs = new DataBlockScanner();
     }
-    if (!b.isValid() /*|| b.isEmpty()*/) {
+    if (!b.isValid() /* || b.isEmpty() */) {
       // Return null for now
       return null;
     }
@@ -183,8 +162,10 @@ public final class DataBlockScanner extends Scanner {
     bs.setStopRow(stopRowPtr, stopRowLength);
     return bs;
   }
+
   /** Private ctor */
-  private DataBlockScanner() {}
+  private DataBlockScanner() {
+  }
 
   private void reset() {
     this.startRowPtr = 0;
@@ -212,7 +193,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Search first record, which is greater or equal to a given key
-   *
    * @param key key array
    * @param keyOffset offset in a key array
    * @param keyLength length of a key in bytes
@@ -253,7 +233,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Search last record, which is less or equals to a given key
-   *
    * @param key key array
    * @param keyOffset offset in a key array
    * @param keyLength length of a key in bytes
@@ -302,7 +281,6 @@ public final class DataBlockScanner extends Scanner {
   /**
    * TODO: deep copy of data block including external allocations Or keep read lock until block is
    * released Set scanner with new block
-   *
    * @param b block
    * @throws RetryOperationException
    */
@@ -326,7 +304,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Check if has next
-   *
    * @return true, false
    */
   public final boolean hasNext() {
@@ -347,9 +324,9 @@ public final class DataBlockScanner extends Scanner {
   public int getOffset() {
     return (int) (this.curPtr - this.ptr);
   }
+
   /**
    * Advance scanner by one record
-   *
    * @return true, false
    */
   public final boolean next() {
@@ -378,7 +355,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current address of a k-v in a scanner
-   *
    * @return address of a record
    */
   public final long address() {
@@ -387,7 +363,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current key size (in bytes)
-   *
    * @return key size
    */
   public final int keySize() {
@@ -399,7 +374,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current value size (in bytes)
-   *
    * @return value size
    */
   public final int valueSize() {
@@ -449,7 +423,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get key into buffer
-   *
    * @param buffer
    * @param offset
    * @return key length if was success or not enough room size, -1 if scanner is done
@@ -468,7 +441,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get key into buffer
-   *
    * @param addr buffer address
    * @param len length of a buffer
    * @return key length if was success or not enough room size, -1 if scanner is done
@@ -487,7 +459,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get value into buffer
-   *
    * @param buffer
    * @param offset
    * @return value length if was success or not enough room size, -1 if scanner is done
@@ -507,7 +478,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get value into buffer
-   *
    * @param addr buffer address
    * @param len length of a buffer
    * @return value length if was success or not enough room size, -1 if scanner is done
@@ -527,7 +497,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current key - value
-   *
    * @param keyBuffer
    * @param keyOffset
    * @param valueBuffer
@@ -550,7 +519,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current key-value into buffer
-   *
    * @param addr buffer address
    * @param len buffer length in bytes
    * @return value + key length if was success or not enough room size, -1 if scanner is done
@@ -570,10 +538,11 @@ public final class DataBlockScanner extends Scanner {
   }
 
   @Override
-  public void close() throws IOException {}
+  public void close() throws IOException {
+  }
+
   /**
    * Get current key address
-   *
    * @return key address
    */
   public final long valueAddress() {
@@ -585,7 +554,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current key address
-   *
    * @return key address
    */
   public final long keyAddress() {
@@ -594,9 +562,9 @@ public final class DataBlockScanner extends Scanner {
     }
     return DataBlock.keyAddress(this.curPtr);
   }
+
   /**
    * Get version of a current key
-   *
    * @return
    */
   public long keyVersion() {
@@ -606,7 +574,6 @@ public final class DataBlockScanner extends Scanner {
 
   /**
    * Get current Key type : DELETE or PUT
-   *
    * @return
    */
   public Op keyOpType() {
@@ -751,7 +718,7 @@ public final class DataBlockScanner extends Scanner {
 
   @Override
   public boolean hasPrevious() {
-    long limit = isFirst ? this.ptr + DataBlock.RECORD_TOTAL_OVERHEAD + 2 /*{0,0}*/ : this.ptr;
+    long limit = isFirst ? this.ptr + DataBlock.RECORD_TOTAL_OVERHEAD + 2 /* {0,0} */ : this.ptr;
     long pptr = limit;
     if (pptr == this.curPtr) {
       return false;

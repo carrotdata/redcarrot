@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.util;
 
 import static org.junit.Assert.assertEquals;
@@ -96,39 +92,39 @@ public class TestUtils {
 
   @Test
   public void testGreaterThan() {
-    byte[] in = new byte[] {0, 0, 0};
-    byte[] out = new byte[] {0, 0, 1};
+    byte[] in = new byte[] { 0, 0, 0 };
+    byte[] out = new byte[] { 0, 0, 1 };
     assertTrue(Utils.compareTo(TestUtils.greaterThan(in), 0, in.length, out, 0, out.length) == 0);
 
-    in = new byte[] {0, 0, (byte) 255};
-    out = new byte[] {0, 1, (byte) 255};
+    in = new byte[] { 0, 0, (byte) 255 };
+    out = new byte[] { 0, 1, (byte) 255 };
     assertTrue(Utils.compareTo(TestUtils.greaterThan(in), 0, in.length, out, 0, out.length) == 0);
 
-    in = new byte[] {0, (byte) 255, (byte) 255};
-    out = new byte[] {1, (byte) 255, (byte) 255};
+    in = new byte[] { 0, (byte) 255, (byte) 255 };
+    out = new byte[] { 1, (byte) 255, (byte) 255 };
     assertTrue(Utils.compareTo(TestUtils.greaterThan(in), 0, in.length, out, 0, out.length) == 0);
 
-    in = new byte[] {(byte) 255, (byte) 255, (byte) 255};
-    out = new byte[] {(byte) 255, (byte) 255, (byte) 255, 0};
+    in = new byte[] { (byte) 255, (byte) 255, (byte) 255 };
+    out = new byte[] { (byte) 255, (byte) 255, (byte) 255, 0 };
     assertTrue(Utils.compareTo(TestUtils.greaterThan(in), 0, out.length, out, 0, out.length) == 0);
   }
 
   @Test
   public void testLessThan() {
-    byte[] in = new byte[] {1, 1, 1};
-    byte[] out = new byte[] {1, 1, 0};
+    byte[] in = new byte[] { 1, 1, 1 };
+    byte[] out = new byte[] { 1, 1, 0 };
     assertTrue(Utils.compareTo(TestUtils.lessThan(in), 0, out.length, out, 0, out.length) == 0);
 
-    in = new byte[] {1, 1, 0};
-    out = new byte[] {1, 0, 0};
+    in = new byte[] { 1, 1, 0 };
+    out = new byte[] { 1, 0, 0 };
     assertTrue(Utils.compareTo(TestUtils.lessThan(in), 0, out.length, out, 0, out.length) == 0);
 
-    in = new byte[] {1, 0, 0};
-    out = new byte[] {0, 0, 0};
+    in = new byte[] { 1, 0, 0 };
+    out = new byte[] { 0, 0, 0 };
     assertTrue(Utils.compareTo(TestUtils.lessThan(in), 0, out.length, out, 0, out.length) == 0);
 
-    in = new byte[] {0, 0, 0};
-    out = new byte[] {0, 0};
+    in = new byte[] { 0, 0, 0 };
+    out = new byte[] { 0, 0 };
     assertTrue(Utils.compareTo(TestUtils.lessThan(in), 0, out.length, out, 0, out.length) == 0);
   }
 

@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import static org.junit.Assert.assertEquals;
@@ -48,19 +44,13 @@ public class BigSortedMapPerfTestClusterMode {
         }
         totalLoaded++;
         if (totalLoaded % 100000 == 0) {
-          log.debug(
-              "{}: Loaded {} RAM allocated={}",
-              Thread.currentThread().getId(),
-              totalLoaded,
-              BigSortedMap.getGlobalAllocatedMemory());
+          log.debug("{}: Loaded {} RAM allocated={}", Thread.currentThread().getId(), totalLoaded,
+            BigSortedMap.getGlobalAllocatedMemory());
         }
       }
       long end = System.currentTimeMillis();
-      log.debug(
-          "Load performance: Records={}, MS={}, RPS={}",
-          totalLoaded,
-          end - start,
-          totalLoaded * 1000 / (end - start));
+      log.debug("Load performance: Records={}, MS={}, RPS={}", totalLoaded, end - start,
+        totalLoaded * 1000 / (end - start));
       log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
     }
 
@@ -79,7 +69,8 @@ public class BigSortedMapPerfTestClusterMode {
       }
       long end = System.currentTimeMillis();
 
-      log.debug("Scan performance: {}: {} RPS", Thread.currentThread().getId(), totalScanned * 1000 / (end - start));
+      log.debug("Scan performance: {}: {} RPS", Thread.currentThread().getId(),
+        totalScanned * 1000 / (end - start));
       assertEquals(n * totalLoaded, totalScanned);
     }
 

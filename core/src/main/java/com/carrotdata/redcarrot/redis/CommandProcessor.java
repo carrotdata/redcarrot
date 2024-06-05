@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis;
 
 import java.nio.ByteBuffer;
@@ -35,35 +31,32 @@ public class CommandProcessor {
   private static final int BUFFER_SIZE = 1024 * 1024; // 1 MB
 
   /** Keeps thread local Key instance */
-  private static ThreadLocal<Key> keyTLS =
-      new ThreadLocal<Key>() {
-        @Override
-        protected Key initialValue() {
-          return new Key(0, 0);
-        }
-      };
+  private static ThreadLocal<Key> keyTLS = new ThreadLocal<Key>() {
+    @Override
+    protected Key initialValue() {
+      return new Key(0, 0);
+    }
+  };
 
   /** Input buffer per thread TODO: floating size */
-  private static ThreadLocal<Long> inBufTLS =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(BUFFER_SIZE);
-          return ptr;
-        }
-      };
+  private static ThreadLocal<Long> inBufTLS = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      long ptr = UnsafeAccess.malloc(BUFFER_SIZE);
+      return ptr;
+    }
+  };
 
   /*
    * Output buffer per thread TODO: floating size
    */
-  private static ThreadLocal<Long> outBufTLS =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(BUFFER_SIZE);
-          return ptr;
-        }
-      };
+  private static ThreadLocal<Long> outBufTLS = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      long ptr = UnsafeAccess.malloc(BUFFER_SIZE);
+      return ptr;
+    }
+  };
 
   /*
    * Redis command map.
@@ -81,7 +74,6 @@ public class CommandProcessor {
 
   /**
    * Main method
-   *
    * @param in input buffer contains incoming Redis command
    * @param out output buffer to return to a client (command response)
    * @return true , if shutdown was requested, false - otherwise
@@ -108,8 +100,8 @@ public class CommandProcessor {
       String cmdName = com.carrotdata.redcarrot.util.Utils.toString(key.address, key.length);
       try {
         @SuppressWarnings("unchecked")
-        Class<RedisCommand> cls =
-            (Class<RedisCommand>) Class.forName("com.carrotdata.redcarrot.redis.commands." + cmdName);
+        Class<RedisCommand> cls = (Class<RedisCommand>) Class
+            .forName("com.carrotdata.redcarrot.redis.commands." + cmdName);
         cmd = cls.newInstance();
         map.put(key, cmd);
       } catch (Throwable e) {
@@ -126,7 +118,7 @@ public class CommandProcessor {
     cmd.executeCommand(storage, inbuf, outbuf, BUFFER_SIZE);
     executeTotal += System.nanoTime() - start;
     if (count % 10000 == 0) {
-//       log.debug(" command exe avg={}", executeTotal / (1000L * count));
+      // log.debug(" command exe avg={}", executeTotal / (1000L * count));
     }
     if (cmd.autoconvertToRedis()) {
       // Convert response to Redis format
@@ -141,7 +133,6 @@ public class CommandProcessor {
 
   /**
    * Extract command name from an input buffer
-   *
    * @param inbuf input buffer
    * @return command name as a Key
    */

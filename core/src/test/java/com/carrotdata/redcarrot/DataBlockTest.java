@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot;
 
 import java.io.IOException;
@@ -196,7 +192,7 @@ public class DataBlockTest extends DataBlockTestBase {
     log.debug("testBlockMerge FREE b");
 
     // TODO: fix this later
-    //    bb.free();
+    // bb.free();
     log.debug("testBlockMerge FREE bb");
 
     log.debug("testBlockMerge DONE");
@@ -226,7 +222,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     assertEquals(1, (int) b.getNumberOfRecords());
     // First key is a system key
-    assertEquals(0, Bytes.compareTo(new byte[] {0}, b.getFirstKey()));
+    assertEquals(0, Bytes.compareTo(new byte[] { 0 }, b.getFirstKey()));
     // b.free();
     log.debug("testCompactionFull DONE");
   }
@@ -308,10 +304,8 @@ public class DataBlockTest extends DataBlockTestBase {
 
     // Try insert one more time
     // Try to insert
-    int reqSize =
-        DataBlock.mustStoreExternally(size, size)
-            ? DataBlock.RECORD_TOTAL_OVERHEAD + 12
-            : 2 * size + DataBlock.RECORD_TOTAL_OVERHEAD;
+    int reqSize = DataBlock.mustStoreExternally(size, size) ? DataBlock.RECORD_TOTAL_OVERHEAD + 12
+        : 2 * size + DataBlock.RECORD_TOTAL_OVERHEAD;
     boolean expResult = reqSize <= avail;
     result = b.put(key, size, key, size, 0, 0);
     assertEquals(expResult, result);
@@ -461,7 +455,7 @@ public class DataBlockTest extends DataBlockTestBase {
 
     int toDelete = keys.size() / 2;
 
-    // Delete  first
+    // Delete first
     for (int i = 0; i < toDelete; i++) {
       Key key = keys.get(i);
       OpResult res = b.delete(key.address, key.length, Long.MAX_VALUE);
@@ -520,8 +514,8 @@ public class DataBlockTest extends DataBlockTestBase {
         keys.add(new Key(ptr, keyLength));
       }
     }
-    log.debug(
-        "M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalDataSize());
+    log.debug("M: {} D: {}", BigSortedMap.getGlobalAllocatedMemory(),
+      BigSortedMap.getGlobalDataSize());
     return keys;
   }
 

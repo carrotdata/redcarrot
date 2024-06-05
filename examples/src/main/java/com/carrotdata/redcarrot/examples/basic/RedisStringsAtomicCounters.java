@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.basic;
 
 import java.io.IOException;
@@ -25,21 +21,21 @@ import redis.clients.jedis.Jedis;
 /**
  * This example shows how to use Redis Strings.INCRBY and Strings.INCRBYFLOAT to keep huge list of
  * atomic counters Test Description:
- *
- * <p>Key format: "counter:number" number = [0:1M]
- *
- * <p>1. Load 1M long and double counters 2. Increment each by random number between 1:1000 3.
+ * <p>
+ * Key format: "counter:number" number = [0:1M]
+ * <p>
+ * 1. Load 1M long and double counters 2. Increment each by random number between 1:1000 3.
  * Calculate Memory usage
- *
- * <p>Results:
- *
- * <p>1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 37.5 bytes
+ * <p>
+ * Results:
+ * <p>
+ * 1. Average counter size is 21 (13 bytes - key, 8 - value) 2. Carrot No compression. 37.5 bytes
  * per counter 3. Carrot LZ4 - 10.8 bytes per counter 4. Carrot LZ4HC - 10.3 bytes per counter 5.
  * Redis memory usage per counter is 57.5 bytes
- *
- * <p>RAM usage (Redis-to-Carrot)
- *
- * <p>1) No compression 57.5/37.5 ~ 1.5x 2) LZ4 compression 57.5/10.8 ~ 5.3x 3) LZ4HC compression
+ * <p>
+ * RAM usage (Redis-to-Carrot)
+ * <p>
+ * 1) No compression 57.5/37.5 ~ 1.5x 2) LZ4 compression 57.5/10.8 ~ 5.3x 3) LZ4HC compression
  * 57.5/10.3 ~ 5.6x
  */
 public class RedisStringsAtomicCounters {
@@ -66,7 +62,7 @@ public class RedisStringsAtomicCounters {
     Random r = new Random();
     for (int i = 0; i < N; i++) {
       String skey = "counter:" + i;
-      totalDataSize += skey.length() + 8 /*length of a counter*/;
+      totalDataSize += skey.length() + 8 /* length of a counter */;
       client.incrBy(skey, nextScoreSkewed(r));
       if (i % 10000 == 0 && i > 0) {
         log.debug("set string :{}", i);

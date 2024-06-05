@@ -1,14 +1,14 @@
 /**
  * Copyright (C) 2021-present Carrot, Inc.
- *
- * <p>This program is free software: you can redistribute it and/or modify it under the terms of the
+ * <p>
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * Server Side Public License, version 1, as published by MongoDB, Inc.
- *
- * <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Server Side Public License for more details.
- *
- * <p>You should have received a copy of the Server Side Public License along with this program. If
+ * <p>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Server
+ * Side Public License for more details.
+ * <p>
+ * You should have received a copy of the Server Side Public License along with this program. If
  * not, see <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.carrotdata.redcarrot.redis;
@@ -27,7 +27,7 @@ import com.carrotdata.redcarrot.redis.util.Utils;
 public class RawClusterClient {
   private static Logger logger = LogManager.getLogger(RawClusterClient.class);
 
-  byte[] CRLF = new byte[] {(byte) '\r', (byte) '\n'};
+  byte[] CRLF = new byte[] { (byte) '\r', (byte) '\n' };
   byte ARRAY = (byte) '*';
   byte STR = (byte) '$';
 
@@ -83,7 +83,7 @@ public class RawClusterClient {
   }
 
   public String set(String key, String value) throws IOException {
-    writeRequest(buf, new String[] {"SET", key, value});
+    writeRequest(buf, new String[] { "SET", key, value });
     int slot = Math.abs(key.hashCode()) % connList.size();
     SocketChannel channel = connList.get(slot);
     buf.flip();
@@ -103,7 +103,7 @@ public class RawClusterClient {
   }
 
   public String get(String key) throws IOException {
-    writeRequest(buf, new String[] {"GET", key});
+    writeRequest(buf, new String[] { "GET", key });
     int slot = Math.abs(key.hashCode()) % connList.size();
     SocketChannel channel = connList.get(slot);
     buf.flip();
@@ -158,7 +158,7 @@ public class RawClusterClient {
     }
   }
 
-  static String[] ping_cmd = new String[] {"PING"};
+  static String[] ping_cmd = new String[] { "PING" };
 
   public String ping() throws IOException {
     int slot = 0;
@@ -181,7 +181,7 @@ public class RawClusterClient {
   }
 
   private String flushAll(SocketChannel channel) throws IOException {
-    writeRequest(buf, new String[] {"FLUSHALL"});
+    writeRequest(buf, new String[] { "FLUSHALL" });
     buf.flip();
     while (buf.hasRemaining()) {
       channel.write(buf);
@@ -199,7 +199,7 @@ public class RawClusterClient {
   }
 
   private String save(SocketChannel channel) throws IOException {
-    writeRequest(buf, new String[] {"SAVE"});
+    writeRequest(buf, new String[] { "SAVE" });
     buf.flip();
     while (buf.hasRemaining()) {
       channel.write(buf);
@@ -221,7 +221,7 @@ public class RawClusterClient {
       flushAll(sc);
     }
   }
-  
+
   /**
    * Shutdown Carrot node
    * @param channel socket channel
@@ -229,23 +229,24 @@ public class RawClusterClient {
    * @throws IOException
    */
   private void shutdown(SocketChannel channel, boolean save) throws IOException {
-    writeRequest(buf, save? new String[]  {"SHUTDOWN", "SAVE"}: new String[]{"SHUTDOWN", "NOSAVE"});
+    writeRequest(buf,
+      save ? new String[] { "SHUTDOWN", "SAVE" } : new String[] { "SHUTDOWN", "NOSAVE" });
     buf.flip();
     while (buf.hasRemaining()) {
       channel.write(buf);
     }
     buf.clear();
-//    while (buf.position() == 0) {
-//      // Hack
-//      channel.read(buf);
-//    }
-//    buf.flip();
-//    byte[] bytes = new byte[buf.limit()];
-//    buf.get(bytes);
-//    String result = new String(bytes);
-//    System.out.println("result="+ result);
+    // while (buf.position() == 0) {
+    // // Hack
+    // channel.read(buf);
+    // }
+    // buf.flip();
+    // byte[] bytes = new byte[buf.limit()];
+    // buf.get(bytes);
+    // String result = new String(bytes);
+    // System.out.println("result="+ result);
   }
-  
+
   /**
    * Shutdown all carrot nodes
    */
@@ -260,7 +261,7 @@ public class RawClusterClient {
   }
 
   public String sscan(String key, long cursor) throws IOException {
-    writeRequest(buf, new String[] {"SSCAN", key, Long.toString(cursor)});
+    writeRequest(buf, new String[] { "SSCAN", key, Long.toString(cursor) });
     buf.flip();
     int slot = 0; // Math.abs(key.hashCode()) % connList.size();
     SocketChannel channel = connList.get(slot);

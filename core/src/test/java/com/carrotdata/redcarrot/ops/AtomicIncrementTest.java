@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.ops;
 
 import static org.junit.Assert.assertEquals;
@@ -64,7 +60,7 @@ public class AtomicIncrementTest {
 
       long incrTime = 0;
       long putTime = 0;
-      while (true) {  
+      while (true) {
         double d = r.nextDouble();
         if (d < 0.5 && totalLoaded.get() > 1000) {
           // Run increment
@@ -96,14 +92,10 @@ public class AtomicIncrementTest {
             keys.add(k);
           }
           if ((totalLoaded.get() + 1) % 1000000 == 0) {
-            log.debug(
-                "{} loaded = {} PPS={} IPS={} mem={} max={}",
-                getName(),
-                totalLoaded,
-                totalLoaded.get() * 1_000_000_000/ putTime,
-                totalIncrements.get() * 1_000_000_000/ incrTime,
-                BigSortedMap.getGlobalAllocatedMemory(),
-                BigSortedMap.getGlobalMemoryLimit());
+            log.debug("{} loaded = {} PPS={} IPS={} mem={} max={}", getName(), totalLoaded,
+              totalLoaded.get() * 1_000_000_000 / putTime,
+              totalIncrements.get() * 1_000_000_000 / incrTime,
+              BigSortedMap.getGlobalAllocatedMemory(), BigSortedMap.getGlobalMemoryLimit());
           }
         }
       } // end while
@@ -119,7 +111,7 @@ public class AtomicIncrementTest {
 
   @Test
   public void testIncrement() throws IOException {
-    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+    // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
     for (int k = 1; k <= 1; k++) {
       log.debug("Increment test run #{}", k);
 
@@ -158,11 +150,8 @@ public class AtomicIncrementTest {
         assertEquals(totalIncrements.get(), total);
         // CHECK THIS
         assertEquals(keys.size(), (int) count);
-        log.debug(
-            "Time to load= {} and to increment ={} is {}ms",
-            totalLoaded,
-            totalIncrements,
-            end - start);
+        log.debug("Time to load= {} and to increment ={} is {}ms", totalLoaded, totalIncrements,
+          end - start);
         log.debug("Total memory={}", BigSortedMap.getGlobalAllocatedMemory());
         log.debug("Total   data={}", BigSortedMap.getGlobalBlockDataSize());
         log.debug("Total  index={}", BigSortedMap.getGlobalBlockIndexSize());

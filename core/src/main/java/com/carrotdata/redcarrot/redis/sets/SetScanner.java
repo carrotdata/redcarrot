@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.sets;
 
 import static com.carrotdata.redcarrot.redis.util.Commons.NUM_ELEM_SIZE;
@@ -32,19 +28,17 @@ public final class SetScanner extends Scanner {
   private static final Logger log = LogManager.getLogger(SetScanner.class);
 
   /*
-   * This is used to speed up reverse scanner.
-   * during initialization process of a next Value blob,
-   * when we seek last element, we calculate all offsets along the way
-   * from the beginning of a Value blob till the last element
+   * This is used to speed up reverse scanner. during initialization process of a next Value blob,
+   * when we seek last element, we calculate all offsets along the way from the beginning of a Value
+   * blob till the last element
    */
-  static ThreadLocal<Long> offsetBuffer =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          long ptr = UnsafeAccess.malloc(4096); // More than enough to keep reverse scanner offsets
-          return ptr;
-        }
-      };
+  static ThreadLocal<Long> offsetBuffer = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      long ptr = UnsafeAccess.malloc(4096); // More than enough to keep reverse scanner offsets
+      return ptr;
+    }
+  };
 
   /*
    * Keeps index for offsetBuffer
@@ -115,7 +109,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Constructor
-   *
    * @param scanner base scanner
    * @throws IOException
    */
@@ -125,7 +118,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Constructor
-   *
    * @param scanner base scanner
    * @param reverse true, if reverse scanner, false - otherwise
    * @throws IOException
@@ -136,7 +128,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Constructor for a range scanner
-   *
    * @param scanner base scanner
    * @param start start member address
    * @param startSize start member size
@@ -151,7 +142,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Constructor for a range scanner
-   *
    * @param scanner base scanner
    * @param start start member address
    * @param startSize start member size
@@ -160,14 +150,8 @@ public final class SetScanner extends Scanner {
    * @param reverse reverse scanner
    * @throws IOException
    */
-  public SetScanner(
-      BigSortedMapScanner scanner,
-      long start,
-      int startSize,
-      long stop,
-      int stopSize,
-      boolean reverse)
-      throws IOException {
+  public SetScanner(BigSortedMapScanner scanner, long start, int startSize, long stop, int stopSize,
+      boolean reverse) throws IOException {
     this.mapScanner = scanner;
     this.startMemberPtr = start;
     this.startMemberSize = startSize;
@@ -179,10 +163,9 @@ public final class SetScanner extends Scanner {
 
   @SuppressWarnings("unused")
   private void dumpLimits() {
-    log.debug(
-        "start={} end={}",
-        startMemberPtr > 0 ? Bytes.toHex(startMemberPtr, startMemberSize) : "0",
-        stopMemberPtr > 0 ? Bytes.toHex(stopMemberPtr, stopMemberSize) : "0");
+    log.debug("start={} end={}",
+      startMemberPtr > 0 ? Bytes.toHex(startMemberPtr, startMemberSize) : "0",
+      stopMemberPtr > 0 ? Bytes.toHex(stopMemberPtr, stopMemberSize) : "0");
   }
 
   @SuppressWarnings("unused")
@@ -194,7 +177,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Get set member address from a set key
-   *
    * @param ptr set key
    * @return address
    */
@@ -205,7 +187,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Get set member size
-   *
    * @param ptr set key
    * @param size set key size
    * @return size of a member
@@ -217,7 +198,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Dispose range keys on close()
-   *
    * @param b true - dispose, false - don't
    */
   public void setDisposeKeysOnClose(boolean b) {
@@ -226,7 +206,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Get value number (number elements in a current value)
-   *
    * @return value number
    */
   public int getValueNumber() {
@@ -341,7 +320,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Checks if scanner has next element
-   *
    * @return true, false
    * @throws IOException
    */
@@ -357,9 +335,8 @@ public final class SetScanner extends Scanner {
         return true;
       } else {
 
-        if (Utils.compareTo(
-                this.memberAddress, this.memberSize, this.stopMemberPtr, this.stopMemberSize)
-            >= 0) {
+        if (Utils.compareTo(this.memberAddress, this.memberSize, this.stopMemberPtr,
+          this.stopMemberSize) >= 0) {
           return false;
         } else {
           return true;
@@ -387,7 +364,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Advance scanner by one element MUST BE USED IN COMBINATION with hasNext()
-   *
    * @return true if operation succeeded , false - end of scanner
    * @throws IOException
    */
@@ -431,9 +407,8 @@ public final class SetScanner extends Scanner {
       this.memberSize = Utils.readUVInt(valueAddress + offset);
       this.memberAddress = valueAddress + offset + Utils.sizeUVInt(this.memberSize);
       if (this.stopMemberPtr > 0) {
-        if (Utils.compareTo(
-                this.memberAddress, this.memberSize, this.stopMemberPtr, this.stopMemberSize)
-            >= 0) {
+        if (Utils.compareTo(this.memberAddress, this.memberSize, this.stopMemberPtr,
+          this.stopMemberSize) >= 0) {
           this.offset = 0;
           return false;
         } else {
@@ -453,7 +428,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Get current element address
-   *
    * @return element address
    */
   public long memberAddress() {
@@ -462,31 +436,30 @@ public final class SetScanner extends Scanner {
 
   /**
    * Gets current element size
-   *
    * @return element size
    */
   public int memberSize() {
     return this.memberSize;
   }
+
   /**
    * Get global position
-   *
    * @return global position
    */
   public long getPosition() {
     return this.position;
   }
+
   /**
    * Get local (in current value) position
-   *
    * @return position
    */
   public int getPos() {
     return this.pos;
   }
+
   /**
    * Skips to position - works only forward
-   *
    * @param pos position to skip (always less than cardinality)
    * @return current position (can be less than pos)
    */
@@ -504,9 +477,9 @@ public final class SetScanner extends Scanner {
         skipLocal((int) (this.pos + pos - this.position));
         return this.position;
       } else {
-        // This is the hack to make this method compatible 
+        // This is the hack to make this method compatible
         // with large offset (greater than cardinality)
-        //but caller must check return value
+        // but caller must check return value
         this.position += left - 1;
         try {
           mapScanner.next();
@@ -532,7 +505,6 @@ public final class SetScanner extends Scanner {
   /**
    * We do not check stop limit to improve performance because: 1. We now in advance cardinality of
    * the set 2. We use this API only in direct scanner w/o start and stop
-   *
    * @param pos position to search
    * @return number of skipped elements
    */
@@ -560,7 +532,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Delete current Element
-   *
    * @return true if success, false - otherwise
    */
   public boolean delete() {
@@ -570,7 +541,6 @@ public final class SetScanner extends Scanner {
 
   /**
    * Delete all Elements in this scanner
-   *
    * @return true on success, false?
    */
   public boolean deleteAll() {
@@ -602,9 +572,8 @@ public final class SetScanner extends Scanner {
       this.memberSize = Utils.readUVInt(valueAddress + offset);
       this.memberAddress = valueAddress + offset + Utils.sizeUVInt(this.memberSize);
       if (this.startMemberPtr > 0) {
-        int result =
-            Utils.compareTo(
-                this.memberAddress, this.memberSize, this.startMemberPtr, this.startMemberSize);
+        int result = Utils.compareTo(this.memberAddress, this.memberSize, this.startMemberPtr,
+          this.startMemberSize);
         if (result < 0) {
           return false;
         }

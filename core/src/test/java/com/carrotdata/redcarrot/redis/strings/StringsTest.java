@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.strings;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +46,7 @@ public class StringsTest extends CarrotCoreBase {
       byte[] key = ("user:" + i).getBytes();
       long keyPtr = UnsafeAccess.malloc(key.length);
       int keySize = key.length;
-      //      log.debug("copy key: {}, keyPtr: {}, keySize: {}", new String(key), keyPtr, keySize);
+      // log.debug("copy key: {}, keyPtr: {}, keySize: {}", new String(key), keyPtr, keySize);
       UnsafeAccess.copy(key, 0, keyPtr, keySize);
 
       // value
@@ -58,8 +54,8 @@ public class StringsTest extends CarrotCoreBase {
       byte[] value = session.toString().getBytes();
       int valueSize = value.length;
       long valuePtr = UnsafeAccess.malloc(valueSize);
-      //      log.debug(
-      //          "copy value: {}, valuePtr: {}, valueSize: {}", new String(value), valuePtr,
+      // log.debug(
+      // "copy value: {}, valuePtr: {}, valueSize: {}", new String(value), valuePtr,
       // valueSize);
       UnsafeAccess.copy(value, 0, valuePtr, valueSize);
       keyValues.add(new KeyValue(keyPtr, keySize, valuePtr, valueSize));
@@ -83,16 +79,8 @@ public class StringsTest extends CarrotCoreBase {
     Random r = new Random();
     long exp = 0;
 
-    boolean res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            false);
+    boolean res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, false);
     assertTrue(res);
     long size = Strings.GET(map, kv.keyPtr, kv.keySize, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) size);
@@ -102,62 +90,30 @@ public class StringsTest extends CarrotCoreBase {
     assertEquals(exp, expire);
 
     exp = Math.abs(r.nextLong());
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, false);
     assertTrue(res);
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
     exp = Math.abs(r.nextLong());
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, false);
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
 
     assertEquals(exp, expire);
 
     exp = Math.abs(r.nextLong());
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, false);
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
 
     assertEquals(exp, expire);
 
     exp = Math.abs(r.nextLong());
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, false);
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
 
     assertEquals(exp, expire);
@@ -202,21 +158,12 @@ public class StringsTest extends CarrotCoreBase {
     KeyValue kv = keyValues.get(0);
     long exp = 10;
 
-    boolean res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.NONE, true);
+    boolean res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, true);
     assertTrue(res);
 
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp + 10,
-            MutationOptions.NONE,
-            true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp + 10,
+      MutationOptions.NONE, true);
     assertTrue(res);
 
     // Check that expire did not change
@@ -226,72 +173,50 @@ public class StringsTest extends CarrotCoreBase {
     res = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(res);
 
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.XX, true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.XX, true);
     assertFalse(res);
 
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.NONE, true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, true);
     assertTrue(res);
 
     exp += 10;
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.XX, false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.XX, false);
     assertTrue(res);
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp + 10,
-            MutationOptions.XX,
-            true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp + 10,
+      MutationOptions.XX, true);
     assertTrue(res);
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.NX, true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NX, true);
     assertFalse(res);
 
     res = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(res);
 
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.NX, true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NX, true);
     assertTrue(res);
 
     exp += 10;
-    res =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.XX, false);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.XX, false);
     assertTrue(res);
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
-    res =
-        Strings.SET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp + 10,
-            MutationOptions.XX,
-            true);
+    res = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp + 10,
+      MutationOptions.XX, true);
     assertTrue(res);
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
@@ -307,32 +232,12 @@ public class StringsTest extends CarrotCoreBase {
     // long SET_FAILED = -2;
     long GET_FAILED = -1;
 
-    long res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NONE,
-            true,
-            buffer,
-            bufferSize);
+    long res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, true, buffer, bufferSize);
     assertEquals(GET_FAILED, res);
 
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp + 10,
-            MutationOptions.NONE,
-            true,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp + 10,
+      MutationOptions.NONE, true, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) res);
     assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
 
@@ -343,38 +248,17 @@ public class StringsTest extends CarrotCoreBase {
     boolean result = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(result);
 
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.XX,
-            true,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.XX, true, buffer, bufferSize);
     assertEquals(GET_FAILED, res);
 
-    result =
-        Strings.SET(
-            map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp, MutationOptions.NONE, true);
+    result = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NONE, true);
     assertTrue(result);
 
     exp += 10;
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv1.valuePtr,
-            kv1.valueSize,
-            exp,
-            MutationOptions.XX,
-            false,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv1.valuePtr, kv1.valueSize, exp,
+      MutationOptions.XX, false, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) res);
 
     assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
@@ -382,69 +266,29 @@ public class StringsTest extends CarrotCoreBase {
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp + 10,
-            MutationOptions.XX,
-            true,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp + 10,
+      MutationOptions.XX, true, buffer, bufferSize);
     assertEquals(kv1.valueSize, (int) res);
     assertEquals(0, Utils.compareTo(kv1.valuePtr, kv1.valueSize, buffer, (int) res));
 
     expire = Strings.GETEXPIRE(map, kv.keyPtr, kv.keySize);
     assertEquals(exp, expire);
 
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.NX,
-            true,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.NX, true, buffer, bufferSize);
     assertEquals(kv.valueSize, (int) res);
     assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, (int) res));
 
     result = Strings.DELETE(map, kv.keyPtr, kv.keySize);
     assertTrue(result);
 
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv2.valuePtr,
-            kv2.valueSize,
-            exp,
-            MutationOptions.NX,
-            true,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv2.valuePtr, kv2.valueSize, exp,
+      MutationOptions.NX, true, buffer, bufferSize);
     assertEquals(GET_FAILED, res);
 
     exp += 10;
-    res =
-        Strings.SETGET(
-            map,
-            kv.keyPtr,
-            kv.keySize,
-            kv.valuePtr,
-            kv.valueSize,
-            exp,
-            MutationOptions.XX,
-            false,
-            buffer,
-            bufferSize);
+    res = Strings.SETGET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, exp,
+      MutationOptions.XX, false, buffer, bufferSize);
     assertEquals(kv2.valueSize, (int) res);
 
     assertEquals(0, Utils.compareTo(kv2.valuePtr, kv2.valueSize, buffer, (int) res));
@@ -456,8 +300,8 @@ public class StringsTest extends CarrotCoreBase {
   @Test
   public void testIncrementLongWrongFormat() {
     KeyValue kv = keyValues.get(0);
-    Strings.SET(
-        map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
+    Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE,
+      false);
     try {
       Strings.INCRBY(map, kv.keyPtr, kv.keySize, 1);
     } catch (OperationFailedException e) {
@@ -469,8 +313,8 @@ public class StringsTest extends CarrotCoreBase {
   @Test
   public void testIncrementDoubleWrongFormat() {
     KeyValue kv = keyValues.get(0);
-    Strings.SET(
-        map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, false);
+    Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE,
+      false);
     try {
       Strings.INCRBYFLOAT(map, kv.keyPtr, kv.keySize, 1d);
     } catch (OperationFailedException e) {
@@ -581,9 +425,8 @@ public class StringsTest extends CarrotCoreBase {
     for (int i = 0; i < nKeyValues; i++) {
       KeyValue kv = keyValues.get(i);
       totalSize += kv.keySize + kv.valueSize;
-      boolean result =
-          Strings.SET(
-              map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
+      boolean result = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0,
+        MutationOptions.NONE, true);
       assertTrue(result);
       if ((i + 1) % 10000 == 0) {
         log.debug(i + 1);
@@ -591,12 +434,9 @@ public class StringsTest extends CarrotCoreBase {
     }
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per key-value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        nKeyValues,
-        totalSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() - totalSize / nKeyValues,
-        end - start);
+      "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per key-value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), nKeyValues, totalSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() - totalSize / nKeyValues, end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < nKeyValues; i++) {
       KeyValue kv = keyValues.get(i);
@@ -616,9 +456,8 @@ public class StringsTest extends CarrotCoreBase {
     for (int i = 0; i < nKeyValues; i++) {
       KeyValue kv = keyValues.get(i);
       totalSize += kv.keySize + kv.valueSize;
-      boolean result =
-          Strings.SET(
-              map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0, MutationOptions.NONE, true);
+      boolean result = Strings.SET(map, kv.keyPtr, kv.keySize, kv.valuePtr, kv.valueSize, 0,
+        MutationOptions.NONE, true);
       assertTrue(result);
       if ((i + 1) % 10000 == 0) {
         log.debug(i + 1);
@@ -627,12 +466,9 @@ public class StringsTest extends CarrotCoreBase {
 
     long end = System.currentTimeMillis();
     log.debug(
-        "Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per key-value. Time to load: {}ms",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        nKeyValues,
-        totalSize,
-        ((double) BigSortedMap.getGlobalAllocatedMemory() - totalSize) / nKeyValues,
-        end - start);
+      "Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per key-value. Time to load: {}ms",
+      BigSortedMap.getGlobalAllocatedMemory(), nKeyValues, totalSize,
+      ((double) BigSortedMap.getGlobalAllocatedMemory() - totalSize) / nKeyValues, end - start);
     start = System.currentTimeMillis();
     for (int i = 0; i < nKeyValues; i++) {
       KeyValue kv = keyValues.get(i);
@@ -666,8 +502,8 @@ public class StringsTest extends CarrotCoreBase {
 
     assertEquals(2 * kv.valueSize, size);
     assertEquals(0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer, kv.valueSize));
-    assertEquals(
-        0, Utils.compareTo(kv.valuePtr, kv.valueSize, buffer + kv.valueSize, kv.valueSize));
+    assertEquals(0,
+      Utils.compareTo(kv.valuePtr, kv.valueSize, buffer + kv.valueSize, kv.valueSize));
   }
 
   @Test
@@ -940,9 +776,8 @@ public class StringsTest extends CarrotCoreBase {
 
     // Tets edge cases
     // 1. end = start = +-inf
-    int size =
-        Strings.GETRANGE(
-            map, kv.keyPtr, kv.keySize, Commons.NULL_LONG, Commons.NULL_LONG, buf, bufSize);
+    int size = Strings.GETRANGE(map, kv.keyPtr, kv.keySize, Commons.NULL_LONG, Commons.NULL_LONG,
+      buf, bufSize);
     assertEquals(valueSize, size);
     assertEquals(0, Utils.compareTo(valuePtr, valueSize, buf, valueSize));
 
@@ -1034,19 +869,16 @@ public class StringsTest extends CarrotCoreBase {
 
     // Test edge cases
     // 1. offset < 0
-    int size =
-        (int)
-            Strings.SETRANGE(
-                map, kv.keyPtr, kv.keySize, Commons.NULL_LONG, kv.valuePtr, kv.valueSize);
+    int size = (int) Strings.SETRANGE(map, kv.keyPtr, kv.keySize, Commons.NULL_LONG, kv.valuePtr,
+      kv.valueSize);
     assertEquals(-1, size);
 
     for (int offset = 0; offset < 10000; offset++) {
       size = (int) Strings.SETRANGE(map, kv.keyPtr, kv.keySize, offset, kv.valuePtr, kv.valueSize);
       int expSize = Math.max(valueSize, offset + kv.valueSize);
       assertEquals(expSize, size);
-      size =
-          Strings.GETRANGE(
-              map, kv.keyPtr, kv.keySize, offset, offset + kv.valueSize - 1, buf, bufSize);
+      size = Strings.GETRANGE(map, kv.keyPtr, kv.keySize, offset, offset + kv.valueSize - 1, buf,
+        bufSize);
       assertEquals(kv.valueSize, size);
       if (size > 0) {
         assertEquals(0, Utils.compareTo(buf, size, kv.valuePtr, kv.valueSize));
@@ -1240,11 +1072,8 @@ public class StringsTest extends CarrotCoreBase {
 
 class FakeUserSession {
 
-  static final String[] ATTRIBUTES =
-      new String[] {
-        "attr1", "attr2", "attr3", "attr4", "attr5",
-        "attr6", "attr7", "attr8", "attr9", "attr10"
-      };
+  static final String[] ATTRIBUTES = new String[] { "attr1", "attr2", "attr3", "attr4", "attr5",
+      "attr6", "attr7", "attr8", "attr9", "attr10" };
 
   Properties props;
 

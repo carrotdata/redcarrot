@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.lists;
 
 import static org.junit.Assert.assertEquals;
@@ -119,8 +115,8 @@ public class ListsTest extends CarrotCoreBase {
 
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
@@ -142,8 +138,8 @@ public class ListsTest extends CarrotCoreBase {
 
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(2L * i + 1, len);
       elemPtrs[0] = largePtr;
@@ -184,8 +180,8 @@ public class ListsTest extends CarrotCoreBase {
     UnsafeAccess.copy(buf, 0, largePtr, largeSize);
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(2L * i + 1, len);
       elemPtrs[0] = largePtr;
@@ -193,7 +189,6 @@ public class ListsTest extends CarrotCoreBase {
       len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(2L * i + 2, len);
     }
-
 
     log.debug("Taking snapshot");
     map.snapshot();
@@ -228,12 +223,11 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
-
 
     log.debug("Taking snapshot");
     map.snapshot();
@@ -249,8 +243,8 @@ public class ListsTest extends CarrotCoreBase {
     for (int i = 0; i < nValues; i++) {
       int size = Lists.RPOP(map, key.address, key.length, buffer, valueSize);
       assertEquals(valueSize, size);
-      assertEquals(
-          0, Utils.compareTo(buffer, valueSize, values.get(i).address, values.get(i).length));
+      assertEquals(0,
+        Utils.compareTo(buffer, valueSize, values.get(i).address, values.get(i).length));
     }
     UnsafeAccess.free(buffer);
   }
@@ -261,8 +255,8 @@ public class ListsTest extends CarrotCoreBase {
 
     // Try LPUSHX - no key yet
     Value v = values.get(0);
-    long[] elemPtrs = new long[] {v.address};
-    int[] elemSizes = new int[] {v.length};
+    long[] elemPtrs = new long[] { v.address };
+    int[] elemSizes = new int[] { v.length };
     long len = Lists.RPUSHX(map, key.address, key.length, elemPtrs, elemSizes);
     // Can not add
     assertEquals(-1, (int) len);
@@ -274,18 +268,15 @@ public class ListsTest extends CarrotCoreBase {
     // Now we are ready to go
     for (int i = 1; i < nValues; i++) {
       v = values.get(i);
-      elemPtrs = new long[] {v.address};
-      elemSizes = new int[] {v.length};
+      elemPtrs = new long[] { v.address };
+      elemSizes = new int[] { v.length };
       len = Lists.RPUSHX(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
 
-    log.debug(
-        "Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per value",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        nValues,
-        valueSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
+    log.debug("Total allocated memory ={} for {} {}  byte values. Overhead={} bytes per value",
+      BigSortedMap.getGlobalAllocatedMemory(), nValues, valueSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
     assertEquals(nValues, (int) Lists.LLEN(map, key.address, key.length));
 
     for (int i = 0; i < nValues; i++) {
@@ -306,8 +297,8 @@ public class ListsTest extends CarrotCoreBase {
 
     // Try LPUSHX - no key yet
     Value v = values.get(0);
-    long[] elemPtrs = new long[] {v.address};
-    int[] elemSizes = new int[] {v.length};
+    long[] elemPtrs = new long[] { v.address };
+    int[] elemSizes = new int[] { v.length };
     long len = Lists.LPUSHX(map, key.address, key.length, elemPtrs, elemSizes);
     // Can not add
     assertEquals(-1, (int) len);
@@ -319,18 +310,15 @@ public class ListsTest extends CarrotCoreBase {
     // Now we are ready to go
     for (int i = 1; i < nValues; i++) {
       v = values.get(i);
-      elemPtrs = new long[] {v.address};
-      elemSizes = new int[] {v.length};
+      elemPtrs = new long[] { v.address };
+      elemSizes = new int[] { v.length };
       len = Lists.LPUSHX(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
 
-    log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        nValues,
-        valueSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
+    log.debug("Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value",
+      BigSortedMap.getGlobalAllocatedMemory(), nValues, valueSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
     assertEquals(nValues, (int) Lists.LLEN(map, key.address, key.length));
 
     for (int i = 0; i < nValues; i++) {
@@ -352,18 +340,15 @@ public class ListsTest extends CarrotCoreBase {
     for (int i = 0; i < nValues; i++) {
       // log.debug(i);
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
 
-    log.debug(
-        "Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value",
-        BigSortedMap.getGlobalAllocatedMemory(),
-        nValues,
-        valueSize,
-        (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
+    log.debug("Total allocated memory ={} for {} {} byte values. Overhead={} bytes per value",
+      BigSortedMap.getGlobalAllocatedMemory(), nValues, valueSize,
+      (double) BigSortedMap.getGlobalAllocatedMemory() / nValues - valueSize);
     assertEquals(nValues, (int) Lists.LLEN(map, key.address, key.length));
 
     for (int i = 0; i < nValues; i++) {
@@ -384,8 +369,8 @@ public class ListsTest extends CarrotCoreBase {
 
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.RPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
@@ -410,8 +395,8 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       long len = Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       assertEquals(i + 1, (int) len);
     }
@@ -440,8 +425,8 @@ public class ListsTest extends CarrotCoreBase {
     log.debug("SEED={}", seed);
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       if (r.nextBoolean()) {
         Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
       } else {
@@ -472,8 +457,8 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       Lists.RPUSH(map, key.address, key.length, elemPtrs, elemSizes);
     }
 
@@ -497,8 +482,8 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
     }
 
@@ -524,8 +509,8 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       Lists.LPUSH(map, key.address, key.length, elemPtrs, elemSizes);
     }
 
@@ -559,8 +544,8 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      long[] elemPtrs = new long[] {v.address};
-      int[] elemSizes = new int[] {v.length};
+      long[] elemPtrs = new long[] { v.address };
+      int[] elemSizes = new int[] { v.length };
       Lists.RPUSH(map, key.address, key.length, elemPtrs, elemSizes);
     }
 
@@ -751,27 +736,23 @@ public class ListsTest extends CarrotCoreBase {
     Key key = getKey();
     Key key2 = getAnotherKey();
 
-    int size =
-        Lists.RPOPLPUSH(
-            map, key.address, key.length, key2.address, key2.length, buffer, bufferSize);
+    int size = Lists.RPOPLPUSH(map, key.address, key.length, key2.address, key2.length, buffer,
+      bufferSize);
     assertEquals(-1, size);
 
     // Push 4 values to the source
     for (int i = 0; i < 4; i++) {
       Value v = values.get(i);
-      int sz =
-          (int)
-              Lists.LPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int sz = (int) Lists.LPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, sz);
     }
     // Now we have SRC = 3, 2, 1, 0
     // Rotate single list
     for (int i = 0; i < 4; i++) {
       Value v = values.get(i);
-      int sz =
-          Lists.RPOPLPUSH(
-              map, key.address, key.length, key.address, key.length, buffer, bufferSize);
+      int sz = Lists.RPOPLPUSH(map, key.address, key.length, key.address, key.length, buffer,
+        bufferSize);
       assertEquals(valueSize, sz);
       assertEquals(0, Utils.compareTo(v.address, v.length, buffer, sz));
     }
@@ -779,9 +760,8 @@ public class ListsTest extends CarrotCoreBase {
     // Rotate two lists
     for (int i = 0; i < 4; i++) {
       Value v = values.get(i);
-      int sz =
-          Lists.RPOPLPUSH(
-              map, key.address, key.length, key2.address, key2.length, buffer, bufferSize);
+      int sz = Lists.RPOPLPUSH(map, key.address, key.length, key2.address, key2.length, buffer,
+        bufferSize);
       assertEquals(valueSize, sz);
       assertEquals(0, Utils.compareTo(v.address, v.length, buffer, sz));
     }
@@ -818,10 +798,8 @@ public class ListsTest extends CarrotCoreBase {
     int toLoad = nValues / 2;
     for (int i = 0; i < toLoad; i++) {
       Value v = values.get(i);
-      int len =
-          (int)
-              Lists.LPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int len = (int) Lists.LPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, len);
     }
 
@@ -850,10 +828,8 @@ public class ListsTest extends CarrotCoreBase {
     // load half of values
     for (int i = 0; i < nValues / 2; i++) {
       Value v = values.get(i);
-      int len =
-          (int)
-              Lists.LPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int len = (int) Lists.LPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, len);
     }
 
@@ -877,15 +853,13 @@ public class ListsTest extends CarrotCoreBase {
       assertEquals(valueSize, sz);
 
       Value insert = values.get(index);
-      ls =
-          Lists.LINSERT(
-              map, key.address, key.length, after, buffer, sz, insert.address, insert.length);
+      ls = Lists.LINSERT(map, key.address, key.length, after, buffer, sz, insert.address,
+        insert.length);
       listSize++;
       assertEquals((int) ls, listSize);
 
-      sz =
-          Lists.LINDEX(
-              map, key.address, key.length, after ? insertPos + 1 : insertPos, buffer, bufferSize);
+      sz = Lists.LINDEX(map, key.address, key.length, after ? insertPos + 1 : insertPos, buffer,
+        bufferSize);
       assertEquals(valueSize, sz);
       assertEquals(0, Utils.compareTo(insert.address, insert.length, buffer, sz));
       if (i % 1000 == 0) {
@@ -905,13 +879,11 @@ public class ListsTest extends CarrotCoreBase {
 
     long sz = Lists.LRANGE(map, key.address, key.length, 0, 1, buffer, bufferSize);
     assertEquals(-1L, sz);
-    // load  values
+    // load values
     for (int i = 0; i < nValues; i++) {
       Value v = values.get(i);
-      int len =
-          (int)
-              Lists.RPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int len = (int) Lists.RPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, len);
     }
     Random r = new Random();
@@ -966,7 +938,6 @@ public class ListsTest extends CarrotCoreBase {
 
   /**
    * Verifies range of values
-   *
    * @param start start index (inclusive)
    * @param stop stop index (inclusive)
    * @param buffer buffer
@@ -1005,13 +976,11 @@ public class ListsTest extends CarrotCoreBase {
         Lists.LREM(map, key.address, key.length, -10, values.get(0).address, values.get(0).length);
     assertEquals(0L, removed);
 
-    // load  values (n-1)
+    // load values (n-1)
     for (int i = 0; i < nValues - 1; i++) {
       Value v = values.get(i);
-      int len =
-          (int)
-              Lists.RPUSH(
-                  map, key.address, key.length, new long[] {v.address}, new int[] {v.length});
+      int len = (int) Lists.RPUSH(map, key.address, key.length, new long[] { v.address },
+        new int[] { v.length });
       assertEquals(i + 1, len);
     }
 
@@ -1028,9 +997,8 @@ public class ListsTest extends CarrotCoreBase {
       long[] indexes = Utils.randomDistinctArray(nValues - 1, toInsert);
       for (int j = 0; j < indexes.length; j++) {
         Value vv = values.get((int) indexes[j]);
-        long size =
-            Lists.LINSERT(
-                map, key.address, key.length, false, vv.address, vv.length, v.address, v.length);
+        long size = Lists.LINSERT(map, key.address, key.length, false, vv.address, vv.length,
+          v.address, v.length);
         assertEquals(nValues + j, (int) size);
       }
       // Remove all
@@ -1049,9 +1017,8 @@ public class ListsTest extends CarrotCoreBase {
       long[] indexes = Utils.randomDistinctArray(nValues - 1, toInsert);
       for (int j = 0; j < indexes.length; j++) {
         Value vv = values.get((int) indexes[j]);
-        long size =
-            Lists.LINSERT(
-                map, key.address, key.length, false, vv.address, vv.length, v.address, v.length);
+        long size = Lists.LINSERT(map, key.address, key.length, false, vv.address, vv.length,
+          v.address, v.length);
         assertEquals(nValues + j, (int) size);
       }
       // Remove all
@@ -1070,9 +1037,8 @@ public class ListsTest extends CarrotCoreBase {
       long[] indexes = Utils.randomDistinctArray(nValues - 1, toInsert);
       for (int j = 0; j < indexes.length; j++) {
         Value vv = values.get((int) indexes[j]);
-        long size =
-            Lists.LINSERT(
-                map, key.address, key.length, false, vv.address, vv.length, v.address, v.length);
+        long size = Lists.LINSERT(map, key.address, key.length, false, vv.address, vv.length,
+          v.address, v.length);
         assertEquals(nValues + j, (int) size);
       }
       // Remove all
@@ -1092,9 +1058,8 @@ public class ListsTest extends CarrotCoreBase {
       long[] indexes = Utils.randomDistinctArray(nValues - 1, toInsert);
       for (int j = 0; j < indexes.length; j++) {
         Value vv = values.get((int) indexes[j]);
-        long size =
-            Lists.LINSERT(
-                map, key.address, key.length, false, vv.address, vv.length, v.address, v.length);
+        long size = Lists.LINSERT(map, key.address, key.length, false, vv.address, vv.length,
+          v.address, v.length);
         assertEquals(nValues + j, (int) size);
       }
       // Remove all
@@ -1112,9 +1077,8 @@ public class ListsTest extends CarrotCoreBase {
       long[] indexes = Utils.randomDistinctArray(nValues - 1, toInsert);
       for (int j = 0; j < indexes.length; j++) {
         Value vv = values.get((int) indexes[j]);
-        long size =
-            Lists.LINSERT(
-                map, key.address, key.length, false, vv.address, vv.length, v.address, v.length);
+        long size = Lists.LINSERT(map, key.address, key.length, false, vv.address, vv.length,
+          v.address, v.length);
         assertEquals(nValues + j, (int) size);
       }
       // Remove all

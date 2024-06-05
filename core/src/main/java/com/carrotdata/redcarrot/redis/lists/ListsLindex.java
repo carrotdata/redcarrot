@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.lists;
 
 import com.carrotdata.redcarrot.DataBlock;
@@ -23,19 +19,18 @@ import com.carrotdata.redcarrot.util.Utils;
  * first element, 1 the second element and so on. Negative indices can be used to designate elements
  * starting at the tail of the list. Here, -1 means the last element, -2 means the penultimate and
  * so forth. When the value at key is not a list, an error is returned.
- *
- * <p>Return value Bulk string reply: the requested element, or nil when index is out of range.
- *
- * <p>This is fully fenced, atomic implementation
+ * <p>
+ * Return value Bulk string reply: the requested element, or nil when index is out of range.
+ * <p>
+ * This is fully fenced, atomic implementation
  */
 public class ListsLindex extends Operation {
-  private static ThreadLocal<Segment> segment =
-      new ThreadLocal<Segment>() {
-        @Override
-        protected Segment initialValue() {
-          return new Segment();
-        }
-      };
+  private static ThreadLocal<Segment> segment = new ThreadLocal<Segment>() {
+    @Override
+    protected Segment initialValue() {
+      return new Segment();
+    }
+  };
   /*
    * Buffer to load element to
    */
@@ -93,9 +88,9 @@ public class ListsLindex extends Operation {
     this.length = s.get(off, buffer, bufferSize);
     return true;
   }
+
   /**
    * Set buffer to read data to
-   *
    * @param buffer buffer address
    * @param bufferSize buffer size
    */
@@ -106,7 +101,6 @@ public class ListsLindex extends Operation {
 
   /**
    * Set index
-   *
    * @param index
    */
   public void setIndex(long index) {
@@ -115,7 +109,6 @@ public class ListsLindex extends Operation {
 
   /**
    * Get length of an element or -1
-   *
    * @return length
    */
   public int getLength() {

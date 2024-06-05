@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.redis.commands;
 
 import com.carrotdata.redcarrot.BigSortedMap;
@@ -20,25 +16,22 @@ import com.carrotdata.redcarrot.util.UnsafeAccess;
 import com.carrotdata.redcarrot.util.Utils;
 
 public class SSCAN implements RedisCommand {
-  private static ThreadLocal<Long> keyArena =
-      new ThreadLocal<Long>() {
-        @Override
-        protected Long initialValue() {
-          return UnsafeAccess.malloc(512);
-        }
-      };
+  private static ThreadLocal<Long> keyArena = new ThreadLocal<Long>() {
+    @Override
+    protected Long initialValue() {
+      return UnsafeAccess.malloc(512);
+    }
+  };
 
-  private static ThreadLocal<Integer> keyArenaSize =
-      new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-          return 512;
-        }
-      };
+  private static ThreadLocal<Integer> keyArenaSize = new ThreadLocal<Integer>() {
+    @Override
+    protected Integer initialValue() {
+      return 512;
+    }
+  };
 
   /**
    * Checks key arena size
-   *
    * @param required size
    */
   static void checkKeyArena(int required) {
@@ -92,11 +85,8 @@ public class SSCAN implements RedisCommand {
         int size = DBSystem.getCursor(map, cursor, keyArena.get(), keyArenaSize.get());
         if (size < 0) {
           // Invalid cursor
-          Errors.write(
-              outBufferPtr,
-              Errors.TYPE_GENERIC,
-              Errors.ERR_INVALID_CURSOR,
-              ": " + Utils.toString(cursorPtr, curSize));
+          Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_INVALID_CURSOR,
+            ": " + Utils.toString(cursorPtr, curSize));
           return;
         } else if (size > keyArenaSize.get()) {
           checkKeyArena(size);
@@ -121,18 +111,15 @@ public class SSCAN implements RedisCommand {
           regex = Utils.toString(inDataPtr, size);
         } else if (Utils.compareTo(COUNT_FLAG, COUNT_LENGTH, inDataPtr, size) == 0
             || Utils.compareTo(COUNT_FLAG_LOWER, COUNT_LENGTH, inDataPtr, size) == 0) {
-          inDataPtr += size;
-          size = UnsafeAccess.toInt(inDataPtr);
-          inDataPtr += Utils.SIZEOF_INT;
-          count = (int) Utils.strToLong(inDataPtr, size);
-        } else {
-          Errors.write(
-              outBufferPtr,
-              Errors.TYPE_GENERIC,
-              Errors.ERR_WRONG_COMMAND_FORMAT,
-              ": " + Utils.toString(inDataPtr, size));
-          return;
-        }
+              inDataPtr += size;
+              size = UnsafeAccess.toInt(inDataPtr);
+              inDataPtr += Utils.SIZEOF_INT;
+              count = (int) Utils.strToLong(inDataPtr, size);
+            } else {
+              Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
+                ": " + Utils.toString(inDataPtr, size));
+              return;
+            }
       } else if (numArgs == 7) {
         int size = UnsafeAccess.toInt(inDataPtr);
         inDataPtr += Utils.SIZEOF_INT;
@@ -144,11 +131,8 @@ public class SSCAN implements RedisCommand {
           regex = Utils.toString(inDataPtr, size);
           inDataPtr += size;
         } else {
-          Errors.write(
-              outBufferPtr,
-              Errors.TYPE_GENERIC,
-              Errors.ERR_WRONG_COMMAND_FORMAT,
-              ": " + Utils.toString(inDataPtr, size));
+          Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
+            ": " + Utils.toString(inDataPtr, size));
           return;
         }
         size = UnsafeAccess.toInt(inDataPtr);
@@ -161,11 +145,8 @@ public class SSCAN implements RedisCommand {
           count = (int) Utils.strToLong(inDataPtr, size);
           inDataPtr += size;
         } else {
-          Errors.write(
-              outBufferPtr,
-              Errors.TYPE_GENERIC,
-              Errors.ERR_WRONG_COMMAND_FORMAT,
-              ": " + Utils.toString(inDataPtr, size));
+          Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_COMMAND_FORMAT,
+            ": " + Utils.toString(inDataPtr, size));
           return;
         }
       }
@@ -186,17 +167,9 @@ public class SSCAN implements RedisCommand {
       off += Utils.SIZEOF_BYTE;
 
       // Actual call
-      long serLen =
-          Sets.SSCAN(
-              map,
-              keyPtr,
-              keySize,
-              lastSeenPtr,
-              lastSeenSize,
-              count,
-              outBufferPtr + off + Utils.SIZEOF_INT /*first 4 bytes keeps serialized size*/,
-              outBufferSize - off - Utils.SIZEOF_INT,
-              regex);
+      long serLen = Sets.SSCAN(map, keyPtr, keySize, lastSeenPtr, lastSeenSize, count,
+        outBufferPtr + off + Utils.SIZEOF_INT /* first 4 bytes keeps serialized size */,
+        outBufferSize - off - Utils.SIZEOF_INT, regex);
 
       // TODO: how to handle non-existing keys?
       if (serLen == 0) {
@@ -229,14 +202,11 @@ public class SSCAN implements RedisCommand {
       }
     } catch (NumberFormatException e) {
       if (cursorOK) {
-        Errors.write(
-            outBufferPtr,
-            Errors.TYPE_GENERIC,
-            Errors.ERR_WRONG_NUMBER_FORMAT,
-            ": " + e.getMessage());
+        Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_WRONG_NUMBER_FORMAT,
+          ": " + e.getMessage());
       } else {
-        Errors.write(
-            outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_INVALID_CURSOR, ": " + e.getMessage());
+        Errors.write(outBufferPtr, Errors.TYPE_GENERIC, Errors.ERR_INVALID_CURSOR,
+          ": " + e.getMessage());
       }
     }
   }

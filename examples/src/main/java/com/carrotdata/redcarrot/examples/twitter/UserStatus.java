@@ -1,16 +1,12 @@
 /*
- Copyright (C) 2021-present Carrot, Inc.
-
- <p>This program is free software: you can redistribute it and/or modify it under the terms of the
- Server Side Public License, version 1, as published by MongoDB, Inc.
-
- <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- Server Side Public License for more details.
-
- <p>You should have received a copy of the Server Side Public License along with this program. If
- not, see <http://www.mongodb.com/licensing/server-side-public-license>.
-*/
+ * Copyright (C) 2021-present Carrot, Inc. <p>This program is free software: you can redistribute it
+ * and/or modify it under the terms of the Server Side Public License, version 1, as published by
+ * MongoDB, Inc. <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the Server Side Public License for more details. <p>You should have received a copy
+ * of the Server Side Public License along with this program. If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
 package com.carrotdata.redcarrot.examples.twitter;
 
 import java.util.ArrayList;
@@ -30,8 +26,8 @@ import redis.clients.jedis.Jedis;
 
 /**
  * Twitter user status object (simple)
- *
- * <p>posted id uid login private liked retweeted
+ * <p>
+ * posted id uid login private liked retweeted
  */
 public class UserStatus extends KeyValues {
   public static final String POSTED = "posted";
@@ -200,7 +196,6 @@ public class UserStatus extends KeyValues {
 
   /**
    * 10% are private
-   *
    * @return
    */
   private static String newPrivate() {
@@ -211,7 +206,6 @@ public class UserStatus extends KeyValues {
 
   /**
    * Skewed between 0 and 1000
-   *
    * @return
    */
   private static String newLiked() {
@@ -223,7 +217,6 @@ public class UserStatus extends KeyValues {
 
   /**
    * Skewed between 0 and 1000
-   *
    * @return
    */
   private static String newRetweeted() {
