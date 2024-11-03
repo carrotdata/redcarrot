@@ -156,7 +156,7 @@ public class RedisConf {
     if (value != null) {
       return value;
     }
-    return props.getProperty(value, defValue);
+    return props.getProperty(name, defValue);
   }
   
   /**
