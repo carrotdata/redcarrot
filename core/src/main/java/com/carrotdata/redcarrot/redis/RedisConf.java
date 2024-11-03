@@ -110,7 +110,16 @@ public class RedisConf {
   }
 
   private int getIntProperty(String name, int defValue) {
-    String value = props.getProperty(name);
+    String value = System.getProperty(name);
+    if (value != null) {
+      try {
+        return Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        // TODO log error
+        log.error("StackTrace: ", e);
+      }
+    }
+    value = props.getProperty(name);
     if (value == null) return defValue;
     try {
       return Integer.parseInt(value);
@@ -122,7 +131,16 @@ public class RedisConf {
   }
 
   private long getLongProperty(String name, long defValue) {
-    String value = props.getProperty(name);
+    String value = System.getProperty(name);
+    if (value != null) {
+      try {
+        return Long.parseLong(value);
+      } catch (NumberFormatException e) {
+        // TODO log error
+        log.error("StackTrace: ", e);
+      }
+    }
+    value = props.getProperty(name);
     if (value == null) return defValue;
     try {
       return Long.parseLong(value);
@@ -133,12 +151,20 @@ public class RedisConf {
     return defValue;
   }
 
+  private String getStringProperty(String name, String defValue) {
+    String value = System.getProperty(name);
+    if (value != null) {
+      return value;
+    }
+    return props.getProperty(value, defValue);
+  }
+  
   /**
    * Get list of nodes: {address:port}
    * @return list of nodes (and ports)
    */
   public String[] getNodes() {
-    String value = props.getProperty(CONF_REDIS_NODES);
+    String value = getStringProperty(CONF_REDIS_NODES, null);
     if (value == null) {
       // single node on a default port
       return new String[] { "127.0.0.1:" + DEFAULT_SERVER_PORT };
@@ -206,7 +232,7 @@ public class RedisConf {
    * @return codec
    */
   public Codec getCompressionCodec() {
-    String value = props.getProperty(CONF_COMPRESSION_CODEC);
+    String value = getStringProperty(CONF_COMPRESSION_CODEC, null);
     if (value != null) {
       try {
         CodecType codecType = CodecType.valueOf(value.toUpperCase());
@@ -223,7 +249,7 @@ public class RedisConf {
    * @return snapshot directory
    */
   public String getDataDir() {
-    return props.getProperty(CONF_DATA_DIR_PATH, DEFAULT_DATA_DIR_PATH);
+    return getStringProperty(CONF_DATA_DIR_PATH, DEFAULT_DATA_DIR_PATH);
   }
 
   /**
@@ -241,7 +267,7 @@ public class RedisConf {
    * @return
    */
   public String getDataDirForNode(String server, int port) {
-    String value = props.getProperty(CONF_DATA_DIR_PATH + "." + server + "." + port);
+    String value = getStringProperty(CONF_DATA_DIR_PATH + "." + server + "." + port, null);
     if (value != null) return value;
     return getDataDir() + File.separator + server + File.separator + port;
   }
@@ -251,11 +277,7 @@ public class RedisConf {
    * @return snapshot interval
    */
   public int getSnapshotInterval() {
-    String value = props.getProperty(CONF_SNAPSHOT_INTERVAL_SECS);
-    if (value != null) {
-      return Integer.parseInt(value);
-    }
-    return DEFAULT_SNAPSHOT_INTERVAL_SECS;
+    return getIntProperty(CONF_SNAPSHOT_INTERVAL_SECS, DEFAULT_SNAPSHOT_INTERVAL_SECS);
   }
 
   /**
@@ -263,7 +285,7 @@ public class RedisConf {
    * @return log directory
    */
   public String getLogsDir() {
-    return props.getProperty(CONF_SERVER_LOG_DIR_PATH, DEFAULT_SERVER_LOG_DIR_PATH);
+    return getStringProperty(CONF_SERVER_LOG_DIR_PATH, DEFAULT_SERVER_LOG_DIR_PATH);
   }
 
   /**
@@ -271,7 +293,7 @@ public class RedisConf {
    * @return WAL directory
    */
   public String getWALDir() {
-    return props.getProperty(CONF_SERVER_WAL_DIR_PATH, DEFAULT_SERVER_WAL_DIR_PATH);
+    return getStringProperty(CONF_SERVER_WAL_DIR_PATH, DEFAULT_SERVER_WAL_DIR_PATH);
   }
 
   /**
@@ -329,7 +351,7 @@ public class RedisConf {
 
   /** Get data block sizes */
   public int[] getDataBlockSizes() {
-    String value = props.getProperty(DATA_BLOCK_SIZES_KEY);
+    String value = getStringProperty(DATA_BLOCK_SIZES_KEY, null);
     if (value != null) {
       value = value.trim();
       String[] parts = value.split(",");
