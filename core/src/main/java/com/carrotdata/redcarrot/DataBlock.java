@@ -338,38 +338,52 @@ public final class DataBlock {
   }
 
   public static final int KEY_SIZE_LENGTH = 2;
+  
   public static final int VALUE_SIZE_LENGTH = 2;
+  
   public static final int KV_SIZE_LENGTH = KEY_SIZE_LENGTH + VALUE_SIZE_LENGTH;
+  
   public static final int EXPIRE_SIZE_LENGTH = 8;
+  
   // public final static int EVICTION_SIZE_LENGTH = 8;
   public static final int RECORD_PREFIX_LENGTH =
       KEY_SIZE_LENGTH + VALUE_SIZE_LENGTH + EXPIRE_SIZE_LENGTH /* + EVICTION_SIZE_LENGTH */;
+  
   public static final long NOT_FOUND = -1L;
+  
   public static final int TYPE_SIZE = 1;
+  
   // public final static int SEQUENCEID_SIZE = 8;
   public static final int INT_SIZE = 4;
+  
   public static final int ADDRESS_SIZE = 8;
+  
   // Overhead for K-V = 13 bytes
   public static final int RECORD_TOTAL_OVERHEAD =
       RECORD_PREFIX_LENGTH + TYPE_SIZE /* + SEQUENCEID_SIZE */;
+  
   // public final static byte DELETED_MASK = (byte) (1 << 7);
   public static final double MIN_COMPACT_RATIO = 0.25d;
-
-  public static final String MAX_BLOCK_SIZE_KEY = "max.block.size";
+  
   public static short MAX_BLOCK_SIZE = 4096;
+    
+  public static short MAX_EMBEDDED_KV_SIZE = (short) (MAX_BLOCK_SIZE / 8);
+  
   public static final long NO_VERSION = -1;
+  
   // This is stored as key length
   public static final int EXTERNAL_KEY_VALUE = 0;
+  
   // This is stored as value length
   public static final int EXTERNAL_VALUE = -1;
+  
   // Minimum data block size for compression
   public static final int MIN_COMP_SIZE = 512;
 
   static {
-    String val = System.getProperty(MAX_BLOCK_SIZE_KEY);
-    if (val != null) {
-      MAX_BLOCK_SIZE = Short.parseShort(val);
-    }
+    RedisConf conf = RedisConf.getInstance();
+    MAX_BLOCK_SIZE = (short) conf.getMaxDataBlockSize();
+    MAX_EMBEDDED_KV_SIZE = (short) conf.getMaxEmbeddedKVSize();
   }
 
   /**
@@ -414,7 +428,7 @@ public final class DataBlock {
    */
 
   static int[] BLOCK_SIZES = new int[] { 256, 320, 384, 448, 512, 768, 1024, 1280, 1536, 1792, 2048,
-      2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096 };
+      2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096, 5120, 6144, 7168, 8192, 10240, 12288, 14336, 16384};
 
   static {
     RedisConf conf = RedisConf.getInstance();
@@ -463,10 +477,10 @@ public final class DataBlock {
    * @return true, if - yes, false - otherwise
    */
   public static AllocType getAllocType(int keySize, int valueSize) {
-    if (keySize + valueSize + RECORD_TOTAL_OVERHEAD < MAX_BLOCK_SIZE / 2
+    if (keySize + valueSize + RECORD_TOTAL_OVERHEAD < MAX_EMBEDDED_KV_SIZE
         - /* SAFE for first block */ RECORD_TOTAL_OVERHEAD - 2) {
       return AllocType.EMBEDDED;
-    } else if (keySize + RECORD_TOTAL_OVERHEAD + ADDRESS_SIZE + INT_SIZE < MAX_BLOCK_SIZE / 2
+    } else if (keySize + RECORD_TOTAL_OVERHEAD + ADDRESS_SIZE + INT_SIZE < MAX_EMBEDDED_KV_SIZE
         - /* SAFE for first block */ RECORD_TOTAL_OVERHEAD - 2) {
           return AllocType.EXT_VALUE;
         } else {
@@ -666,14 +680,6 @@ public final class DataBlock {
 
   /** Constructor w/o memory allocation and maximum size */
   DataBlock() {
-    String val = System.getProperty(MAX_BLOCK_SIZE_KEY);
-    short size = 0;
-    if (val != null) {
-      size = Short.parseShort(val);
-    } else {
-      size = MAX_BLOCK_SIZE;
-    }
-    this.blockSize = size;
   }
 
   protected boolean isFirstBlock() {
@@ -997,7 +1003,7 @@ public final class DataBlock {
    * @return value size (can be negative)
    */
   public static int getMaximumEmbeddedValueSize(int keySize) {
-    int valueSize = MAX_BLOCK_SIZE / 2 - keySize - 2 * RECORD_TOTAL_OVERHEAD - 3;
+    int valueSize = MAX_EMBEDDED_KV_SIZE - keySize - 2 * RECORD_TOTAL_OVERHEAD - 3;
     return valueSize;
   }
 
@@ -1313,7 +1319,7 @@ public final class DataBlock {
     UnsafeAccess.storeFence();
   }
 
-  // TODO: not used - elegible for removal
+  // TODO: not used - eligible for removal
   final void setAllCompressData(byte v) {
     UnsafeAccess.putByte(indexPtr + auxOffset, v);
     UnsafeAccess.storeFence();

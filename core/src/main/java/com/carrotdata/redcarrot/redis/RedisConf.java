@@ -41,6 +41,12 @@ public class RedisConf {
   public static final String CONF_SERVER_LOG_DIR_PATH = "server.log.dir.path";
   public static final String CONF_SERVER_WAL_DIR_PATH = "server.wal.dir.path";
   public static final String CONF_SERVER_TEST_MODE = "server.test.mode";
+  
+  public static final String CONF_MAX_BLOCK_SIZE = "max.block.size";
+
+  public static final String CONF_MAX_EMBEDDED_KV_SIZE = "max.embedded.kv.size";
+
+  
   public static final int DEFAULT_SNAPSHOT_INTERVAL_SECS = 0; // no snapshots
   public static final String DEFAULT_SERVER_WAL_DIR_PATH = "./WALs";
   public static final String DEFAULT_SERVER_LOG_DIR_PATH = "./logs";
@@ -56,6 +62,10 @@ public class RedisConf {
   public static final int DEFAULT_ZSET_MAX_COMPACT_SIZE = 100;
   public static final boolean DEFAULT_SERVER_TEST_MODE = false;
 
+  public static final int DEFAULT_MAX_EMBEDDED_KV_SIZE = 512;
+
+  public static final int DEFAULT_MAX_BLOCK_SIZE = 4096;
+  
   /* Data block configuration section */
   /* Comma separated list of data block sizes */
   public static final String DATA_BLOCK_SIZES_KEY = "datablock.sizes";
@@ -138,6 +148,22 @@ public class RedisConf {
     }
   }
 
+  /**
+   * Get maximum data block size
+   * @return size
+   */
+  public int getMaxDataBlockSize() {
+    return getIntProperty(CONF_MAX_BLOCK_SIZE, DEFAULT_MAX_BLOCK_SIZE);
+  }
+  
+  /**
+   * Get maximum embedded KV size
+   * @return size
+   */
+  public int getMaxEmbeddedKVSize() {
+    return getIntProperty(CONF_MAX_EMBEDDED_KV_SIZE, DEFAULT_MAX_EMBEDDED_KV_SIZE);
+  }
+  
   /**
    * Maximum size of ZSet in a compact representation
    * @return maximum size
@@ -310,7 +336,7 @@ public class RedisConf {
       int[] sizes = new int[parts.length];
       for (int i = 0; i < parts.length; i++) {
         try {
-          sizes[i] = Integer.parseInt(parts[i]);
+          sizes[i] = Integer.parseInt(parts[i].trim());
         } catch (NumberFormatException e) {
           // TODO logging
           log.error("Can not parse configuration value '{}'", DATA_BLOCK_SIZES_KEY);
