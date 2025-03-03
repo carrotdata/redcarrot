@@ -427,8 +427,9 @@ public final class DataBlock {
    * step 256 - this is jemalloc specific sizes of allocation 256 * 2, 3, 4, ... 16
    */
 
+  //FIXME: max block size must not be less than max in BLOCK_SIZES
   static int[] BLOCK_SIZES = new int[] { 256, 320, 384, 448, 512, 768, 1024, 1280, 1536, 1792, 2048,
-      2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096, 5120, 6144, 7168, 8192, 10240, 12288, 14336, 16384};
+      2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096};
 
   static {
     RedisConf conf = RedisConf.getInstance();
