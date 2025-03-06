@@ -13,6 +13,7 @@ package com.carrotdata.redcarrot;
 
 import java.io.IOException;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,7 +119,9 @@ public final class BigSortedMapScanner extends Scanner {
 
   private void init() throws IOException {
 
-    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    map.readLock();
+    
+    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
     IndexBlock key = null;
     long ptr = 0;
     int length = 0;
@@ -284,7 +287,7 @@ public final class BigSortedMapScanner extends Scanner {
 
     int version = current.getSeqNumberSplitOrMerge();
 
-    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
     if (this.indexScanner != null) {
       this.indexScanner.close();
       this.indexScanner = null;
@@ -351,7 +354,7 @@ public final class BigSortedMapScanner extends Scanner {
     if (this.blockScanner != null) {
       return true;
     }
-    TreeMap<IndexBlock, IndexBlock> cmap = map.getMap();
+    ConcurrentSkipListMap<IndexBlock, IndexBlock> cmap = map.getMap();
     if (this.indexScanner != null) {
       this.indexScanner.close();
       this.indexScanner = null;
@@ -510,6 +513,7 @@ public final class BigSortedMapScanner extends Scanner {
   }
 
   public void close(boolean full) throws IOException {
+
     if (this.indexScanner != null) {
       this.indexScanner.close();
     }
@@ -531,6 +535,7 @@ public final class BigSortedMapScanner extends Scanner {
         UnsafeAccess.free(stopRowPtr);
       }
     }
+    map.readUnlock();
   }
 
   @Override

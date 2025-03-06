@@ -34,8 +34,9 @@ public class BigSortedMapPerfTest {
   public static void setUp() {
     log.debug("Set up: block = 4096; Mem={}", 10000000);
 
-    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
-    // BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
+    //BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
+    BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
 
     BigSortedMap.setMaxBlockSize(4096);
 

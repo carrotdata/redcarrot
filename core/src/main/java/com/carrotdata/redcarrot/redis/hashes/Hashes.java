@@ -14,7 +14,6 @@ package com.carrotdata.redcarrot.redis.hashes;
 import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
 import static com.carrotdata.redcarrot.redis.util.Commons.NUM_ELEM_SIZE;
 import static com.carrotdata.redcarrot.redis.util.Commons.ZERO;
-import static com.carrotdata.redcarrot.redis.util.Commons.keySizeWithPrefix;
 import static com.carrotdata.redcarrot.redis.util.Commons.numElementsInValue;
 import static com.carrotdata.redcarrot.util.KeysLocker.readLock;
 import static com.carrotdata.redcarrot.util.KeysLocker.readUnlock;
@@ -29,6 +28,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.carrotdata.redcarrot.BigSortedMap;
 import com.carrotdata.redcarrot.BigSortedMapScanner;
 import com.carrotdata.redcarrot.DataBlock;
@@ -428,10 +428,10 @@ public class Hashes {
   public static int HSET(BigSortedMap map, long keyPtr, int keySize, long fieldPtr, int fieldSize,
       long valuePtr, int valueSize, boolean lock) {
 
-    Key k = getKey(keyPtr, keySize);
+    //Key k = getKey(keyPtr, keySize);
     int count = 0;
     try {
-      if (lock) writeLock(k);
+      //if (lock) writeLock(k);
       int kSize = buildKey(keyPtr, keySize, fieldPtr, fieldSize);
       HashSet set = hashSet.get();
       set.reset();
@@ -443,7 +443,7 @@ public class Hashes {
       count += set.getAdded();
       return count;
     } finally {
-      if (lock) writeUnlock(k);
+      //if (lock) writeUnlock(k);
     }
   }
 
@@ -675,9 +675,9 @@ public class Hashes {
 
   static int getMaxValueSize(int keySize) {
     int size = DataBlock.getMaximumEmbeddedValueSize(keySize);
-    if (size < DataBlock.MAX_BLOCK_SIZE / 4) {
-      return DataBlock.MAX_BLOCK_SIZE / 2; // Key is LARGE (sick!) Will allocate externally
-    }
+    //if (size < DataBlock.MAX_BLOCK_SIZE / 4) {
+    //  return DataBlock.MAX_BLOCK_SIZE / 2; // Key is LARGE (sick!) Will allocate externally
+    //}
     return size;
   }
 
@@ -1434,9 +1434,12 @@ public class Hashes {
    */
   public static long HINCRBY(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
       int fieldSize, long incr) throws OperationFailedException {
-    Key k = getKey(keyPtr, keySize);
+    //FIXME: Optimize for speed, we do not need to read/write
+    //Key k = getKey(keyPtr, keySize);
     try {
-      writeLock(k);
+      //writeLock(k);
+      // Make it atomic
+      map.writeLock();
       long value = 0;
       int size = HGET(map, keyPtr, keySize, fieldPtr, fieldSize, incrArena.get(), INCR_ARENA_SIZE);
       if (size > INCR_ARENA_SIZE) {
@@ -1465,7 +1468,8 @@ public class Hashes {
         throw new OperationFailedException();
       }
     } finally {
-      writeUnlock(k);
+      //writeUnlock(k);
+      map.writeUnlock();
     }
   }
 
@@ -1512,9 +1516,10 @@ public class Hashes {
    */
   public static double HINCRBYFLOAT(BigSortedMap map, long keyPtr, int keySize, long fieldPtr,
       int fieldSize, double incr) throws OperationFailedException {
-    Key k = getKey(keyPtr, keySize);
+    //Key k = getKey(keyPtr, keySize);
     try {
-      writeLock(k);
+      //writeLock(k);
+      map.writeLock();
       double value = 0;
       int size = HGET(map, keyPtr, keySize, fieldPtr, fieldSize, incrArena.get(), INCR_ARENA_SIZE);
       if (size > INCR_ARENA_SIZE) {
@@ -1543,7 +1548,8 @@ public class Hashes {
         throw new OperationFailedException();
       }
     } finally {
-      writeUnlock(k);
+      //writeUnlock(k);
+      map.writeUnlock();
     }
   }
 
@@ -2079,7 +2085,7 @@ public class Hashes {
    * @param count count to return
    * @param withValues with values?
    * @param bufSize buffer size
-   * @return list of K-V or K-K
+   * @return list of K-V or K-K (can return less than requested)
    */
   public static List<Pair<String>> HRANDFIELD(BigSortedMap map, String key, int count,
       boolean withValues, int bufSize) {

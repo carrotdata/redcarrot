@@ -15,10 +15,9 @@ import static com.carrotdata.redcarrot.redis.util.Commons.KEY_SIZE;
 import static com.carrotdata.redcarrot.redis.util.Commons.NUM_ELEM_SIZE;
 import static com.carrotdata.redcarrot.redis.util.Commons.ZERO;
 import static com.carrotdata.redcarrot.redis.util.Commons.numElementsInValue;
-import static com.carrotdata.redcarrot.util.Utils.SIZEOF_BYTE;
-
 import static com.carrotdata.redcarrot.util.KeysLocker.readLock;
 import static com.carrotdata.redcarrot.util.KeysLocker.readUnlock;
+import static com.carrotdata.redcarrot.util.Utils.SIZEOF_BYTE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,10 +26,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.carrotdata.redcarrot.BigSortedMap;
 import com.carrotdata.redcarrot.BigSortedMapScanner;
 import com.carrotdata.redcarrot.DataBlock;
-import com.carrotdata.redcarrot.ops.OperationFailedException;
 import com.carrotdata.redcarrot.redis.util.Commons;
 import com.carrotdata.redcarrot.redis.util.DataType;
 import com.carrotdata.redcarrot.util.Key;
@@ -448,9 +447,9 @@ public class Sets {
 
   static int getMaxValueSize(int keySize) {
     int size = DataBlock.getMaximumEmbeddedValueSize(keySize);
-    if (size < DataBlock.MAX_BLOCK_SIZE / 4) {
-      return DataBlock.MAX_BLOCK_SIZE / 2; // Key is LARGE (sick!) Will allocate externally
-    }
+    //if (size < DataBlock.MAX_BLOCK_SIZE / 4) {
+    //  return DataBlock.MAX_BLOCK_SIZE / 2; // Key is LARGE (sick!) Will allocate externally
+    //}
     return size;
   }
 
@@ -900,6 +899,7 @@ public class Sets {
         return 0; // empty or does not exists
       }
       while (scanner.hasNext()) {
+        //FIXME: what about keys?
         long valueSize = scanner.valueSize();
         total += valueSize - NUM_ELEM_SIZE;
       }
@@ -1224,14 +1224,15 @@ public class Sets {
    */
   public static int SMOVE(BigSortedMap map, long srcKeyPtr, int srcKeySize, long dstKeyPtr,
       int dstKeySize, long elemPtr, int elemSize) {
-
-    Key src = new Key(srcKeyPtr, srcKeySize);
-    Key dst = new Key(dstKeyPtr, dstKeySize);
-    ArrayList<Key> keyList = new ArrayList<Key>();
-    keyList.add(src);
-    keyList.add(dst);
+    //TODO: we can improve performance by copying BSM key-values instead
+//    Key src = new Key(srcKeyPtr, srcKeySize);
+//    Key dst = new Key(dstKeyPtr, dstKeySize);
+//    ArrayList<Key> keyList = new ArrayList<Key>();
+//    keyList.add(src);
+//    keyList.add(dst);
     try {
-      KeysLocker.writeLockAllKeys(keyList);
+      //KeysLocker.writeLockAllKeys(keyList);
+      map.writeLock();
       int n = SREM(map, srcKeyPtr, srcKeySize, elemPtr, elemSize);
       if (n == 0) {
         return 0;
@@ -1239,7 +1240,8 @@ public class Sets {
       int count = SADD(map, dstKeyPtr, dstKeySize, elemPtr, elemSize);
       return count;
     } finally {
-      KeysLocker.writeUnlockAllKeys(keyList);
+      //KeysLocker.writeUnlockAllKeys(keyList);
+      map.writeUnlock();
     }
   }
 
@@ -1296,14 +1298,15 @@ public class Sets {
     if (count <= 0) {
       return 0;
     }
-    Key k = getKey(keyPtr, keySize);
+    //Key k = getKey(keyPtr, keySize);
     // boolean distinct = count > 0;
     // if (!distinct) {
     // count = -count;
     // }
     SetScanner scanner = null;
     try {
-      KeysLocker.writeLock(k);
+      //KeysLocker.writeLock(k);
+      map.writeLock();
       long total = SCARD(map, keyPtr, keySize);
       if (total == 0) {
         return 0; // Empty set or does not exists
@@ -1347,7 +1350,8 @@ public class Sets {
           // Should not be here
         }
       }
-      KeysLocker.writeUnlock(k);
+      //KeysLocker.writeUnlock(k);
+      map.writeUnlock();
     }
   }
 

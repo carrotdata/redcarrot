@@ -79,7 +79,7 @@ public class TestRedisConf {
 
     p.clear();
     // Wrong format
-    p.setProperty(RedisConf.DATA_BLOCK_SIZES_KEY, "10, 20,50");
+    p.setProperty(RedisConf.DATA_BLOCK_SIZES_KEY, "10, xx,50");
     sizes = conf.getDataBlockSizes();
     assertNull(sizes);
   }

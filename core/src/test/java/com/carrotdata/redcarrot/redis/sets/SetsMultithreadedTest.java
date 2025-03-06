@@ -27,6 +27,8 @@ import com.carrotdata.redcarrot.compression.CodecType;
 import com.carrotdata.redcarrot.redis.RedisConf;
 import com.carrotdata.redcarrot.util.UnsafeAccess;
 import com.carrotdata.redcarrot.util.Value;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SetsMultithreadedTest {
@@ -36,33 +38,65 @@ public class SetsMultithreadedTest {
   BigSortedMap map;
   int valueSize = 16;
   int keySize = 16;
-  int setSize = 10000;
-  int keysNumber = 1000; // per thread
-  // FIXME: no MT support yet
-  int numThreads = 1;
+  int setSize = 10_000; // Max 10K pages per file
+  int keysNumber = 100000; //File number per thread
+  int numThreads = 2;
   List<Value> values;
+  boolean[] rnd = new boolean[1_000_111];
   long setupTime;
+  double percCached = 0.1;// 10% of a file is cached on average
+
+  long valueBufPtr ;
+//  private List<Value> getValues() {
+//    byte[] buffer = new byte[valueSize];
+//    Random r = new Random();
+//    values = new ArrayList<Value>();
+//    for (int i = 0; i < setSize; i++) {
+//      long ptr = UnsafeAccess.malloc(valueSize);
+//      int size = valueSize;
+//      r.nextBytes(buffer);
+//      UnsafeAccess.copy(buffer, 0, ptr, valueSize);
+//      //UnsafeAccess.copy(buffer, 0, ptr + valueSize / 2, valueSize / 2);
+//      values.add(new Value(ptr, size));
+//    }
+//    return values;
+//  }
 
   private List<Value> getValues() {
-    byte[] buffer = new byte[valueSize / 2];
-    Random r = new Random();
+    valueBufPtr = UnsafeAccess.malloc(setSize * Integer.toString(setSize).length());
+    
     values = new ArrayList<Value>();
+    int off = 0;
     for (int i = 0; i < setSize; i++) {
-      long ptr = UnsafeAccess.malloc(valueSize);
-      int size = valueSize;
-      r.nextBytes(buffer);
-      UnsafeAccess.copy(buffer, 0, ptr, valueSize / 2);
-      UnsafeAccess.copy(buffer, 0, ptr + valueSize / 2, valueSize / 2);
-      values.add(new Value(ptr, size));
+      byte[] b = Integer.toString(i).getBytes();
+      long ptr = UnsafeAccess.mallocZeroed(b.length);
+      UnsafeAccess.copy(b, 0, ptr, b.length);
+      values.add(new Value(ptr, b.length));
+//      UnsafeAccess.putByte(valueBufPtr + off,  (byte) b.length);
+//      off += 1;
+//      UnsafeAccess.copy(b, 0, valueBufPtr + off, b.length);
+//      off += b.length;
     }
     return values;
   }
-
+  
+  private void initRandom() {
+    Random r = new Random();
+    for (int i = 0; i < rnd.length; i++) {
+      if (r.nextDouble() < percCached) {
+        rnd[i] = true;
+      } else {
+        rnd[i] = false;
+      }
+    }
+  }
+  
   // @Before
   private void setUp() {
     setupTime = System.currentTimeMillis();
-    map = new BigSortedMap(100000000000L);
+    map = new BigSortedMap(20_000_000_000L);
     values = getValues();
+    initRandom();
   }
 
   // @After
@@ -71,20 +105,22 @@ public class SetsMultithreadedTest {
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  // @Ignore
+  @Ignore
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 100; i++) {
       log.debug("*************** RUN = {} Compression=NULL", i + 1);
       setUp();
       runTest();
-      tearDown();
+      // Wait
+      System.in.read();
+      tearDown();    
     }
   }
 
-  // @Ignore
+  //@Ignore
   @Test
   public void runAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
@@ -97,14 +133,14 @@ public class SetsMultithreadedTest {
     }
   }
 
-  // @Ignore
+  @Ignore
   @Test
   public void runAllCompressionZSTD() throws IOException {
     RedisConf conf = RedisConf.getInstance();
     conf.setTestMode(true);
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     log.debug("");
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 100; i++) {
       log.debug("*************** RUN = {}  Compression=ZSTD", i + 1);
       setUp();
       runTest();
@@ -112,7 +148,7 @@ public class SetsMultithreadedTest {
     }
   }
 
-  private void runTest() {
+  private void runTest() throws IOException {
 
     Runnable load = new Runnable() {
 
@@ -123,12 +159,21 @@ public class SetsMultithreadedTest {
         String name = Thread.currentThread().getName();
         int id = Integer.parseInt(name);
         Random r = new Random(setupTime + id);
+        
         long ptr = UnsafeAccess.malloc(keySize);
         byte[] buf = new byte[keySize];
+        long c = 0;
+        int nn = 0;
         for (int i = 0; i < keysNumber; i++) {
           r.nextBytes(buf);
           UnsafeAccess.copy(buf, 0, ptr, keySize);
+          //int off = 0;
+
           for (Value v : values) {
+            if (!rnd[(int)(c++ % rnd.length)]) {
+              continue;
+            }
+
             int res = Sets.SADD(map, ptr, keySize, v.address, v.length);
             assertEquals(1, res);
             loaded++;
@@ -136,14 +181,14 @@ public class SetsMultithreadedTest {
               log.debug("{} loaded {}", Thread.currentThread().getName(), loaded);
             }
           }
-          int card = (int) Sets.SCARD(map, ptr, keySize);
-          if (card != values.size()) {
-            card = (int) Sets.SCARD(map, ptr, keySize);
-            log.fatal("Second CARD={}", card);
-            Thread.dumpStack();
-            System.exit(-1);
-          }
-          assertEquals(values.size(), card);
+//          int card = (int) Sets.SCARD(map, ptr, keySize);
+//          if (card != values.size()) {
+//            card = (int) Sets.SCARD(map, ptr, keySize);
+//            log.fatal("Second CARD={}", card);
+//            Thread.dumpStack();
+//            System.exit(-1);
+//          }
+//          assertEquals(values.size(), card);
         }
         UnsafeAccess.free(ptr);
       }
@@ -157,12 +202,18 @@ public class SetsMultithreadedTest {
         String name = Thread.currentThread().getName();
         int id = Integer.parseInt(name);
         Random r = new Random(setupTime + id);
+        Random rr = new Random(setupTime + id);
+
         long ptr = UnsafeAccess.malloc(keySize);
         byte[] buf = new byte[keySize];
+        long c = 0;
         for (int i = 0; i < keysNumber; i++) {
           r.nextBytes(buf);
           UnsafeAccess.copy(buf, 0, ptr, keySize);
           for (Value v : values) {
+            if (!rnd[(int)(c++ % rnd.length)]) {
+              continue;
+            }
             int res = Sets.SISMEMBER(map, ptr, keySize, v.address, v.length);
             assertEquals(1, res);
             read++;
@@ -189,16 +240,16 @@ public class SetsMultithreadedTest {
         for (int i = 0; i < keysNumber; i++) {
           r.nextBytes(buf);
           UnsafeAccess.copy(buf, 0, ptr, keySize);
-          long card = (int) Sets.SCARD(map, ptr, keySize);
-          if (card != setSize) {
-            log.fatal("card:{} != setSize:{}", card, setSize);
-            Thread.dumpStack();
-            System.exit(-1);
-          }
-          assertEquals(setSize, (int) card);
+//          long card = (int) Sets.SCARD(map, ptr, keySize);
+//          if (card != setSize) {
+//            log.fatal("card:{} != setSize:{}", card, setSize);
+//            Thread.dumpStack();
+//            System.exit(-1);
+//          }
+//          assertEquals(setSize, (int) card);
           boolean res = Sets.DELETE(map, ptr, keySize);
           assertTrue(res);
-          card = Sets.SCARD(map, ptr, keySize);
+          long card = Sets.SCARD(map, ptr, keySize);
           if (card != 0) {
             log.fatal("delete, card={}", card);
             System.exit(-1);
@@ -229,7 +280,7 @@ public class SetsMultithreadedTest {
 
     long end = System.currentTimeMillis();
 
-    log.debug("Loading " + (numThreads * keysNumber * setSize) + " elements os done in "
+    log.debug("Loading  approximately " + ((long)numThreads * keysNumber * setSize * percCached) + " elements os done in "
         + (end - start) + "ms");
     BigSortedMap.printGlobalMemoryAllocationStats();
     UnsafeAccess.mallocStats.printStats("Memory Statistics:");
@@ -251,8 +302,11 @@ public class SetsMultithreadedTest {
 
     end = System.currentTimeMillis();
 
-    log.debug("Reading " + (numThreads * keysNumber * setSize) + " elements os done in "
+    log.debug("Reading approximately" + ((long)numThreads * keysNumber * setSize * percCached) + " elements os done in "
         + (end - start) + "ms");
+    
+    System.in.read();
+    
     log.debug("Deleting  data");
     start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {

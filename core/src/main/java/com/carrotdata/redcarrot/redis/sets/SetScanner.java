@@ -37,6 +37,7 @@ public final class SetScanner extends Scanner {
   static ThreadLocal<Long> offsetBuffer = new ThreadLocal<Long>() {
     @Override
     protected Long initialValue() {
+      //FIXME: will it work for every 
       long ptr = UnsafeAccess.malloc(4096); // More than enough to keep reverse scanner offsets
       return ptr;
     }

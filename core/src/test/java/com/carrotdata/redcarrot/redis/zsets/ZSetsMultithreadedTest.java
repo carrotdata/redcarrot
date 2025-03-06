@@ -41,7 +41,7 @@ public class ZSetsMultithreadedTest {
   int setSize = 10000;
   int keysNumber = 1000; // per thread
   // FIXME: no MT support yet
-  int numThreads = 1;
+  int numThreads = 2;
   List<Value> values;
   List<Double> scores;
   long setupTime;
@@ -91,7 +91,7 @@ public class ZSetsMultithreadedTest {
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void testAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
@@ -107,7 +107,7 @@ public class ZSetsMultithreadedTest {
     }
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void testAllCompressionLZ4() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.LZ4));
@@ -122,7 +122,7 @@ public class ZSetsMultithreadedTest {
     }
   }
 
-  // @Ignore
+  @Ignore
   @Test
   public void testAllCompressionZSTD() throws IOException {
     RedisConf conf = RedisConf.getInstance();

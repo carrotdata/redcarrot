@@ -40,7 +40,7 @@ public class AtomicAppendTest {
   static AtomicLong totalAppends = new AtomicLong();
   static long toLoad = 2000000;
   // FIXME: no MT support yet
-  static int totalThreads = 1;
+  static int totalThreads = 2;
 
   static class AppendRunner extends Thread {
 
@@ -123,6 +123,7 @@ public class AtomicAppendTest {
           total += size;
           scanner.next();
         }
+        scanner.close();
         assertEquals((totalAppends.get() + totalLoaded.get()) * 8, total);
         assertEquals(totalLoaded.get(), count);
         // map.dumpStats();

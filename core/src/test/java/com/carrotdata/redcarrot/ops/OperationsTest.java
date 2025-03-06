@@ -97,7 +97,7 @@ public class OperationsTest {
         total += UnsafeAccess.toLong(addr);
         scanner.next();
       }
-
+      scanner.close();
       assertEquals(totalIncrement, total);
     } finally {
       if (map != null) {
@@ -143,7 +143,7 @@ public class OperationsTest {
         total += size;
         scanner.next();
       }
-
+      scanner.close();
       assertEquals((totalAppend + totalLoaded) * 8, total);
     } finally {
       if (map != null) {

@@ -218,6 +218,7 @@ public abstract class CommandBase {
       outDirect.clear();
       String inline = validRequests[i];
       String request = inline;
+      log.debug(inline);
       strToByteBuffer(request, inDirect);
       CommandProcessor.process(map, inDirect, outDirect);
       String result = byteBufferToString(outDirect);

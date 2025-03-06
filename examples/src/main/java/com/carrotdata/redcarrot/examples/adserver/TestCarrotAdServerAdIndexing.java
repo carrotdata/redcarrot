@@ -32,20 +32,21 @@ import com.carrotdata.redcarrot.util.Utils;
  * ----- Data structure used to keep ads indexes (please refer to the book above to understand the
  * context):
  * <p>
- * 1. LocAd: SET keeps location -> {id} - for every location keeps list of ad ids 2. WordAds: ZSET
- * keeps list of ad ids for every word/keyword. word -> {id} 3. AdType: HASH keeps id-> type
- * association (type = cpm, cpa, cpc) 4. AdeCPM: ZSET keeps eCPM (estimated CPM) for every ad 5.
- * AdBase: ZSET keeps base values for every ads 6. AdWords: SET keeps list of words which can be
- * targeted by a given ad.
+ * 1. LocAd: SET keeps location -> {id} - for every location keeps list of ad ids 
+ * 2. WordAds: ZSET keeps list of ad ids for every word/keyword. word -> {id} 
+ * 3. AdType: HASH keeps id-> type association (type = cpm, cpa, cpc) 
+ * 4. AdeCPM: ZSET keeps eCPM (estimated CPM) for every ad 
+ * 5. AdBase: ZSET keeps base values for every ads 
+ * 6. AdWords: SET keeps list of words which can be targeted by a given ad.
  * <p>
  * ----- Data structures to keep user targeting:
  * <p>
  * 7. UserActionWords: ZSET keeps user behavior userId -> {word,score} We record user actions for
  * every ad he/she acts on the following way: if user acts on ad, we get the list of words targeted
- * by this ad and increment score for every word in the user's ordered set. 8. UserViewWords: ZSET -
- * the same as above but only for views (this data set is much bigger than in 7.) 9. UserViewAds:
- * HASH keeps history of all ads shown to a user during last XXX minutes, hours, days. 10
- * UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours, days.
+ * by this ad and increment score for every word in the user's ordered set. 
+ * 8. UserViewWords: ZSET -the same as above but only for views (this data set is much bigger than in 7.)
+ * 9. UserViewAds: HASH keeps history of all ads shown to a user during last XXX minutes, hours, days. 
+ * 10 UserActionAds: HASH keeps history of ads user clicked on during last XX minutes, hours, days.
  * <p>
  * ----- Data structures to keep ads performance:
  * <p>
@@ -98,11 +99,17 @@ import com.carrotdata.redcarrot.util.Utils;
  * <p>
  * -- Site performance 1. Redis 7.2.4 = 2,421,441,296 2. Carrot no compression = 733,330,944 3.
  * Carrot LZ4 compression = 675,045,888 4. Carrot ZSTD compression = 577,178,368 Memory ratio
- * Redis/Carrot: 1. Carrot no compression ~ 3.3x 2. Carrot LZ4 ~ 3.6x 3. Carrot ZSTD ~ 4.2x TOTAL
- * RAM usage for all applications: 1. Redis 7.2.4 - 5,669,157,912 bytes 2. Carrot no compression -
- * 1,820,895,104 3. Carrot LZ4 compression - 1,457,531,712 4. Carrot ZSTD compression -
- * 1,202,148,992 Memory ratio Redis/Carrot: 1. Carrot no compression ~ 3.1x 2. Carrot LZ4 ~ 3.9x 3.
- * Carrot ZSTD ~ 4.7x
+ * Redis/Carrot: 1. Carrot no compression ~ 3.3x 2. Carrot LZ4 ~ 3.6x 3. Carrot ZSTD ~ 4.2x 
+ * 
+ * TOTAL RAM usage for all applications: 
+ * 1. Redis 7.2.4 - 5,669,157,912 bytes 
+ * 2. Carrot no compression - 1,820,895,104 
+ * 3. Carrot LZ4 compression - 1,457,531,712 
+ * 4. Carrot ZSTD compression - 1,202,148,992 
+ * Memory ratio Redis/Carrot: 
+ * 1. Carrot no compression ~ 3.1x 
+ * 2. Carrot LZ4 ~ 3.9x 
+ * 3. Carrot ZSTD ~ 4.7x
  */
 public class TestCarrotAdServerAdIndexing {
 

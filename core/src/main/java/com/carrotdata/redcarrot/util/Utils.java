@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +52,12 @@ public class Utils {
   public static final int BITS_PER_BYTE = 8;
 
   private static Random rnd = new Random();
+  
+  /**
+   * FIXME: Potential memory leak. Replace with Caffeine cache
+   */
+  private static ConcurrentHashMap<String, Matcher> regexMatcherMap = new ConcurrentHashMap<>();
+  
 
   /**
    * Returns true if x1 is less than x2, when both values are treated as unsigned long. Both values
@@ -277,6 +286,20 @@ public class Utils {
     return length1 - length2;
   }
 
+  public static int compareToShort(long address1, int length1, long address2, int length2) {
+    Unsafe theUnsafe = UnsafeAccess.theUnsafe;
+    final int minLength = Math.min(length1, length2);
+    for (int i = 0; i < minLength; i++) {
+      int a = theUnsafe.getByte(address1 + i) & 0xff;
+      int b = theUnsafe.getByte(address2 + i) & 0xff;
+      if (a != b) {
+        return a - b;
+      }
+    }
+    return length1 - length2;
+  }
+
+  
   /**
    * Calculates common prefix (number of bytes) of two byte arrays.
    * @param buffer1 left operand
@@ -1608,9 +1631,17 @@ public class Utils {
    */
   public static boolean matches(long ptr, int size, String pattern) {
     String s = toString(ptr, size);
-    return s.matches(pattern);
+    Matcher m = regexMatcherMap.get(pattern);
+    if (m == null) {
+      // What to do with exception?
+      Pattern p = Pattern.compile(pattern);
+      m = p.matcher("");
+      regexMatcherMap.put(pattern,  m);
+    }
+    m.reset(s);
+    return m.matches();
   }
-
+  
   /**
    * Read memory as byte array
    * @param ptr address
@@ -1631,11 +1662,11 @@ public class Utils {
   public static byte[] numericStrToBytes(String value) {
     // value is numeric
     long v = Long.parseLong(value);
-    if (v < Byte.MAX_VALUE && v > Byte.MIN_VALUE) {
+    if (v <= Byte.MAX_VALUE && v >= Byte.MIN_VALUE) {
       return Bytes.toBytes((byte) v);
-    } else if (v < Short.MAX_VALUE && v > Short.MIN_VALUE) {
+    } else if (v <= Short.MAX_VALUE && v >= Short.MIN_VALUE) {
       return Bytes.toBytes((short) v);
-    } else if (v < Integer.MAX_VALUE && v > Integer.MIN_VALUE) {
+    } else if (v <= Integer.MAX_VALUE && v >= Integer.MIN_VALUE) {
       return Bytes.toBytes((int) v);
     } else {
       return Bytes.toBytes(v);

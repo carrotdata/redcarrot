@@ -147,6 +147,7 @@ public class AtomicIncrementTest {
           total += UnsafeAccess.toLong(addr);
           scanner.next();
         }
+        scanner.close();
         log.debug("totalLoaded={} actual={}", totalLoaded, count);
 
         assertEquals(totalIncrements.get(), total);

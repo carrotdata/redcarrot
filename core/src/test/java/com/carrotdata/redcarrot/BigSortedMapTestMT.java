@@ -33,7 +33,7 @@ public class BigSortedMapTestMT {
   private static final Logger log = LogManager.getLogger(BigSortedMapTestMT.class);
 
   // No MT support yet
-  static int totalThreads = 1;
+  static int totalThreads = 4;
   static AtomicDouble putsPs = new AtomicDouble();
   static AtomicDouble comboPs = new AtomicDouble();
   static AtomicDouble scanPs = new AtomicDouble();
@@ -98,7 +98,7 @@ public class BigSortedMapTestMT {
         double d = r.nextDouble();
         boolean result;
         if (BigSortedMap.getGlobalAllocatedMemory() < 0.99 * BigSortedMap.getGlobalMemoryLimit()) {
-          if (d < 0.30) {
+          if (d < 0.05) {
             result = put();
             if (!result) {
               log.fatal("BigSortedMap allocation < 0.30");
@@ -107,10 +107,10 @@ public class BigSortedMapTestMT {
             }
             assertTrue(result);
 
-          } else if (d < 0.5) {
+          } else if (d < 0.08) {
             result = overwrite();
             assertTrue(result);
-          } else if (d < 0.8) {
+          } else if (d < 0.1) {
             result = delete();
             if (!result) {
               log.fatal("BigSortedMap allocation < 0.8");
@@ -119,7 +119,7 @@ public class BigSortedMapTestMT {
             }
             assertTrue(result);
 
-          } else if (d < 0.9) {
+          } else if (d < 0.95) {
             // 0.9 is for safety, not all up to totalLoaded
             // can be really loaded (last ones may be in flight)
             int n = r.nextInt((int) (totalLoaded.get() * 0.9));

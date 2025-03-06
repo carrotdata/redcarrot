@@ -89,6 +89,7 @@ public abstract class CarrotCoreBase {
   @Parameterized.Parameters(name = "Run with codec={0}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] { { CodecFactory.getInstance().getCodec(CodecType.LZ4) },
+      { CodecFactory.getInstance().getCodec(CodecType.ZSTD) },
         { CodecFactory.getInstance().getCodec(CodecType.NONE) }
         // {CodecFactory.getInstance().getCodec(CodecType.LZ4HC)}
     });

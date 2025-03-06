@@ -11,9 +11,6 @@
  */
 package com.carrotdata.redcarrot.examples.basic;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +20,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.carrotdata.redcarrot.BigSortedMap;
 import com.carrotdata.redcarrot.compression.CodecFactory;
 import com.carrotdata.redcarrot.compression.CodecType;
@@ -103,9 +101,6 @@ public class SetsAllEnglishWords {
   private static void runTest(String fileName) throws IOException {
 
     BigSortedMap map = new BigSortedMap(100000000);
-    // File f = new File(fileName);
-    // FileInputStream fis = new FileInputStream(f);
-    // DataInputStream dis = new DataInputStream(fis);
     long totalLength = 0;
     int count = 0;
     List<String> lines = Files.readAllLines(Path.of(fileName));

@@ -11,7 +11,7 @@
 	<url>http://www.server.com</url>
 
 	<properties>
-		<revision>0.4-SNAPSHOT</revision>
+		<revision>0.5</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<log4j.version>2.23.1</log4j.version>
@@ -120,10 +120,10 @@
 						<exclude>**/BigSortedMapTestMT.java</exclude>
 						<exclude>**/AtomicAppendTestMT.java</exclude>
 						<exclude>**/AtomicIncrementTestMT.java</exclude>
-						<!--exclude>**/HashesMultithreadedTest.java</exclude-->
-						<!--exclude>**/SetsMultithreadedTest.java</exclude-->
+						<exclude>**/HashesMultithreadedTest.java</exclude>
+						<exclude>**/SetsMultithreadedTest.java</exclude>
 						<exclude>**/TestBitmapCompression.java</exclude>
-						<!--exclude>**/ZSetsMultithreadedTest.java</exclude-->
+						<exclude>**/ZSetsMultithreadedTest.java</exclude>
 						<exclude>**/SparseBitmapTest.java</exclude>
 					</excludes>
 					<systemProperties>

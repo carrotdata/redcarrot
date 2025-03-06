@@ -219,8 +219,10 @@ public final class IndexBlock implements Comparable<IndexBlock> {
    * PUT=1)
    */
   volatile byte[] firstKey;
+  
   // long version;
   byte type;
+  
   boolean isFirst = false;
   /*
    * Recent unsafe modification time (ms): Creation, split, merge, update first key
@@ -753,7 +755,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     return true;
   }
 
-  protected void dumpIndexBlock() {
+  public void dumpIndexBlock() {
     int count = 0;
     long ptr = dataPtr;
     log.debug("Dump index block: numDataBlocks={}", numDataBlocks);
@@ -1912,7 +1914,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
    * @param version version
    * @return true on success
    */
-  public boolean compressDataBlockForKey(long keyPtr, int keyLength, long version)
+  public synchronized boolean compressDataBlockForKey(long keyPtr, int keyLength, long version)
       throws RetryOperationException {
     DataBlock dataBlock = null;
     try {
@@ -1932,12 +1934,12 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     }
   }
 
-  public void compressLastUsedDataBlock() {
+  public synchronized void compressLastUsedDataBlock() {
     DataBlock dataBlock = block.get();
     dataBlock.compressDataBlockIfNeeded();
   }
 
-  public void compressLastUsedDataBlockForced() {
+  public synchronized void compressLastUsedDataBlockForced() {
     DataBlock dataBlock = block.get();
     dataBlock.setMutationOp(true);
     dataBlock.compressDataBlockIfNeeded();

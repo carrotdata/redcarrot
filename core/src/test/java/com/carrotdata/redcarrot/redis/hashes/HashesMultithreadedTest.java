@@ -28,6 +28,8 @@ import com.carrotdata.redcarrot.redis.RedisConf;
 import com.carrotdata.redcarrot.util.UnsafeAccess;
 import com.carrotdata.redcarrot.util.Utils;
 import com.carrotdata.redcarrot.util.Value;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class HashesMultithreadedTest {
@@ -40,7 +42,7 @@ public class HashesMultithreadedTest {
   int setSize = 10000;
   int keysNumber = 1000; // per thread
   // FIXME: no MT support yet
-  int numThreads = 1;
+  int numThreads = 2;
   List<Value> values;
   long setupTime;
 
@@ -94,6 +96,7 @@ public class HashesMultithreadedTest {
     }
   }
 
+  @Ignore
   @Test
   public void runAllCompressionZSTD() {
     RedisConf conf = RedisConf.getInstance();

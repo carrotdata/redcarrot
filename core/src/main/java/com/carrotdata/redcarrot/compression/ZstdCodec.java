@@ -412,7 +412,7 @@ public class ZstdCodec implements Codec {
     // therefore we add probability element
     ThreadLocalRandom r = ThreadLocalRandom.current();
     double d = r.nextDouble();
-    if (d > 0.01d) return;
+    if (d > 0.0001d) return;
     long $ptr = UnsafeAccess.malloc(size + Utils.SIZEOF_INT);
     UnsafeAccess.copy(ptr, $ptr + Utils.SIZEOF_INT, size);
     UnsafeAccess.putInt($ptr, size);
