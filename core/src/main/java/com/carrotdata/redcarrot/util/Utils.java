@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,8 +57,13 @@ public class Utils {
   /**
    * FIXME: Potential memory leak. Replace with Caffeine cache
    */
-  private static ConcurrentHashMap<String, Matcher> regexMatcherMap = new ConcurrentHashMap<>();
-  
+  private static ThreadLocal<HashMap<String, Matcher>>regexMatcherMap = new ThreadLocal<>() {
+
+    @Override
+    protected HashMap<String, Matcher> initialValue() {
+      return new HashMap<>();
+    }
+  };
 
   /**
    * Returns true if x1 is less than x2, when both values are treated as unsigned long. Both values
@@ -1631,12 +1637,12 @@ public class Utils {
    */
   public static boolean matches(long ptr, int size, String pattern) {
     String s = toString(ptr, size);
-    Matcher m = regexMatcherMap.get(pattern);
+    Matcher m = regexMatcherMap.get().get(pattern);
     if (m == null) {
       // What to do with exception?
       Pattern p = Pattern.compile(pattern);
       m = p.matcher("");
-      regexMatcherMap.put(pattern,  m);
+      regexMatcherMap.get().put(pattern,  m);
     }
     m.reset(s);
     return m.matches();
