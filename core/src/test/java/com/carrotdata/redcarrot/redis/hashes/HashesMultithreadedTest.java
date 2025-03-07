@@ -42,7 +42,7 @@ public class HashesMultithreadedTest {
   int setSize = 10000;
   int keysNumber = 1000; // per thread
   // FIXME: no MT support yet
-  int numThreads = 2;
+  int numThreads = 4;
   List<Value> values;
   long setupTime;
 

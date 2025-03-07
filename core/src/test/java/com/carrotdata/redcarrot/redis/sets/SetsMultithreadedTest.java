@@ -47,20 +47,6 @@ public class SetsMultithreadedTest {
   double percCached = 0.1;// 10% of a file is cached on average
 
   long valueBufPtr ;
-//  private List<Value> getValues() {
-//    byte[] buffer = new byte[valueSize];
-//    Random r = new Random();
-//    values = new ArrayList<Value>();
-//    for (int i = 0; i < setSize; i++) {
-//      long ptr = UnsafeAccess.malloc(valueSize);
-//      int size = valueSize;
-//      r.nextBytes(buffer);
-//      UnsafeAccess.copy(buffer, 0, ptr, valueSize);
-//      //UnsafeAccess.copy(buffer, 0, ptr + valueSize / 2, valueSize / 2);
-//      values.add(new Value(ptr, size));
-//    }
-//    return values;
-//  }
 
   private List<Value> getValues() {
     valueBufPtr = UnsafeAccess.malloc(setSize * Integer.toString(setSize).length());
@@ -72,10 +58,6 @@ public class SetsMultithreadedTest {
       long ptr = UnsafeAccess.mallocZeroed(b.length);
       UnsafeAccess.copy(b, 0, ptr, b.length);
       values.add(new Value(ptr, b.length));
-//      UnsafeAccess.putByte(valueBufPtr + off,  (byte) b.length);
-//      off += 1;
-//      UnsafeAccess.copy(b, 0, valueBufPtr + off, b.length);
-//      off += b.length;
     }
     return values;
   }

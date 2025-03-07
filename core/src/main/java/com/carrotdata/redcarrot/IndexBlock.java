@@ -17,10 +17,10 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.carrotdata.redcarrot.redis.util.Commons;
 import com.carrotdata.redcarrot.util.Bytes;
 import com.carrotdata.redcarrot.util.Key;
@@ -129,15 +129,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
 
   static float[] BLOCK_RATIOS = new float[] { 0.25f, 0.5f, 0.75f, 1.0f };
   static final int EXPANSION_SIZE = 512;
-  /*
-   * Read-Write Lock TODO: StampedLock (Java 8)
-   */
-  ReentrantReadWriteLock[] locks = null;// new ReentrantReadWriteLock[11113];
-  // static {
-  // for (int i = 0; i < locks.length; i++) {
-  // locks[i] = new ReentrantReadWriteLock();
-  // }
-  // }
+
 
   /**
    * Get min size greater than current
@@ -244,7 +236,7 @@ public final class IndexBlock implements Comparable<IndexBlock> {
     if (map != null) {
       map.incrInstanceAllocatedMemory(size);
       map.incrInstanceBlockIndexSize(size);
-      this.locks = map.getIndexLocks();
+      //this.locks = map.getIndexLocks();
     } else {
       BigSortedMap.incrGlobalAllocatedMemory(size);
       BigSortedMap.incrGlobalBlockIndexSize(size);
@@ -470,28 +462,12 @@ public final class IndexBlock implements Comparable<IndexBlock> {
   }
 
   public void readLock(boolean withException) throws RetryOperationException {
-    if (isThreadSafe() || locks == null) return;
-    long before = this.seqNumberSplitOrMerge;
-    int index = (hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.readLock().lock();
-    if (!isValid()) {
-      // The block can become invalid only before after deletion
-      // or after merge (which is not implemented)
-      throw new RetryOperationException();
-    }
-    long after = this.seqNumberSplitOrMerge;
-    if (before != after && withException) {
-      throw new RetryOperationException();
-    }
+
   }
 
   /** Read unlock */
   public void readUnlock() {
-    if (isThreadSafe() || locks == null) return;
-    int index = (hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.readLock().unlock();
+
   }
 
   /**
@@ -500,27 +476,11 @@ public final class IndexBlock implements Comparable<IndexBlock> {
    * @throws InterruptedException
    */
   public void writeLock() throws RetryOperationException {
-
-    if (isThreadSafe() || locks == null) return;
-    long before = this.seqNumberSplitOrMerge;
-    int index = (hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.writeLock().lock();
-    if (!isValid()) {
-      throw new RetryOperationException();
-    }
-    long after = this.seqNumberSplitOrMerge;
-    if (before != after) {
-      throw new RetryOperationException();
-    }
   }
 
   /** Write unlock */
   public void writeUnlock() {
-    if (isThreadSafe() || locks == null) return;
-    int index = (hashCode() % locks.length);
-    ReentrantReadWriteLock lock = locks[index];
-    lock.writeLock().unlock();
+
   }
 
   boolean insertBlock(DataBlock bb) {
