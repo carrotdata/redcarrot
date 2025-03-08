@@ -2061,7 +2061,7 @@ public class Sets {
     while (off < valueSize) {
       int eSize = Utils.readUVInt(valuePtr + off);
       int skip = Utils.sizeUVInt(eSize);
-      if (Utils.compareTo(elementPtr, elementSize, valuePtr + off + skip, eSize) == 0) {
+      if (Utils.equals(elementPtr, elementSize, valuePtr + off + skip, eSize)) {
         return valuePtr + off;
       }
       off += skip + eSize;

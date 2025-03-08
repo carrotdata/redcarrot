@@ -211,13 +211,13 @@ public class TestUtils {
   @Test
   public void testUnsignedVariableInt() {
     int[] values = new int[1000];
-    fillRandom(values, 1 << 7);
+    fillRandom(values, 0x3f);
     verify(values);
-    fillRandom(values, 1 << 14);
+    fillRandom(values, 0x3fff);
     verify(values);
-    fillRandom(values, 1 << 21);
+    fillRandom(values, 0x3fffff);
     verify(values);
-    fillRandom(values, 1 << 28);
+    fillRandom(values, 0x3fffffff);
     verify(values);
   }
 
@@ -226,10 +226,10 @@ public class TestUtils {
     for (int i = 0; i < values.length; i++) {
       // clear
       UnsafeAccess.putInt(ptr, 0);
-      int size = Utils.writeUVInt(ptr, values[i]);
+      int s = Utils.writeUVInt(ptr, values[i]);
       int v = Utils.readUVInt(ptr);
       assertEquals(values[i], v);
-      assertEquals(size, Utils.sizeUVInt(v));
+      assertEquals(s, Utils.sizeUVInt(v));
     }
     UnsafeAccess.free(ptr);
   }

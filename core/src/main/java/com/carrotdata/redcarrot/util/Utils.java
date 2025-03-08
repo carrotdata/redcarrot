@@ -29,12 +29,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+
 import sun.misc.Unsafe;
 
 public class Utils {
@@ -171,6 +172,27 @@ public class Utils {
   }
 
   /**
+   * Compare two arrays on equality
+   * @param buffer1 left operand
+   * @param buffer2 right operand
+   * @param offset1 Where to start comparing in the left buffer
+   * @param offset2 Where to start comparing in the right buffer
+   * @param length1 How much to compare from the left buffer
+   * @param length2 How much to compare from the right buffer
+   * @return true or false
+   */
+  public static boolean equals(byte[] buffer1, int offset1, int length1, byte[] buffer2, int offset2,
+      int length2) {
+    if (length1 != length2) {
+      return false;
+    }
+    if (buffer1[buffer1.length - 1] != buffer2[buffer2.length - 1]) {
+      return false;
+    }
+    return compareTo(buffer1, offset1, length1, buffer2, offset2, length2) == 0;
+  }
+  
+  /**
    * Lexicographically compare array and native memory.
    * @param buffer1 left operand
    * @param address right operand - native
@@ -232,6 +254,26 @@ public class Utils {
   }
 
   /**
+   * Compare two arrays on equality
+   * @param buffer1 left operand
+   * @param address right operand address
+   * @param offset1 Where to start comparing in the left buffer
+   * @param length1 How much to compare from the left buffer
+   * @param length2 How much to compare from the right buffer
+   * @return true or false
+   */
+  public static boolean equals(byte[] buffer1, int offset1, int length1, long address,
+      int length2) {
+    if (length1 != length2) {
+      return false;
+    }
+    if (buffer1[buffer1.length - 1] != UnsafeAccess.toByte(address + length2 - 1)) {
+      return false;
+    }
+    return compareTo(buffer1, offset1, length1, address, length2) == 0;
+  }
+  
+  /**
    * Lexicographically compare two native memory pointers.
    * @param buffer1 left operand
    * @param address right operand - native
@@ -292,6 +334,25 @@ public class Utils {
     return length1 - length2;
   }
 
+  /**
+   * Compare two arrays on equality
+   * @param address1 left operand address
+   * @param address2 right operand address
+   * @param length1 How much to compare from the left buffer
+   * @param length2 How much to compare from the right buffer
+   * @return true or false
+   */
+  public static boolean equals(long address1, int length1, long address2,
+      int length2) {
+    if (length1 != length2) {
+      return false;
+    }
+    if (UnsafeAccess.toByte(address2 + length2 - 1) != UnsafeAccess.toByte(address2 + length2 - 1)) {
+      return false;
+    }
+    return compareTo(address1, length1, address2, length2) == 0;
+  }
+  
   public static int compareToShort(long address1, int length1, long address2, int length2) {
     Unsafe theUnsafe = UnsafeAccess.theUnsafe;
     final int minLength = Math.min(length1, length2);
@@ -571,6 +632,89 @@ public class Utils {
     return 0;
   }
 
+//  /**
+//   * TODO: THIS METHOD IS UNSAFE??? CHECK IT Read unsigned VarInt
+//   * @param ptr address to read from
+//   * @return int value
+//   */
+//  public static int readUVInt(long ptr) {
+//    int v1 = UnsafeAccess.toByte(ptr) & 0xff;
+//
+//    int cont = v1 >>> 7; // either 0 or 1
+//    ptr += cont;
+//    v1 &= 0x7f; // set 8th bit 0
+//    int v2 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
+//    cont = v2 >>> 7;
+//    ptr += cont;
+//    v2 &= 0x7f;
+//    int v3 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
+//    cont = v3 >>> 7;
+//    ptr += cont;
+//    v3 &= 0x7f;
+//    int v4 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
+//    v4 &= 0x7f;
+//    return v1 + (v2 << 7) + (v3 << 14) + (v4 << 21);
+//  }
+  
+//  /**
+//   * Returns size of unsigned variable integer in bytes
+//   * @param value
+//   * @return size in bytes
+//   */
+//  public static int sizeUVInt(int value) {
+//    if (value < v1) {
+//      return 1;
+//    } else if (value < v2) {
+//      return 2;
+//    } else if (value < v3) {
+//      return 3;
+//    } else if (value < v4) {
+//      return 4;
+//    }
+//    return 0;
+//  }
+//
+//  static final int v1 = 1 << 7;
+//  static final int v2 = 1 << 14;
+//  static final int v3 = 1 << 21;
+//  static final int v4 = 1 << 28;
+//
+//  /**
+//   * Writes unsigned variable integer
+//   * @param ptr address to write to
+//   * @param value
+//   * @return number of bytes written
+//   */
+//  public static int writeUVInt(long ptr, int value) {
+//
+//    if (value < v1) {
+//      UnsafeAccess.putByte(ptr, (byte) value);
+//      return 1;
+//    } else if (value < v2) {
+//      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
+//      UnsafeAccess.putByte(ptr + 1, (byte) (value >>> 7));
+//      return 2;
+//    } else if (value < v3) {
+//      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
+//      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 7) | 0x80));
+//      UnsafeAccess.putByte(ptr + 2, (byte) (value >>> 14));
+//      return 3;
+//    } else if (value < v4) {
+//      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
+//      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 7) | 0x80));
+//      UnsafeAccess.putByte(ptr + 2, (byte) ((value >>> 14) | 0x80));
+//      UnsafeAccess.putByte(ptr + 3, (byte) (value >>> 21));
+//      return 4;
+//    }
+//    return 0;
+//  }
+//
+  
+  static final int v1 = 0x3f;
+  static final int v2 = 0x3fff;
+  static final int v3 = 0x3fffff;
+  static final int v4 = 0x3fffffff;
+  
   /**
    * TODO: THIS METHOD IS UNSAFE??? CHECK IT Read unsigned VarInt
    * @param ptr address to read from
@@ -578,45 +722,46 @@ public class Utils {
    */
   public static int readUVInt(long ptr) {
     int v1 = UnsafeAccess.toByte(ptr) & 0xff;
-
-    int cont = v1 >>> 7; // either 0 or 1
-    ptr += cont;
-    v1 &= 0x7f; // set 8th bit 0
-    int v2 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
-    cont = v2 >>> 7;
-    ptr += cont;
-    v2 &= 0x7f;
-    int v3 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
-    cont = v3 >>> 7;
-    ptr += cont;
-    v3 &= 0x7f;
-    int v4 = (byte) (UnsafeAccess.toByte(ptr) * cont) & 0xff;
-    v4 &= 0x7f;
-    return v1 + (v2 << 7) + (v3 << 14) + (v4 << 21);
+    switch (v1 >>> 6) {
+      case 0:
+        return v1;
+      case 1:
+        v1 = v1 & 0x3f;
+        int v2 = (UnsafeAccess.toByte(ptr + 1) & 0xff);
+        return (v2 << 6) + v1;
+      case 2:
+        v1 = v1 & 0x3f;
+        v2 = (UnsafeAccess.toByte(ptr + 1) & 0xff);
+        int v3 = (UnsafeAccess.toByte(ptr + 2) & 0xff);
+        return  (v3 << 14) + (v2 << 6) + v1;
+      case 3:
+        v1 = v1 & 0x3f;
+        v2 = (UnsafeAccess.toByte(ptr + 1) & 0xff);
+        v3 = (UnsafeAccess.toByte(ptr + 2) & 0xff);
+        int v4 = (UnsafeAccess.toByte(ptr + 3) & 0xff);
+        return (v4 << 22) + (v3 << 14) + (v2 << 6) + v1;
+      default:
+        return 0;
+    }
   }
-
+  
   /**
    * Returns size of unsigned variable integer in bytes
    * @param value
    * @return size in bytes
    */
   public static int sizeUVInt(int value) {
-    if (value < v1) {
-      return 1;
-    } else if (value < v2) {
-      return 2;
-    } else if (value < v3) {
-      return 3;
-    } else if (value < v4) {
-      return 4;
-    }
-    return 0;
+     if ( value <= v1) {
+       return 1;
+     } else if (value <= v2) {
+       return 2;
+     } else if (value <= v3) {
+       return 3;
+     } else if (value <= v4) {
+       return 4;
+     }
+     return 0;
   }
-
-  static final int v1 = 1 << 7;
-  static final int v2 = 1 << 14;
-  static final int v3 = 1 << 21;
-  static final int v4 = 1 << 28;
 
   /**
    * Writes unsigned variable integer
@@ -626,28 +771,28 @@ public class Utils {
    */
   public static int writeUVInt(long ptr, int value) {
 
-    if (value < v1) {
+    if (value <= v1) {
       UnsafeAccess.putByte(ptr, (byte) value);
       return 1;
-    } else if (value < v2) {
-      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
-      UnsafeAccess.putByte(ptr + 1, (byte) (value >>> 7));
+    } else if (value <= v2) {
+      UnsafeAccess.putByte(ptr, (byte) ((value & 0x3f) | 0x40));
+      UnsafeAccess.putByte(ptr + 1, (byte) (value >>> 6));
       return 2;
-    } else if (value < v3) {
-      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
-      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 7) | 0x80));
+    } else if (value <= v3) {
+      UnsafeAccess.putByte(ptr, (byte) ((value & 0x3f) | 0x80));
+      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 6)));
       UnsafeAccess.putByte(ptr + 2, (byte) (value >>> 14));
       return 3;
-    } else if (value < v4) {
-      UnsafeAccess.putByte(ptr, (byte) ((value & 0xff) | 0x80));
-      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 7) | 0x80));
-      UnsafeAccess.putByte(ptr + 2, (byte) ((value >>> 14) | 0x80));
-      UnsafeAccess.putByte(ptr + 3, (byte) (value >>> 21));
+    } else if (value <= v4) {
+      UnsafeAccess.putByte(ptr, (byte) ((value & 0x3f) | 0xC0));
+      UnsafeAccess.putByte(ptr + 1, (byte) ((value >>> 6)));
+      UnsafeAccess.putByte(ptr + 2, (byte) ((value >>> 14)));
+      UnsafeAccess.putByte(ptr + 3, (byte) (value >>> 22));
       return 4;
     }
     return 0;
   }
-
+  
   private static byte[] BYTE_BITS = new byte[] { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
   private static byte[] BYTE_LAST_BIT = new byte[] { -1 /* 0 */, 3 /* 1 */, 2 /* 2 */, 3 /* 3 */,
       1 /* 4 */, 3 /* 5 */, 2 /* 6 */, 3 /* 7 */, 0 /* 8 */, 3 /* 9 */, 2 /* 10 */, 3 /* 11 */,

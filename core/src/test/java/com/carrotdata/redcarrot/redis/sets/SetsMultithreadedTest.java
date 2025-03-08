@@ -40,7 +40,7 @@ public class SetsMultithreadedTest {
   int keySize = 16;
   int setSize = 10_000; // Max 10K pages per file
   int keysNumber = 100000; //File number per thread
-  int numThreads = 2;
+  int numThreads = 1;
   List<Value> values;
   boolean[] rnd = new boolean[1_000_111];
   long setupTime;
@@ -87,17 +87,16 @@ public class SetsMultithreadedTest {
     values.stream().forEach(x -> UnsafeAccess.free(x.address));
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void runAllNoCompression() throws IOException {
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.NONE));
     log.debug("");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
       log.debug("*************** RUN = {} Compression=NULL", i + 1);
       setUp();
       runTest();
       // Wait
-      System.in.read();
       tearDown();    
     }
   }
@@ -115,14 +114,14 @@ public class SetsMultithreadedTest {
     }
   }
 
-  @Ignore
+  //@Ignore
   @Test
   public void runAllCompressionZSTD() throws IOException {
     RedisConf conf = RedisConf.getInstance();
     conf.setTestMode(true);
     BigSortedMap.setCompressionCodec(CodecFactory.getInstance().getCodec(CodecType.ZSTD));
     log.debug("");
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
       log.debug("*************** RUN = {}  Compression=ZSTD", i + 1);
       setUp();
       runTest();
@@ -287,7 +286,7 @@ public class SetsMultithreadedTest {
     log.debug("Reading approximately" + ((long)numThreads * keysNumber * setSize * percCached) + " elements os done in "
         + (end - start) + "ms");
     
-    System.in.read();
+    //System.in.read();
     
     log.debug("Deleting  data");
     start = System.currentTimeMillis();
